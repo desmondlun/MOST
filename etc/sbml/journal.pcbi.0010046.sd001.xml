@@ -1,0 +1,3104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level2" level="2" version="1">
+  <model id="MAP" name="M. tuberculosis Mycolic Acid Pathway">
+    <listOfCompartments>
+      <compartment id="default"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species id="G001" name="acpS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X001" name="coenzyme-A" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X002" name="apo-AcpM" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X003" name="ADP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X004" name="[acyl-carrier-protein]" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G002" name="birA" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X005" name="AccB" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X006" name="biotin" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X007" name="ATP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X008" name="pyrophosphate" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X009" name="AMP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X010" name="BCCP-biotin" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G003" name="accA3" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X011" name="HCO3-" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X012" name="phosphate" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X013" name="BCCP-biotin-CO2" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X014" name="H+" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G004" name="accD3" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X015" name="acetyl-CoA" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X016" name="malonyl-CoA" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G005" name="fas" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X017" name="ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X018" name="C2-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X019" name="malonyl-C2-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X020" name="beta-keto-C4-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X021" name="CO2" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X022" name="NADPH" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X023" name="D-3-hydroxy-C4-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X024" name="NADP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X025" name="trans-delta-2-enoyl-C4-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X026" name="H2O" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X027" name="NADH" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X028" name="C4-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X029" name="NAD" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X030" name="malonyl-C4-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X031" name="beta-keto-C6-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X032" name="D-3-hydroxy-C6-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X033" name="trans-delta-2-enoyl-C6-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X034" name="C6-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X035" name="malonyl-C6-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X036" name="beta-keto-C8-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X037" name="D-3-hydroxy-C8-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X038" name="trans-delta-2-enoyl-C8-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X039" name="C8-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X040" name="malonyl-C8-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X041" name="beta-keto-C10-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X042" name="D-3-hydroxy-C10-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X043" name="trans-delta-2-enoyl-C10-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X044" name="C10-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X045" name="malonyl-C10-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X046" name="beta-keto-C12-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X047" name="D-3-hydroxy-C12-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X048" name="trans-delta-2-enoyl-C12-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X049" name="C12-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X050" name="malonyl-C12-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X051" name="beta-keto-C14-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X052" name="D-3-hydroxy-C14-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X053" name="trans-delta-2-enoyl-C14-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X054" name="C14-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X055" name="malonyl-C14-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X056" name="beta-keto-C16-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X057" name="D-3-hydroxy-C16-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X058" name="trans-delta-2-enoyl-C16-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X059" name="C16-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X060" name="malonyl-C16-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X061" name="beta-keto-C18-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X062" name="D-3-hydroxy-C18-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X063" name="trans-delta-2-enoyl-C18-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X064" name="C18-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X065" name="malonyl-C18-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X066" name="beta-keto-C20-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X067" name="D-3-hydroxy-C20-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X068" name="trans-delta-2-enoyl-C20-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X069" name="C20-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X070" name="malonyl-C20-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X071" name="beta-keto-C22-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X072" name="D-3-hydroxy-C22-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X073" name="trans-delta-2-enoyl-C22-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X074" name="C22-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X075" name="malonyl-C22-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X076" name="beta-keto-C24-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X077" name="D-3-hydroxy-C24-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X078" name="trans-delta-2-enoyl-C24-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X079" name="C24-acyl-ACP-FAS" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X080" name="C24-acyl-S-CoA" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X081" name="C16-acyl-S-CoA" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G006" name="fabD" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X082" name="malonyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G007" name="fabH" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X083" name="beta-keto-C18-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G008" name="fabG1/mabA" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X084" name="D-3-hydroxy-C18-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G009" name="fabG2" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G010" name="fabG4" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G011" name="UNK1" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X085" name="trans-delta-2-enoyl-C18-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G012" name="inhA" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X086" name="C18-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G013" name="kasA" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G014" name="kasB" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X087" name="beta-keto-C20-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X088" name="D-3-hydroxy-C20-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X089" name="trans-delta-2-enoyl-C20-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X090" name="C20-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X091" name="beta-keto-C22-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X092" name="D-3-hydroxy-C22-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X093" name="trans-delta-2-enoyl-C22-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X094" name="C22-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X095" name="beta-keto-C24-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X096" name="D-3-hydroxy-C24-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X097" name="trans-delta-2-enoyl-C24-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X098" name="C24-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X099" name="beta-keto-C26-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X100" name="D-3-hydroxy-C26-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X101" name="trans-delta-2-enoyl-C26-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X102" name="C26-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X103" name="beta-keto-C28-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X104" name="D-3-hydroxy-C28-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X105" name="trans-delta-2-enoyl-C28-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X106" name="C28-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X107" name="beta-keto-C30-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X108" name="D-3-hydroxy-C30-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X109" name="trans-delta-2-enoyl-C30-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X110" name="C30-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X111" name="beta-keto-C32-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X112" name="D-3-hydroxy-C32-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X113" name="trans-delta-2-enoyl-C32-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X114" name="C32-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X115" name="beta-keto-C34-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X116" name="D-3-hydroxy-C34-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X117" name="trans-delta-2-enoyl-C34-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X118" name="C34-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X119" name="beta-keto-C36-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X120" name="D-3-hydroxy-C36-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X121" name="trans-delta-2-enoyl-C36-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X122" name="C36-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X123" name="beta-keto-C38-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X124" name="D-3-hydroxy-C38-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X125" name="trans-delta-2-enoyl-C38-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X126" name="C38-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X127" name="beta-keto-C40-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X128" name="D-3-hydroxy-C40-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X129" name="trans-delta-2-enoyl-C40-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X130" name="C40-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X131" name="beta-keto-C42-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X132" name="D-3-hydroxy-C42-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X133" name="trans-delta-2-enoyl-C42-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X134" name="C42-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X135" name="beta-keto-C44-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X136" name="D-3-hydroxy-C44-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X137" name="trans-delta-2-enoyl-C44-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X138" name="C44-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X139" name="beta-keto-C46-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X140" name="D-3-hydroxy-C46-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X141" name="trans-delta-2-enoyl-C46-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X142" name="C46-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X143" name="beta-keto-C48-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X144" name="D-3-hydroxy-C48-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X145" name="trans-delta-2-enoyl-C48-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X146" name="C48-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X147" name="beta-keto-C50-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X148" name="D-3-hydroxy-C50-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X149" name="trans-delta-2-enoyl-C50-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X150" name="C50-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X151" name="beta-keto-C52-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X152" name="D-3-hydroxy-C52-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X153" name="trans-delta-2-enoyl-C52-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X154" name="C52-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X155" name="beta-keto-C54-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X156" name="D-3-hydroxy-C54-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X157" name="trans-delta-2-enoyl-C54-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X158" name="C54-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X159" name="beta-keto-C56-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X160" name="D-3-hydroxy-C56-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X161" name="trans-delta-2-enoyl-C56-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X162" name="C56-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X163" name="beta-keto-C58-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X164" name="D-3-hydroxy-C58-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X165" name="trans-delta-2-enoyl-C58-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X166" name="C58-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G015" name="desA1" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G016" name="desA2" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G017" name="desA3" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X167" name="cis-delta-2-19,31-enoyl-C52-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X168" name="cis-delta-2-19,37-enoyl-C54-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X169" name="cis-delta-2-19,37-enoyl-C58-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G018" name="mmaA2" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X170" name="S-adenosyl-L-methionine" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X171" name="cis-delta-1-31-enoyl-19-cp-C53-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X172" name="S-adenosyl-L-homocysteine" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G019" name="pcaA" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X173" name="19,31-cp-C54-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G020" name="fadD32" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X174" name="19,31-cp-C54-acyl-ACP-AMP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G021" name="accD4" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G022" name="accD5" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X175" name="2-carboxyl-C24-acyl-CoA" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G023" name="pks13" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X176" name="alpha-mycolate" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G024" name="mmaA4" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X177" name="cis-delta-37-methyl-hydroxy-C55-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G025" name="mmaA3" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X178" name="cis-delta-37-methyl-hydroxymethyl-C56-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X179" name="cis-methoxy-C57-meroacyl-cp-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G026" name="cmaA2" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X180" name="cis-methoxy-C57-meroacyl-cp-ACP-AMP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X181" name="cis-methoxy-mycolate" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G027" name="mmaA1" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X182" name="delta-2-cis-19,trans-37-enoyl-methyl-C55-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X183" name="trans-delta-37-methyl-hydroxy-C56-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X184" name="trans-delta-37-methyl-hydroxymethyl-C57-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X185" name="trans-methoxy-C58-meroacyl-cp-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X186" name="trans-methoxy-C58-meroacyl-cp-ACP-AMP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X187" name="trans-methoxy-mycolate" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X188" name="cis-delta-37-methyl-hydroxy-C59-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="G028" name="UNK2" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X189" name="cis-delta-37-methyl-keto-C59-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X190" name="cis-keto-C60-meroacyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X191" name="cis-keto-C60-meroacyl-ACP-AMP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X192" name="cis-keto-mycolate" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X193" name="trans-delta-37-methyl-hydroxy-C60-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X194" name="trans-delta-37-methyl-keto-C60-acyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X195" name="trans-keto-C61-meroacyl-ACP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X196" name="trans-keto-C61-meroacyl-ACP-AMP" compartment="default" initialAmount="0" charge="0"/>
+      <species id="X197" name="trans-keto-mycolate" compartment="default" initialAmount="0" charge="0"/>
+    </listOfSpecies>
+    <listOfReactions>
+      <reaction id="J001" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X001"/>
+          <speciesReference species="X002"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X003"/>
+          <speciesReference species="X004"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G001"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J002" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X005"/>
+          <speciesReference species="X006"/>
+          <speciesReference species="X007"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X008"/>
+          <speciesReference species="X009"/>
+          <speciesReference species="X010"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G002"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J003" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X007"/>
+          <speciesReference species="X010"/>
+          <speciesReference species="X011"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X003"/>
+          <speciesReference species="X012"/>
+          <speciesReference species="X013"/>
+          <speciesReference species="X014"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G003"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J004" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X013"/>
+          <speciesReference species="X015"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X016"/>
+          <speciesReference species="X010"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G004"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J005" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X015"/>
+          <speciesReference species="X017"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X018"/>
+          <speciesReference species="X001"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J006" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X018"/>
+          <speciesReference species="X016"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X019"/>
+          <speciesReference species="X001"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J007" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X019"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X020"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J008" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X020"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X023"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J009" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X023"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X025"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J010" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X025"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X028"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J011" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X028"/>
+          <speciesReference species="X016"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X030"/>
+          <speciesReference species="X001"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J012" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X030"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X031"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J013" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X031"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X032"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J014" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X032"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X033"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J015" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X033"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X034"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J016" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X034"/>
+          <speciesReference species="X016"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X035"/>
+          <speciesReference species="X001"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J017" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X035"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X036"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J018" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X036"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X037"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J019" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X037"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X038"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J020" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X038"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X039"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J021" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X039"/>
+          <speciesReference species="X016"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X040"/>
+          <speciesReference species="X001"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J022" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X040"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X041"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J023" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X041"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X042"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J024" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X042"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X043"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J025" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X043"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X044"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J026" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X044"/>
+          <speciesReference species="X016"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X045"/>
+          <speciesReference species="X001"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J027" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X045"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X046"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J028" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X046"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X047"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J029" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X047"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X048"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J030" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X048"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X049"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J031" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X049"/>
+          <speciesReference species="X016"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X050"/>
+          <speciesReference species="X001"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J032" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X050"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X051"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J033" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X051"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X052"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J034" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X052"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X053"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J035" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X053"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X054"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J036" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X054"/>
+          <speciesReference species="X016"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X055"/>
+          <speciesReference species="X001"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J037" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X055"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X056"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J038" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X056"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X057"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J039" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X057"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X058"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J040" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X058"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X059"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J041" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X059"/>
+          <speciesReference species="X016"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X060"/>
+          <speciesReference species="X001"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J042" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X060"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X061"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J043" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X061"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X062"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J044" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X062"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X063"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J045" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X063"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X064"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J046" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X064"/>
+          <speciesReference species="X016"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X065"/>
+          <speciesReference species="X001"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J047" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X065"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X066"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J048" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X066"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X067"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J049" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X067"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X068"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J050" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X068"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X069"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J051" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X069"/>
+          <speciesReference species="X016"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X070"/>
+          <speciesReference species="X001"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J052" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X070"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X071"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J053" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X071"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X072"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J054" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X072"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X073"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J055" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X073"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X074"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J056" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X074"/>
+          <speciesReference species="X016"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X075"/>
+          <speciesReference species="X001"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J057" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X075"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X076"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J058" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X076"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X077"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J059" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X077"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X078"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J060" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X078"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X079"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J061" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X079"/>
+          <speciesReference species="X001"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X080"/>
+          <speciesReference species="X017"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J062" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X059"/>
+          <speciesReference species="X001"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X081"/>
+          <speciesReference species="X017"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G005"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J063" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X004"/>
+          <speciesReference species="X016"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X082"/>
+          <speciesReference species="X001"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G006"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J064" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X081"/>
+          <speciesReference species="X082"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X001"/>
+          <speciesReference species="X083"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G007"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J065" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X083"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X084"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G008"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J066" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X083"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X084"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G009"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J067" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X083"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X084"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G010"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J068" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X084"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X085"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G011"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J069" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X085"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X086"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G012"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J070" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X086"/>
+          <speciesReference species="X082"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X004"/>
+          <speciesReference species="X087"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G013"/>
+          <modifierSpeciesReference species="G014"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J071" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X087"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X088"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G008"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J072" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X087"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X088"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G009"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J073" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X087"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X088"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G010"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J074" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X088"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X089"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G011"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J075" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X089"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X090"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G012"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J076" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X090"/>
+          <speciesReference species="X082"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X004"/>
+          <speciesReference species="X091"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G013"/>
+          <modifierSpeciesReference species="G014"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J077" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X091"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X092"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G008"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J078" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X091"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X092"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G009"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J079" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X091"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X092"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G010"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J080" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X092"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X093"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G011"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J081" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X093"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X094"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G012"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J082" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X094"/>
+          <speciesReference species="X082"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X004"/>
+          <speciesReference species="X095"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G013"/>
+          <modifierSpeciesReference species="G014"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J083" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X095"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X096"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G008"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J084" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X095"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X096"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G009"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J085" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X095"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X096"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G010"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J086" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X096"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X097"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G011"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J087" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X097"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X098"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G012"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J088" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X098"/>
+          <speciesReference species="X082"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X004"/>
+          <speciesReference species="X099"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G013"/>
+          <modifierSpeciesReference species="G014"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J089" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X099"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X100"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G008"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J090" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X099"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X100"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G009"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J091" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X099"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X100"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G010"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J092" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X100"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X101"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G011"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J093" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X101"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X102"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G012"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J094" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X102"/>
+          <speciesReference species="X082"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X004"/>
+          <speciesReference species="X103"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G013"/>
+          <modifierSpeciesReference species="G014"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J095" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X103"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X104"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G008"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J096" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X103"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X104"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G009"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J097" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X103"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X104"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G010"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J098" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X104"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X105"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G011"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J099" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X105"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X106"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G012"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J100" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X106"/>
+          <speciesReference species="X082"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X004"/>
+          <speciesReference species="X107"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G013"/>
+          <modifierSpeciesReference species="G014"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J101" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X107"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X108"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G008"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J102" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X107"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X108"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G009"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J103" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X107"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X108"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G010"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J104" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X108"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X109"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G011"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J105" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X109"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X110"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G012"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J106" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X110"/>
+          <speciesReference species="X082"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X004"/>
+          <speciesReference species="X111"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G013"/>
+          <modifierSpeciesReference species="G014"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J107" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X111"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X112"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G008"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J108" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X111"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X112"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G009"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J109" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X111"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X112"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G010"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J110" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X112"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X113"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G011"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J111" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X113"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X114"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G012"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J112" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X114"/>
+          <speciesReference species="X082"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X004"/>
+          <speciesReference species="X115"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G013"/>
+          <modifierSpeciesReference species="G014"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J113" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X115"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X116"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G008"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J114" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X115"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X116"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G009"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J115" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X115"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X116"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G010"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J116" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X116"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X117"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G011"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J117" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X117"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X118"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G012"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J118" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X118"/>
+          <speciesReference species="X082"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X004"/>
+          <speciesReference species="X119"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G013"/>
+          <modifierSpeciesReference species="G014"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J119" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X119"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X120"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G008"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J120" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X119"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X120"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G009"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J121" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X119"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X120"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G010"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J122" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X120"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X121"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G011"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J123" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X121"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X122"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G012"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J124" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X122"/>
+          <speciesReference species="X082"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X004"/>
+          <speciesReference species="X123"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G013"/>
+          <modifierSpeciesReference species="G014"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J125" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X123"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X124"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G008"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J126" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X123"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X124"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G009"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J127" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X123"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X124"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G010"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J128" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X124"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X125"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G011"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J129" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X125"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X126"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G012"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J130" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X126"/>
+          <speciesReference species="X082"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X004"/>
+          <speciesReference species="X127"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G013"/>
+          <modifierSpeciesReference species="G014"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J131" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X127"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X128"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G008"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J132" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X127"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X128"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G009"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J133" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X127"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X128"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G010"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J134" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X128"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X129"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G011"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J135" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X129"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X130"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G012"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J136" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X130"/>
+          <speciesReference species="X082"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X004"/>
+          <speciesReference species="X131"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G013"/>
+          <modifierSpeciesReference species="G014"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J137" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X131"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X132"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G008"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J138" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X131"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X132"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G009"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J139" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X131"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X132"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G010"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J140" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X132"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X133"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G011"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J141" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X133"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X134"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G012"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J142" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X134"/>
+          <speciesReference species="X082"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X004"/>
+          <speciesReference species="X135"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G013"/>
+          <modifierSpeciesReference species="G014"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J143" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X135"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X136"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G008"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J144" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X135"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X136"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G009"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J145" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X135"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X136"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G010"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J146" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X136"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X137"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G011"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J147" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X137"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X138"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G012"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J148" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X138"/>
+          <speciesReference species="X082"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X004"/>
+          <speciesReference species="X139"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G013"/>
+          <modifierSpeciesReference species="G014"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J149" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X139"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X140"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G008"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J150" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X139"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X140"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G009"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J151" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X139"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X140"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G010"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J152" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X140"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X141"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G011"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J153" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X141"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X142"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G012"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J154" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X142"/>
+          <speciesReference species="X082"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X004"/>
+          <speciesReference species="X143"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G013"/>
+          <modifierSpeciesReference species="G014"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J155" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X143"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X144"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G008"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J156" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X143"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X144"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G009"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J157" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X143"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X144"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G010"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J158" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X144"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X145"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G011"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J159" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X145"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X146"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G012"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J160" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X146"/>
+          <speciesReference species="X082"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X004"/>
+          <speciesReference species="X147"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G013"/>
+          <modifierSpeciesReference species="G014"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J161" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X147"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X148"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G008"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J162" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X147"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X148"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G009"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J163" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X147"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X148"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G010"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J164" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X148"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X149"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G011"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J165" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X149"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X150"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G012"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J166" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X150"/>
+          <speciesReference species="X082"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X004"/>
+          <speciesReference species="X151"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G013"/>
+          <modifierSpeciesReference species="G014"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J167" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X151"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X152"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G008"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J168" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X151"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X152"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G009"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J169" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X151"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X152"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G010"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J170" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X152"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X153"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G011"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J171" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X153"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X154"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G012"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J172" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X154"/>
+          <speciesReference species="X082"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X004"/>
+          <speciesReference species="X155"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G013"/>
+          <modifierSpeciesReference species="G014"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J173" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X155"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X156"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G008"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J174" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X155"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X156"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G009"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J175" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X155"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X156"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G010"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J176" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X156"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X157"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G011"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J177" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X157"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X158"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G012"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J178" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X158"/>
+          <speciesReference species="X082"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X004"/>
+          <speciesReference species="X159"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G013"/>
+          <modifierSpeciesReference species="G014"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J179" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X159"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X160"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G008"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J180" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X159"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X160"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G009"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J181" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X159"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X160"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G010"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J182" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X160"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X161"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G011"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J183" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X161"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X162"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G012"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J184" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X162"/>
+          <speciesReference species="X082"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X004"/>
+          <speciesReference species="X163"/>
+          <speciesReference species="X021"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G013"/>
+          <modifierSpeciesReference species="G014"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J185" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X163"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X164"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G008"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J186" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X163"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X164"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G009"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J187" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X022"/>
+          <speciesReference species="X163"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X164"/>
+          <speciesReference species="X024"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G010"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J188" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X164"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X165"/>
+          <speciesReference species="X026"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G011"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J189" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X027"/>
+          <speciesReference species="X165"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X166"/>
+          <speciesReference species="X029"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G012"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J190" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X154"/>
+          <speciesReference species="X024"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X167"/>
+          <speciesReference species="X022"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G015"/>
+          <modifierSpeciesReference species="G016"/>
+          <modifierSpeciesReference species="G017"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J191" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X158"/>
+          <speciesReference species="X024"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X168"/>
+          <speciesReference species="X022"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G015"/>
+          <modifierSpeciesReference species="G016"/>
+          <modifierSpeciesReference species="G017"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J192" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X166"/>
+          <speciesReference species="X024"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X169"/>
+          <speciesReference species="X022"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G015"/>
+          <modifierSpeciesReference species="G016"/>
+          <modifierSpeciesReference species="G017"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J193" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X167"/>
+          <speciesReference species="X170"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X171"/>
+          <speciesReference species="X172"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G018"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J194" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X171"/>
+          <speciesReference species="X170"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X173"/>
+          <speciesReference species="X172"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G019"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J195" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X173"/>
+          <speciesReference species="X007"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X174"/>
+          <speciesReference species="X008"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G020"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J196" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X080"/>
+          <speciesReference species="X021"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X175"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G021"/>
+          <modifierSpeciesReference species="G022"/>
+          <modifierSpeciesReference species="G003"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J197" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X174"/>
+          <speciesReference species="X175"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X176"/>
+          <speciesReference species="X009"/>
+          <speciesReference species="X001"/>
+          <speciesReference species="X004"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G023"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J198" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X168"/>
+          <speciesReference species="X170"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X177"/>
+          <speciesReference species="X172"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G024"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J199" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X177"/>
+          <speciesReference species="X170"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X178"/>
+          <speciesReference species="X172"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G025"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J200" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X178"/>
+          <speciesReference species="X170"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X179"/>
+          <speciesReference species="X172"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G018"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J201" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X178"/>
+          <speciesReference species="X170"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X179"/>
+          <speciesReference species="X172"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G026"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J202" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X179"/>
+          <speciesReference species="X007"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X180"/>
+          <speciesReference species="X008"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G020"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J203" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X180"/>
+          <speciesReference species="X175"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X181"/>
+          <speciesReference species="X009"/>
+          <speciesReference species="X001"/>
+          <speciesReference species="X004"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G023"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J204" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X168"/>
+          <speciesReference species="X170"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X182"/>
+          <speciesReference species="X172"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G027"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J205" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X182"/>
+          <speciesReference species="X170"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X183"/>
+          <speciesReference species="X172"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G024"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J206" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X183"/>
+          <speciesReference species="X170"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X184"/>
+          <speciesReference species="X172"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G025"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J207" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X184"/>
+          <speciesReference species="X170"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X185"/>
+          <speciesReference species="X172"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G026"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J208" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X185"/>
+          <speciesReference species="X007"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X186"/>
+          <speciesReference species="X008"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G020"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J209" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X186"/>
+          <speciesReference species="X175"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X187"/>
+          <speciesReference species="X009"/>
+          <speciesReference species="X001"/>
+          <speciesReference species="X004"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G023"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J210" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X169"/>
+          <speciesReference species="X170"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X188"/>
+          <speciesReference species="X172"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G024"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J211" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X188"/>
+          <speciesReference species="X024"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X189"/>
+          <speciesReference species="X022"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G028"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J212" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X189"/>
+          <speciesReference species="X170"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X190"/>
+          <speciesReference species="X172"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G018"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J213" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X190"/>
+          <speciesReference species="X007"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X191"/>
+          <speciesReference species="X008"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G020"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J214" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X191"/>
+          <speciesReference species="X175"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X192"/>
+          <speciesReference species="X009"/>
+          <speciesReference species="X001"/>
+          <speciesReference species="X004"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G023"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J215" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X188"/>
+          <speciesReference species="X170"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X193"/>
+          <speciesReference species="X172"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G027"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J216" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X193"/>
+          <speciesReference species="X024"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X194"/>
+          <speciesReference species="X022"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G028"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J217" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X194"/>
+          <speciesReference species="X170"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X195"/>
+          <speciesReference species="X172"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G026"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J218" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X195"/>
+          <speciesReference species="X007"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X196"/>
+          <speciesReference species="X008"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G020"/>
+        </listOfModifiers>
+      </reaction>
+      <reaction id="J219" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="X196"/>
+          <speciesReference species="X175"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X197"/>
+          <speciesReference species="X009"/>
+          <speciesReference species="X001"/>
+          <speciesReference species="X004"/>
+        </listOfProducts>
+        <listOfModifiers>
+          <modifierSpeciesReference species="G023"/>
+        </listOfModifiers>
+      </reaction>
+    </listOfReactions>
+  </model>
+</sbml>
