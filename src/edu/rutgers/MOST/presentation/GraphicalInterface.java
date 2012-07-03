@@ -73,7 +73,7 @@ import org.apache.log4j.Logger;
 import layout.TableLayout;
 
 public class GraphicalInterface extends JFrame {
-	
+	//log4j
 	static Logger log = Logger.getLogger(GraphicalInterface.class);
 	
 	public static JTable reactionsTable = new JTable();
