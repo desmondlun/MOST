@@ -2,9 +2,6 @@ package edu.rutgers.MOST.config;
 
 import java.util.ArrayList;
 
-import edu.rutgers.MOST.data.SBMLProduct;
-import edu.rutgers.MOST.data.SBMLReactant;
-
 public class LocalConfig {
 	
 	
@@ -31,48 +28,7 @@ public class LocalConfig {
 		this.databaseName = databaseName;
 	}
     
-    //parameters set from metabolites in columnNameInterface
-	//column names
-	private String metaboliteAbbreviationColumnName;
-
-	public String getMetaboliteAbbreviationColumnName() {
-		return metaboliteAbbreviationColumnName;
-	}
-
-	public void setMetaboliteAbbreviationColumnName(String metaboliteAbbreviationColumnName) {
-		this.metaboliteAbbreviationColumnName = metaboliteAbbreviationColumnName;
-	}
-	
-	private String metaboliteNameColumnName;
-
-	public String getMetaboliteNameColumnName() {
-		return metaboliteNameColumnName;
-	}
-
-	public void setMetaboliteNameColumnName(String metaboliteNameColumnName) {
-		this.metaboliteNameColumnName = metaboliteNameColumnName;
-	}
-	
-	private String chargeColumnName;
-
-	public String getChargeColumnName() {
-		return chargeColumnName;
-	}
-
-	public void setChargeColumnName(String chargeColumnName) {
-		this.chargeColumnName = chargeColumnName;
-	}
-	
-	private String compartmentColumnName;
-
-	public String getCompartmentColumnName() {
-		return compartmentColumnName;
-	}
-
-	public void setCompartmentColumnName(String compartmentColumnName) {
-		this.compartmentColumnName = compartmentColumnName;
-	}
-	
+    //parameters set from metabolites in columnNameInterface	
 	//column indices
     private static Integer metaboliteAbbreviationColumnIndex;
 	
@@ -132,99 +88,7 @@ public class LocalConfig {
 	
 	public void setMetabolitesMetaColumnIndexList(ArrayList<Integer> metabolitesMetaColumnIndexList) {
 		this.metabolitesMetaColumnIndexList = metabolitesMetaColumnIndexList;
-	}
-    
-	//parameters set from reactions in columnNameInterface
-	//column names
-	private String reactionAbbreviationColumnName;
-
-	public String getReactionAbbreviationColumnName() {
-		return reactionAbbreviationColumnName;
-	}
-
-	public void setReactionAbbreviationColumnName(String reactionAbbreviationColumnName) {
-		this.reactionAbbreviationColumnName = reactionAbbreviationColumnName;
-	}
-	
-	private String reactionNameColumnName;
-
-	public String getReactionNameColumnName() {
-		return reactionNameColumnName;
-	}
-
-	public void setReactionNameColumnName(String reactionNameColumnName) {
-		this.reactionNameColumnName = reactionNameColumnName;
-	}
-	
-	private String reactionEquationColumnName;
-
-	public String getReactionEquationColumnName() {
-		return reactionEquationColumnName;
-	}
-
-	public void setReactionEquationColumnName(String reactionEquationColumnName) {
-		this.reactionEquationColumnName = reactionEquationColumnName;
-	}
-	
-	private String knockoutColumnName;
-
-	public String getKnockoutColumnName() {
-		return knockoutColumnName;
-	}
-
-	public void setKnockoutColumnName(String knockoutColumnName) {
-		this.knockoutColumnName = knockoutColumnName;
-	}
-	
-	private String fluxValueColumnName;
-
-	public String getFluxValueColumnName() {
-		return fluxValueColumnName;
-	}
-
-	public void setFluxValueColumnName(String fluxValueColumnName) {
-		this.fluxValueColumnName = fluxValueColumnName;
-	}
-	
-	private String reversibleColumnName;
-
-	public String getReversibleColumnName() {
-		return reversibleColumnName;
-	}
-
-	public void setReversibleColumnName(String reversibleColumnName) {
-		this.reversibleColumnName = reversibleColumnName;
-	}
-	
-	private String lowerBoundColumnName;
-
-	public String getLowerBoundColumnName() {
-		return lowerBoundColumnName;
-	}
-
-	public void setLowerBoundColumnName(String lowerBoundColumnName) {
-		this.lowerBoundColumnName = lowerBoundColumnName;
-	}
-	
-	private String upperBoundColumnName;
-
-	public String getUpperBoundColumnName() {
-		return upperBoundColumnName;
-	}
-
-	public void setUpperBoundColumnName(String upperBoundColumnName) {
-		this.upperBoundColumnName = upperBoundColumnName;
-	}
-	
-	private String biologicalObjectiveColumnName;
-
-	public String getBiologicalObjectiveColumnName() {
-		return biologicalObjectiveColumnName;
-	}
-
-	public void setBiologicalObjectiveColumnName(String biologicalObjectiveColumnName) {
-		this.biologicalObjectiveColumnName = biologicalObjectiveColumnName;
-	}
+	}    
 	
 	//column indices
     private static Integer reactionAbbreviationColumnIndex;
@@ -337,4 +201,15 @@ public class LocalConfig {
 	public void setSheetNamesList(ArrayList<String> sheetNamesList) {
 		this.sheetNamesList = sheetNamesList;
 	}
+	
+	Integer progress;
+	
+	public void setProgress(Integer progress) {
+		this.progress = progress;
+	}
+	
+	public Integer getProgress() {
+		return progress;
+	}
+	
 }

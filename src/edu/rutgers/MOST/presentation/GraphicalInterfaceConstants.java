@@ -55,7 +55,7 @@ public class GraphicalInterfaceConstants {
 		"Metabolite Name",		
 		"Charge",
 		"Compartment",
-		"Boundary"
+		"Boundary Condition"
 	};
 	
 	//reactions table column numbers and associated widths
@@ -117,6 +117,7 @@ public class GraphicalInterfaceConstants {
     public static final int METABOLITE_META8_COLUMN = 13;
     public static final int METABOLITE_META9_COLUMN = 14;
     public static final int METABOLITE_META10_COLUMN = 15;
+    public static final int USED_COLUMN = 16;
     public static final int METABOLITE_META_DEFAULT_WIDTH = 150;
     
     public static final String[] BOOLEAN_VALUES = {"false", "true"};

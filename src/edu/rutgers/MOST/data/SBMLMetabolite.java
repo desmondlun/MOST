@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class SBMLMetabolite implements ModelMetabolite {
-	
+
 	private String databaseName;	
 	private Integer id;
 	private String metaboliteAbbreviation;
@@ -25,15 +25,16 @@ public class SBMLMetabolite implements ModelMetabolite {
 	private String meta8;
 	private String meta9;
 	private String meta10;
-	
+	private String used;
+
 	public void setDatabaseName(String databaseName) {
 		this.databaseName = databaseName;
 	}
-	
+
 	public String getDatabaseName() {
 		return databaseName;
 	}
-	
+
 	public Integer getId() {
 		return id;
 	}
@@ -41,14 +42,14 @@ public class SBMLMetabolite implements ModelMetabolite {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	
+
 	public void setMetaboliteAbbreviation(String metaboliteAbbreviation) {
 		this.metaboliteAbbreviation = metaboliteAbbreviation;
 	}
 	public String getMetaboliteAbbreviation() {
 		return metaboliteAbbreviation;
 	}
-	
+
 	public String getMetaboliteName() {
 		return metaboliteName;
 	}
@@ -67,7 +68,7 @@ public class SBMLMetabolite implements ModelMetabolite {
 	public void setCharge(String charge) {
 		this.charge = charge;
 	}	
-	
+
 	public String getBoundary() {
 		return boundary;
 	}
@@ -75,7 +76,7 @@ public class SBMLMetabolite implements ModelMetabolite {
 		this.boundary = boundary;
 	}
 
-	
+
 	// SQL Persistence/ORM Below:
 
 	public boolean update() {
@@ -90,11 +91,11 @@ public class SBMLMetabolite implements ModelMetabolite {
 		Connection conn;
 		try {
 			conn = DriverManager.getConnection(createConnectionStatement(getDatabaseName())); // TODO:
-	    	
+
 			PreparedStatement prep = conn
-			        .prepareStatement("update metabolites set metabolite_abbreviation=?, metabolite_name=?, charge=?, " 
-			        		+ " compartment=?, boundary=?, meta_1=?, meta_2=?, meta_3=?, meta_4=?, meta_5=?, "
-			        		+ " meta_6=?, meta_7=?, meta_8=?, meta_9=?, meta_10=? where id=?;");
+			.prepareStatement("update metabolites set metabolite_abbreviation=?, metabolite_name=?, charge=?, " 
+					+ " compartment=?, boundary=?, meta_1=?, meta_2=?, meta_3=?, meta_4=?, meta_5=?, "
+					+ " meta_6=?, meta_7=?, meta_8=?, meta_9=?, meta_10=?, used=? where id=?;");
 			prep.setString(1, this.getMetaboliteAbbreviation());
 			prep.setString(2, this.getMetaboliteName());
 			prep.setString(3, this.getCharge());
@@ -110,10 +111,11 @@ public class SBMLMetabolite implements ModelMetabolite {
 			prep.setString(13, this.getMeta8());
 			prep.setString(14, this.getMeta9());
 			prep.setString(15, this.getMeta10());
-			prep.setInt(16, this.getId());
+			prep.setString(16, this.getUsed());
+			prep.setInt(17, this.getId());
 			conn.setAutoCommit(true);
 			prep.executeUpdate();
-			
+
 			conn.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -135,13 +137,13 @@ public class SBMLMetabolite implements ModelMetabolite {
 		Connection conn;
 		try {
 			conn = DriverManager.getConnection(createConnectionStatement(getDatabaseName())); // TODO:
-																		// Make
-																		// this
-																		// configurable
+			// Make
+			// this
+			// configurable
 			PreparedStatement prep = conn
-					.prepareStatement("select id, metabolite_abbreviation, metabolite_name, charge, compartment, " 
-							+ " boundary, meta_1, meta_2, meta_3, meta_4, meta_5, "
-			        		+ " meta_6, meta_7, meta_8, meta_9, meta_10 from metabolites where id = ?;");
+			.prepareStatement("select id, metabolite_abbreviation, metabolite_name, charge, compartment, " 
+					+ " boundary, meta_1, meta_2, meta_3, meta_4, meta_5, "
+					+ " meta_6, meta_7, meta_8, meta_9, meta_10, used from metabolites where id = ?;");
 			prep.setInt(1, id);
 			conn.setAutoCommit(true);
 			ResultSet rs = prep.executeQuery();
@@ -162,6 +164,7 @@ public class SBMLMetabolite implements ModelMetabolite {
 				this.setMeta8(rs.getString("meta_8"));
 				this.setMeta9(rs.getString("meta_9"));
 				this.setMeta10(rs.getString("meta_10"));
+				this.setUsed(rs.getString("used"));
 			}
 			rs.close();
 			conn.close();
@@ -173,19 +176,19 @@ public class SBMLMetabolite implements ModelMetabolite {
 
 		return true;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "SBMLMetabolite [id=" + id + ", metaboliteAbbreviation=" + metaboliteAbbreviation
-				+ ", compartment=" + compartment
-				+ ", charge=" + charge
-				+ ", metaboliteName=" + metaboliteName + "]";
+		+ ", compartment=" + compartment
+		+ ", charge=" + charge
+		+ ", metaboliteName=" + metaboliteName + "]";
 	}
 
 	public String createConnectionStatement(String databaseName) {
 		return "jdbc:sqlite:" + getDatabaseName() + ".db";
 	}
-	
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
@@ -271,5 +274,12 @@ public class SBMLMetabolite implements ModelMetabolite {
 		return meta10;
 	}
 
-	
+	public void setUsed(String used) {
+		this.used = used;
+	}
+
+	public String getUsed() {
+		return used;
+	}
+
 }

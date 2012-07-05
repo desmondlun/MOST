@@ -50,14 +50,6 @@ public class MetaboliteFactory {
     }
     
     public void addMetabolite(String metabolite) {
-    	String compartment = "";
-		if (metabolite.endsWith("[c]")) {
-			compartment = "Cytosol";
-		} else if (metabolite.endsWith("[p]")) {
-			compartment = "Periplasm";
-	    } else if (metabolite.endsWith("[m]")) {
-	    	compartment = "Mitochondrial";
-	    }
 		String queryString = "jdbc:sqlite:" + LocalConfig.getInstance().getDatabaseName() + ".db"; //TODO:DEGEN:Call LocalConfig
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -68,9 +60,8 @@ public class MetaboliteFactory {
 		Connection conn;
 		try {
 			conn = DriverManager.getConnection(queryString);
-			PreparedStatement prep1 = conn.prepareStatement("insert into metabolites (metabolite_abbreviation, compartment) values(?, ?);");
+			PreparedStatement prep1 = conn.prepareStatement("insert into metabolites (metabolite_abbreviation) values(?);");
             prep1.setString(1, metabolite);
-            prep1.setString(2, compartment);
             
             prep1.addBatch();
 	    	
@@ -87,8 +78,7 @@ public class MetaboliteFactory {
     }
     
     public boolean isUnused(int id, String databaseName) {
-    	int count = 0;
-
+		String used = "";
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -99,25 +89,50 @@ public class MetaboliteFactory {
 		Connection conn;
 		try {
 			conn = DriverManager.getConnection(queryString);
-			PreparedStatement prep1 = conn.prepareStatement("select count(metabolite_id) from used_metabolites where metabolite_id=?;");
-            prep1.setInt(1, id);
-            
-            ResultSet rs = prep1.executeQuery();
-			//if metabolite_abbreviation is in table will return 1, else 0
-			count = rs.getInt("count(metabolite_id)");
-		    
+			PreparedStatement prep1 = conn.prepareStatement("select used from metabolites where id=?;");
+			prep1.setInt(1, id);
+
+			ResultSet rs = prep1.executeQuery();
+			used = rs.getString("used");
+
 			conn.close();
-			
-			if (count == 0) {
+
+			if (used.compareTo("false") == 0) {
 				return true;
 			}
-			
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();			
 		}
 		return false;		
-    }
+	}
+    
+    public void setMetaboliteUsedValue(Integer metaboliteId, String databaseName, String booleanValue) {
+		String queryString = "jdbc:sqlite:" + LocalConfig.getInstance().getDatabaseName() + ".db"; //TODO:DEGEN:Call LocalConfig
+		try {
+			Class.forName("org.sqlite.JDBC");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Connection conn;
+		try {
+			conn = DriverManager.getConnection(queryString);    		    		
+			PreparedStatement prep1 = conn.prepareStatement(
+					"update metabolites set used=? where id=?;");
+			prep1.setString(1, booleanValue);
+			prep1.setInt(2, metaboliteId);
+
+			prep1.execute();
+			conn.setAutoCommit(true);   		    
+
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();			
+		}
+	}
     
     public int maximumId(String databaseName) {
     	int max = 0;
@@ -142,9 +157,9 @@ public class MetaboliteFactory {
 		}
 		return max;
     }
-    
+        
     public void deleteAllUnusedMetabolites(String databaseName) {
-    	String queryString = "jdbc:sqlite:" + databaseName + ".db";
+		String queryString = "jdbc:sqlite:" + databaseName + ".db";
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
@@ -155,16 +170,16 @@ public class MetaboliteFactory {
 		try {
 			conn = DriverManager.getConnection(queryString);
 			Statement st = conn.createStatement();
-		    String str = ("DELETE FROM metabolites WHERE NOT EXISTS (select * from used_metabolites where metabolites.id = used_metabolites.metabolite_id);");
-		    
-		    st.executeUpdate(str);
-			
+			String str = ("DELETE FROM metabolites where used like 'false';");
+
+			st.executeUpdate(str);
+
 			conn.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();			
 		}		
-    }
+	}
     
     public Integer metaboliteId(String databaseName, String metaboliteAbbreviation) {
     	Integer metaboliteId = 0;

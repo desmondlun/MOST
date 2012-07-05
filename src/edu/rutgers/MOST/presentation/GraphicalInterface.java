@@ -150,6 +150,16 @@ public class GraphicalInterface extends JFrame {
 		return dbFilename;
 	}
 	
+    public static File SBMLFile;
+	
+	public void setSBMLFile(File SBMLFile) {
+		this.SBMLFile = SBMLFile;
+	}
+	
+	public static File getSBMLFile() {
+		return SBMLFile;
+	}
+	
     public static File metabolitesCSVFile;
 	
 	public void setMetabolitesCSVFile(File metabolitesCSVFile) {
@@ -258,16 +268,26 @@ public class GraphicalInterface extends JFrame {
 		return icons;
 	}
 	
+    private Task task;
+	
+	public final ProgressBar progressBar = new ProgressBar();
+	
+	javax.swing.Timer t = new javax.swing.Timer(1000, new TimeListener());
+	
   @SuppressWarnings("unchecked")
 public GraphicalInterface(final Connection con)
       throws SQLException {
 
+	  LocalConfig.getInstance().setProgress(0);
+      progressBar.pack();
+      progressBar.setIconImages(icons);
+	  progressBar.setSize(200, 75);
+      progressBar.setTitle("Loading...");
+	  progressBar.setVisible(false);
+	  
 	  setDatabaseName(ConfigConstants.DEFAULT_DATABASE_NAME);
 	  
 	  setTitle(GraphicalInterfaceConstants.TITLE + " - " + ConfigConstants.DEFAULT_DATABASE_NAME);
-	  
-	  setDefaultMetaboliteColumnNames();
-	  setDefaultReactionColumnNames();
 	  
 	  final ArrayList<Image> icons = new ArrayList<Image>(); 
 	  icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
@@ -285,9 +305,15 @@ public GraphicalInterface(final Connection con)
       { 
           public void valueChanged(ListSelectionEvent e) 
           {    
-              System.out.println(fileList.getSelectedValue().toString());
+              String optimizePath = getOptimizePath();
+              if (optimizePath.contains("\\")) {
+            	  optimizePath = optimizePath.substring(0, optimizePath.lastIndexOf("\\") + 1) + fileList.getSelectedValue().toString();
+              } else {
+            	  optimizePath = fileList.getSelectedValue().toString();
+              }
+              setOptimizePath(optimizePath);
               if (getOptimizePath().endsWith(fileList.getSelectedValue().toString())) {
-            	  loadOutputPane(getOptimizePath() + ".log");
+            	  loadOutputPane(getOptimizePath() + ".log");            	  
               }
           } 
       }); 
@@ -473,7 +499,7 @@ public GraphicalInterface(final Connection con)
      
       menuBar.add(simulateMenu);
     
-      //Edit menu
+    //Edit menu
       JMenu editMenu = new JMenu("Edit");
       editMenu.setMnemonic(KeyEvent.VK_E);
     
@@ -490,6 +516,7 @@ public GraphicalInterface(final Connection con)
     			Class.forName("org.sqlite.JDBC");
     			Connection con = DriverManager.getConnection(fileString);
     			setUpMetabolitesTable(con);
+    			setUpReactionsTable(con);
     	    	} catch (ClassNotFoundException e) {
     				 // TODO Auto-generated catch block
     				 e.printStackTrace();
@@ -674,9 +701,7 @@ public GraphicalInterface(final Connection con)
      
       JScrollPane scrollPaneMetab = new JScrollPane(metabolitesTable);
       tabbedPane.addTab(GraphicalInterfaceConstants.DEFAULT_METABOLITE_TABLE_TAB_NAME, scrollPaneMetab);
-      //tabbedPane.setMnemonicAt(1, KeyEvent.VK_B);
-    	  
-	  //JScrollPane fileListPane = new JScrollPane(fileList);	  	  
+      //tabbedPane.setMnemonicAt(1, KeyEvent.VK_B);  	  
 	  
       JScrollPane outputPane = new JScrollPane(outputTextArea);
       
@@ -724,56 +749,36 @@ public GraphicalInterface(final Connection con)
   
   /*******************************************************************************/
   //Actions
-  /*******************************************************************************/
+  /*******************************************************************************/ 
   class LoadSBMLAction implements ActionListener {
-      public void actionPerformed(ActionEvent ae) {
+      public void actionPerformed(ActionEvent ae) { 
+    	  progressBar.progress.setValue(0);
+    	  LocalConfig.getInstance().setProgress(0);	  
     	  loadSetUp();
     	  JTextArea output = null;
-    	  JFileChooser fileChooser = new JFileChooser();
-    	  SBMLDocument doc = new SBMLDocument();
-    	  SBMLReader reader = new SBMLReader();  
+    	  JFileChooser fileChooser = new JFileChooser(); 
           //... Open a file dialog.
           int retval = fileChooser.showOpenDialog(output);
           if (retval == JFileChooser.APPROVE_OPTION) {
               //... The user selected a file, get it, use it.
           	File file = fileChooser.getSelectedFile();
-          
-          	ProgressBar progress = new ProgressBar();
-          	progress.setIconImages(icons);
-			progress.setSize(200, 75);
-			progress.setTitle("Loading...");
-			progress.setVisible(true);
-          	
+          	setSBMLFile(file);
           	String rawFilename = fileChooser.getSelectedFile().getName();
           	String filename = rawFilename.substring(0, rawFilename.length() - 4);
-          	setDatabaseName(filename);         	
-              try {
-					doc = reader.readSBML(file);
-					SBMLModelReader modelReader = new SBMLModelReader(doc);
-					modelReader.setDatabaseName(filename);
-					modelReader.load();
-					String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
-					setUpTables(getDatabaseName());
-				} catch (FileNotFoundException e) {
-					JOptionPane.showMessageDialog(null,                
-  		    				"File does not exist.",                
-  		    				"File does not exist.",                                
-  		    				JOptionPane.ERROR_MESSAGE);
-					//e.printStackTrace();
-				} catch (XMLStreamException e) {
-					JOptionPane.showMessageDialog(null,                
-  		    				"This File is not a Valid SBML File.",                
-  		    				"Invalid SBML File.",                                
-  		    				JOptionPane.ERROR_MESSAGE);
-					// TODO Auto-generated catch block
-					//e.printStackTrace();
-				}
-				progress.setVisible(false);
-				progress.dispose();
+          	setDatabaseName(filename);  
+          	LocalConfig.getInstance().setProgress(0);
+    		// Schedule a job for the event-dispatching thread:
+    		// creating and showing this application's GUI.
+          	progressBar.setVisible(true);
+		    
+		    t.start();
+
+			task = new Task();
+			task.execute();
           }
       }
   }
-  
+   
   class LoadSQLiteItemAction implements ActionListener {
       public void actionPerformed(ActionEvent ae) {
     	  loadSetUp();
@@ -782,13 +787,6 @@ public GraphicalInterface(final Connection con)
           //... Open a file dialog.
           int retval = fileChooser.showOpenDialog(output);
           if (retval == JFileChooser.APPROVE_OPTION) {
-        	  
-        	  ProgressBar progress = new ProgressBar();
-        	  progress.setIconImages(icons);
-			  progress.setSize(200, 75);
-		      progress.setTitle("Loading...");
-			  progress.setVisible(true);
-        	  
               //... The user selected a file, get it, use it.
           	  String rawFilename = fileChooser.getSelectedFile().getName();
           	  String filename = rawFilename.substring(0, rawFilename.length() - 3);
@@ -796,8 +794,6 @@ public GraphicalInterface(final Connection con)
           	  String path = rawPath.substring(0, rawPath.length() - 3);
           	  setDatabaseName(path);
               setUpTables(filename);
-		      progress.setVisible(false);
-		      progress.dispose();
           }
       }
   }
@@ -827,7 +823,7 @@ public GraphicalInterface(final Connection con)
 			    columnNameInterface.setModal(true);
 			    columnNameInterface.setIconImages(icons);
 			    
-			    columnNameInterface.setSize(600, 300);
+			    columnNameInterface.setSize(600, 360);
 			    columnNameInterface.setResizable(false);
 			    columnNameInterface.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 			    columnNameInterface.setLocationRelativeTo(null);
@@ -866,7 +862,7 @@ public GraphicalInterface(final Connection con)
 			    columnNameInterface.setModal(true);
 			    columnNameInterface.setIconImages(icons);
 			    
-			    columnNameInterface.setSize(600, 420);
+			    columnNameInterface.setSize(600, 510);
 			    columnNameInterface.setResizable(false);
 			    columnNameInterface.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 			    columnNameInterface.setLocationRelativeTo(null);
@@ -886,8 +882,8 @@ public GraphicalInterface(final Connection con)
 	  public void actionPerformed(ActionEvent ae) {
 		  setSplitCharacter(',');
 		  setExtension(".csv");
-		  loadMetabolitesTextFile(); 
-		  setUpTables(getDatabaseName());
+		  loadMetabolitesTextFile();
+		  t.start();
       }
   }
   
@@ -896,7 +892,7 @@ public GraphicalInterface(final Connection con)
 		  setSplitCharacter('\t');
 		  setExtension(".txt");
 		  loadMetabolitesTextFile();
-		  setUpTables(getDatabaseName());
+		  t.start();
       }
   }
   
@@ -905,7 +901,7 @@ public GraphicalInterface(final Connection con)
 		  setSplitCharacter(',');
 		  setExtension(".csv");
 		  loadReactionsTextFile();
-		  setUpTables(getDatabaseName());
+		  t.start();
       }
   }
   
@@ -914,14 +910,14 @@ public GraphicalInterface(final Connection con)
 		  setSplitCharacter('\t');
 		  setExtension(".txt");
 		  loadReactionsTextFile();
-		  setUpTables(getDatabaseName());
+		  t.start();
       }
   }
   
   class LoadExcel97Action implements ActionListener {
       public void actionPerformed(ActionEvent ae) {
     	  loadExcel97File();
-    	  setUpTables(getDatabaseName());
+    	  t.start();
       }
   };
   
@@ -937,10 +933,7 @@ public GraphicalInterface(final Connection con)
     	  setExcelPath(file);
     	  String rawFilename = fileChooser.getSelectedFile().getName();
     	  String filename = rawFilename.substring(0, rawFilename.length() - 4);
-    	  System.out.println("filename " + filename);
           setDatabaseName(filename);
-          System.out.println("Excel file " + file);
-          System.out.println("raw " + rawFilename);
     	  if (!file.endsWith(".xls")) {
     		  JOptionPane.showMessageDialog(null,                
 	    				"Not a Valid Excel File.",                
@@ -965,7 +958,7 @@ public GraphicalInterface(final Connection con)
 			    	  columnNameInterface.setModal(true);
 					  columnNameInterface.setIconImages(icons);
 					    
-					  columnNameInterface.setSize(600, 650);
+					  columnNameInterface.setSize(600, 700);
 					  columnNameInterface.setResizable(false);
 					  columnNameInterface.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 					  columnNameInterface.setLocationRelativeTo(null);
@@ -992,9 +985,7 @@ public GraphicalInterface(final Connection con)
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
-  		      
-		      
+			}		      
     	  }          	
       }
   }
@@ -1003,7 +994,6 @@ public GraphicalInterface(final Connection con)
 	  DatabaseCopier copier = new DatabaseCopier();
 	  //filename is rawFilename - extension
 	  String filename = getDBFilename().substring(0, getDBFilename().length() - 3);
-	  System.out.println("db n " + getDBFilename());
 	  
   	  //compare strings - same = 0
   	  if (getDatabaseName().compareTo(getDBPath()) == 0) {
@@ -1049,12 +1039,8 @@ public GraphicalInterface(final Connection con)
           if (retval == JFileChooser.APPROVE_OPTION) {            	  
               //... The user selected a file, get it, use it.
         	  String rawPath = fileChooser.getSelectedFile().getPath();
-        	  System.out.println("raw p " + rawPath);
         	  setDBPath(rawPath);
           	  String rawFilename = fileChooser.getSelectedFile().getName();
-          	  
-          	  
-          	  System.out.println(getDBFilename());
           	  //checks if filename endswith .db else renames file to end with .db
           	  if (!rawPath.endsWith(".db")) {
           		  rawPath = rawPath + ".db";
@@ -1073,15 +1059,9 @@ public GraphicalInterface(final Connection con)
 			    	  int confirmDialog = JOptionPane.showConfirmDialog(fileChooser, "Replace existing file?");
     		    	  if (confirmDialog == JOptionPane.YES_OPTION) {
     		    		  done = true;
-    		    		  ProgressBar progress = new ProgressBar();
-    		    		  progress.setIconImages(icons);
-    	          		  progress.setSize(200, 75);
-    	          		  progress.setTitle("Saving...");
-    	          		  progress.setVisible(true);
-    	          		  
+    	
     		    		  saveSQLiteFile();
-    		    		  progress.setVisible(false);
-    		    		  progress.dispose();
+    		    		  
     		    	  } else if (confirmDialog == JOptionPane.NO_OPTION) {        		    	  
     		    		  done = false;
     		    	  } else {
@@ -1089,15 +1069,8 @@ public GraphicalInterface(final Connection con)
     		    	  }       		    	  
     		      } else {
     		    	  done = true;
-    		    	  ProgressBar progress = new ProgressBar();
-    		    	  progress.setIconImages(icons);
-	          		  progress.setSize(200, 75);
-	          		  progress.setTitle("Saving...");
-	          		  progress.setVisible(true);
-	          		  
+    		    	 
 	          		  saveSQLiteFile();
-		    		  progress.setVisible(false);
-		    		  progress.dispose();
     		      }
     	      }			                  	  
           }
@@ -1110,6 +1083,14 @@ public GraphicalInterface(final Connection con)
     	  saveFile();
       }
   };
+  
+  class SaveAsCSVsItemItemAction implements ActionListener {
+      public void actionPerformed(ActionEvent ae) {
+    	  setSplitCharacter(',');
+		  //saveMetabolitesTextFile();
+		  //saveReactionsTextFile();
+      }
+  }
   
   class ClearAction implements ActionListener {
       public void actionPerformed(ActionEvent cae) {
@@ -1138,24 +1119,22 @@ public GraphicalInterface(final Connection con)
   //based on code from http://tips4java.wordpress.com/2009/06/07/table-cell-listener/
   Action rAction = new AbstractAction()
   {
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(ActionEvent ae)
       {		  
-          TableCellListener tcl = (TableCellListener)e.getSource();
+          TableCellListener tcl = (TableCellListener)ae.getSource();
           updateReactionsDatabaseRow(tcl.getRow(), Integer.parseInt((String) (reactionsTable.getModel().getValueAt(tcl.getRow(), 0))), "SBML", getDatabaseName());
     	  
           if (tcl.getColumn() == GraphicalInterfaceConstants.REACTION_STRING_COLUMN) {  
         	  if (tcl.getOldValue() != tcl.getNewValue()) {
         		  ReactionParser parser = new ReactionParser();
         		  ReactionFactory rFactory = new ReactionFactory();
+        		  MetaboliteFactory mFactory = new MetaboliteFactory();
         		  if (parser.isValid(tcl.getOldValue()) && parser.isValid(tcl.getNewValue())) {
         			  ArrayList<Integer> oldIdList = parser.speciesIdList(tcl.getOldValue(), getDatabaseName());
         			  ArrayList<Integer> newIdList = parser.speciesIdList(tcl.getNewValue(), getDatabaseName());
         			  for (int j = 0; j < newIdList.size(); j++) {
             			  if (!oldIdList.contains(newIdList.get(j))) {
-            				  //check that id is not present before adding
-            				  if(rFactory.usedMetaboliteCount(newIdList.get(j), getDatabaseName()) == 0) {
-            				      rFactory.addIdToUsedMetabolites(newIdList.get(j), getDatabaseName());
-            				  }		    
+            				  mFactory.setMetaboliteUsedValue(newIdList.get(j), getDatabaseName(), "true");		    
             			  }
             		  }
         			  //removes deleted species from used_metabolites if not required by other rxns
@@ -1163,20 +1142,32 @@ public GraphicalInterface(final Connection con)
         			      if (!newIdList.contains(oldIdList.get(i))) {
         				      //check if metabolite id is not used by other reactions before removing
         				      if ((rFactory.reactantUsedCount(oldIdList.get(i), getDatabaseName()) + rFactory.productUsedCount(oldIdList.get(i), getDatabaseName())) == 0) {
-        				         rFactory.removeIdFromUsedMetabolites(oldIdList.get(i), getDatabaseName());
+        				          mFactory.setMetaboliteUsedValue(oldIdList.get(i), getDatabaseName(), "false"); 
         				      }     				    
         			      }
         		      }
         		  } else if (!parser.isValid(tcl.getOldValue()) && parser.isValid(tcl.getNewValue())) {
         			  ArrayList<Integer> newIdList = parser.speciesIdList(tcl.getNewValue(), getDatabaseName());
         			  for (int j = 0; j < newIdList.size(); j++) {
-            			  if(rFactory.usedMetaboliteCount(newIdList.get(j), getDatabaseName()) == 0) {
-        				      rFactory.addIdToUsedMetabolites(newIdList.get(j), getDatabaseName());
-        				  }
+        				  mFactory.setMetaboliteUsedValue(newIdList.get(j), getDatabaseName(), "true");
             		  }   		  
         		  }       		  
         	  }
-          }           
+          }
+          //resets metabolite table to show any changed values of used column
+          //probably not necessary since this column is not visible
+          String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
+	      try {
+			  Class.forName("org.sqlite.JDBC");
+			  Connection con = DriverManager.getConnection(fileString);
+			  setUpMetabolitesTable(con);
+	          } catch (ClassNotFoundException e) {
+				   // TODO Auto-generated catch block
+				   e.printStackTrace();
+			  } catch (SQLException e) {
+				  // TODO Auto-generated catch block
+				  e.printStackTrace();
+			  }
       }
   };
   
@@ -1196,27 +1187,50 @@ public GraphicalInterface(final Connection con)
   /*******************************************************************************/
   //table layouts
   /*******************************************************************************/
+  private class RowListener implements ListSelectionListener {
+      public void valueChanged(ListSelectionEvent event) {
+          if (event.getValueIsAdjusting()) {
+              return;
+          }
+      }
+  }
+
+  private class ColumnListener implements ListSelectionListener {
+      public void valueChanged(ListSelectionEvent event) {
+          if (event.getValueIsAdjusting()) {
+              return;
+          }
+      }
+  }
+  
   public void setReactionsTableLayout() {
+	  
+	  reactionsTable.getSelectionModel().addListSelectionListener(new RowListener());
+	  reactionsTable.getColumnModel().getSelectionModel().
+          addListSelectionListener(new ColumnListener());
+	  
 	  reactionsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-	  reactionsTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+	  reactionsTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 	  //allows individual cells to be selected as default
 	  reactionsTable.setColumnSelectionAllowed(true);
 	  reactionsTable.setRowSelectionAllowed(true); 
-	    
+	  reactionsTable.setCellSelectionEnabled(true);
+	  //reactionsTable.setDragEnabled(true);
+      	    
 	  JTableHeader header = reactionsTable.getTableHeader();
 
 	  ColumnHeaderToolTips tips = new ColumnHeaderToolTips();
 	  for (int c = 0; c < reactionsTable.getColumnCount(); c++) {
 	      TableColumn col = reactionsTable.getColumnModel().getColumn(c);
 	      if (c == GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN) {
-	    	  tips.setToolTip(col, LocalConfig.getInstance().getBiologicalObjectiveColumnName());
+	    	  tips.setToolTip(col, GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN]);
 	      }	
 	      if (c == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
-	    	  tips.setToolTip(col, LocalConfig.getInstance().getReversibleColumnName());
+	    	  tips.setToolTip(col, GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.REVERSIBLE_COLUMN]);
 	      }
 	      if (c == GraphicalInterfaceConstants.KO_COLUMN) {
 	    	  tips.setToolTip(col, GraphicalInterfaceConstants.KNOCKOUT_TOOLTIP);
-	      }	      
+	      }      
 	  }
 	  header.addMouseMotionListener(tips);
 	  
@@ -1251,48 +1265,49 @@ public GraphicalInterface(final Connection con)
 	          if (i==GraphicalInterfaceConstants.KO_COLUMN) {
 	    		  column.setPreferredWidth(GraphicalInterfaceConstants.KO_WIDTH); 
 	    		  ChangeName(reactionsTable, GraphicalInterfaceConstants.KO_COLUMN, 
-	    				  LocalConfig.getInstance().getKnockoutColumnName());
-	    		  JComboBox koCombo = new JComboBox(GraphicalInterfaceConstants.BOOLEAN_VALUES);
-	    		  column.setCellEditor(new DefaultCellEditor(koCombo));
+	    				  GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.KO_COLUMN]); 
+	    		  //JComboBox koCombo = new JComboBox(GraphicalInterfaceConstants.BOOLEAN_VALUES);
+	    		  //column.setCellEditor(new DefaultCellEditor(koCombo));
 	    	  }
 	          if (i==GraphicalInterfaceConstants.FLUX_VALUE_COLUMN) {
 	    		  ChangeName(reactionsTable, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN, 
-	    				  LocalConfig.getInstance().getFluxValueColumnName());
+	    				  GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.FLUX_VALUE_COLUMN]); 
 	    	  }
-	    	  if (i==GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN) {
+	          if (i==GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN) {
 	    		  column.setPreferredWidth(GraphicalInterfaceConstants.REACTION_ABBREVIATION_WIDTH);//2
 	    		  ChangeName(reactionsTable, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN, 
-	    				  LocalConfig.getInstance().getReactionAbbreviationColumnName());
+	    				  GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN]); 
 	    	  }
-	    	  if (i==GraphicalInterfaceConstants.REACTION_NAME_COLUMN) {
+	          if (i==GraphicalInterfaceConstants.REACTION_NAME_COLUMN) {
 	    		  column.setPreferredWidth(GraphicalInterfaceConstants.REACTION_NAME_WIDTH);
 	    		  ChangeName(reactionsTable, GraphicalInterfaceConstants.REACTION_NAME_COLUMN, 
-	    				  LocalConfig.getInstance().getReactionNameColumnName());
+	    				  GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.REACTION_NAME_COLUMN]);     
 	    	  }
 	    	  if (i==GraphicalInterfaceConstants.REACTION_STRING_COLUMN) {
 	    		  column.setPreferredWidth(GraphicalInterfaceConstants.REACTION_STRING_WIDTH);//3  
 	    		  ChangeName(reactionsTable, GraphicalInterfaceConstants.REACTION_STRING_COLUMN, 
-	    				  LocalConfig.getInstance().getReactionEquationColumnName());
+	    				  GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.REACTION_STRING_COLUMN]); 
 	    	  }
 	    	  if (i==GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
 	    		  column.setPreferredWidth(GraphicalInterfaceConstants.REVERSIBLE_WIDTH);        //4
 	    		  ChangeName(reactionsTable, GraphicalInterfaceConstants.REVERSIBLE_COLUMN, 
-	    				  LocalConfig.getInstance().getReversibleColumnName());
+	    				  GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.REVERSIBLE_COLUMN]); 
 	    		  //JComboBox revCombo = new JComboBox(GraphicalInterfaceConstants.BOOLEAN_VALUES);
 	    		  //column.setCellEditor(new DefaultCellEditor(revCombo));
-	    	  }	    	  
+	    	  }
+	    	  
+	    	  if (i==GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN) {
+	    		  ChangeName(reactionsTable, GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN, 
+	    				  GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN]); 
+	    	  }
 	    	  if (i==GraphicalInterfaceConstants.LOWER_BOUND_COLUMN) {
 	    		  ChangeName(reactionsTable, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN, 
-	    				  LocalConfig.getInstance().getLowerBoundColumnName());
+	    				  GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.LOWER_BOUND_COLUMN]);          
 	    	  }
 	    	  if (i==GraphicalInterfaceConstants.UPPER_BOUND_COLUMN) {
 	    		  ChangeName(reactionsTable, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN, 
-	    				  LocalConfig.getInstance().getUpperBoundColumnName());
-	    	  }
-	    	  if (i==GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN) {
-	    		  ChangeName(reactionsTable, GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN, 
-	    				  LocalConfig.getInstance().getBiologicalObjectiveColumnName());
-	    	  }		    	  
+	    				  GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.UPPER_BOUND_COLUMN]);          
+	    	  } 	  
 	    	  //set alignment of columns with numerical values to right, and default width
 	    	  if (i==GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN || i==GraphicalInterfaceConstants.LOWER_BOUND_COLUMN || i==GraphicalInterfaceConstants.UPPER_BOUND_COLUMN || i==GraphicalInterfaceConstants.FLUX_VALUE_COLUMN) {	  
 	    		  reacRenderer.setHorizontalAlignment(JLabel.RIGHT); 
@@ -1450,7 +1465,10 @@ public GraphicalInterface(final Connection con)
 	  for (int c = 0; c < metabolitesTable.getColumnCount(); c++) {
 	      TableColumn col = metabolitesTable.getColumnModel().getColumn(c);	
 	      if (c == GraphicalInterfaceConstants.CHARGE_COLUMN) {
-	    	  tips.setToolTip(col, LocalConfig.getInstance().getChargeColumnName());
+	    	  tips.setToolTip(col, GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES[GraphicalInterfaceConstants.CHARGE_COLUMN]);     
+	      }
+	      if (c == GraphicalInterfaceConstants.BOUNDARY_COLUMN) {
+	    	  tips.setToolTip(col, GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES[GraphicalInterfaceConstants.BOUNDARY_COLUMN]);     
 	      }
 	  }
 	  header.addMouseMotionListener(tips);
@@ -1484,7 +1502,7 @@ public GraphicalInterface(final Connection con)
 	    		  column.setPreferredWidth(GraphicalInterfaceConstants.METABOLITE_NAME_WIDTH);
 	    		  ChangeName(metabolitesTable, GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN, 
 	    				  GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES[GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN]);     
-	    	  }	    	  
+	    	  } 
 	    	  if (w==GraphicalInterfaceConstants.CHARGE_COLUMN) {
 	    		  column.setPreferredWidth(GraphicalInterfaceConstants.CHARGE_WIDTH);
 	    		  ChangeName(metabolitesTable, GraphicalInterfaceConstants.CHARGE_COLUMN, 
@@ -1495,7 +1513,7 @@ public GraphicalInterface(final Connection con)
 	    		  column.setPreferredWidth(GraphicalInterfaceConstants.COMPARTMENT_WIDTH);
 	    		  ChangeName(metabolitesTable, GraphicalInterfaceConstants.COMPARTMENT_COLUMN, 
 	    				  GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES[GraphicalInterfaceConstants.COMPARTMENT_COLUMN]);     
-	    	  }   
+	    	  }	    	  	    	  
 	    	  if (w==GraphicalInterfaceConstants.BOUNDARY_COLUMN) {
 	    		  column.setPreferredWidth(GraphicalInterfaceConstants.BOUNDARY_WIDTH);
 	    		  ChangeName(metabolitesTable, GraphicalInterfaceConstants.BOUNDARY_COLUMN, 
@@ -1591,7 +1609,13 @@ public GraphicalInterface(final Connection con)
 	    		  } else {
 	    			  ChangeName(metabolitesTable, GraphicalInterfaceConstants.METABOLITE_META10_COLUMN, "O");	    					 
 	    		  }
-	    	  }    	    	  
+	    	  } 
+	    	  if (w==GraphicalInterfaceConstants.USED_COLUMN) {	
+	    		  column.setMaxWidth(0);
+	    		  column.setMinWidth(0); 
+	    		  column.setWidth(0); 
+	    		  column.setPreferredWidth(0);
+	    	  } 
 	    }	  
   }
   /************************************************************************************/
@@ -1761,12 +1785,13 @@ public GraphicalInterface(final Connection con)
 
 	  		      SBMLReaction aReaction = (SBMLReaction)aFactory.getReactionById(getIdFromCurrentRow(getCurrentRow()), "SBML", getDatabaseName()); 
 	        	  ReactionParser parser = new ReactionParser();
+	        	  MetaboliteFactory mFactory = new MetaboliteFactory();
 	        	  ArrayList<Integer> oldIdList = parser.speciesIdList(aReaction.getReactionString(), getDatabaseName());
 	        	  
 	        	  for (int i = 0; i < oldIdList.size(); i++) {
-	    				//check if metabolite id is not used by other reactions before removing
+	    				//check if metabolite id is not used by other reactions before setting to false
 	    				if ((aFactory.reactantUsedCount(oldIdList.get(i), getDatabaseName()) + aFactory.productUsedCount(oldIdList.get(i), getDatabaseName())) == 1) {
-	    				    aFactory.removeIdFromUsedMetabolites(oldIdList.get(i), getDatabaseName());
+	    					mFactory.setMetaboliteUsedValue(oldIdList.get(i), getDatabaseName(), "false"); 
 	    				}     				    	    			    
 	    		    }   
 	        	  
@@ -1778,6 +1803,7 @@ public GraphicalInterface(final Connection con)
 	  				Class.forName("org.sqlite.JDBC");
 	  			    Connection con = DriverManager.getConnection(fileString);
 	  			    setUpReactionsTable(con);
+	  			    setUpMetabolitesTable(con);
 	  	            } catch (ClassNotFoundException e) {
 	  				     // TODO Auto-generated catch block
 	  				     e.printStackTrace();
@@ -1866,12 +1892,13 @@ public GraphicalInterface(final Connection con)
 
 		  		      SBMLReaction aReaction = (SBMLReaction)aFactory.getReactionById(getIdFromCurrentRow(getCurrentRow()), "SBML", getDatabaseName()); 
 		        	  ReactionParser parser = new ReactionParser();
+		        	  MetaboliteFactory mFactory = new MetaboliteFactory();
 		        	  ArrayList<Integer> oldIdList = parser.speciesIdList(aReaction.getReactionString(), getDatabaseName());
 		        	  
 		        	  for (int i = 0; i < oldIdList.size(); i++) {
-		    				//check if metabolite id is not used by other reactions before removing
+		    				//check if metabolite id is not used by other reactions before setting to false
 		    				if ((aFactory.reactantUsedCount(oldIdList.get(i), getDatabaseName()) + aFactory.productUsedCount(oldIdList.get(i), getDatabaseName())) == 1) {
-		    				    aFactory.removeIdFromUsedMetabolites(oldIdList.get(i), getDatabaseName());
+		    					mFactory.setMetaboliteUsedValue(oldIdList.get(i), getDatabaseName(), "false"); 
 		    				}     				    	    			    
 		    		    }   
 		        	  
@@ -1883,6 +1910,7 @@ public GraphicalInterface(final Connection con)
 		  				Class.forName("org.sqlite.JDBC");
 		  			    Connection con = DriverManager.getConnection(fileString);
 		  			    setUpReactionsTable(con);
+		  			    setUpMetabolitesTable(con);
 		  	            } catch (ClassNotFoundException e) {
 		  				     // TODO Auto-generated catch block
 		  				     e.printStackTrace();
@@ -2004,9 +2032,22 @@ public GraphicalInterface(final Connection con)
 	    	   unhighlightParticipatingReactionsMenu.setEnabled(false);
 	       }
 	       unhighlightParticipatingReactionsMenu.addActionListener(new ActionListener() {
-		   public void actionPerformed(ActionEvent e) {
+		   public void actionPerformed(ActionEvent ae) {
 			   //to make sure that if user entered two spaces in reaction equation - still no highlight results
 			   setParticipatingMetabolite("   "); 
+			   String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
+			   try {
+	    			Class.forName("org.sqlite.JDBC");
+	    			Connection con = DriverManager.getConnection(getDatabaseName());
+	    			setUpMetabolitesTable(con);
+	    			setUpReactionsTable(con);
+	    	    	} catch (ClassNotFoundException e) {
+	    				 // TODO Auto-generated catch block
+	    				 e.printStackTrace();
+	    			} catch (SQLException e) {
+	    				    // TODO Auto-generated catch block
+	    				    e.printStackTrace();
+	    			} 
 		       }
 		   });
 	       contextMenu.add(unhighlightParticipatingReactionsMenu);
@@ -2186,11 +2227,12 @@ public GraphicalInterface(final Connection con)
   
     //listens for submit button event in ReactionInterface
     ActionListener submitButtonActionListener = new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent ae) {
 			reactionInterface.setReactionEquation(reactionInterface.reactionField.getText());
 		    reactionsTable.getModel().setValueAt(reactionInterface.getReactionEquation(), getCurrentRow(), GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
 		    updateReactionsDatabaseRow(getCurrentRow(), Integer.parseInt((String) (reactionsTable.getModel().getValueAt(getCurrentRow(), 0))), "SBML", getDatabaseName());
 		    
+		    MetaboliteFactory mFactory = new MetaboliteFactory();
 		    ReactionFactory rFactory = new ReactionFactory();
             SBMLReaction aReaction = (SBMLReaction)rFactory.getReactionById(getIdFromCurrentRow(getCurrentRow()), "SBML", getDatabaseName()); 
             ReactionParser parser = new ReactionParser();
@@ -2214,10 +2256,7 @@ public GraphicalInterface(final Connection con)
 			    //adds new species to used_metabolites table
       		    for (int j = 0; j < newIdList.size(); j++) {
       			    if (!oldIdList.contains(newIdList.get(j))) {
-      				    //check that id is not present before adding
-      				    if(rFactory.usedMetaboliteCount(newIdList.get(j), getDatabaseName()) == 0) {
-      				    	rFactory.addIdToUsedMetabolites(newIdList.get(j), getDatabaseName());
-      				    }		    
+      			    	mFactory.setMetaboliteUsedValue(newIdList.get(j), getDatabaseName(), "true"); 		    
       			    }
       		    }
       		    //removes deleted species from used_metabolites if not required by other rxns
@@ -2225,19 +2264,30 @@ public GraphicalInterface(final Connection con)
     			    if (!newIdList.contains(oldIdList.get(i))) {
     				    //check if metabolite id is not used by other reactions before removing
     				    if ((rFactory.reactantUsedCount(oldIdList.get(i), getDatabaseName()) + rFactory.productUsedCount(oldIdList.get(i), getDatabaseName())) == 0) {
-    				    	rFactory.removeIdFromUsedMetabolites(oldIdList.get(i), getDatabaseName());
+    				    	mFactory.setMetaboliteUsedValue(oldIdList.get(i), getDatabaseName(), "false"); 
     				    }     				    
     			    }
     		    }    
 		    } else if (!parser.isValid(reactionInterface.getOldReaction()) && parser.isValid(reactionInterface.getReactionEquation())) {
 		    	ArrayList<Integer> newIdList = parser.speciesIdList(reactionInterface.getReactionEquation(), getDatabaseName());
 		    	for (int j = 0; j < newIdList.size(); j++) {
-      				//check that id is not present before adding
-      				if(rFactory.usedMetaboliteCount(newIdList.get(j), getDatabaseName()) == 0) {
-      				    rFactory.addIdToUsedMetabolites(newIdList.get(j), getDatabaseName());
-      				}		          			    
+		    		mFactory.setMetaboliteUsedValue(newIdList.get(j), getDatabaseName(), "true"); 		          			    
       		    }		    	
-		    }		    
+		    }
+		      //resets metabolite table to show any changed values of used column
+	          //probably not necessary since this column is not visible
+	          String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
+		      try {
+				  Class.forName("org.sqlite.JDBC");
+				  Connection con = DriverManager.getConnection(fileString);
+				  setUpMetabolitesTable(con);
+		          } catch (ClassNotFoundException e) {
+					   // TODO Auto-generated catch block
+					   e.printStackTrace();
+				  } catch (SQLException e) {
+					  // TODO Auto-generated catch block
+					  e.printStackTrace();
+				  }
 	    }
 	}; 
 
@@ -2356,24 +2406,6 @@ public GraphicalInterface(final Connection con)
   	    highlightUnusedMetabolitesItem.setState(false);  	    
     }
     
-    public void setDefaultMetaboliteColumnNames() {
-    	LocalConfig.getInstance().setMetaboliteAbbreviationColumnName(GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES[GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN]);
-    	LocalConfig.getInstance().setMetaboliteNameColumnName(GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES[GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN]);
-    	LocalConfig.getInstance().setChargeColumnName(GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES[GraphicalInterfaceConstants.CHARGE_COLUMN]); 
-    	LocalConfig.getInstance().setCompartmentColumnName(GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES[GraphicalInterfaceConstants.COMPARTMENT_COLUMN]); 	
-    }
-    
-    public void setDefaultReactionColumnNames() {
-    	LocalConfig.getInstance().setReactionAbbreviationColumnName(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN]); 
-    	LocalConfig.getInstance().setReactionNameColumnName(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.REACTION_NAME_COLUMN]);  
-    	LocalConfig.getInstance().setReactionEquationColumnName(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.REACTION_STRING_COLUMN]); 
-    	LocalConfig.getInstance().setKnockoutColumnName(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.KO_COLUMN]);   
-    	LocalConfig.getInstance().setFluxValueColumnName(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.FLUX_VALUE_COLUMN]); 
-    	LocalConfig.getInstance().setReversibleColumnName(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.REVERSIBLE_COLUMN]); 
-    	LocalConfig.getInstance().setLowerBoundColumnName(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.LOWER_BOUND_COLUMN]); 
-    	LocalConfig.getInstance().setUpperBoundColumnName(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.UPPER_BOUND_COLUMN]);     
-    	LocalConfig.getInstance().setBiologicalObjectiveColumnName(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN]); 
-    }
     
    /******************************************************************************/
    //update database methods, called when table rows changed 
@@ -2497,6 +2529,7 @@ public GraphicalInterface(final Connection con)
 		    aMetabolite.setMeta8((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META8_COLUMN));
 		    aMetabolite.setMeta9((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META9_COLUMN));
 		    aMetabolite.setMeta10((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META10_COLUMN));
+		    aMetabolite.setUsed((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.USED_COLUMN));
 		    
 		    aMetabolite.update();
 		  
@@ -2537,7 +2570,61 @@ public GraphicalInterface(final Connection con)
 	    }
 	  }
 
+   class Task extends SwingWorker<Void, Void> {
+
+		@Override
+		public void done() {
+
+		}
+
+		@Override
+		protected Void doInBackground() throws Exception {
+			int progress = 0;
+			SBMLDocument doc = new SBMLDocument();
+			SBMLReader reader = new SBMLReader();
+			try {		  
+				doc = reader.readSBML(GraphicalInterface.getSBMLFile());
+				final SBMLModelReader modelReader = new SBMLModelReader(doc);
+				modelReader.setDatabaseName(LocalConfig.getInstance().getDatabaseName());
+				modelReader.load();
+			} catch (FileNotFoundException e) {
+				JOptionPane.showMessageDialog(null,                
+						"File does not exist.",                
+						"File does not exist.",                                
+						JOptionPane.ERROR_MESSAGE);
+				//e.printStackTrace();
+			} catch (XMLStreamException e) {
+				JOptionPane.showMessageDialog(null,                
+						"This File is not a Valid SBML File.",                
+						"Invalid SBML File.",                                
+						JOptionPane.ERROR_MESSAGE);
+				// TODO Auto-generated catch block
+				//e.printStackTrace();
+			}	
+			while (progress < 100) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException ignore) {
+				}			
+			}				
+			t.stop();
+			return null;
+		}
+	}
    
+   class TimeListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			progressBar.progress.setValue(LocalConfig.getInstance().getProgress());
+			progressBar.progress.repaint();
+			if (LocalConfig.getInstance().getProgress() == 100) {
+				setUpTables(LocalConfig.getInstance().getDatabaseName());
+				t.stop();
+				progressBar.setVisible(false);
+				progressBar.dispose();
+			}
+		}
+	}
+     
    /******************************************************************************/
    //end update database methods
    /******************************************************************************/
@@ -2563,13 +2650,9 @@ public GraphicalInterface(final Connection con)
 	   frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	   frame.setLocationRelativeTo(null);
 	   frame.setVisible(true);
-	   
-	   ReactionFactory aFactory = new ReactionFactory();
-	   aFactory.listUsedMetabolites(getDatabaseName());
-	   
+	  
 	   showPrompt = true;
 
-	   loadOutputPane("C://testing.log");
   }
 }
 

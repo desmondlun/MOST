@@ -105,9 +105,9 @@ public class TableCellListener implements PropertyChangeListener, Runnable
 	{
 		return table;
 	}
-//
-//  Implement the PropertyChangeListener interface
-//
+	//
+	//  Implement the PropertyChangeListener interface
+	//
 	@Override
 	public void propertyChange(PropertyChangeEvent e)
 	{
@@ -161,12 +161,12 @@ public class TableCellListener implements PropertyChangeListener, Runnable
 			//  while processing this change
 
 			TableCellListener tcl = new TableCellListener(
-				getTable(), getRow(), getColumn(), getOldValue(), getNewValue());
+					getTable(), getRow(), getColumn(), getOldValue(), getNewValue());
 
 			ActionEvent event = new ActionEvent(
-				tcl,
-				ActionEvent.ACTION_PERFORMED,
-				"");
+					tcl,
+					ActionEvent.ACTION_PERFORMED,
+			"");
 			action.actionPerformed(event);
 		}
 	}
