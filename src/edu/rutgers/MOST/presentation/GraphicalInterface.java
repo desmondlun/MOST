@@ -2347,9 +2347,7 @@ public GraphicalInterface(final Connection con)
 			MetabolitesDatabaseTableModel metabModel = new MetabolitesDatabaseTableModel(con, new String("select * from metabolites"));
 			metabolitesTable.setModel(metabModel);
 			setMetabolitesTableLayout();
-			RowSorter<TableModel> sorter =
-		          new TableRowSorter<TableModel>(metabModel);
-			metabolitesTable.setRowSorter(sorter);
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -2362,10 +2360,7 @@ public GraphicalInterface(final Connection con)
 			ReactionsDatabaseTableModel reacModel = new ReactionsDatabaseTableModel(con, new String("select * from reactions"));
 			reactionsTable.setModel(reacModel);
 			setReactionsTableLayout();			
-			setParticipatingMetabolite("   ");
-			RowSorter<TableModel> sorter =
-		          new TableRowSorter<TableModel>(reacModel);
-			reactionsTable.setRowSorter(sorter);
+			setParticipatingMetabolite("   ");			
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
