@@ -419,7 +419,7 @@ public GraphicalInterface(final Connection con)
 				log.debug("create an optimize");
 
 				Optimize opt = new Optimize();
-				opt.setDatabaseName(getDatabaseName());// should be optimizePath
+				opt.setDatabaseName(getOptimizePath());// should be optimizePath
 														// once the copier is
 														// implemented
 				opt.setFBAModel(model);
@@ -436,10 +436,15 @@ public GraphicalInterface(final Connection con)
 								GRB.StringAttr.VarName));
 						SBMLReaction aReaction = (SBMLReaction) aFactory
 								.getReactionById(reactionId, "SBML",
-										getDatabaseName());
+										getOptimizePath());
 						outputText.append("\nReaction:"
 								+ aReaction.getReactionAbbreviation()
 								+ " Flux: " + vars.get(i).get(GRB.DoubleAttr.X));
+						
+						//DEGEN:DB Update: Set the flux of the reaction based on the optimization
+						aReaction.setFluxValue(vars.get(i).get(GRB.DoubleAttr.X));
+						aReaction.update();
+						//DEGEN: End DB Update
 					} catch (GRBException ex) {
 						ex.printStackTrace();
 
@@ -937,10 +942,10 @@ public GraphicalInterface(final Connection con)
     	  setExcelPath(file);
     	  String rawFilename = fileChooser.getSelectedFile().getName();
     	  String filename = rawFilename.substring(0, rawFilename.length() - 4);
-    	  System.out.println("filename " + filename);
+    	  log.debug("filename " + filename);
           setDatabaseName(filename);
-          System.out.println("Excel file " + file);
-          System.out.println("raw " + rawFilename);
+          log.debug("Excel file " + file);
+          log.debug("raw " + rawFilename);
     	  if (!file.endsWith(".xls")) {
     		  JOptionPane.showMessageDialog(null,                
 	    				"Not a Valid Excel File.",                
