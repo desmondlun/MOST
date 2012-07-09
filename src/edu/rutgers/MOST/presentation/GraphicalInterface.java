@@ -446,7 +446,7 @@ public GraphicalInterface(final Connection con)
 				log.debug("create an optimize");
 
 				Optimize opt = new Optimize();
-				opt.setDatabaseName(getDatabaseName());// should be optimizePath
+				opt.setDatabaseName(getOptimizePath());// should be optimizePath
 														// once the copier is
 														// implemented
 				opt.setFBAModel(model);
@@ -463,7 +463,7 @@ public GraphicalInterface(final Connection con)
 								GRB.StringAttr.VarName));
 						SBMLReaction aReaction = (SBMLReaction) aFactory
 								.getReactionById(reactionId, "SBML",
-										getDatabaseName());
+										getOptimizePath());
 						outputText.append("\nReaction:"
 								+ aReaction.getReactionAbbreviation()
 								+ " Flux: " + vars.get(i).get(GRB.DoubleAttr.X));
