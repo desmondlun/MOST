@@ -313,10 +313,26 @@ public GraphicalInterface(final Connection con)
               }
               setOptimizePath(optimizePath);
               if (getOptimizePath().endsWith(fileList.getSelectedValue().toString())) {
-            	  loadOutputPane(getOptimizePath() + ".log");            	  
+            	  loadOutputPane(getOptimizePath() + ".log");
+            	 
+            	  String fileString = "jdbc:sqlite:" + getOptimizePath() + ".db";
+				  try {
+					Class.forName("org.sqlite.JDBC");
+					Connection con = DriverManager.getConnection(fileString);			    
+					setUpMetabolitesTable(con);
+					setUpReactionsTable(con);
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				  
               }
           } 
       }); 
+      
       
 	  /**************************************************************************/
 	  //create menu bar
