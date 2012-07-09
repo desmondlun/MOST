@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import edu.rutgers.MOST.config.LocalConfig;
-import edu.rutgers.MOST.presentation.GraphicalInterface;
+import edu.rutgers.MOST.presentation.ProgressConstants;
 
 public class ReactionFactory {
 	
@@ -26,95 +26,9 @@ public class ReactionFactory {
 		return new SBMLReaction(); //Default behavior.
 	}
 	
-	public void listUsedMetabolites(String databaseName) {
-    	int count = 0;
-    	//String queryString = "jdbc:sqlite:" + databaseName + ".db";
-		String queryString = "jdbc:sqlite:" + databaseName + ".db";
-		try {
-			Class.forName("org.sqlite.JDBC");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Connection conn;
-		try {
-			conn = DriverManager.getConnection(queryString);
-            Statement stat = conn.createStatement();		    
-		    stat.executeUpdate("drop table if exists used_metabolites;");
-		    
-		    stat.executeUpdate("CREATE TABLE used_metabolites (metabolite_id integer);");
-		    
-		    ResultSet rs = stat.executeQuery("select distinct id from metabolites join reaction_reactants where metabolites.id = reaction_reactants.metabolite_id;");
-		    
-		    while(rs.next()){
-            	PreparedStatement prep3 = conn.prepareStatement(
-            		      "insert into used_metabolites (metabolite_id) values (?);"); 
-            	prep3.setInt(1, rs.getInt(1));
-            	prep3.addBatch();
-
-            	conn.setAutoCommit(false);
-            	prep3.executeBatch();
-            	conn.setAutoCommit(true);    
-            }
-		    
-            rs.close();
-		    
-            ResultSet rsProd = stat.executeQuery("select distinct id from metabolites join reaction_products where metabolites.id = reaction_products.metabolite_id;");
-            while(rsProd.next()){  
-            	PreparedStatement prep = conn.prepareStatement("select count(metabolite_id) from used_metabolites where metabolite_id=?;");
-    			prep.setInt(1, rsProd.getInt(1)); 			
-    			ResultSet rsProdCount = prep.executeQuery();    			
-    			//if metabolite_abbreviation is in table will return 1, else 0
-    			count = rsProdCount.getInt("count(metabolite_id)");
-    			if (count == 0) {    				
-    				PreparedStatement prep4 = conn.prepareStatement(
-      		      "insert into used_metabolites (metabolite_id) values (?);"); 
-    				prep4.setInt(1, rsProd.getInt(1));
-    				prep4.addBatch();
-
-    				conn.setAutoCommit(false);
-    				prep4.executeBatch();
-    				conn.setAutoCommit(true); 
-    			}
-    			rsProdCount.close();
-            }
-            
-            rsProd.close();
-            
-			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();			
-		}	
-
-    }
-	
-	public int usedMetaboliteCount(Integer id, String databaseName) {
-    	int count = 0;
-    	String queryString = "jdbc:sqlite:" + databaseName + ".db"; //TODO:DEGEN:Call LocalConfig
-		try {
-			Class.forName("org.sqlite.JDBC");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Connection conn;
-		try {
-			conn = DriverManager.getConnection(queryString);
-			PreparedStatement prep = conn.prepareStatement("select count(metabolite_id) from used_metabolites where metabolite_id=?;");
-			prep.setInt(1, id);
-			ResultSet rs = prep.executeQuery();
-			//if metabolite_abbreviation is in table will return 1, else 0
-			count = rs.getInt("count(metabolite_id)");			
-			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();			
-		}
-		return count;
-    }
-	
-	public void addIdToUsedMetabolites(Integer id, String databaseName) {
+	public void setMetabolitesUsedStatus(String databaseName) {
+		MetaboliteFactory mFactory = new MetaboliteFactory();
+		int numMetabolites = 0;
 		String queryString = "jdbc:sqlite:" + LocalConfig.getInstance().getDatabaseName() + ".db"; //TODO:DEGEN:Call LocalConfig
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -125,20 +39,32 @@ public class ReactionFactory {
 		Connection conn;
 		try {
 			conn = DriverManager.getConnection(queryString);
-			PreparedStatement prep = conn.prepareStatement("insert into used_metabolites (metabolite_id) VALUES(?);");
-			prep.setInt(1, id);
-			prep.execute();
-		    conn.setAutoCommit(true); 		
+			PreparedStatement prep = conn
+			.prepareStatement("SELECT MAX(id) FROM metabolites;");
+			conn.setAutoCommit(true);
+			ResultSet rs1 = prep.executeQuery();
+			numMetabolites = rs1.getInt("MAX(id)"); 
 			conn.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();			
+		}    
+		for (int i = 1; i < numMetabolites + 1; i++) {
+			if (i%10 == 0) {
+				LocalConfig.getInstance().setProgress((i*ProgressConstants.UPDATE_USED_PERCENT)/numMetabolites + ProgressConstants.METABOLITE_LOAD_PERCENT + ProgressConstants.REACTION_LOAD_PERCENT);
+			}
+			if ((reactantUsedCount(i, databaseName) + productUsedCount(i, databaseName)) > 0) {
+				mFactory.setMetaboliteUsedValue(i, databaseName, "true");  
+			}		    
 		}
+		LocalConfig.getInstance().setProgress(100);
 	}
 	
 	public int reactantUsedCount(Integer id, String databaseName) {
     	int count = 0;
     	String queryString = "jdbc:sqlite:" + databaseName + ".db"; //TODO:DEGEN:Call LocalConfig
+    	//not necessary to call LocalConfig since this method is only called in the Graphical Interface 
+    	//where the database name is supplied
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
@@ -151,8 +77,7 @@ public class ReactionFactory {
 			PreparedStatement prep = conn.prepareStatement("select count(metabolite_id) from reaction_reactants where metabolite_id=?;");
 			prep.setInt(1, id);
 			ResultSet rs = prep.executeQuery();
-			count = rs.getInt("count(metabolite_id)");			
-			System.out.println("rr " + count);			
+			count = rs.getInt("count(metabolite_id)");					
 			conn.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -163,7 +88,7 @@ public class ReactionFactory {
 	
 	public int productUsedCount(Integer id, String databaseName) {
     	int count = 0;
-    	String queryString = "jdbc:sqlite:" + databaseName + ".db"; //TODO:DEGEN:Call LocalConfig
+    	String queryString = "jdbc:sqlite:" + databaseName + ".db"; 
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
@@ -176,8 +101,7 @@ public class ReactionFactory {
 			PreparedStatement prep = conn.prepareStatement("select count(metabolite_id) from reaction_products where metabolite_id=?;");
 			prep.setInt(1, id);
 			ResultSet rs = prep.executeQuery();
-			count = rs.getInt("count(metabolite_id)");			
-			System.out.println("rp " + count);			
+			count = rs.getInt("count(metabolite_id)");					
 			conn.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -185,28 +109,6 @@ public class ReactionFactory {
 		}
 		return count;
     }
-	
-	public void removeIdFromUsedMetabolites(Integer id, String databaseName) {
-		String queryString = "jdbc:sqlite:" + LocalConfig.getInstance().getDatabaseName() + ".db"; //TODO:DEGEN:Call LocalConfig
-		try {
-			Class.forName("org.sqlite.JDBC");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Connection conn;
-		try {
-			conn = DriverManager.getConnection(queryString);
-			PreparedStatement prep = conn.prepareStatement("delete from used_metabolites where metabolite_id=?;");
-			prep.setInt(1, id);
-			prep.execute();
-		    conn.setAutoCommit(true); 		
-			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();			
-		}
-	}
 	
 	public Vector<ModelReaction> getAllReactions(String sourceType, String databaseName) {
 		Vector<ModelReaction> reactions = new Vector<ModelReaction>();

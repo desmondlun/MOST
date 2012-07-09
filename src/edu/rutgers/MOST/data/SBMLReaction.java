@@ -14,7 +14,7 @@ public class SBMLReaction implements ModelReaction {
 	/**
 	 * @param args
 	 */
-	
+
 	private String databaseName;	
 	private Integer id; 
 	private String knockout;
@@ -41,19 +41,19 @@ public class SBMLReaction implements ModelReaction {
 	private String meta13;
 	private String meta14;
 	private String meta15;	
-	
+
 	private ArrayList reactantsList;
 	private ArrayList productsList;
-	
-		
+
+
 	public void setDatabaseName(String databaseName) {
 		this.databaseName = databaseName;
 	}
-	
+
 	public String getDatabaseName() {
 		return databaseName;
 	}
-	
+
 	public Integer getId() {
 		return id;
 	}
@@ -69,7 +69,7 @@ public class SBMLReaction implements ModelReaction {
 	public String getKnockout() {
 		return knockout;
 	}
-	
+
 	public String getReactionAbbreviation() {
 		return reactionAbbreviation;
 	}
@@ -85,7 +85,7 @@ public class SBMLReaction implements ModelReaction {
 	public void setReactionName(String reactionName) {
 		this.reactionName = reactionName;
 	}
-	
+
 	public void setReactionString(String reactionString) {
 		this.reactionString = reactionString;
 	}
@@ -93,7 +93,7 @@ public class SBMLReaction implements ModelReaction {
 	public String getReactionString() {
 		return reactionString;
 	}
-	
+
 	public String getReversible() {
 		return reversible;
 	}
@@ -101,7 +101,7 @@ public class SBMLReaction implements ModelReaction {
 	public void setReversible(String reversible) {
 		this.reversible = reversible;
 	}
-		
+
 	public double getLowerBound() {
 		return lowerBound;
 	}
@@ -125,7 +125,7 @@ public class SBMLReaction implements ModelReaction {
 	public void setBiologicalObjective(double biologicalObjective) {
 		this.biologicalObjective = biologicalObjective;
 	}
-	
+
 	public double getFluxValue() {
 		return fluxValue;
 	}
@@ -133,7 +133,7 @@ public class SBMLReaction implements ModelReaction {
 	public void setFluxValue(double fluxValue) {
 		this.fluxValue = fluxValue;
 	}
-	
+
 	public void setReactantsList(ArrayList reactantsList) {
 		this.reactantsList = reactantsList;
 	}
@@ -141,7 +141,7 @@ public class SBMLReaction implements ModelReaction {
 	public ArrayList getReactantsList() {
 		return reactantsList;
 	}
-	
+
 	public void setProductsList(ArrayList productsList) {
 		this.productsList = productsList;
 	}
@@ -149,7 +149,7 @@ public class SBMLReaction implements ModelReaction {
 	public ArrayList getProductsList() {
 		return productsList;
 	}
-	
+
 	// SQL Persistence/ORM Below:
 
 	public boolean update() {
@@ -164,12 +164,12 @@ public class SBMLReaction implements ModelReaction {
 		Connection conn;
 		try {
 			conn = DriverManager.getConnection(createConnectionStatement(getDatabaseName())); // TODO:
-	    	
+
 			PreparedStatement prep = conn
-			        .prepareStatement("update reactions set knockout=?, flux_value=?, reaction_abbreviation=?, reaction_name=?, " 
-			        		+ " reaction_string=?, reversible=?, lower_bound=?, upper_bound=?, biological_objective=?, " 
-			        		+ " meta_1=?, meta_2=?, meta_3=?, meta_4=?, meta_5=?, meta_6=?, meta_7=?, meta_8=?, "
-			        		+ " meta_9=?, meta_10=?, meta_11=?, meta_12=?, meta_13=?, meta_14=?, meta_15=? where id=?;");
+			.prepareStatement("update reactions set knockout=?, flux_value=?, reaction_abbreviation=?, reaction_name=?, " 
+					+ " reaction_string=?, reversible=?, lower_bound=?, upper_bound=?, biological_objective=?, " 
+					+ " meta_1=?, meta_2=?, meta_3=?, meta_4=?, meta_5=?, meta_6=?, meta_7=?, meta_8=?, "
+					+ " meta_9=?, meta_10=?, meta_11=?, meta_12=?, meta_13=?, meta_14=?, meta_15=? where id=?;");
 			prep.setString(1, this.getKnockout());
 			prep.setDouble(2, this.getFluxValue());	
 			prep.setString(3, this.getReactionAbbreviation());
@@ -197,7 +197,7 @@ public class SBMLReaction implements ModelReaction {
 			prep.setInt(25, this.getId());
 			conn.setAutoCommit(true);
 			prep.executeUpdate();
-			
+
 			conn.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -219,15 +219,15 @@ public class SBMLReaction implements ModelReaction {
 		Connection conn;
 		try {
 			conn = DriverManager.getConnection(createConnectionStatement(getDatabaseName())); // TODO:
-																		// Make
-																		// this
-																		// configurable
+			// Make
+			// this
+			// configurable
 			PreparedStatement prep = conn
-					.prepareStatement("select id, knockout, flux_value, reaction_abbreviation, reaction_name, reaction_string, "
-							+ " reversible, lower_bound, upper_bound, biological_objective, "
-							+ " meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, "
-							+ " meta_9, meta_10, meta_11, meta_12, meta_13, meta_14, meta_15 "
-							+ " from reactions where id = ?;");
+			.prepareStatement("select id, knockout, flux_value, reaction_abbreviation, reaction_name, reaction_string, "
+					+ " reversible, lower_bound, upper_bound, biological_objective, "
+					+ " meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, "
+					+ " meta_9, meta_10, meta_11, meta_12, meta_13, meta_14, meta_15 "
+					+ " from reactions where id = ?;");
 			prep.setInt(1, id);
 			conn.setAutoCommit(true);
 			ResultSet rs = prep.executeQuery();
@@ -257,7 +257,7 @@ public class SBMLReaction implements ModelReaction {
 				this.setMeta13(rs.getString("meta_13"));
 				this.setMeta14(rs.getString("meta_14"));
 				this.setMeta15(rs.getString("meta_15"));
-				}
+			}
 			rs.close();
 			conn.close();
 		} catch (SQLException e) {
@@ -272,14 +272,14 @@ public class SBMLReaction implements ModelReaction {
 	@Override
 	public String toString() {
 		return "SBMLReaction [id=" + id + ", reactionAbbreviation=" + reactionAbbreviation
-				+ ", biologicalObjective=" + biologicalObjective
-				+ ", upperBound=" + upperBound + ", lowerBound=" + lowerBound
-				+ ", reactionName=" + reactionName + ", reversible="
-				+ reversible + ", knockout=" + knockout + "]";
+		+ ", biologicalObjective=" + biologicalObjective
+		+ ", upperBound=" + upperBound + ", lowerBound=" + lowerBound
+		+ ", reactionName=" + reactionName + ", reversible="
+		+ reversible + ", knockout=" + knockout + "]";
 	}
-	
+
 	public boolean clearReactants() {
-		
+
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
@@ -290,25 +290,25 @@ public class SBMLReaction implements ModelReaction {
 		Connection conn;
 		try {
 			conn = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getDatabaseName())); // TODO:
-	    	
+
 			PreparedStatement prep = conn
-			        .prepareStatement("delete from reaction_reactants where reaction_id=?;");
+			.prepareStatement("delete from reaction_reactants where reaction_id=?;");
 			prep.setInt(1, this.getId());
 			conn.setAutoCommit(true);
 			prep.executeUpdate();
-			
+
 			conn.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
 		}
-		
+
 		return true;		
 	}
-	
-    public boolean clearProducts() {
-		
+
+	public boolean clearProducts() {
+
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
@@ -319,43 +319,43 @@ public class SBMLReaction implements ModelReaction {
 		Connection conn;
 		try {
 			conn = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getDatabaseName())); // TODO:
-	    	
+
 			PreparedStatement prep = conn
-	        		.prepareStatement("delete from reaction_products where reaction_id=?;");
-	        prep.setInt(1, this.getId());
-	        conn.setAutoCommit(true);
-	        prep.executeUpdate();
-			
+			.prepareStatement("delete from reaction_products where reaction_id=?;");
+			prep.setInt(1, this.getId());
+			conn.setAutoCommit(true);
+			prep.executeUpdate();
+
 			conn.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return false;
 		}
-		
+
 		return true;		
 	}
-	
+
 	public void updateReactants() {
 		for (int r = 0; r < getReactantsList().size(); r++) {
-			
-        	SBMLReactant aReactant = (SBMLReactant) getReactantsList().get(r);
-        	aReactant.update();
-        }
+
+			SBMLReactant aReactant = (SBMLReactant) getReactantsList().get(r);
+			aReactant.update();
+		}
 	}
-	
+
 	public void updateProducts() {
-        for (int p = 0; p < getProductsList().size(); p++) {
-			
-        	SBMLProduct aProduct = (SBMLProduct) getProductsList().get(p);
-        	aProduct.update();
-        }		
+		for (int p = 0; p < getProductsList().size(); p++) {
+
+			SBMLProduct aProduct = (SBMLProduct) getProductsList().get(p);
+			aProduct.update();
+		}		
 	}
-	
+
 	public String createConnectionStatement(String databaseName) {
 		return "jdbc:sqlite:" + databaseName + ".db";
 	}
-	
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
@@ -440,7 +440,7 @@ public class SBMLReaction implements ModelReaction {
 	public String getMeta10() {
 		return meta10;
 	}
-	
+
 	public void setMeta11(String meta11) {
 		this.meta11 = meta11;
 	}

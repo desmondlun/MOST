@@ -1,22 +1,27 @@
 package edu.rutgers.MOST.presentation;
 
-import javax.swing.*;
-
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Vector;
 
-import javax.swing.JFrame;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.JTextField;
+import javax.swing.SwingWorker;
 
 import edu.rutgers.MOST.config.ConfigConstants;
 import edu.rutgers.MOST.config.LocalConfig;
@@ -24,44 +29,30 @@ import edu.rutgers.MOST.data.DatabaseCreator;
 import edu.rutgers.MOST.data.Excel97Reader;
 import edu.rutgers.MOST.data.MetabolitesMetaColumnManager;
 import edu.rutgers.MOST.data.ReactionsMetaColumnManager;
-import edu.rutgers.MOST.data.TextMetabolitesModelReader;
-import edu.rutgers.MOST.data.TextReactionsModelReader;
 
-public class ExcelColumnNameInterface extends JDialog {
+public class ExcelColumnNameInterface  extends JDialog {
+
+	//metabolite combos
+	public JComboBox<String> cbMetaboliteAbbreviation = new JComboBox();
+	public JComboBox<String> cbMetaboliteName = new JComboBox();
+	public JComboBox<String> cbCharge = new JComboBox();
+	public JComboBox<String> cbCompartment = new JComboBox();
+	public JComboBox<String> cbBoundary = new JComboBox();
+	
+	//reaction combos
+	public JComboBox<String> cbKnockout = new JComboBox();
+	public JComboBox<String> cbFluxValue = new JComboBox();
+	public JComboBox<String> cbReactionAbbreviation = new JComboBox();
+	public JComboBox<String> cbReactionName = new JComboBox();
+	public JComboBox<String> cbReactionEquation = new JComboBox();
+	public JComboBox<String> cbReversible = new JComboBox();
+	public JComboBox<String> cbLowerBound = new JComboBox();
+	public JComboBox<String> cbUpperBound = new JComboBox();
+	public JComboBox<String> cbObjective = new JComboBox();
 	
 	JButton okButton = new JButton("     OK     ");
-    JButton cancelButton = new JButton("  Cancel  ");  
-    
-    final JComboBox<String> cbMetabColumnDisplayName1 = new JComboBox();
-    final JComboBox<String> cbMetabColumnNameFromFile1 = new JComboBox();
-    final JComboBox<String> cbMetabColumnDisplayName2 = new JComboBox();
-    final JComboBox<String> cbMetabColumnNameFromFile2 = new JComboBox();
-    final JComboBox<String> cbMetabColumnDisplayName3 = new JComboBox();
-    final JComboBox<String> cbMetabColumnNameFromFile3 = new JComboBox();
-    final JComboBox<String> cbMetabColumnDisplayName4 = new JComboBox();
-    final JComboBox<String> cbMetabColumnNameFromFile4 = new JComboBox();   
-    final JComboBox<String> cbMetabColumnDisplayName5 = new JComboBox();
-    final JComboBox<String> cbMetabColumnNameFromFile5 = new JComboBox();
-    
-    final JComboBox<String> cbReacColumnDisplayName1 = new JComboBox();
-    final JComboBox<String> cbReacColumnNameFromFile1 = new JComboBox();
-    final JComboBox<String> cbReacColumnDisplayName2 = new JComboBox();
-    final JComboBox<String> cbReacColumnNameFromFile2 = new JComboBox();
-    final JComboBox<String> cbReacColumnDisplayName3 = new JComboBox();
-    final JComboBox<String> cbReacColumnNameFromFile3 = new JComboBox();
-    final JComboBox<String> cbReacColumnDisplayName4 = new JComboBox();
-    final JComboBox<String> cbReacColumnNameFromFile4 = new JComboBox();
-    final JComboBox<String> cbReacColumnDisplayName5 = new JComboBox();
-    final JComboBox<String> cbReacColumnNameFromFile5 = new JComboBox();
-    final JComboBox<String> cbReacColumnDisplayName6 = new JComboBox();
-    final JComboBox<String> cbReacColumnNameFromFile6 = new JComboBox();
-    final JComboBox<String> cbReacColumnDisplayName7 = new JComboBox();
-    final JComboBox<String> cbReacColumnNameFromFile7 = new JComboBox();
-    final JComboBox<String> cbReacColumnDisplayName8 = new JComboBox();
-    final JComboBox<String> cbReacColumnNameFromFile8 = new JComboBox();
-    final JComboBox<String> cbReacColumnDisplayName9 = new JComboBox();
-    final JComboBox<String> cbReacColumnNameFromFile9 = new JComboBox();
-    
+	JButton cancelButton = new JButton("  Cancel  ");
+	
     public static ArrayList<String> metabColumnNamesFromFile;
     
     public static ArrayList<String> getMetabColumnNamesFromFile() {
@@ -82,250 +73,156 @@ public class ExcelColumnNameInterface extends JDialog {
 		this.reacColumnNamesFromFile = reacColumnNamesFromFile;
 	}
 	
+    private Task task;
+	
+	public final ProgressBar progressBar = new ProgressBar();
+	
+	javax.swing.Timer t = new javax.swing.Timer(1000, new TimeListener());
+
 	public ExcelColumnNameInterface(final Connection con, ArrayList<String> metabColumnNamesFromFile, ArrayList<String> reacColumnNamesFromFile)
-	    throws SQLException {
+        throws SQLException {
+
+		final ArrayList<Image> icons = new ArrayList<Image>(); 
+	    icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
+	    icons.add(new ImageIcon("etc/most32.jpg").getImage());
+		
+		LocalConfig.getInstance().setProgress(0);
+		progressBar.pack();
+		progressBar.setIconImages(icons);
+		progressBar.setSize(200, 75);
+	    progressBar.setTitle("Loading...");
+		progressBar.setVisible(false);
 
 		setMetabColumnNamesFromFile(metabColumnNamesFromFile);
 		setReacColumnNamesFromFile(reacColumnNamesFromFile);
 		
-		setTitle("Column Selector");
+		setTitle(ColumnInterfaceConstants.EXCEL_COLUMN_NAME_INTERFACE_TITLE);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-	    	
-		cbMetabColumnDisplayName1.setEditable(true);		
-		cbMetabColumnNameFromFile1.setEditable(true);
-		cbMetabColumnDisplayName2.setEditable(true);		
-		cbMetabColumnNameFromFile2.setEditable(true);
-		cbMetabColumnDisplayName3.setEditable(true);		
-		cbMetabColumnNameFromFile3.setEditable(true);
-		cbMetabColumnDisplayName4.setEditable(true);		
-		cbMetabColumnNameFromFile4.setEditable(true);
-		cbMetabColumnDisplayName5.setEditable(true);		
-		cbMetabColumnNameFromFile5.setEditable(true);
-		
-		cbReacColumnDisplayName1.setEditable(true);		
-		cbReacColumnNameFromFile1.setEditable(true);
-		cbReacColumnDisplayName2.setEditable(true);		
-		cbReacColumnNameFromFile2.setEditable(true);
-		cbReacColumnDisplayName3.setEditable(true);		
-		cbReacColumnNameFromFile3.setEditable(true);
-		cbReacColumnDisplayName4.setEditable(true);		
-		cbReacColumnNameFromFile4.setEditable(true);
-		cbReacColumnDisplayName5.setEditable(true);		
-		cbReacColumnNameFromFile5.setEditable(true);
-		cbReacColumnDisplayName6.setEditable(true);		
-		cbReacColumnNameFromFile6.setEditable(true);
-		cbReacColumnDisplayName7.setEditable(true);		
-		cbReacColumnNameFromFile7.setEditable(true);
-		cbReacColumnDisplayName8.setEditable(true);		
-		cbReacColumnNameFromFile8.setEditable(true);
-		cbReacColumnDisplayName9.setEditable(true);		
-		cbReacColumnNameFromFile9.setEditable(true);
-	    
-		for (int g = 0; g < GraphicalInterfaceConstants.METABOLITE_ID_COLUMN_NAMES.length; g++) {
-	    	cbMetabColumnDisplayName1.addItem(GraphicalInterfaceConstants.METABOLITE_ID_COLUMN_NAMES[g].toString());
-		}
-	    
-		for (int g = 0; g < GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN_NAMES.length; g++) {
-	    	cbMetabColumnDisplayName2.addItem(GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN_NAMES[g].toString());
-	    }
-	    
-	    for (int g = 0; g < GraphicalInterfaceConstants.METABOLITE_CHARGE_COLUMN_NAMES.length; g++) {
-	    	cbMetabColumnDisplayName3.addItem(GraphicalInterfaceConstants.METABOLITE_CHARGE_COLUMN_NAMES[g].toString());
-	    }
-	    
-	    for (int g = 0; g < GraphicalInterfaceConstants.METABOLITE_COMPARTMENT_COLUMN_NAMES.length; g++) {
-	    	cbMetabColumnDisplayName4.addItem(GraphicalInterfaceConstants.METABOLITE_COMPARTMENT_COLUMN_NAMES[g].toString());
-	    }
-			    
-		
-	    for (int g = 0; g < GraphicalInterfaceConstants.REACTION_ID_COLUMN_NAMES.length; g++) {
-	    	cbReacColumnDisplayName1.addItem(GraphicalInterfaceConstants.REACTION_ID_COLUMN_NAMES[g].toString());
-	    }
-	    	
-	    for (int g = 0; g < GraphicalInterfaceConstants.REACTION_NAME_COLUMN_NAMES.length; g++) {
-	    	cbReacColumnDisplayName2.addItem(GraphicalInterfaceConstants.REACTION_NAME_COLUMN_NAMES[g].toString());
-	    }
-	    
-	    for (int g = 0; g < GraphicalInterfaceConstants.REACTION_EQUATION_COLUMN_NAMES.length; g++) {
-	    	cbReacColumnDisplayName3.addItem(GraphicalInterfaceConstants.REACTION_EQUATION_COLUMN_NAMES[g].toString());
-	    }
-	    
-	    for (int g = 0; g < GraphicalInterfaceConstants.KNOCKOUT_COLUMN_NAMES.length; g++) {
-	    	cbReacColumnDisplayName4.addItem(GraphicalInterfaceConstants.KNOCKOUT_COLUMN_NAMES[g].toString());
-	    }
-	    
-	    for (int g = 0; g < GraphicalInterfaceConstants.FLUX_VALUE_COLUMN_NAMES.length; g++) {
-	    	cbReacColumnDisplayName5.addItem(GraphicalInterfaceConstants.FLUX_VALUE_COLUMN_NAMES[g].toString());
-	    }
-	    
-	    for (int g = 0; g < GraphicalInterfaceConstants.REVERSIBLE_COLUMN_NAMES.length; g++) {
-	    	cbReacColumnDisplayName6.addItem(GraphicalInterfaceConstants.REVERSIBLE_COLUMN_NAMES[g].toString());
-	    }
-	    	
-	    for (int g = 0; g < GraphicalInterfaceConstants.LOWER_BOUND_COLUMN_NAMES.length; g++) {
-	    	cbReacColumnDisplayName7.addItem(GraphicalInterfaceConstants.LOWER_BOUND_COLUMN_NAMES[g].toString());
-	    }
-	    
-	    for (int g = 0; g < GraphicalInterfaceConstants.UPPER_BOUND_COLUMN_NAMES.length; g++) {
-	    	cbReacColumnDisplayName8.addItem(GraphicalInterfaceConstants.UPPER_BOUND_COLUMN_NAMES[g].toString());
-	    }
-	    
-	    for (int g = 0; g < GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN_NAMES.length; g++) {
-	    	cbReacColumnDisplayName9.addItem(GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN_NAMES[g].toString());
-	    }
-	    
-	    populateMetabNamesFromFileBoxes(metabColumnNamesFromFile);
-	    populateReacNamesFromFileBoxes(reacColumnNamesFromFile);
-	    
-	    cbMetabColumnDisplayName1.setPreferredSize(new Dimension(150, 10));
-	    cbMetabColumnDisplayName1.setSelectedIndex(0);
-	    cbMetabColumnDisplayName2.setPreferredSize(new Dimension(150, 10));
-	    cbMetabColumnDisplayName2.setSelectedIndex(0);
-	    cbMetabColumnDisplayName3.setPreferredSize(new Dimension(150, 10));
-	    cbMetabColumnDisplayName3.setSelectedIndex(0);
-	    cbMetabColumnDisplayName4.setPreferredSize(new Dimension(150, 10));
-	    cbMetabColumnDisplayName4.setSelectedIndex(0);
-	    cbMetabColumnDisplayName5.setPreferredSize(new Dimension(150, 10));
-	    //cbMetabColumnDisplayName5.setSelectedIndex(0);
-	    
-	    cbMetabColumnNameFromFile1.setPreferredSize(new Dimension(150, 10)); 
-	    cbMetabColumnNameFromFile2.setPreferredSize(new Dimension(150, 10)); 
-	    cbMetabColumnNameFromFile3.setPreferredSize(new Dimension(150, 10)); 
-	    cbMetabColumnNameFromFile4.setPreferredSize(new Dimension(150, 10)); 
-	    cbMetabColumnNameFromFile5.setPreferredSize(new Dimension(150, 10));
-	    
-	    //set size
-	    cbReacColumnDisplayName1.setPreferredSize(new Dimension(150, 10));
-	    cbReacColumnDisplayName1.setSelectedIndex(0);
-	    
-	    cbReacColumnDisplayName2.setPreferredSize(new Dimension(150, 10));
-	    cbReacColumnDisplayName2.setSelectedIndex(0);
-	    
-	    cbReacColumnDisplayName3.setPreferredSize(new Dimension(150, 10));
-	    cbReacColumnDisplayName3.setSelectedIndex(0);
-	    
-	    cbReacColumnDisplayName4.setPreferredSize(new Dimension(150, 10));
-	    cbReacColumnDisplayName4.setSelectedIndex(0);
-	    
-	    cbReacColumnDisplayName5.setPreferredSize(new Dimension(150, 10));
-	    cbReacColumnDisplayName5.setSelectedIndex(0);
-	    
-	    cbReacColumnDisplayName6.setPreferredSize(new Dimension(150, 10));
-	    cbReacColumnDisplayName6.setSelectedIndex(0);
-	    
-	    cbReacColumnDisplayName7.setPreferredSize(new Dimension(150, 10));
-	    cbReacColumnDisplayName7.setSelectedIndex(0);
-	    
-	    cbReacColumnDisplayName8.setPreferredSize(new Dimension(150, 10));
-	    cbReacColumnDisplayName8.setSelectedIndex(0);
-	    
-	    cbReacColumnDisplayName9.setPreferredSize(new Dimension(150, 10));
-	    cbReacColumnDisplayName9.setSelectedIndex(0);
-	    
-	    
-	    cbReacColumnNameFromFile1.setPreferredSize(new Dimension(150, 10));
-	    cbReacColumnNameFromFile2.setPreferredSize(new Dimension(150, 10));
-	    cbReacColumnNameFromFile3.setPreferredSize(new Dimension(150, 10));
-	    cbReacColumnNameFromFile4.setPreferredSize(new Dimension(150, 10));
-	    cbReacColumnNameFromFile5.setPreferredSize(new Dimension(150, 10));
-	    cbReacColumnNameFromFile6.setPreferredSize(new Dimension(150, 10));
-	    cbReacColumnNameFromFile7.setPreferredSize(new Dimension(150, 10));
-	    cbReacColumnNameFromFile8.setPreferredSize(new Dimension(150, 10));
-	    cbReacColumnNameFromFile9.setPreferredSize(new Dimension(150, 10));
 
-	    
-	    JTextField fieldMetabDisplayName1 = (JTextField)cbMetabColumnDisplayName1.getEditor().getEditorComponent();
-	    fieldMetabDisplayName1.addKeyListener(new ComboKeyHandler(cbMetabColumnDisplayName1));
-	    
-	    JTextField fieldMetabDisplayName2 = (JTextField)cbMetabColumnDisplayName2.getEditor().getEditorComponent();
-	    fieldMetabDisplayName2.addKeyListener(new ComboKeyHandler(cbMetabColumnDisplayName2));
-	    
-	    JTextField fieldMetabDisplayName3 = (JTextField)cbMetabColumnDisplayName3.getEditor().getEditorComponent();
-	    fieldMetabDisplayName3.addKeyListener(new ComboKeyHandler(cbMetabColumnDisplayName3));
-	    
-	    JTextField fieldMetabDisplayName4 = (JTextField)cbMetabColumnDisplayName4.getEditor().getEditorComponent();
-	    fieldMetabDisplayName4.addKeyListener(new ComboKeyHandler(cbMetabColumnDisplayName4));
-	    
-	    JTextField fieldMetabDisplayName5 = (JTextField)cbMetabColumnDisplayName5.getEditor().getEditorComponent();
-	    fieldMetabDisplayName5.addKeyListener(new ComboKeyHandler(cbMetabColumnDisplayName5));
-	    
-	    
-	    JTextField fieldReacDisplayName1 = (JTextField)cbReacColumnDisplayName1.getEditor().getEditorComponent();
-	    fieldReacDisplayName1.addKeyListener(new ComboKeyHandler(cbReacColumnDisplayName1));
-	    
-	    JTextField fieldReacDisplayName2 = (JTextField)cbReacColumnDisplayName2.getEditor().getEditorComponent();
-	    fieldReacDisplayName2.addKeyListener(new ComboKeyHandler(cbReacColumnDisplayName2));
-	    
-	    JTextField fieldReacDisplayName3 = (JTextField)cbReacColumnDisplayName3.getEditor().getEditorComponent();
-	    fieldReacDisplayName3.addKeyListener(new ComboKeyHandler(cbReacColumnDisplayName3));
-	    
-	    JTextField fieldReacDisplayName4 = (JTextField)cbReacColumnDisplayName4.getEditor().getEditorComponent();
-	    fieldReacDisplayName4.addKeyListener(new ComboKeyHandler(cbReacColumnDisplayName4));
-	    
-	    JTextField fieldReacDisplayName5 = (JTextField)cbReacColumnDisplayName5.getEditor().getEditorComponent();
-	    fieldReacDisplayName5.addKeyListener(new ComboKeyHandler(cbReacColumnDisplayName5));
-	    
-	    JTextField fieldReacDisplayName6 = (JTextField)cbReacColumnDisplayName6.getEditor().getEditorComponent();
-	    fieldReacDisplayName6.addKeyListener(new ComboKeyHandler(cbReacColumnDisplayName6));
-	    
-	    JTextField fieldReacDisplayName7 = (JTextField)cbReacColumnDisplayName7.getEditor().getEditorComponent();
-	    fieldReacDisplayName7.addKeyListener(new ComboKeyHandler(cbReacColumnDisplayName7));
-	    
-	    JTextField fieldReacDisplayName8 = (JTextField)cbReacColumnDisplayName8.getEditor().getEditorComponent();
-	    fieldReacDisplayName8.addKeyListener(new ComboKeyHandler(cbReacColumnDisplayName8));
-	    
-	    JTextField fieldReacDisplayName9 = (JTextField)cbReacColumnDisplayName9.getEditor().getEditorComponent();
-	    fieldReacDisplayName9.addKeyListener(new ComboKeyHandler(cbReacColumnDisplayName9));
-	    
-	    
-	    JTextField fieldMetabFromFile1 = (JTextField)cbMetabColumnNameFromFile1.getEditor().getEditorComponent();
-	    fieldMetabFromFile1.addKeyListener(new ComboKeyHandler(cbMetabColumnNameFromFile1));
-	    
-	    JTextField fieldMetabFromFile2 = (JTextField)cbMetabColumnNameFromFile2.getEditor().getEditorComponent();
-	    fieldMetabFromFile2.addKeyListener(new ComboKeyHandler(cbMetabColumnNameFromFile2));
-	    
-	    JTextField fieldMetabFromFile3 = (JTextField)cbMetabColumnNameFromFile3.getEditor().getEditorComponent();
-	    fieldMetabFromFile3.addKeyListener(new ComboKeyHandler(cbMetabColumnNameFromFile3));
-	    
-	    JTextField fieldMetabFromFile4 = (JTextField)cbMetabColumnNameFromFile4.getEditor().getEditorComponent();
-	    fieldMetabFromFile4.addKeyListener(new ComboKeyHandler(cbMetabColumnNameFromFile4));
-	    
-	    JTextField fieldMetabFromFile5 = (JTextField)cbMetabColumnNameFromFile5.getEditor().getEditorComponent();
-	    fieldMetabFromFile5.addKeyListener(new ComboKeyHandler(cbMetabColumnNameFromFile5));
-	    
-	    
-	    JTextField fieldReacFromFile1 = (JTextField)cbReacColumnNameFromFile1.getEditor().getEditorComponent();
-	    fieldReacFromFile1.addKeyListener(new ComboKeyHandler(cbReacColumnNameFromFile1));
-	    
-	    JTextField fieldReacFromFile2 = (JTextField)cbReacColumnNameFromFile2.getEditor().getEditorComponent();
-	    fieldReacFromFile2.addKeyListener(new ComboKeyHandler(cbReacColumnNameFromFile2));
-	    
-	    JTextField fieldReacFromFile3 = (JTextField)cbReacColumnNameFromFile3.getEditor().getEditorComponent();
-	    fieldReacFromFile3.addKeyListener(new ComboKeyHandler(cbReacColumnNameFromFile3));
-	    
-	    JTextField fieldReacFromFile4 = (JTextField)cbReacColumnNameFromFile4.getEditor().getEditorComponent();
-	    fieldReacFromFile4.addKeyListener(new ComboKeyHandler(cbReacColumnNameFromFile4));
-	   	  
-	    JTextField fieldReacFromFile5 = (JTextField)cbReacColumnNameFromFile5.getEditor().getEditorComponent();
-	    fieldReacFromFile5.addKeyListener(new ComboKeyHandler(cbReacColumnNameFromFile5));
-	    
-	    JTextField fieldReacFromFile6 = (JTextField)cbReacColumnNameFromFile6.getEditor().getEditorComponent();
-	    fieldReacFromFile6.addKeyListener(new ComboKeyHandler(cbReacColumnNameFromFile6));
-	    
-	    JTextField fieldReacFromFile7 = (JTextField)cbReacColumnNameFromFile7.getEditor().getEditorComponent();
-	    fieldReacFromFile7.addKeyListener(new ComboKeyHandler(cbReacColumnNameFromFile7));
-	    
-	    JTextField fieldReacFromFile8 = (JTextField)cbReacColumnNameFromFile8.getEditor().getEditorComponent();
-	    fieldReacFromFile8.addKeyListener(new ComboKeyHandler(cbReacColumnNameFromFile8));
-	    
-	    JTextField fieldReacFromFile9 = (JTextField)cbReacColumnNameFromFile9.getEditor().getEditorComponent();
-	    fieldReacFromFile9.addKeyListener(new ComboKeyHandler(cbReacColumnNameFromFile9));
-	    
-	    //box layout
-	    Box vb = Box.createVerticalBox();
-	    
-	    Box hbMetabLabels = Box.createHorizontalBox();
-	    Box hbMetab1 = Box.createHorizontalBox();
+		//metabolites
+		cbMetaboliteAbbreviation.setEditable(true);	
+		cbMetaboliteName.setEditable(true);
+		cbCharge.setEditable(true);	
+		cbCompartment.setEditable(true);
+		cbBoundary.setEditable(true);
+		
+		cbMetaboliteAbbreviation.setPreferredSize(new Dimension(250, 25));
+		cbMetaboliteAbbreviation.setMaximumSize(new Dimension(250, 25));
+		cbMetaboliteAbbreviation.setMinimumSize(new Dimension(250, 25));
+
+		cbMetaboliteName.setPreferredSize(new Dimension(250, 25));
+		cbMetaboliteName.setMaximumSize(new Dimension(250, 25));
+		cbMetaboliteName.setMinimumSize(new Dimension(250, 25));
+		
+		cbCharge.setPreferredSize(new Dimension(250, 25));
+		cbCharge.setMaximumSize(new Dimension(250, 25));
+		cbCharge.setMinimumSize(new Dimension(250, 25));
+
+		cbCompartment.setPreferredSize(new Dimension(250, 25));
+		cbCompartment.setMaximumSize(new Dimension(250, 25));
+		cbCompartment.setMinimumSize(new Dimension(250, 25));
+		
+		cbBoundary.setPreferredSize(new Dimension(250, 25));
+		cbBoundary.setMaximumSize(new Dimension(250, 25));
+		cbBoundary.setMinimumSize(new Dimension(250, 25));
+
+		JTextField fieldMetaboliteAbbreviation = (JTextField)cbMetaboliteAbbreviation.getEditor().getEditorComponent();
+		fieldMetaboliteAbbreviation.addKeyListener(new ComboKeyHandler(cbMetaboliteAbbreviation));
+
+		JTextField fieldMetaboliteName = (JTextField)cbMetaboliteName.getEditor().getEditorComponent();
+		fieldMetaboliteName.addKeyListener(new ComboKeyHandler(cbMetaboliteName));
+
+		JTextField fieldCharge = (JTextField)cbCharge.getEditor().getEditorComponent();
+		fieldCharge.addKeyListener(new ComboKeyHandler(cbCharge));
+
+		JTextField fieldCompartment = (JTextField)cbCompartment.getEditor().getEditorComponent();
+		fieldCompartment.addKeyListener(new ComboKeyHandler(cbCompartment));
+		
+		JTextField fieldBoundary = (JTextField)cbBoundary.getEditor().getEditorComponent();
+		fieldBoundary.addKeyListener(new ComboKeyHandler(cbBoundary));
+		
+		//reactions
+		cbKnockout.setEditable(true);	
+		cbFluxValue.setEditable(true);
+		cbReactionAbbreviation.setEditable(true);	
+		cbReactionName.setEditable(true);
+		cbReactionEquation.setEditable(true);
+		cbReversible.setEditable(true);
+		cbLowerBound.setEditable(true);
+		cbUpperBound.setEditable(true);
+		cbObjective.setEditable(true);
+		
+		cbKnockout.setPreferredSize(new Dimension(250, 25));
+		cbKnockout.setMaximumSize(new Dimension(250, 25));
+		cbKnockout.setMinimumSize(new Dimension(250, 25));
+
+		cbFluxValue.setPreferredSize(new Dimension(250, 25));
+		cbFluxValue.setMaximumSize(new Dimension(250, 25));
+		cbFluxValue.setMinimumSize(new Dimension(250, 25));
+		
+		cbReactionAbbreviation.setPreferredSize(new Dimension(250, 25));
+		cbReactionAbbreviation.setMaximumSize(new Dimension(250, 25));
+		cbReactionAbbreviation.setMinimumSize(new Dimension(250, 25));
+
+		cbReactionName.setPreferredSize(new Dimension(250, 25));
+		cbReactionName.setMaximumSize(new Dimension(250, 25));
+		cbReactionName.setMinimumSize(new Dimension(250, 25));
+		
+		cbReactionEquation.setPreferredSize(new Dimension(250, 25));
+		cbReactionEquation.setMaximumSize(new Dimension(250, 25));
+		cbReactionEquation.setMinimumSize(new Dimension(250, 25));
+		
+		cbReversible.setPreferredSize(new Dimension(250, 25));
+		cbReversible.setMaximumSize(new Dimension(250, 25));
+		cbReversible.setMinimumSize(new Dimension(250, 25));
+		
+		cbLowerBound.setPreferredSize(new Dimension(250, 25));
+		cbLowerBound.setMaximumSize(new Dimension(250, 25));
+		cbLowerBound.setMinimumSize(new Dimension(250, 25));
+		
+		cbUpperBound.setPreferredSize(new Dimension(250, 25));
+		cbUpperBound.setMaximumSize(new Dimension(250, 25));
+		cbUpperBound.setMinimumSize(new Dimension(250, 25));
+
+		cbObjective.setPreferredSize(new Dimension(250, 25));
+		cbObjective.setMaximumSize(new Dimension(250, 25));
+		cbObjective.setMinimumSize(new Dimension(250, 25));
+		
+		JTextField fieldKnockout = (JTextField)cbKnockout.getEditor().getEditorComponent();
+		fieldKnockout.addKeyListener(new ComboKeyHandler(cbKnockout));
+
+		JTextField fieldFluxValue = (JTextField)cbFluxValue.getEditor().getEditorComponent();
+		fieldFluxValue.addKeyListener(new ComboKeyHandler(cbFluxValue));
+
+		JTextField fieldReactionAbbreviation = (JTextField)cbReactionAbbreviation.getEditor().getEditorComponent();
+		fieldReactionAbbreviation.addKeyListener(new ComboKeyHandler(cbReactionAbbreviation));
+
+		JTextField fieldReactionName = (JTextField)cbReactionName.getEditor().getEditorComponent();
+		fieldReactionName.addKeyListener(new ComboKeyHandler(cbReactionName));
+		
+		JTextField fieldReactionEquation = (JTextField)cbReactionEquation.getEditor().getEditorComponent();
+		fieldReactionEquation.addKeyListener(new ComboKeyHandler(cbReactionEquation));
+		
+		JTextField fieldReversible = (JTextField)cbReversible.getEditor().getEditorComponent();
+		fieldReversible.addKeyListener(new ComboKeyHandler(cbReversible));
+		
+		JTextField fieldLowerBound = (JTextField)cbLowerBound.getEditor().getEditorComponent();
+		fieldLowerBound.addKeyListener(new ComboKeyHandler(cbLowerBound));
+		
+		JTextField fieldUpperBound = (JTextField)cbUpperBound.getEditor().getEditorComponent();
+		fieldUpperBound.addKeyListener(new ComboKeyHandler(cbUpperBound));
+		
+		JTextField fieldObjective = (JTextField)cbObjective.getEditor().getEditorComponent();
+		fieldObjective.addKeyListener(new ComboKeyHandler(cbObjective));
+		
+		populateMetabNamesFromFileBoxes(metabColumnNamesFromFile);
+	    populateReacNamesFromFileBoxes(reacColumnNamesFromFile);
+		
+		//box layout
+		Box vb = Box.createVerticalBox();
+
+		Box hbMetabLabels = Box.createHorizontalBox();
+		Box hbMetab1 = Box.createHorizontalBox();
 	    Box hbMetab2 = Box.createHorizontalBox();
 	    Box hbMetab3 = Box.createHorizontalBox();
 	    Box hbMetab4 = Box.createHorizontalBox();
@@ -341,655 +238,604 @@ public class ExcelColumnNameInterface extends JDialog {
 	    Box hbReac7 = Box.createHorizontalBox();
 	    Box hbReac8 = Box.createHorizontalBox();
 	    Box hbReac9 = Box.createHorizontalBox();
-	    
-	    Box hbMetabDisplayLabel = Box.createHorizontalBox();	    
-	    Box hbMetabFromFileLabel = Box.createHorizontalBox();
-	    
-	    Box hbMetabDisplay1 = Box.createHorizontalBox();
-	    Box hbMetabFromFile1 = Box.createHorizontalBox();
-	    Box hbMetabDisplay2 = Box.createHorizontalBox();
-	    Box hbMetabFromFile2 = Box.createHorizontalBox();
-	    Box hbMetabDisplay3 = Box.createHorizontalBox();
-	    Box hbMetabFromFile3 = Box.createHorizontalBox();
-	    Box hbMetabDisplay4 = Box.createHorizontalBox();
-	    Box hbMetabFromFile4 = Box.createHorizontalBox();
-	    Box hbMetabDisplay5 = Box.createHorizontalBox();
-	    Box hbMetabFromFile5 = Box.createHorizontalBox();
-	       
-	    Box hbReacDisplayLabel = Box.createHorizontalBox();	    
-	    Box hbReacFromFileLabel = Box.createHorizontalBox();
-	    
-	    Box hbReacDisplay1 = Box.createHorizontalBox();	    
-	    Box hbReacFromFile1 = Box.createHorizontalBox();
-	    Box hbReacDisplay2 = Box.createHorizontalBox();	    
-	    Box hbReacFromFile2 = Box.createHorizontalBox();
-	    Box hbReacDisplay3 = Box.createHorizontalBox();	    
-	    Box hbReacFromFile3 = Box.createHorizontalBox();
-	    Box hbReacDisplay4 = Box.createHorizontalBox();	    
-	    Box hbReacFromFile4 = Box.createHorizontalBox();
-	    Box hbReacDisplay5 = Box.createHorizontalBox();	    
-	    Box hbReacFromFile5 = Box.createHorizontalBox();
-	    Box hbReacDisplay6 = Box.createHorizontalBox();	    
-	    Box hbReacFromFile6 = Box.createHorizontalBox();
-	    Box hbReacDisplay7 = Box.createHorizontalBox();	    
-	    Box hbReacFromFile7 = Box.createHorizontalBox();
-	    Box hbReacDisplay8 = Box.createHorizontalBox();	    
-	    Box hbReacFromFile8 = Box.createHorizontalBox();
-	    Box hbReacDisplay9 = Box.createHorizontalBox();	    
-	    Box hbReacFromFile9 = Box.createHorizontalBox();
-	    	    
-	    Box hbButton = Box.createHorizontalBox();
-	    
-	    //alignment not working
-	    JLabel metabDisplayLabel = new JLabel();
-	    metabDisplayLabel.setText(GraphicalInterfaceConstants.METABOLITES_DISPLAY_LABEL);
-	    metabDisplayLabel.setSize(new Dimension(150, 20));
-	    metabDisplayLabel.setBorder(BorderFactory.createEmptyBorder(10,20,0,100));
-	    metabDisplayLabel.setAlignmentX(LEFT_ALIGNMENT);
-	    
-	    hbMetabDisplayLabel.add(metabDisplayLabel);	
-	    hbMetabDisplayLabel.setAlignmentX(LEFT_ALIGNMENT);
-	    
-	    JLabel metabFromFileLabel = new JLabel();
-	    metabFromFileLabel.setText(GraphicalInterfaceConstants.METABOLITES_FROM_FILE_LABEL);
-	    metabFromFileLabel.setSize(new Dimension(150, 20));
-	    metabFromFileLabel.setBorder(BorderFactory.createEmptyBorder(10,50,0,20));
-	    metabFromFileLabel.setAlignmentX(RIGHT_ALIGNMENT);
-	    
-	    hbMetabFromFileLabel.add(metabFromFileLabel);
-	    hbMetabFromFileLabel.setAlignmentX(RIGHT_ALIGNMENT);
-	    
-	    hbMetabLabels.add(hbMetabDisplayLabel);
-	    hbMetabLabels.add(hbMetabFromFileLabel);
-	    
-	    
-	    JPanel panelMetabDisplay1 = new JPanel();
-	    panelMetabDisplay1.setLayout(new BoxLayout(panelMetabDisplay1, BoxLayout.X_AXIS));
-	    panelMetabDisplay1.add(cbMetabColumnDisplayName1);
-	    panelMetabDisplay1.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbMetabDisplay1.add(panelMetabDisplay1);
-	    
-	    JPanel panelMetabFromFile1 = new JPanel();
-	    panelMetabFromFile1.setLayout(new BoxLayout(panelMetabFromFile1, BoxLayout.X_AXIS));
-	    panelMetabFromFile1.add(cbMetabColumnNameFromFile1);
-	    panelMetabFromFile1.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbMetabFromFile1.add(panelMetabFromFile1);
-	    
-	    hbMetab1.add(hbMetabDisplay1);
-	    hbMetab1.add(hbMetabFromFile1);
-	    
-	    JPanel panelMetabDisplay2 = new JPanel();
-	    panelMetabDisplay2.setLayout(new BoxLayout(panelMetabDisplay2, BoxLayout.X_AXIS));
-	    panelMetabDisplay2.add(cbMetabColumnDisplayName2);
-	    panelMetabDisplay2.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbMetabDisplay2.add(panelMetabDisplay2);
-	    
-	    JPanel panelMetabFromFile2 = new JPanel();
-	    panelMetabFromFile2.setLayout(new BoxLayout(panelMetabFromFile2, BoxLayout.X_AXIS));
-	    panelMetabFromFile2.add(cbMetabColumnNameFromFile2);
-	    panelMetabFromFile2.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbMetabFromFile2.add(panelMetabFromFile2);
-	    
-	    hbMetab2.add(hbMetabDisplay2);
-	    hbMetab2.add(hbMetabFromFile2);
-	    
-	    JPanel panelMetabDisplay3 = new JPanel();
-	    panelMetabDisplay3.setLayout(new BoxLayout(panelMetabDisplay3, BoxLayout.X_AXIS));
-	    panelMetabDisplay3.add(cbMetabColumnDisplayName3);
-	    panelMetabDisplay3.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbMetabDisplay3.add(panelMetabDisplay3);
-	    
-	    JPanel panelMetabFromFile3 = new JPanel();
-	    panelMetabFromFile3.setLayout(new BoxLayout(panelMetabFromFile3, BoxLayout.X_AXIS));
-	    panelMetabFromFile3.add(cbMetabColumnNameFromFile3);
-	    panelMetabFromFile3.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbMetabFromFile3.add(panelMetabFromFile3);
-	    
-	    hbMetab3.add(hbMetabDisplay3);
-	    hbMetab3.add(hbMetabFromFile3);
-	    
-	    JPanel panelMetabDisplay4 = new JPanel();
-	    panelMetabDisplay4.setLayout(new BoxLayout(panelMetabDisplay4, BoxLayout.X_AXIS));
-	    panelMetabDisplay4.add(cbMetabColumnDisplayName4);
-	    panelMetabDisplay4.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbMetabDisplay4.add(panelMetabDisplay4);
-	    
-	    JPanel panelMetabFromFile4 = new JPanel();
-	    panelMetabFromFile4.setLayout(new BoxLayout(panelMetabFromFile4, BoxLayout.X_AXIS));
-	    panelMetabFromFile4.add(cbMetabColumnNameFromFile4);
-	    panelMetabFromFile4.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbMetabFromFile4.add(panelMetabFromFile4);
-	    
-	    hbMetab4.add(hbMetabDisplay4);
-	    hbMetab4.add(hbMetabFromFile4);
-	   	    
-	    JPanel panelMetabDisplay5 = new JPanel();
-	    panelMetabDisplay5.setLayout(new BoxLayout(panelMetabDisplay5, BoxLayout.X_AXIS));
-	    panelMetabDisplay5.add(cbMetabColumnDisplayName5);
-	    panelMetabDisplay5.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbMetabDisplay5.add(panelMetabDisplay5);
-	    
-	    JPanel panelMetabFromFile5 = new JPanel();
-	    panelMetabFromFile5.setLayout(new BoxLayout(panelMetabFromFile5, BoxLayout.X_AXIS));
-	    panelMetabFromFile5.add(cbMetabColumnNameFromFile5);
-	    panelMetabFromFile5.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbMetabFromFile5.add(panelMetabFromFile5);
-	    
-	    hbMetab5.add(hbMetabDisplay5);
-	    hbMetab5.add(hbMetabFromFile5);
-	    
-	    
-	    JPanel separatorPane = new JPanel();
+
+		Box hbMetabTopLabels = Box.createHorizontalBox();	    	    
+		Box hbMetaboliteAbbreviationLabel = Box.createHorizontalBox();	    
+		Box hbMetaboliteAbbreviation = Box.createHorizontalBox();
+		Box hbMetaboliteNameLabel = Box.createHorizontalBox();	    
+		Box hbMetabolite = Box.createHorizontalBox();
+		Box hbChargeLabel = Box.createHorizontalBox();	    
+		Box hbCharge = Box.createHorizontalBox();
+		Box hbCompartmentLabel = Box.createHorizontalBox();	    
+		Box hbCompartment = Box.createHorizontalBox();
+		Box hbBoundaryLabel = Box.createHorizontalBox();	    
+		Box hbBoundary = Box.createHorizontalBox();
+		Box hbReacTopLabels = Box.createHorizontalBox();
+		Box hbKnockoutLabel = Box.createHorizontalBox();	    
+		Box hbKnockout = Box.createHorizontalBox();
+		Box hbFluxValueLabel = Box.createHorizontalBox();	    
+		Box hbFluxValue = Box.createHorizontalBox();
+		Box hbReactionAbbreviationLabel = Box.createHorizontalBox();	    
+		Box hbReactionAbbreviation = Box.createHorizontalBox();
+		Box hbReactionNameLabel = Box.createHorizontalBox();	    
+		Box hbReactionName = Box.createHorizontalBox();
+		Box hbReactionEquationLabel = Box.createHorizontalBox();	    
+		Box hbReactionEquation = Box.createHorizontalBox();
+		Box hbReversibleLabel = Box.createHorizontalBox();	    
+		Box hbReversible = Box.createHorizontalBox();
+		Box hbLowerBoundLabel = Box.createHorizontalBox();	    
+		Box hbLowerBound = Box.createHorizontalBox();
+		Box hbUpperBoundLabel = Box.createHorizontalBox();	    
+		Box hbUpperBound = Box.createHorizontalBox();
+		Box hbObjectiveLabel = Box.createHorizontalBox();	    
+		Box hbObjective = Box.createHorizontalBox();
+
+		Box hbButton = Box.createHorizontalBox();
+
+		//metabolite top label
+		JLabel metaboliteTopLabel = new JLabel();
+		metaboliteTopLabel.setText(ColumnInterfaceConstants.EXCEL_METABOLITES_TOP_LABEL);
+		metaboliteTopLabel.setSize(new Dimension(300, 20));
+		//top, left, bottom. right
+		metaboliteTopLabel.setBorder(BorderFactory.createEmptyBorder(10,30,20,200));
+		metaboliteTopLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+		hbMetabTopLabels.add(metaboliteTopLabel);	
+		hbMetabTopLabels.setAlignmentX(LEFT_ALIGNMENT);
+
+		hbMetabLabels.add(hbMetabTopLabels);
+		
+		//metabolite Abbreviation Label and combo
+		JLabel metaboliteAbbreviationLabel = new JLabel();
+		metaboliteAbbreviationLabel.setText(ColumnInterfaceConstants.METABOLITE_ABBREVIATION_LABEL);
+		metaboliteAbbreviationLabel.setSize(new Dimension(250, 25));
+		metaboliteAbbreviationLabel.setMinimumSize(new Dimension(250, 25));
+		metaboliteAbbreviationLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,80));
+		metaboliteAbbreviationLabel.setAlignmentX(LEFT_ALIGNMENT);
+		//metaboliteAbbreviationLabel.setAlignmentY(TOP_ALIGNMENT);	    	    
+
+		JPanel panelMetaboliteAbbreviationLabel = new JPanel();
+		panelMetaboliteAbbreviationLabel.setLayout(new BoxLayout(panelMetaboliteAbbreviationLabel, BoxLayout.X_AXIS));
+		panelMetaboliteAbbreviationLabel.add(metaboliteAbbreviationLabel);
+		panelMetaboliteAbbreviationLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+
+		hbMetaboliteAbbreviationLabel.add(panelMetaboliteAbbreviationLabel);
+		hbMetaboliteAbbreviationLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+		JPanel panelMetaboliteAbbreviation = new JPanel();
+		panelMetaboliteAbbreviation.setLayout(new BoxLayout(panelMetaboliteAbbreviation, BoxLayout.X_AXIS));
+		panelMetaboliteAbbreviation.add(cbMetaboliteAbbreviation);
+		panelMetaboliteAbbreviation.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		panelMetaboliteAbbreviation.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbMetaboliteAbbreviation.add(panelMetaboliteAbbreviation);
+		hbMetaboliteAbbreviation.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbMetab1.add(hbMetaboliteAbbreviationLabel);
+		hbMetab1.add(hbMetaboliteAbbreviation);
+
+		//metabolite Name Label and combo
+		JLabel metaboliteNameLabel = new JLabel();
+		metaboliteNameLabel.setText(ColumnInterfaceConstants.METABOLITE_NAME_LABEL);
+		metaboliteNameLabel.setSize(new Dimension(250, 25));
+		metaboliteNameLabel.setMinimumSize(new Dimension(250, 25));
+		metaboliteNameLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,80));
+		metaboliteNameLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+		JPanel panelMetaboliteNameLabel = new JPanel();
+		panelMetaboliteNameLabel.setLayout(new BoxLayout(panelMetaboliteNameLabel, BoxLayout.X_AXIS));
+		panelMetaboliteNameLabel.add(metaboliteNameLabel);
+		panelMetaboliteNameLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+
+		hbMetaboliteNameLabel.add(panelMetaboliteNameLabel);
+		hbMetaboliteNameLabel.setAlignmentX(LEFT_ALIGNMENT);
+		
+		JPanel panelMetaboliteName = new JPanel();
+		panelMetaboliteName.setLayout(new BoxLayout(panelMetaboliteName, BoxLayout.X_AXIS));
+		panelMetaboliteName.add(cbMetaboliteName);
+		panelMetaboliteName.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		panelMetaboliteName.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbMetabolite.add(panelMetaboliteName);
+		hbMetabolite.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbMetab2.add(hbMetaboliteNameLabel);
+		hbMetab2.add(hbMetabolite);
+
+		//charge label and combo
+		JLabel chargeLabel = new JLabel();
+		chargeLabel.setText(ColumnInterfaceConstants.CHARGE_LABEL);
+		chargeLabel.setSize(new Dimension(250, 25));	
+		chargeLabel.setMinimumSize(new Dimension(250, 25));
+		chargeLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,80));
+		chargeLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+		JPanel panelChargeLabel = new JPanel();
+		panelChargeLabel.setLayout(new BoxLayout(panelChargeLabel, BoxLayout.X_AXIS));
+		panelChargeLabel.add(chargeLabel);
+		panelChargeLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+
+		hbChargeLabel.add(panelChargeLabel);
+		hbChargeLabel.setAlignmentX(LEFT_ALIGNMENT);
+		
+		JPanel panelCharge = new JPanel();
+		panelCharge.setLayout(new BoxLayout(panelCharge, BoxLayout.X_AXIS));
+		panelCharge.add(cbCharge);
+		panelCharge.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		panelCharge.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbCharge.add(panelCharge);
+		hbCharge.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbMetab3.add(hbChargeLabel);
+		hbMetab3.add(hbCharge);
+		
+		//compartment label and combo
+		JLabel compartmentLabel = new JLabel();
+		compartmentLabel.setText(ColumnInterfaceConstants.COMPARTMENT_LABEL);
+		compartmentLabel.setSize(new Dimension(250, 25));
+		compartmentLabel.setMinimumSize(new Dimension(250, 25));
+		compartmentLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,80));
+		compartmentLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+		JPanel panelCompartmentLabel = new JPanel();
+		panelCompartmentLabel.setLayout(new BoxLayout(panelCompartmentLabel, BoxLayout.X_AXIS));
+		panelCompartmentLabel.add(compartmentLabel);
+		panelCompartmentLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+
+		hbCompartmentLabel.add(panelCompartmentLabel);
+		hbCompartmentLabel.setAlignmentX(LEFT_ALIGNMENT);
+		
+		JPanel panelCompartment = new JPanel();
+		panelCompartment.setLayout(new BoxLayout(panelCompartment, BoxLayout.X_AXIS));
+		panelCompartment.add(cbCompartment);
+		panelCompartment.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		panelCompartment.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbCompartment.add(panelCompartment);
+		hbCompartment.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbMetab4.add(hbCompartmentLabel);
+		hbMetab4.add(hbCompartment);
+		
+		//boundary label and combo
+		JLabel boundaryLabel = new JLabel();
+		boundaryLabel.setText(ColumnInterfaceConstants.BOUNDARY_LABEL);
+		boundaryLabel.setSize(new Dimension(250, 25));
+		boundaryLabel.setMinimumSize(new Dimension(250, 25));
+		boundaryLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,80));
+		boundaryLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+		JPanel panelBoundaryLabel = new JPanel();
+		panelBoundaryLabel.setLayout(new BoxLayout(panelBoundaryLabel, BoxLayout.X_AXIS));
+		panelBoundaryLabel.add(boundaryLabel);
+		panelBoundaryLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+
+		hbBoundaryLabel.add(panelBoundaryLabel);
+		hbBoundaryLabel.setAlignmentX(LEFT_ALIGNMENT);
+		
+		JPanel panelBoundary = new JPanel();
+		panelBoundary.setLayout(new BoxLayout(panelBoundary, BoxLayout.X_AXIS));
+		panelBoundary.add(cbBoundary);
+		panelBoundary.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+		panelBoundary.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbBoundary.add(panelBoundary);
+		hbBoundary.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbMetab5.add(hbBoundaryLabel);
+		hbMetab5.add(hbBoundary);
+		
+		JPanel separatorPane = new JPanel();
 	    separatorPane.setLayout(new BoxLayout(separatorPane,
                 BoxLayout.LINE_AXIS));
 	    separatorPane.add(new JSeparator(JSeparator.HORIZONTAL));
 	    separatorPane.setBorder(BorderFactory.createEmptyBorder(20,0,0,0));
 	    hbSeparator.add(separatorPane);
-	    
-	    
-	    //alignment not working
-	    JLabel reacDisplayLabel = new JLabel();
-	    reacDisplayLabel.setText(GraphicalInterfaceConstants.REACTIONS_DISPLAY_LABEL);
-	    reacDisplayLabel.setSize(new Dimension(150, 20));
-	    reacDisplayLabel.setBorder(BorderFactory.createEmptyBorder(0,20,0,100));
-	    reacDisplayLabel.setAlignmentX(LEFT_ALIGNMENT);
-	    
-	    hbReacDisplayLabel.add(reacDisplayLabel);	
-	    hbReacDisplayLabel.setAlignmentX(LEFT_ALIGNMENT);
-	    
-	    JLabel reacFromFileLabel = new JLabel();
-	    reacFromFileLabel.setText(GraphicalInterfaceConstants.REACTIONS_FROM_FILE_LABEL);
-	    reacFromFileLabel.setSize(new Dimension(150, 20));
-	    reacFromFileLabel.setBorder(BorderFactory.createEmptyBorder(0,50,0,20));
-	    reacFromFileLabel.setAlignmentX(RIGHT_ALIGNMENT);
-	    
-	    hbReacFromFileLabel.add(reacFromFileLabel);
-	    hbReacFromFileLabel.setAlignmentX(RIGHT_ALIGNMENT);
-	    
-	    hbReacLabels.add(hbReacDisplayLabel);
-	    hbReacLabels.add(hbReacFromFileLabel);
-	    
-	    
-	    JPanel panelReacDisplay1 = new JPanel();
-	    panelReacDisplay1.setLayout(new BoxLayout(panelReacDisplay1, BoxLayout.X_AXIS));
-	    panelReacDisplay1.add(cbReacColumnDisplayName1);
-	    panelReacDisplay1.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbReacDisplay1.add(panelReacDisplay1);
-	    
-	    JPanel panelReacFromFile1 = new JPanel();
-	    panelReacFromFile1.setLayout(new BoxLayout(panelReacFromFile1, BoxLayout.X_AXIS));
-	    panelReacFromFile1.add(cbReacColumnNameFromFile1);
-	    panelReacFromFile1.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbReacFromFile1.add(panelReacFromFile1);
-	    
-	    hbReac1.add(hbReacDisplay1);
-	    hbReac1.add(hbReacFromFile1);
-	    
-	    JPanel panelReacDisplay2 = new JPanel();
-	    panelReacDisplay2.setLayout(new BoxLayout(panelReacDisplay2, BoxLayout.X_AXIS));
-	    panelReacDisplay2.add(cbReacColumnDisplayName2);
-	    panelReacDisplay2.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbReacDisplay2.add(panelReacDisplay2);
-	    
-	    JPanel panelReacFromFile2 = new JPanel();
-	    panelReacFromFile2.setLayout(new BoxLayout(panelReacFromFile2, BoxLayout.X_AXIS));
-	    panelReacFromFile2.add(cbReacColumnNameFromFile2);
-	    panelReacFromFile2.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbReacFromFile2.add(panelReacFromFile2);
-	    
-	    hbReac2.add(hbReacDisplay2);
-	    hbReac2.add(hbReacFromFile2);
-	    
-	    JPanel panelReacDisplay3 = new JPanel();
-	    panelReacDisplay3.setLayout(new BoxLayout(panelReacDisplay3, BoxLayout.X_AXIS));
-	    panelReacDisplay3.add(cbReacColumnDisplayName3);
-	    panelReacDisplay3.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbReacDisplay3.add(panelReacDisplay3);
-	    
-	    JPanel panelReacFromFile3 = new JPanel();
-	    panelReacFromFile3.setLayout(new BoxLayout(panelReacFromFile3, BoxLayout.X_AXIS));
-	    panelReacFromFile3.add(cbReacColumnNameFromFile3);
-	    panelReacFromFile3.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbReacFromFile3.add(panelReacFromFile3);
-	    
-	    hbReac3.add(hbReacDisplay3);
-	    hbReac3.add(hbReacFromFile3);
-	    
-	    JPanel panelReacDisplay4 = new JPanel();
-	    panelReacDisplay4.setLayout(new BoxLayout(panelReacDisplay4, BoxLayout.X_AXIS));
-	    panelReacDisplay4.add(cbReacColumnDisplayName4);
-	    panelReacDisplay4.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbReacDisplay4.add(panelReacDisplay4);
-	    
-	    JPanel panelReacFromFile4 = new JPanel();
-	    panelReacFromFile4.setLayout(new BoxLayout(panelReacFromFile4, BoxLayout.X_AXIS));
-	    panelReacFromFile4.add(cbReacColumnNameFromFile4);
-	    panelReacFromFile4.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbReacFromFile4.add(panelReacFromFile4);
-	    
-	    hbReac4.add(hbReacDisplay4);
-	    hbReac4.add(hbReacFromFile4);
-	    
-	    JPanel panelReacDisplay5 = new JPanel();
-	    panelReacDisplay5.setLayout(new BoxLayout(panelReacDisplay5, BoxLayout.X_AXIS));
-	    panelReacDisplay5.add(cbReacColumnDisplayName5);
-	    panelReacDisplay5.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbReacDisplay5.add(panelReacDisplay5);
-	    
-	    JPanel panelReacFromFile5 = new JPanel();
-	    panelReacFromFile5.setLayout(new BoxLayout(panelReacFromFile5, BoxLayout.X_AXIS));
-	    panelReacFromFile5.add(cbReacColumnNameFromFile5);
-	    panelReacFromFile5.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbReacFromFile5.add(panelReacFromFile5);
-	    
-	    hbReac5.add(hbReacDisplay5);
-	    hbReac5.add(hbReacFromFile5);
-	    
-	    JPanel panelReacDisplay6 = new JPanel();
-	    panelReacDisplay6.setLayout(new BoxLayout(panelReacDisplay6, BoxLayout.X_AXIS));
-	    panelReacDisplay6.add(cbReacColumnDisplayName6);
-	    panelReacDisplay6.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbReacDisplay6.add(panelReacDisplay6);
-	    
-	    JPanel panelReacFromFile6 = new JPanel();
-	    panelReacFromFile6.setLayout(new BoxLayout(panelReacFromFile6, BoxLayout.X_AXIS));
-	    panelReacFromFile6.add(cbReacColumnNameFromFile6);
-	    panelReacFromFile6.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbReacFromFile6.add(panelReacFromFile6);
-	    
-	    hbReac6.add(hbReacDisplay6);
-	    hbReac6.add(hbReacFromFile6);
-	    
-	    JPanel panelReacDisplay7 = new JPanel();
-	    panelReacDisplay7.setLayout(new BoxLayout(panelReacDisplay7, BoxLayout.X_AXIS));
-	    panelReacDisplay7.add(cbReacColumnDisplayName7);
-	    panelReacDisplay7.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbReacDisplay7.add(panelReacDisplay7);
-	    
-	    JPanel panelReacFromFile7 = new JPanel();
-	    panelReacFromFile7.setLayout(new BoxLayout(panelReacFromFile7, BoxLayout.X_AXIS));
-	    panelReacFromFile7.add(cbReacColumnNameFromFile7);
-	    panelReacFromFile7.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbReacFromFile7.add(panelReacFromFile7);
-	    
-	    hbReac7.add(hbReacDisplay7);
-	    hbReac7.add(hbReacFromFile7);
-	    
-	    JPanel panelReacDisplay8 = new JPanel();
-	    panelReacDisplay8.setLayout(new BoxLayout(panelReacDisplay8, BoxLayout.X_AXIS));
-	    panelReacDisplay8.add(cbReacColumnDisplayName8);
-	    panelReacDisplay8.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbReacDisplay8.add(panelReacDisplay8);
-	    
-	    JPanel panelReacFromFile8 = new JPanel();
-	    panelReacFromFile8.setLayout(new BoxLayout(panelReacFromFile8, BoxLayout.X_AXIS));
-	    panelReacFromFile8.add(cbReacColumnNameFromFile8);
-	    panelReacFromFile8.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbReacFromFile8.add(panelReacFromFile8);
-	    
-	    hbReac8.add(hbReacDisplay8);
-	    hbReac8.add(hbReacFromFile8);
-	    
-	    JPanel panelReacDisplay9 = new JPanel();
-	    panelReacDisplay9.setLayout(new BoxLayout(panelReacDisplay9, BoxLayout.X_AXIS));
-	    panelReacDisplay9.add(cbReacColumnDisplayName9);
-	    panelReacDisplay9.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbReacDisplay9.add(panelReacDisplay9);
-	    
-	    JPanel panelReacFromFile9 = new JPanel();
-	    panelReacFromFile9.setLayout(new BoxLayout(panelReacFromFile9, BoxLayout.X_AXIS));
-	    panelReacFromFile9.add(cbReacColumnNameFromFile9);
-	    panelReacFromFile9.setBorder(BorderFactory.createEmptyBorder(5,20,5,20));
-	    
-	    hbReacFromFile9.add(panelReacFromFile9);
-	    
-	    hbReac9.add(hbReacDisplay9);
-	    hbReac9.add(hbReacFromFile9);
-	    
-	    okButton.setMnemonic(KeyEvent.VK_O);
-	    JLabel blank = new JLabel("    "); 
-	    cancelButton.setMnemonic(KeyEvent.VK_C);
+		
+	    //reaction top label
+		JLabel reactionTopLabel = new JLabel();
+		reactionTopLabel.setText(ColumnInterfaceConstants.EXCEL_REACTIONS_TOP_LABEL);
+		reactionTopLabel.setSize(new Dimension(300, 25));
+		//top, left, bottom. right
+		reactionTopLabel.setBorder(BorderFactory.createEmptyBorder(20,30,20,200));
+		reactionTopLabel.setAlignmentX(LEFT_ALIGNMENT);
 
-	    JPanel buttonPanel = new JPanel();
-	    buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-	    buttonPanel.add(okButton);
-	    buttonPanel.add(blank);
-	    buttonPanel.add(cancelButton);
-	    buttonPanel.setBorder(BorderFactory.createEmptyBorder(10,20,10,20));
+		hbReacTopLabels.add(reactionTopLabel);	
+		hbReacTopLabels.setAlignmentX(LEFT_ALIGNMENT);
+
+		hbReacLabels.add(hbReacTopLabels);
 	    
-	    hbButton.add(buttonPanel);
-	    
-	    vb.add(hbMetabLabels);
-	    vb.add(hbMetab1);
-	    vb.add(hbMetab2);
-	    vb.add(hbMetab3);
-	    vb.add(hbMetab4);
-	    vb.add(hbMetab5);
-	    vb.add(hbSeparator);
-	    vb.add(hbReacLabels);
-	    vb.add(hbReac1);
-	    vb.add(hbReac2);
-	    vb.add(hbReac3);
-	    vb.add(hbReac4);
-	    vb.add(hbReac5);
-	    vb.add(hbReac6);
-	    vb.add(hbReac7);
-	    vb.add(hbReac8);
-	    vb.add(hbReac9);
-	    vb.add(hbButton);
-	    
-	    add(vb);
-	    
-	    ActionListener actionListener = new ActionListener() {
-		      public void actionPerformed(ActionEvent actionEvent) { 
-		    	String metabDisplayNameSelection1 = (String) cbMetabColumnDisplayName1.getSelectedItem(); 		    	
-			    //String metabNameFromFileSelection1 = (String) cbMetabColumnNameFromFile1.getSelectedItem(); 
-			    String metabDisplayNameSelection2 = (String) cbMetabColumnDisplayName2.getSelectedItem(); 		    	
-			    //String metabNameFromFileSelection2 = (String) cbMetabColumnNameFromFile2.getSelectedItem();
-			    String metabDisplayNameSelection3 = (String) cbMetabColumnDisplayName3.getSelectedItem(); 		    	
-			    //String metabNameFromFileSelection3 = (String) cbMetabColumnNameFromFile3.getSelectedItem();
-			    String metabDisplayNameSelection4 = (String) cbMetabColumnDisplayName4.getSelectedItem(); 		    	
-			    //String metabNameFromFileSelection4 = (String) cbMetabColumnNameFromFile4.getSelectedItem();  
-			    String metabDisplayNameSelection5 = (String) cbMetabColumnDisplayName5.getSelectedItem(); 		    	
-			    //String metabNameFromFileSelection5 = (String) cbMetabColumnNameFromFile5.getSelectedItem();    
-			    
-			    
-		    	String reacDisplayNameSelection1 = (String) cbReacColumnDisplayName1.getSelectedItem(); 		    	
-		    	//String reaNacmeFromFileSelection1 = (String) cbReacColumnNameFromFile1.getSelectedItem(); 
-		    	String reacDisplayNameSelection2 = (String) cbReacColumnDisplayName2.getSelectedItem(); 		    	
-		    	//String reaNacmeFromFileSelection2 = (String) cbReacColumnNameFromFile2.getSelectedItem();
-		    	String reacDisplayNameSelection3 = (String) cbReacColumnDisplayName3.getSelectedItem(); 		    	
-		    	//String reaNacmeFromFileSelection3 = (String) cbReacColumnNameFromFile3.getSelectedItem();
-		    	String reacDisplayNameSelection4 = (String) cbReacColumnDisplayName4.getSelectedItem(); 		    	
-		    	//String reaNacmeFromFileSelection4 = (String) cbReacColumnNameFromFile4.getSelectedItem(); 
-		    	String reacDisplayNameSelection5 = (String) cbReacColumnDisplayName5.getSelectedItem(); 		    	
-		    	//String reaNacmeFromFileSelection5 = (String) cbReacColumnNameFromFile5.getSelectedItem(); 
-		    	String reacDisplayNameSelection6 = (String) cbReacColumnDisplayName6.getSelectedItem(); 		    	
-		    	//String reaNacmeFromFileSelection6 = (String) cbReacColumnNameFromFile6.getSelectedItem();
-		    	String reacDisplayNameSelection7 = (String) cbReacColumnDisplayName7.getSelectedItem(); 		    	
-		    	//String reaNacmeFromFileSelection7 = (String) cbReacColumnNameFromFile7.getSelectedItem();
-		    	String reacDisplayNameSelection8 = (String) cbReacColumnDisplayName8.getSelectedItem(); 		    	
-		    	//String reaNacmeFromFileSelection8 = (String) cbReacColumnNameFromFile8.getSelectedItem(); 
-		    	String reacDisplayNameSelection9 = (String) cbReacColumnDisplayName9.getSelectedItem(); 		    	
-		    	//String reaNacmeFromFileSelection9 = (String) cbReacColumnNameFromFile9.getSelectedItem(); 
-		    	
-		    	LocalConfig.getInstance().setMetaboliteAbbreviationColumnName(metabDisplayNameSelection1);
-		    	LocalConfig.getInstance().setMetaboliteNameColumnName(metabDisplayNameSelection2);
-		    	LocalConfig.getInstance().setChargeColumnName(metabDisplayNameSelection3);
-		    	LocalConfig.getInstance().setCompartmentColumnName(metabDisplayNameSelection4);
-		    	//LocalConfig.getInstance().setBoundaryColumnName(metabDisplayNameSelection5);
-		    	
-		    	LocalConfig.getInstance().setReactionAbbreviationColumnName(reacDisplayNameSelection1);
-		    	LocalConfig.getInstance().setReactionNameColumnName(reacDisplayNameSelection2);
-		    	LocalConfig.getInstance().setReactionEquationColumnName(reacDisplayNameSelection3);
-		    	LocalConfig.getInstance().setKnockoutColumnName(reacDisplayNameSelection4);
-		    	LocalConfig.getInstance().setFluxValueColumnName(reacDisplayNameSelection5);
-		    	LocalConfig.getInstance().setReversibleColumnName(reacDisplayNameSelection6);
-		    	LocalConfig.getInstance().setLowerBoundColumnName(reacDisplayNameSelection7);
-		    	LocalConfig.getInstance().setUpperBoundColumnName(reacDisplayNameSelection8);
-		    	LocalConfig.getInstance().setBiologicalObjectiveColumnName(reacDisplayNameSelection9);
-		    	
-		    	if (cbMetabColumnNameFromFile1.getSelectedItem() != null) {
-		    		LocalConfig.getInstance().setMetaboliteAbbreviationColumnIndex(cbMetabColumnDisplayName1.getSelectedIndex());
-		    	} else {
-		    		LocalConfig.getInstance().setMetaboliteAbbreviationColumnIndex(-1);
-		    	}
-		    	if (cbMetabColumnNameFromFile2.getSelectedItem() != null) {
-		    		LocalConfig.getInstance().setMetaboliteNameColumnIndex(cbMetabColumnDisplayName2.getSelectedIndex());
-		    	} else {
-		    		LocalConfig.getInstance().setMetaboliteNameColumnIndex(-1);
-		    	}
-		    	if (cbMetabColumnNameFromFile3.getSelectedItem() != null) {
-		    		LocalConfig.getInstance().setChargeColumnIndex(cbMetabColumnDisplayName3.getSelectedIndex());
-		    	} else {
-		    		LocalConfig.getInstance().setChargeColumnIndex(-1);
-		    	}
-		    	if (cbMetabColumnNameFromFile4.getSelectedItem() != null) {
-		    		LocalConfig.getInstance().setCompartmentColumnIndex(cbMetabColumnDisplayName4.getSelectedIndex());
-		    	} else {
-		    		LocalConfig.getInstance().setCompartmentColumnIndex(-1);
-		    	}
-		    	if (cbMetabColumnNameFromFile5.getSelectedItem() != null) {
-		    		LocalConfig.getInstance().setBoundaryColumnIndex(cbMetabColumnDisplayName5.getSelectedIndex());
-		    	} else {
-		    		LocalConfig.getInstance().setBoundaryColumnIndex(-1);
-		    	}
-		    	
-		    	
-		    	if (cbReacColumnNameFromFile1.getSelectedItem() != null) {
-		    		LocalConfig.getInstance().setReactionAbbreviationColumnIndex(cbReacColumnDisplayName1.getSelectedIndex());
-		    	} else {
-		    		LocalConfig.getInstance().setReactionAbbreviationColumnIndex(-1);
-		    	}
-		    	if (cbReacColumnNameFromFile2.getSelectedItem() != null) {
-		    		LocalConfig.getInstance().setReactionNameColumnIndex(cbReacColumnDisplayName2.getSelectedIndex());
-		    	} else {
-		    		LocalConfig.getInstance().setReactionNameColumnIndex(-1);
-		    	}
-		    	if (cbReacColumnNameFromFile3.getSelectedItem() != null) {
-		    		LocalConfig.getInstance().setReactionEquationColumnIndex(cbReacColumnDisplayName3.getSelectedIndex());
-		    	} else {
-		    		LocalConfig.getInstance().setReactionEquationColumnIndex(-1);
-		    	}
-		    	if (cbReacColumnNameFromFile4.getSelectedItem() != null) {
-		    		LocalConfig.getInstance().setKnockoutColumnIndex(cbReacColumnDisplayName4.getSelectedIndex());
-		    	} else {
-		    		LocalConfig.getInstance().setKnockoutColumnIndex(-1);
-		    	}
-		    	if (cbReacColumnNameFromFile5.getSelectedItem() != null) {
-		    		LocalConfig.getInstance().setFluxValueColumnIndex(cbReacColumnDisplayName5.getSelectedIndex());
-		    	} else {
-		    		LocalConfig.getInstance().setFluxValueColumnIndex(-1);
-		    	}
-		    	if (cbReacColumnNameFromFile6.getSelectedItem() != null) {
-		    		LocalConfig.getInstance().setReversibleColumnIndex(cbReacColumnDisplayName6.getSelectedIndex());
-		    	} else {
-		    		LocalConfig.getInstance().setReversibleColumnIndex(-1);
-		    	}
-		    	if (cbReacColumnNameFromFile7.getSelectedItem() != null) {
-		    		LocalConfig.getInstance().setLowerBoundColumnIndex(cbReacColumnDisplayName7.getSelectedIndex());
-		    	} else {
-		    		LocalConfig.getInstance().setLowerBoundColumnIndex(-1);
-		    	}
-		    	if (cbReacColumnNameFromFile8.getSelectedItem() != null) {
-		    		LocalConfig.getInstance().setUpperBoundColumnIndex(cbReacColumnDisplayName8.getSelectedIndex());
-		    	} else {
-		    		LocalConfig.getInstance().setUpperBoundColumnIndex(-1);
-		    	}
-		    	if (cbReacColumnNameFromFile9.getSelectedItem() != null) {
-		    		LocalConfig.getInstance().setBiologicalObjectiveColumnIndex(cbReacColumnDisplayName9.getSelectedIndex());
-		    	} else {
-		    		LocalConfig.getInstance().setBiologicalObjectiveColumnIndex(-1);
-		    	}
-		      }
-		};
-		   
-		cbMetabColumnDisplayName1.addActionListener(actionListener);		
-		cbMetabColumnNameFromFile1.addActionListener(actionListener);
-		cbMetabColumnDisplayName2.addActionListener(actionListener);		
-		cbMetabColumnNameFromFile2.addActionListener(actionListener);
-		cbMetabColumnDisplayName3.addActionListener(actionListener);		
-		cbMetabColumnNameFromFile3.addActionListener(actionListener);
-		cbMetabColumnDisplayName4.addActionListener(actionListener);		
-		cbMetabColumnNameFromFile4.addActionListener(actionListener);
-		cbMetabColumnDisplayName5.addActionListener(actionListener);		
-		cbMetabColumnNameFromFile5.addActionListener(actionListener);
+		//knockout Label and combo
+		JLabel knockoutLabel = new JLabel();
+		knockoutLabel.setText(ColumnInterfaceConstants.KO_LABEL);
+		knockoutLabel.setSize(new Dimension(250, 25));
+		knockoutLabel.setMinimumSize(new Dimension(250, 25));
+		knockoutLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,80));
+		knockoutLabel.setAlignmentX(LEFT_ALIGNMENT);
+		//knockoutLabel.setAlignmentY(TOP_ALIGNMENT);	    	    
+
+		JPanel panelKnockoutLabel = new JPanel();
+		panelKnockoutLabel.setLayout(new BoxLayout(panelKnockoutLabel, BoxLayout.X_AXIS));
+		panelKnockoutLabel.add(knockoutLabel);
+		panelKnockoutLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+
+		hbKnockoutLabel.add(panelKnockoutLabel);
+		hbKnockoutLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+		JPanel panelKnockout = new JPanel();
+		panelKnockout.setLayout(new BoxLayout(panelKnockout, BoxLayout.X_AXIS));
+		panelKnockout.add(cbKnockout);
+		panelKnockout.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		panelKnockout.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbKnockout.add(panelKnockout);
+		hbKnockout.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbReac1.add(hbKnockoutLabel);
+		hbReac1.add(hbKnockout);
+
+		//flux value label and combo
+		JLabel fluxValueLabel = new JLabel();
+		fluxValueLabel.setText(ColumnInterfaceConstants.FLUX_VALUE_LABEL);
+		fluxValueLabel.setSize(new Dimension(250, 25));	 
+		fluxValueLabel.setMinimumSize(new Dimension(250, 25));
+		fluxValueLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,80));
+		fluxValueLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+		JPanel panelFluxValueLabel = new JPanel();
+		panelFluxValueLabel.setLayout(new BoxLayout(panelFluxValueLabel, BoxLayout.X_AXIS));
+		panelFluxValueLabel.add(fluxValueLabel);
+		panelFluxValueLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+
+		hbFluxValueLabel.add(panelFluxValueLabel);
+		hbFluxValueLabel.setAlignmentX(LEFT_ALIGNMENT);
 		
-		cbReacColumnDisplayName1.addActionListener(actionListener);
-		cbReacColumnNameFromFile1.addActionListener(actionListener);
-		cbReacColumnDisplayName2.addActionListener(actionListener);
-		cbReacColumnNameFromFile2.addActionListener(actionListener);
-		cbReacColumnDisplayName3.addActionListener(actionListener);
-		cbReacColumnNameFromFile3.addActionListener(actionListener);
-		cbReacColumnDisplayName4.addActionListener(actionListener);
-		cbReacColumnNameFromFile4.addActionListener(actionListener);
-		cbReacColumnDisplayName5.addActionListener(actionListener);
-		cbReacColumnNameFromFile5.addActionListener(actionListener);
-		cbReacColumnDisplayName6.addActionListener(actionListener);
-		cbReacColumnNameFromFile6.addActionListener(actionListener);
-		cbReacColumnDisplayName7.addActionListener(actionListener);
-		cbReacColumnNameFromFile7.addActionListener(actionListener);
-		cbReacColumnDisplayName8.addActionListener(actionListener);
-		cbReacColumnNameFromFile8.addActionListener(actionListener);
-		cbReacColumnDisplayName9.addActionListener(actionListener);
-		cbReacColumnNameFromFile9.addActionListener(actionListener);
+		JPanel panelFluxValue = new JPanel();
+		panelFluxValue.setLayout(new BoxLayout(panelFluxValue, BoxLayout.X_AXIS));
+		panelFluxValue.add(cbFluxValue);
+		panelFluxValue.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		panelFluxValue.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbFluxValue.add(panelFluxValue);
+		hbFluxValue.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbReac2.add(hbFluxValueLabel);
+		hbReac2.add(hbFluxValue);
+
+		//reaction abbreviation label and combo
+		JLabel reactionAbbreviationLabel = new JLabel();
+		reactionAbbreviationLabel.setText(ColumnInterfaceConstants.REACTION_ABBREVIATION_LABEL);
+		reactionAbbreviationLabel.setSize(new Dimension(250, 25));	 
+		reactionAbbreviationLabel.setMinimumSize(new Dimension(250, 25));
+		reactionAbbreviationLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,80));
+		reactionAbbreviationLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+		JPanel panelReactionAbbreviationLabel = new JPanel();
+		panelReactionAbbreviationLabel.setLayout(new BoxLayout(panelReactionAbbreviationLabel, BoxLayout.X_AXIS));
+		panelReactionAbbreviationLabel.add(reactionAbbreviationLabel);
+		panelReactionAbbreviationLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+
+		hbReactionAbbreviationLabel.add(panelReactionAbbreviationLabel);
+		hbReactionAbbreviationLabel.setAlignmentX(LEFT_ALIGNMENT);
 		
+		JPanel panelReactionAbbreviation = new JPanel();
+		panelReactionAbbreviation.setLayout(new BoxLayout(panelReactionAbbreviation, BoxLayout.X_AXIS));
+		panelReactionAbbreviation.add(cbReactionAbbreviation);
+		panelReactionAbbreviation.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		panelReactionAbbreviation.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbReactionAbbreviation.add(panelReactionAbbreviation);
+		hbReactionAbbreviation.setAlignmentX(RIGHT_ALIGNMENT);
+		
+		hbReac3.add(hbReactionAbbreviationLabel);
+		hbReac3.add(hbReactionAbbreviation);
+		
+		//reaction name label and combo
+		JLabel reactionNameLabel = new JLabel();
+		reactionNameLabel.setText(ColumnInterfaceConstants.REACTION_NAME_LABEL);
+		reactionNameLabel.setSize(new Dimension(250, 25));	
+		reactionNameLabel.setMinimumSize(new Dimension(250, 25));
+		reactionNameLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,80));
+		reactionNameLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+		JPanel panelReactionNameLabel = new JPanel();
+		panelReactionNameLabel.setLayout(new BoxLayout(panelReactionNameLabel, BoxLayout.X_AXIS));
+		panelReactionNameLabel.add(reactionNameLabel);
+		panelReactionNameLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+
+		hbReactionNameLabel.add(panelReactionNameLabel);
+		hbReactionNameLabel.setAlignmentX(LEFT_ALIGNMENT);
+		
+		JPanel panelReactionName = new JPanel();
+		panelReactionName.setLayout(new BoxLayout(panelReactionName, BoxLayout.X_AXIS));
+		panelReactionName.add(cbReactionName);
+		panelReactionName.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		panelReactionName.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbReactionName.add(panelReactionName);
+		hbReactionName.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbReac4.add(hbReactionNameLabel);
+		hbReac4.add(hbReactionName);
+		
+		//reaction equation label and combo
+		JLabel reactionEquationLabel = new JLabel();
+		reactionEquationLabel.setText(ColumnInterfaceConstants.REACTION_EQUATION_LABEL);
+		reactionEquationLabel.setSize(new Dimension(250, 25));	
+		reactionEquationLabel.setMinimumSize(new Dimension(250, 25));
+		reactionEquationLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,80));
+		reactionEquationLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+		JPanel panelReactionEquationLabel = new JPanel();
+		panelReactionEquationLabel.setLayout(new BoxLayout(panelReactionEquationLabel, BoxLayout.X_AXIS));
+		panelReactionEquationLabel.add(reactionEquationLabel);
+		panelReactionEquationLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+
+		hbReactionEquationLabel.add(panelReactionEquationLabel);
+		hbReactionEquationLabel.setAlignmentX(LEFT_ALIGNMENT);
+		
+		JPanel panelReactionEquation = new JPanel();
+		panelReactionEquation.setLayout(new BoxLayout(panelReactionEquation, BoxLayout.X_AXIS));
+		panelReactionEquation.add(cbReactionEquation);
+		panelReactionEquation.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		panelReactionEquation.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbReactionEquation.add(panelReactionEquation);
+		hbReactionEquation.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbReac5.add(hbReactionEquationLabel);
+		hbReac5.add(hbReactionEquation);
+		
+		//reversible label and combo
+		JLabel reversibleLabel = new JLabel();
+		reversibleLabel.setText(ColumnInterfaceConstants.REVERSIBLE_LABEL);
+		reversibleLabel.setSize(new Dimension(250, 25));
+		reversibleLabel.setMinimumSize(new Dimension(250, 25));
+		reversibleLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,80));
+		reversibleLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+		JPanel panelReversibleLabel = new JPanel();
+		panelReversibleLabel.setLayout(new BoxLayout(panelReversibleLabel, BoxLayout.X_AXIS));
+		panelReversibleLabel.add(reversibleLabel);
+		panelReversibleLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+
+		hbReversibleLabel.add(panelReversibleLabel);
+		hbReversibleLabel.setAlignmentX(LEFT_ALIGNMENT);
+		
+		JPanel panelReversible = new JPanel();
+		panelReversible.setLayout(new BoxLayout(panelReversible, BoxLayout.X_AXIS));
+		panelReversible.add(cbReversible);
+		panelReversible.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		panelReversible.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbReversible.add(panelReversible);
+		hbReversible.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbReac6.add(hbReversibleLabel);
+		hbReac6.add(hbReversible);
+		
+		//lower bound label and combo
+		JLabel lowerBoundLabel = new JLabel();
+		lowerBoundLabel.setText(ColumnInterfaceConstants.LOWER_BOUND_LABEL);
+		lowerBoundLabel.setSize(new Dimension(250, 25));	
+		lowerBoundLabel.setMinimumSize(new Dimension(250, 25));
+		lowerBoundLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,80));
+		lowerBoundLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+		JPanel panelLowerBoundLabel = new JPanel();
+		panelLowerBoundLabel.setLayout(new BoxLayout(panelLowerBoundLabel, BoxLayout.X_AXIS));
+		panelLowerBoundLabel.add(lowerBoundLabel);
+		panelLowerBoundLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+
+		hbLowerBoundLabel.add(panelLowerBoundLabel);
+		hbLowerBoundLabel.setAlignmentX(LEFT_ALIGNMENT);
+		
+		JPanel panelLowerBound = new JPanel();
+		panelLowerBound.setLayout(new BoxLayout(panelLowerBound, BoxLayout.X_AXIS));
+		panelLowerBound.add(cbLowerBound);
+		panelLowerBound.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		panelLowerBound.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbLowerBound.add(panelLowerBound);
+		hbLowerBound.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbReac7.add(hbLowerBoundLabel);
+		hbReac7.add(hbLowerBound);
+		
+		//upper bound label and combo
+		JLabel upperBoundLabel = new JLabel();
+		upperBoundLabel.setText(ColumnInterfaceConstants.UPPER_BOUND_LABEL);
+		upperBoundLabel.setSize(new Dimension(250, 25));	
+		upperBoundLabel.setMinimumSize(new Dimension(250, 25));
+		upperBoundLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,80));
+		upperBoundLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+		JPanel panelUpperBoundLabel = new JPanel();
+		panelUpperBoundLabel.setLayout(new BoxLayout(panelUpperBoundLabel, BoxLayout.X_AXIS));
+		panelUpperBoundLabel.add(upperBoundLabel);
+		panelUpperBoundLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+
+		hbUpperBoundLabel.add(panelUpperBoundLabel);
+		hbUpperBoundLabel.setAlignmentX(LEFT_ALIGNMENT);
+		
+		JPanel panelUpperBound = new JPanel();
+		panelUpperBound.setLayout(new BoxLayout(panelUpperBound, BoxLayout.X_AXIS));
+		panelUpperBound.add(cbUpperBound);
+		panelUpperBound.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		panelUpperBound.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbUpperBound.add(panelUpperBound);
+		hbUpperBound.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbReac8.add(hbUpperBoundLabel);
+		hbReac8.add(hbUpperBound);
+		
+		//objective label and combo
+		JLabel objectiveLabel = new JLabel();
+		objectiveLabel.setText(ColumnInterfaceConstants.BIOLOGICAL_OBJECTIVE_LABEL);
+		objectiveLabel.setSize(new Dimension(250, 25));	
+		objectiveLabel.setMinimumSize(new Dimension(250, 25));
+		objectiveLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,80));
+		objectiveLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+		JPanel panelObjectiveLabel = new JPanel();
+		panelObjectiveLabel.setLayout(new BoxLayout(panelObjectiveLabel, BoxLayout.X_AXIS));
+		panelObjectiveLabel.add(objectiveLabel);
+		panelObjectiveLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+
+		hbObjectiveLabel.add(panelObjectiveLabel);
+		hbObjectiveLabel.setAlignmentX(LEFT_ALIGNMENT);
+		
+		JPanel panelObjective = new JPanel();
+		panelObjective.setLayout(new BoxLayout(panelObjective, BoxLayout.X_AXIS));
+		panelObjective.add(cbObjective);
+		panelObjective.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		panelObjective.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbObjective.add(panelObjective);
+		hbObjective.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbReac9.add(hbObjectiveLabel);
+		hbReac9.add(hbObjective);
+		
+		okButton.setMnemonic(KeyEvent.VK_O);
+		JLabel blank = new JLabel("    "); 
+		cancelButton.setMnemonic(KeyEvent.VK_C);
+
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+		buttonPanel.add(okButton);
+		buttonPanel.add(blank);
+		buttonPanel.add(cancelButton);
+		buttonPanel.setBorder(BorderFactory.createEmptyBorder(10,20,20,20));
+
+		hbButton.add(buttonPanel);
+
+		vb.add(hbMetabLabels);
+		vb.add(hbMetab1);
+		vb.add(hbMetab2);
+		vb.add(hbMetab3);
+		vb.add(hbMetab4);
+		vb.add(hbMetab5);
+		vb.add(hbSeparator);
+		vb.add(hbReacLabels);		
+		vb.add(hbReac1);
+		vb.add(hbReac2);
+		vb.add(hbReac3);
+		vb.add(hbReac4);
+		vb.add(hbReac5);
+		vb.add(hbReac6);
+		vb.add(hbReac7);
+		vb.add(hbReac8);
+		vb.add(hbReac9);
+		vb.add(hbButton);
+
+		add(vb);
+
 		ActionListener okButtonActionListener = new ActionListener() {
-	        public void actionPerformed(ActionEvent ae) {
-	        	LocalConfig.getInstance().setMetaboliteAbbreviationColumnName((String) cbMetabColumnDisplayName1.getSelectedItem());
-	        	LocalConfig.getInstance().setMetaboliteNameColumnName((String) cbMetabColumnDisplayName2.getSelectedItem());
-	        	LocalConfig.getInstance().setChargeColumnName((String) cbMetabColumnDisplayName3.getSelectedItem());
-	        	LocalConfig.getInstance().setCompartmentColumnName((String) cbMetabColumnDisplayName4.getSelectedItem());
-	        	//LocalConfig.getInstance().setBoundaryColumnName((String) cbMetabColumnDisplayName5.getSelectedItem());
-	        	
-	        	LocalConfig.getInstance().setReactionAbbreviationColumnName((String) cbReacColumnDisplayName1.getSelectedItem());
-	        	LocalConfig.getInstance().setReactionNameColumnName((String) cbReacColumnDisplayName2.getSelectedItem());
-	        	LocalConfig.getInstance().setReactionEquationColumnName((String) cbReacColumnDisplayName3.getSelectedItem());
-	        	LocalConfig.getInstance().setKnockoutColumnName((String) cbReacColumnDisplayName4.getSelectedItem());
-	        	LocalConfig.getInstance().setFluxValueColumnName((String) cbReacColumnDisplayName5.getSelectedItem());
-	        	LocalConfig.getInstance().setReversibleColumnName((String) cbReacColumnDisplayName6.getSelectedItem());
-	        	LocalConfig.getInstance().setLowerBoundColumnName((String) cbReacColumnDisplayName7.getSelectedItem());
-	        	LocalConfig.getInstance().setUpperBoundColumnName((String) cbReacColumnDisplayName8.getSelectedItem());
-	        	LocalConfig.getInstance().setBiologicalObjectiveColumnName((String) cbReacColumnDisplayName9.getSelectedItem());
-	        	
-	        	//add metacolumn names to db
+			public void actionPerformed(ActionEvent prodActionEvent) {
+				//add metacolumn names to db
 	        	MetabolitesMetaColumnManager metabolitesMetaColumnManager = new MetabolitesMetaColumnManager();
-	        	ArrayList<String> metabMetaColumnNames = new ArrayList();
-	        	ArrayList<Integer> metabUsedIndices = new ArrayList();
-	        	ArrayList<Integer> metabMetaColumnIndexList = new ArrayList();
+	        	ArrayList<String> metaColumnNames = new ArrayList();
+	        	ArrayList<Integer> usedIndices = new ArrayList();
+	        	ArrayList<Integer> metaColumnIndexList = new ArrayList();
 	        	
-	        	if (getMetabColumnNamesFromFile().contains(cbMetabColumnNameFromFile1.getSelectedItem())) {
-	    			LocalConfig.getInstance().setMetaboliteAbbreviationColumnIndex(getMetabColumnNamesFromFile().indexOf(cbMetabColumnNameFromFile1.getSelectedItem()));
-	    			metabUsedIndices.add(getMetabColumnNamesFromFile().indexOf(cbMetabColumnNameFromFile1.getSelectedItem()));
+	    		if (getMetabColumnNamesFromFile().contains(cbMetaboliteAbbreviation.getSelectedItem())) {
+	    			LocalConfig.getInstance().setMetaboliteAbbreviationColumnIndex(getMetabColumnNamesFromFile().indexOf(cbMetaboliteAbbreviation.getSelectedItem()));
+	    			usedIndices.add(getMetabColumnNamesFromFile().indexOf(cbMetaboliteAbbreviation.getSelectedItem()));
 	        	}
-	    		if (getMetabColumnNamesFromFile().contains(cbMetabColumnNameFromFile2.getSelectedItem())) {
-	    			LocalConfig.getInstance().setMetaboliteNameColumnIndex(getMetabColumnNamesFromFile().indexOf(cbMetabColumnNameFromFile2.getSelectedItem()));
-	    			metabUsedIndices.add(getMetabColumnNamesFromFile().indexOf(cbMetabColumnNameFromFile2.getSelectedItem()));
+	    		if (getMetabColumnNamesFromFile().contains(cbMetaboliteName.getSelectedItem())) {
+	    			LocalConfig.getInstance().setMetaboliteNameColumnIndex(getMetabColumnNamesFromFile().indexOf(cbMetaboliteName.getSelectedItem()));
+	    			usedIndices.add(getMetabColumnNamesFromFile().indexOf(cbMetaboliteName.getSelectedItem()));
 	        	}
-	    		if (getMetabColumnNamesFromFile().contains(cbMetabColumnNameFromFile3.getSelectedItem())) {
-	    			LocalConfig.getInstance().setChargeColumnIndex(getMetabColumnNamesFromFile().indexOf(cbMetabColumnNameFromFile3.getSelectedItem()));
-	    			metabUsedIndices.add(getMetabColumnNamesFromFile().indexOf(cbMetabColumnNameFromFile3.getSelectedItem()));
+	    		if (getMetabColumnNamesFromFile().contains(cbCharge.getSelectedItem())) {
+	    			LocalConfig.getInstance().setChargeColumnIndex(getMetabColumnNamesFromFile().indexOf(cbCharge.getSelectedItem()));
+	    			usedIndices.add(getMetabColumnNamesFromFile().indexOf(cbCharge.getSelectedItem()));
 	        	}
-	    		if (getMetabColumnNamesFromFile().contains(cbMetabColumnNameFromFile4.getSelectedItem())) {
-	    			LocalConfig.getInstance().setCompartmentColumnIndex(getMetabColumnNamesFromFile().indexOf(cbMetabColumnNameFromFile4.getSelectedItem()));
-	    			metabUsedIndices.add(getMetabColumnNamesFromFile().indexOf(cbMetabColumnNameFromFile4.getSelectedItem()));
+	    		if (getMetabColumnNamesFromFile().contains(cbCompartment.getSelectedItem())) {
+	    			LocalConfig.getInstance().setCompartmentColumnIndex(getMetabColumnNamesFromFile().indexOf(cbCompartment.getSelectedItem()));
+	    			usedIndices.add(getMetabColumnNamesFromFile().indexOf(cbCompartment.getSelectedItem()));
 	        	}
-	    		if (getMetabColumnNamesFromFile().contains(cbMetabColumnNameFromFile5.getSelectedItem())) {
-	    			LocalConfig.getInstance().setBoundaryColumnIndex(getMetabColumnNamesFromFile().indexOf(cbMetabColumnNameFromFile5.getSelectedItem()));
-	    			metabUsedIndices.add(getMetabColumnNamesFromFile().indexOf(cbMetabColumnNameFromFile5.getSelectedItem()));
+	    		if (getMetabColumnNamesFromFile().contains(cbBoundary.getSelectedItem())) {
+	    			LocalConfig.getInstance().setBoundaryColumnIndex(getMetabColumnNamesFromFile().indexOf(cbBoundary.getSelectedItem()));
+	    			usedIndices.add(getMetabColumnNamesFromFile().indexOf(cbBoundary.getSelectedItem()));
 	        	}
-	    		for (int i = 0; i < getMetabColumnNamesFromFile().size(); i++) {
-	        		if (!metabUsedIndices.contains(i)) {
-	        			metabMetaColumnNames.add(getMetabColumnNamesFromFile().get(i));
-	        			metabMetaColumnIndexList.add(getMetabColumnNamesFromFile().indexOf(getMetabColumnNamesFromFile().get(i)));
+	        	for (int i = 0; i < getMetabColumnNamesFromFile().size(); i++) {
+	        		if (!usedIndices.contains(i)) {
+	        			metaColumnNames.add(getMetabColumnNamesFromFile().get(i));
+	        			metaColumnIndexList.add(getMetabColumnNamesFromFile().indexOf(getMetabColumnNamesFromFile().get(i)));
 	        		} 
 	        	}
-	    		
-	    		DatabaseCreator creator = new DatabaseCreator();
+	        	DatabaseCreator creator = new DatabaseCreator();
 	        	creator.createDatabase(LocalConfig.getInstance().getDatabaseName());
-	        	metabolitesMetaColumnManager.addColumnNames(LocalConfig.getInstance().getDatabaseName(), metabMetaColumnNames);
-	        	LocalConfig.getInstance().setMetabolitesMetaColumnIndexList(metabMetaColumnIndexList);
-	    			        	
+	        	metabolitesMetaColumnManager.addColumnNames(LocalConfig.getInstance().getDatabaseName(), metaColumnNames);
+	        	LocalConfig.getInstance().setMetabolitesMetaColumnIndexList(metaColumnIndexList);
+	        	
 	        	ReactionsMetaColumnManager reactionsMetaColumnManager = new ReactionsMetaColumnManager();
 	        	ArrayList<String> reacMetaColumnNames = new ArrayList();
 	        	ArrayList<Integer> reacUsedIndices = new ArrayList();
 	        	ArrayList<Integer> reacMetaColumnIndexList = new ArrayList();
 	        	
-	        	if (getReacColumnNamesFromFile().contains(cbReacColumnNameFromFile1.getSelectedItem())) {
-	    			LocalConfig.getInstance().setReactionAbbreviationColumnIndex(getReacColumnNamesFromFile().indexOf(cbReacColumnNameFromFile1.getSelectedItem()));
-	    			reacUsedIndices.add(getReacColumnNamesFromFile().indexOf(cbReacColumnNameFromFile1.getSelectedItem()));
+	        	if (getReacColumnNamesFromFile().contains(cbKnockout.getSelectedItem())) {
+	    			LocalConfig.getInstance().setKnockoutColumnIndex(getReacColumnNamesFromFile().indexOf(cbKnockout.getSelectedItem()));
+	    			reacUsedIndices.add(getReacColumnNamesFromFile().indexOf(cbKnockout.getSelectedItem()));
 	        	}
-	    		if (getReacColumnNamesFromFile().contains(cbReacColumnNameFromFile2.getSelectedItem())) {
-	    			LocalConfig.getInstance().setReactionNameColumnIndex(getReacColumnNamesFromFile().indexOf(cbReacColumnNameFromFile2.getSelectedItem()));
-	    			reacUsedIndices.add(getReacColumnNamesFromFile().indexOf(cbReacColumnNameFromFile2.getSelectedItem()));
+	    		if (getReacColumnNamesFromFile().contains(cbFluxValue.getSelectedItem())) {
+	    			LocalConfig.getInstance().setFluxValueColumnIndex(getReacColumnNamesFromFile().indexOf(cbFluxValue.getSelectedItem()));
+	    			reacUsedIndices.add(getReacColumnNamesFromFile().indexOf(cbFluxValue.getSelectedItem()));
 	        	}
-	    		if (getReacColumnNamesFromFile().contains(cbReacColumnNameFromFile3.getSelectedItem())) {
-	    			LocalConfig.getInstance().setReactionEquationColumnIndex(getReacColumnNamesFromFile().indexOf(cbReacColumnNameFromFile3.getSelectedItem()));
-	    			reacUsedIndices.add(getReacColumnNamesFromFile().indexOf(cbReacColumnNameFromFile3.getSelectedItem()));
+	    		if (getReacColumnNamesFromFile().contains(cbReactionAbbreviation.getSelectedItem())) {
+	    			LocalConfig.getInstance().setReactionAbbreviationColumnIndex(getReacColumnNamesFromFile().indexOf(cbReactionAbbreviation.getSelectedItem()));
+	    			reacUsedIndices.add(getReacColumnNamesFromFile().indexOf(cbReactionAbbreviation.getSelectedItem()));
 	        	}
-	    		if (getReacColumnNamesFromFile().contains(cbReacColumnNameFromFile4.getSelectedItem())) {
-	    			LocalConfig.getInstance().setKnockoutColumnIndex(getReacColumnNamesFromFile().indexOf(cbReacColumnNameFromFile4.getSelectedItem()));
-	    			reacUsedIndices.add(getReacColumnNamesFromFile().indexOf(cbReacColumnNameFromFile4.getSelectedItem()));
+	    		if (getReacColumnNamesFromFile().contains(cbReactionName.getSelectedItem())) {
+	    			LocalConfig.getInstance().setReactionNameColumnIndex(getReacColumnNamesFromFile().indexOf(cbReactionName.getSelectedItem()));
+	    			reacUsedIndices.add(getReacColumnNamesFromFile().indexOf(cbReactionName.getSelectedItem()));
 	        	}
-	    		if (getReacColumnNamesFromFile().contains(cbReacColumnNameFromFile5.getSelectedItem())) {
-	    			LocalConfig.getInstance().setFluxValueColumnIndex(getReacColumnNamesFromFile().indexOf(cbReacColumnNameFromFile5.getSelectedItem()));
-	    			reacUsedIndices.add(getReacColumnNamesFromFile().indexOf(cbReacColumnNameFromFile5.getSelectedItem()));
+	    		if (getReacColumnNamesFromFile().contains(cbReactionEquation.getSelectedItem())) {
+	    			LocalConfig.getInstance().setReactionEquationColumnIndex(getReacColumnNamesFromFile().indexOf(cbReactionEquation.getSelectedItem()));
+	    			reacUsedIndices.add(getReacColumnNamesFromFile().indexOf(cbReactionEquation.getSelectedItem()));
 	        	}
-	    		if (getReacColumnNamesFromFile().contains(cbReacColumnNameFromFile6.getSelectedItem())) {
-	    			LocalConfig.getInstance().setReversibleColumnIndex(getReacColumnNamesFromFile().indexOf(cbReacColumnNameFromFile6.getSelectedItem()));
-	    			reacUsedIndices.add(getReacColumnNamesFromFile().indexOf(cbReacColumnNameFromFile6.getSelectedItem()));
+	    		if (getReacColumnNamesFromFile().contains(cbReversible.getSelectedItem())) {
+	    			LocalConfig.getInstance().setReversibleColumnIndex(getReacColumnNamesFromFile().indexOf(cbReversible.getSelectedItem()));
+	    			reacUsedIndices.add(getReacColumnNamesFromFile().indexOf(cbReversible.getSelectedItem()));
 	        	}
-	    		if (getReacColumnNamesFromFile().contains(cbReacColumnNameFromFile7.getSelectedItem())) {
-	    			LocalConfig.getInstance().setLowerBoundColumnIndex(getReacColumnNamesFromFile().indexOf(cbReacColumnNameFromFile7.getSelectedItem()));
-	    			reacUsedIndices.add(getReacColumnNamesFromFile().indexOf(cbReacColumnNameFromFile7.getSelectedItem()));
+	    		if (getReacColumnNamesFromFile().contains(cbLowerBound.getSelectedItem())) {
+	    			LocalConfig.getInstance().setLowerBoundColumnIndex(getReacColumnNamesFromFile().indexOf(cbLowerBound.getSelectedItem()));
+	    			reacUsedIndices.add(getReacColumnNamesFromFile().indexOf(cbLowerBound.getSelectedItem()));
 	        	}
-	    		if (getReacColumnNamesFromFile().contains(cbReacColumnNameFromFile8.getSelectedItem())) {
-	    			LocalConfig.getInstance().setUpperBoundColumnIndex(getReacColumnNamesFromFile().indexOf(cbReacColumnNameFromFile8.getSelectedItem()));
-	    			reacUsedIndices.add(getReacColumnNamesFromFile().indexOf(cbReacColumnNameFromFile8.getSelectedItem()));
+	    		if (getReacColumnNamesFromFile().contains(cbUpperBound.getSelectedItem())) {
+	    			LocalConfig.getInstance().setUpperBoundColumnIndex(getReacColumnNamesFromFile().indexOf(cbUpperBound.getSelectedItem()));
+	    			reacUsedIndices.add(getReacColumnNamesFromFile().indexOf(cbUpperBound.getSelectedItem()));
 	        	}
-	    		if (getReacColumnNamesFromFile().contains(cbReacColumnNameFromFile9.getSelectedItem())) {
-	    			LocalConfig.getInstance().setBiologicalObjectiveColumnIndex(getReacColumnNamesFromFile().indexOf(cbReacColumnNameFromFile9.getSelectedItem()));
-	    			reacUsedIndices.add(getReacColumnNamesFromFile().indexOf(cbReacColumnNameFromFile9.getSelectedItem()));
+	    		if (getReacColumnNamesFromFile().contains(cbObjective.getSelectedItem())) {
+	    			LocalConfig.getInstance().setBiologicalObjectiveColumnIndex(getReacColumnNamesFromFile().indexOf(cbObjective.getSelectedItem()));
+	    			reacUsedIndices.add(getReacColumnNamesFromFile().indexOf(cbObjective.getSelectedItem()));
 	        	}
 	    		for (int i = 0; i < getReacColumnNamesFromFile().size(); i++) {
 	        		if (!reacUsedIndices.contains(i)) {
 	        			reacMetaColumnNames.add(getReacColumnNamesFromFile().get(i));
 	        			reacMetaColumnIndexList.add(getReacColumnNamesFromFile().indexOf(getReacColumnNamesFromFile().get(i)));
 	        		} 
-	        	}	        	
+	        	}
+	        	
 	        	reactionsMetaColumnManager.addColumnNames(LocalConfig.getInstance().getDatabaseName(), reacMetaColumnNames);
 	        	LocalConfig.getInstance().setReactionsMetaColumnIndexList(reacMetaColumnIndexList);
 	        	
 	        	setVisible(false);
-				dispose();
-	    		
-				final ArrayList<Image> icons = new ArrayList<Image>(); 
-			    icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
-			    icons.add(new ImageIcon("etc/most32.jpg").getImage());
+				dispose();				
 				
-				ProgressBar progress = new ProgressBar();
-		  	    progress.setIconImages(icons);
-				progress.setSize(200, 75);
-			    progress.setTitle("Loading...");
-				progress.setVisible(true);
-				
-				Excel97Reader reader = new Excel97Reader();
-				reader.load(GraphicalInterface.getExcelPath(), LocalConfig.getInstance().getDatabaseName(), LocalConfig.getInstance().getSheetNamesList());
-	    		
-	        	progress.setVisible(false);
-	        	progress.dispose();
-	        }
+                progressBar.setVisible(true);
+			    
+			    t.start();
+
+				task = new Task();
+				task.execute();
+			}
 		};
-		
-					
-		okButton.addActionListener(okButtonActionListener); 
+
+		okButton.addActionListener(okButtonActionListener);
 
 		ActionListener cancelButtonActionListener = new ActionListener() {
 	        public void actionPerformed(ActionEvent prodActionEvent) {
@@ -1012,67 +858,49 @@ public class ExcelColumnNameInterface extends JDialog {
 			      }
 			}
 		};
+					
+		cancelButton.addActionListener(cancelButtonActionListener);
 
-					
-		cancelButton.addActionListener(cancelButtonActionListener); 
-		/*
-		ActionListener cancelButtonActionListener = new ActionListener() {
-	        public void actionPerformed(ActionEvent prodActionEvent) {
-				setVisible(false);
-				dispose();
-				//this is a hack, creates blank reaction table
-				try {
-		    		  Class.forName("org.sqlite.JDBC");       
-		    		  DatabaseCreator databaseCreator = new DatabaseCreator();
-		    		  databaseCreator.createBlankReactionsTable(LocalConfig.getInstance().getDatabaseName());
-				  } catch (ClassNotFoundException e) {
-					  // TODO Auto-generated catch block
-					  e.printStackTrace();
-				  }
-			}
-		};
-					
-		cancelButton.addActionListener(cancelButtonActionListener);    
-		 */   
-	}
-	
-    public void populateMetabNamesFromFileBoxes(ArrayList<String> metabColumnNamesFromFile) {
+	} 	 
+
+    public void populateMetabNamesFromFileBoxes(ArrayList<String> columnNamesFromFile) {
 		
 		LocalConfig.getInstance().setCompartmentColumnIndex(-1);
 		LocalConfig.getInstance().setChargeColumnIndex(-1);
 		LocalConfig.getInstance().setBoundaryColumnIndex(-1);
 		//add all column names to from file comboboxes
-		for (int c = 0; c < metabColumnNamesFromFile.size(); c++) { 
-			cbMetabColumnNameFromFile1.addItem(metabColumnNamesFromFile.get(c));
-			cbMetabColumnNameFromFile2.addItem(metabColumnNamesFromFile.get(c));
-			cbMetabColumnNameFromFile3.addItem(metabColumnNamesFromFile.get(c));
-			cbMetabColumnNameFromFile4.addItem(metabColumnNamesFromFile.get(c));
-			cbMetabColumnNameFromFile5.addItem(metabColumnNamesFromFile.get(c));
+		for (int c = 0; c < columnNamesFromFile.size(); c++) { 
+			cbMetaboliteAbbreviation.addItem(columnNamesFromFile.get(c));
+			cbMetaboliteName.addItem(columnNamesFromFile.get(c));
+			cbCharge.addItem(columnNamesFromFile.get(c));
+			cbCompartment.addItem(columnNamesFromFile.get(c));
+			cbBoundary.addItem(columnNamesFromFile.get(c));
 		}
-		cbMetabColumnNameFromFile4.setSelectedIndex(-1);
-		cbMetabColumnNameFromFile3.setSelectedIndex(-1);
-		cbMetabColumnNameFromFile5.setSelectedIndex(-1);
-		for (int c = 0; c < metabColumnNamesFromFile.size(); c++) { 
+		cbCompartment.setSelectedIndex(-1);
+		cbCharge.setSelectedIndex(-1);
+		cbBoundary.setSelectedIndex(-1);
+		for (int c = 0; c < columnNamesFromFile.size(); c++) { 
 			//filters to match column names from file to required column names in table
-			if((metabColumnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.COMPARTMENT_FILTER[0])) {
-				cbMetabColumnNameFromFile4.setSelectedIndex(c);
+			if((columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.COMPARTMENT_FILTER[0])) {
+				cbCompartment.setSelectedIndex(c);
 				LocalConfig.getInstance().setCompartmentColumnIndex(c);	
-			} else if((metabColumnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.CHARGE_FILTER[0]) && !(metabColumnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.CHARGE_NOT_FILTER[0])) {
-				cbMetabColumnNameFromFile3.setSelectedIndex(c);
-				LocalConfig.getInstance().setChargeColumnIndex(c);				
-			} else if((metabColumnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.BOUNDARY_FILTER[0])) {
-				cbMetabColumnNameFromFile5.setSelectedIndex(c);
-				LocalConfig.getInstance().setBoundaryColumnIndex(c);				
+			} else if((columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.CHARGE_FILTER[0]) && !(columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.CHARGE_NOT_FILTER[0])) {
+				cbCharge.setSelectedIndex(c);
+				LocalConfig.getInstance().setChargeColumnIndex(c);
+			} else if((columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.BOUNDARY_FILTER[0])) {
+				cbBoundary.setSelectedIndex(c);
+				LocalConfig.getInstance().setBoundaryColumnIndex(c);
 			}  
 		}
+		 
 		//first two columns are recommended to be column 1 and 2: abbreviation (id), and name
-		cbMetabColumnNameFromFile1.setSelectedIndex(0);
+		cbMetaboliteAbbreviation.setSelectedIndex(0);
 		LocalConfig.getInstance().setMetaboliteAbbreviationColumnIndex(0);
-		cbMetabColumnNameFromFile2.setSelectedIndex(1);	
+		cbMetaboliteName.setSelectedIndex(1);	
 		LocalConfig.getInstance().setMetaboliteNameColumnIndex(1);
-    }
+	}
 	
-    public void populateReacNamesFromFileBoxes(ArrayList<String> reacColumnNamesFromFile) {
+    public void populateReacNamesFromFileBoxes(ArrayList<String> columnNamesFromFile) {
 		
 		LocalConfig.getInstance().setKnockoutColumnIndex(-1);
 		LocalConfig.getInstance().setFluxValueColumnIndex(-1);
@@ -1080,59 +908,102 @@ public class ExcelColumnNameInterface extends JDialog {
 		LocalConfig.getInstance().setLowerBoundColumnIndex(-1);
 		LocalConfig.getInstance().setUpperBoundColumnIndex(-1);
 		LocalConfig.getInstance().setBiologicalObjectiveColumnIndex(-1);
-		
+				
 		//add all column names to from file comboboxes
-		for (int c = 0; c < reacColumnNamesFromFile.size(); c++) { 
-			cbReacColumnNameFromFile1.addItem(reacColumnNamesFromFile.get(c));
-			cbReacColumnNameFromFile2.addItem(reacColumnNamesFromFile.get(c));
-			cbReacColumnNameFromFile3.addItem(reacColumnNamesFromFile.get(c));
-			cbReacColumnNameFromFile4.addItem(reacColumnNamesFromFile.get(c));
-			cbReacColumnNameFromFile5.addItem(reacColumnNamesFromFile.get(c));
-			cbReacColumnNameFromFile6.addItem(reacColumnNamesFromFile.get(c));
-			cbReacColumnNameFromFile7.addItem(reacColumnNamesFromFile.get(c));
-			cbReacColumnNameFromFile8.addItem(reacColumnNamesFromFile.get(c));
-			cbReacColumnNameFromFile9.addItem(reacColumnNamesFromFile.get(c));
+		for (int c = 0; c < columnNamesFromFile.size(); c++) { 
+			cbKnockout.addItem(columnNamesFromFile.get(c));
+			cbFluxValue.addItem(columnNamesFromFile.get(c));
+			cbReactionAbbreviation.addItem(columnNamesFromFile.get(c));
+			cbReactionName.addItem(columnNamesFromFile.get(c));
+			cbReactionEquation.addItem(columnNamesFromFile.get(c));
+			cbReversible.addItem(columnNamesFromFile.get(c));
+			cbLowerBound.addItem(columnNamesFromFile.get(c));
+			cbUpperBound.addItem(columnNamesFromFile.get(c));
+			cbObjective.addItem(columnNamesFromFile.get(c));
 		}		
-		cbReacColumnNameFromFile4.setSelectedIndex(-1);	
-		cbReacColumnNameFromFile5.setSelectedIndex(-1);
-		cbReacColumnNameFromFile6.setSelectedIndex(-1);	
-		cbReacColumnNameFromFile7.setSelectedIndex(-1);
-		cbReacColumnNameFromFile8.setSelectedIndex(-1);
-		cbReacColumnNameFromFile9.setSelectedIndex(-1);
-		for (int c = 0; c < reacColumnNamesFromFile.size(); c++) { 
+		cbKnockout.setSelectedIndex(-1);	
+		cbFluxValue.setSelectedIndex(-1);
+		cbReversible.setSelectedIndex(-1);	
+		cbLowerBound.setSelectedIndex(-1);
+		cbUpperBound.setSelectedIndex(-1);
+		cbObjective.setSelectedIndex(-1);
+		for (int c = 0; c < columnNamesFromFile.size(); c++) { 
 			//filters to match column names from file to required column names in table			
-			if((reacColumnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.KNOCKOUT_COLUMN_FILTER[0]) == 0 || (reacColumnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.KNOCKOUT_COLUMN_FILTER[1]) == 0) {
-				cbReacColumnNameFromFile4.setSelectedIndex(c);
+			if((columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.KNOCKOUT_COLUMN_FILTER[0]) == 0 || (columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.KNOCKOUT_COLUMN_FILTER[1]) == 0) {
+				cbKnockout.setSelectedIndex(c);
 				LocalConfig.getInstance().setKnockoutColumnIndex(c);	
-			} else if((reacColumnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.FLUX_VALUE_COLUMN_FILTER[0])) {
-				cbReacColumnNameFromFile5.setSelectedIndex(c);
+			} else if((columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.FLUX_VALUE_COLUMN_FILTER[0])) {
+				cbFluxValue.setSelectedIndex(c);
 				LocalConfig.getInstance().setFluxValueColumnIndex(c);
-			} else if((reacColumnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.REVERSIBLE_COLUMN_FILTER[0])) {
-				cbReacColumnNameFromFile6.setSelectedIndex(c);
+			} else if((columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.REVERSIBLE_COLUMN_FILTER[0])) {
+				cbReversible.setSelectedIndex(c);
 				LocalConfig.getInstance().setReversibleColumnIndex(c); 
-			} else if((reacColumnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.LOWER_BOUND_FILTER[0]) == 0 || (reacColumnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.LOWER_BOUND_FILTER[1]) == 0) {
-				cbReacColumnNameFromFile7.setSelectedIndex(c);
+			} else if((columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.LOWER_BOUND_FILTER[0]) == 0 || (columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.LOWER_BOUND_FILTER[1]) == 0) {
+				cbLowerBound.setSelectedIndex(c);
 				LocalConfig.getInstance().setLowerBoundColumnIndex(c); 
-			} else if((reacColumnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.UPPER_BOUND_FILTER[0]) == 0 || (reacColumnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.UPPER_BOUND_FILTER[1]) == 0) {
-				cbReacColumnNameFromFile8.setSelectedIndex(c);
+			} else if((columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.UPPER_BOUND_FILTER[0]) == 0 || (columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.UPPER_BOUND_FILTER[1]) == 0) {
+				cbUpperBound.setSelectedIndex(c);
 				LocalConfig.getInstance().setUpperBoundColumnIndex(c); 
-			} else if((reacColumnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_FILTER[0])) {
-				cbReacColumnNameFromFile9.setSelectedIndex(c);
+			} else if((columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_FILTER[0])) {
+				cbObjective.setSelectedIndex(c);
 				LocalConfig.getInstance().setBiologicalObjectiveColumnIndex(c); 	
 			}
 		}
 		 
-		//first two columns are recommended to be column 1 and 2: abbreviation (id), and name
-		cbReacColumnNameFromFile1.setSelectedIndex(0);
-		LocalConfig.getInstance().setReactionAbbreviationColumnIndex(0);
-		cbReacColumnNameFromFile2.setSelectedIndex(1);	
-		LocalConfig.getInstance().setReactionNameColumnIndex(1);
-		cbReacColumnNameFromFile3.setSelectedIndex(2);	
-		LocalConfig.getInstance().setReactionEquationColumnIndex(2);
+		//csv files written by TextReactionWriter will have KO and fluxValue as col 1 and 2
+		if((columnNamesFromFile.get(0).toLowerCase()).compareTo(GraphicalInterfaceConstants.KNOCKOUT_COLUMN_FILTER[0]) == 0 || (columnNamesFromFile.get(0).toLowerCase()).compareTo(GraphicalInterfaceConstants.KNOCKOUT_COLUMN_FILTER[1]) == 0) {
+			cbReactionAbbreviation.setSelectedIndex(2);
+			LocalConfig.getInstance().setReactionAbbreviationColumnIndex(2);
+			cbReactionName.setSelectedIndex(3);	
+			LocalConfig.getInstance().setReactionNameColumnIndex(3);
+			cbReactionEquation.setSelectedIndex(4);	
+			LocalConfig.getInstance().setReactionEquationColumnIndex(4);
+		} else {
+			//first two columns are recommended to be column 1 and 2: abbreviation (id), and name
+			cbReactionAbbreviation.setSelectedIndex(0);
+			LocalConfig.getInstance().setReactionAbbreviationColumnIndex(0);
+			cbReactionName.setSelectedIndex(1);	
+			LocalConfig.getInstance().setReactionNameColumnIndex(1);
+			cbReactionEquation.setSelectedIndex(2);	
+			LocalConfig.getInstance().setReactionEquationColumnIndex(2);
+		}		
 	}
 
+	class Task extends SwingWorker<Void, Void> {
+
+		@Override
+		public void done() {
+			 
+		}
+
+		@Override
+		protected Void doInBackground() throws Exception {
+			int progress = 0;
+			Excel97Reader reader = new Excel97Reader();			
+			reader.load(GraphicalInterface.getExcelPath(), LocalConfig.getInstance().getDatabaseName(), LocalConfig.getInstance().getSheetNamesList());
+			while (progress < 100) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException ignore) {
+				}			
+			}
+			t.stop();
+			return null;
+		}
+	}
+	
+	class TimeListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			progressBar.progress.setValue(LocalConfig.getInstance().getProgress());
+			progressBar.progress.repaint();
+			if (LocalConfig.getInstance().getProgress() == 100) {
+				progressBar.setVisible(false);
+				progressBar.dispose();
+			}
+		}
+	}
+	
 	public static void main(String[] args) throws Exception {
-	    
 		Class.forName("org.sqlite.JDBC");       
 		DatabaseCreator databaseCreator = new DatabaseCreator();
 		Connection con = DriverManager.getConnection("jdbc:sqlite:" + "untitled" + ".db");
@@ -1152,14 +1023,13 @@ public class ExcelColumnNameInterface extends JDialog {
 	    list2.add("test3");
 		ExcelColumnNameInterface frame = new ExcelColumnNameInterface(con, list, list2);
 		frame.setIconImages(icons);
-		frame.setSize(600, 650);
+		frame.setSize(600, 700);
 	    frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	    frame.setLocationRelativeTo(null);
 	    frame.setVisible(true);
-	    
-	  }
-
 	}
+}
+
 
 
 
