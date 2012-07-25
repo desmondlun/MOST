@@ -33,7 +33,7 @@ public class SBMLModelReader {
 
 
 	public void load(){
-		readNotes = false;
+		readNotes = true;
 		DatabaseCreator databaseCreator = new DatabaseCreator();
 		databaseCreator.createDatabase(getDatabaseName());
 
@@ -332,12 +332,14 @@ public class SBMLModelReader {
 						String noteItem = "";
 						//removes xmlns (xml namespace tags)
 						if (noteString.contains("xmlns")) {
-							noteString = noteString.substring(noteString.indexOf(">") + 1, noteString.lastIndexOf("<"));
-							String endtag = noteString.substring(noteString.lastIndexOf("<"));
-							String[] nameSpaces = noteString.split(endtag);
-							for (int n = 0; n < nameSpaces.length; n++) {
-								noteItem = nameSpaces[n].substring(nameSpaces[n].indexOf(">") + 1); 
-								noteItemList.add(noteItem);
+							if (!noteString.endsWith("/>")) {
+								noteString = noteString.substring(noteString.indexOf(">") + 1, noteString.lastIndexOf("<"));
+								String endtag = noteString.substring(noteString.lastIndexOf("<"));
+								String[] nameSpaces = noteString.split(endtag);
+								for (int n = 0; n < nameSpaces.length; n++) {
+									noteItem = nameSpaces[n].substring(nameSpaces[n].indexOf(">") + 1); 
+									noteItemList.add(noteItem);
+								}
 							}
 						} else {
 							//for "<>", "</>" types of nodes, tags are removed

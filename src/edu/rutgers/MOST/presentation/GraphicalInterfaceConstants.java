@@ -258,7 +258,7 @@ public class GraphicalInterfaceConstants {
     
     public static final String DEFAULT_METABOLITE_TABLE_TAB_NAME = "Metabolites";
     
-    public static final String DEFAULT_REACTION_TABLE_TAB_NAME = "Reactions  ";
+    public static final String DEFAULT_REACTION_TABLE_TAB_NAME = " Reactions ";
     
 }
 
