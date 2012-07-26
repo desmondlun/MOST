@@ -27,8 +27,23 @@ public class LocalConfig {
 	public void setDatabaseName(String databaseName) {
 		this.databaseName = databaseName;
 	}
-    
-    //parameters set from metabolites in columnNameInterface	
+	
+	//Database currently loaded in table. This is needed when optimizations are loaded
+	//update methods change optimized database. 
+	private String loadedDatabase;
+
+	public String getLoadedDatabase() {
+		return loadedDatabase;
+	}
+
+	public void setLoadedDatabase(String loadedDatabase) {
+		this.loadedDatabase = loadedDatabase;
+	}
+	
+	/**********************************************************************************/
+	//parameters set for metabolites in columnNameInterfaces
+	/**********************************************************************************/
+    	
 	//column indices
     private static Integer metaboliteAbbreviationColumnIndex;
 	
@@ -90,7 +105,20 @@ public class LocalConfig {
 		this.metabolitesMetaColumnIndexList = metabolitesMetaColumnIndexList;
 	}    
 	
-	//column indices
+    private static Integer metabolitesNextRowCorrection;
+	
+	public void setMetabolitesNextRowCorrection(Integer metabolitesNextRowCorrection) {
+		this.metabolitesNextRowCorrection = metabolitesNextRowCorrection;
+	}
+
+	public static Integer getMetabolitesNextRowCorrection() {
+		return metabolitesNextRowCorrection;
+	}
+	
+	/**********************************************************************************/
+	//parameters set for reactions in columnNameInterfaces
+	/**********************************************************************************/
+	//reaction column indices
     private static Integer reactionAbbreviationColumnIndex;
 	
 	public void setReactionAbbreviationColumnIndex(Integer reactionAbbreviationColumnIndex) {
@@ -189,6 +217,16 @@ public class LocalConfig {
 	
 	public void setReactionsMetaColumnIndexList(ArrayList<Integer> reactionsMetaColumnIndexList) {
 		this.reactionsMetaColumnIndexList = reactionsMetaColumnIndexList;
+	}
+	
+    private static Integer reactionsNextRowCorrection;
+	
+	public void setReactionsNextRowCorrection(Integer reactionsNextRowCorrection) {
+		this.reactionsNextRowCorrection = reactionsNextRowCorrection;
+	}
+
+	public static Integer getReactionsNextRowCorrection() {
+		return reactionsNextRowCorrection;
 	}
 	
 	//sheet names list for ExcelSheetInterface and Excel97Reader

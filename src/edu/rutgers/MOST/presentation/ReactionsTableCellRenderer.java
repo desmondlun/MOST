@@ -12,22 +12,19 @@ public class ReactionsTableCellRenderer extends DefaultTableCellRenderer{
 			Object obj, boolean isSelected, boolean hasFocus, int row, int column) {
 		Component cell = super.getTableCellRendererComponent(
 				table, obj, isSelected, hasFocus, row, column);
-		//if (isSelected) {
-			//cell.setBackground(Color.blue);
-		//} 	  
-
-		// based on code from http://www.java-forums.org/awt-swing/541-how-change-color-jtable-row-having-particular-value.html
-		if (table.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTION_STRING_COLUMN) != null) {
+		if (isSelected) {
+			cell.setBackground(new Color(180, 216, 231));
+		} else if (table.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTION_STRING_COLUMN) != null) {
 			String s =  table.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTION_STRING_COLUMN).toString();		   
 			if(s.startsWith(GraphicalInterface.getParticipatingMetabolite() + " ") || s.endsWith(" " + GraphicalInterface.getParticipatingMetabolite()) || s.contains(" " + GraphicalInterface.getParticipatingMetabolite() + " ")) {        
-				System.out.println(s);
 				cell.setBackground(Color.green);     
-			}     else     {         
-				cell.setBackground(Color.white);     
-			} 
+			} else {
+				cell.setBackground(Color.white); 
+			}
 		} else {
-			//cell.setBackground(null);
+			cell.setBackground(Color.white);
 		}
+
 
 		//based on code from http://tech.chitgoks.com/2009/11/05/display-tooltip-in-jtable-cell-if-text-is-truncated/
 		int availableWidth = table.getColumnModel().getColumn(column).getWidth();

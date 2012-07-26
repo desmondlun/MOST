@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import edu.rutgers.MOST.config.LocalConfig;
 
 public class SBMLProduct implements ModelProduct {
-    
+
 	private String databaseName;
 	private Integer reactionId;
 	private Integer metaboliteId;
@@ -19,11 +19,11 @@ public class SBMLProduct implements ModelProduct {
 	public void setDatabaseName(String databaseName) {
 		this.databaseName = databaseName;
 	}
-	
+
 	public String getDatabaseName() {
 		return databaseName;
 	}
-	
+
 	public void setReactionId(Integer reactionId) {
 		this.reactionId = reactionId;
 	}
@@ -31,7 +31,7 @@ public class SBMLProduct implements ModelProduct {
 	public Integer getReactionId() {
 		return reactionId;
 	}
-	
+
 	public void setMetaboliteId(Integer metaboliteId) {
 		this.metaboliteId = metaboliteId;
 	}
@@ -39,7 +39,7 @@ public class SBMLProduct implements ModelProduct {
 	public Integer getMetaboliteId() {
 		return metaboliteId;
 	}
-	
+
 	public void setMetaboliteAbbreviation(String metaboliteAbbreviation) {
 		this.metaboliteAbbreviation = metaboliteAbbreviation;
 	}
@@ -67,16 +67,16 @@ public class SBMLProduct implements ModelProduct {
 		}
 		Connection conn;
 		try {
-			conn = DriverManager.getConnection(createConnectionStatement(getDatabaseName())); // TODO:
-	    
+			conn = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getLoadedDatabase())); // TODO:
+
 			PreparedStatement prep = conn
-	                 .prepareStatement("insert into reaction_products (reaction_id, metabolite_id, stoic) values (?, (select id from metabolites where metabolite_abbreviation = ?), ?);");
+			.prepareStatement("insert into reaction_products (reaction_id, metabolite_id, stoic) values (?, (select id from metabolites where metabolite_abbreviation = ?), ?);");
 			prep.setInt(1, this.getReactionId());
 			prep.setString(2, this.getMetaboliteAbbreviation());
 			prep.setDouble(3, this.getStoic());
 			conn.setAutoCommit(true);
 			prep.executeUpdate();
-			
+
 			conn.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -97,12 +97,12 @@ public class SBMLProduct implements ModelProduct {
 		}
 		Connection conn;
 		try {
-			conn = DriverManager.getConnection(createConnectionStatement(getDatabaseName())); // TODO:
-																		// Make
-																		// this
-																		// configurable
+			conn = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getLoadedDatabase())); // TODO:
+			// Make
+			// this
+			// configurable
 			PreparedStatement prep = conn
-					.prepareStatement("select reaction_id, metabolite_id, stoic from reaction_products where reaction_id = ?;");
+			.prepareStatement("select reaction_id, metabolite_id, stoic from reaction_products where reaction_id = ?;");
 			prep.setInt(1, reactionId);
 			conn.setAutoCommit(true);
 			ResultSet rs = prep.executeQuery();
@@ -125,14 +125,14 @@ public class SBMLProduct implements ModelProduct {
 	@Override
 	public String toString() {
 		return "SBMLProduct [reactionId=" + reactionId
-				+ ", metaboliteAbbreviation=" + metaboliteAbbreviation
-				+ ", stoic=" + stoic + "]";
+		+ ", metaboliteAbbreviation=" + metaboliteAbbreviation
+		+ ", stoic=" + stoic + "]";
 	}
-	
+
 	public String createConnectionStatement(String databaseName) {
 		return "jdbc:sqlite:" + databaseName + ".db";
 	}
-	
+
 	public void getAbbreviationFromId(int id) {
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -142,12 +142,12 @@ public class SBMLProduct implements ModelProduct {
 		}
 		Connection conn;
 		try {
-			conn = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getDatabaseName())); // TODO:
-																		// Make
-																		// this
-																		// configurable
+			conn = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getLoadedDatabase())); // TODO:
+			// Make
+			// this
+			// configurable
 			PreparedStatement prep = conn
-					.prepareStatement("select metabolite_abbreviation from metabolites where id = ?;");
+			.prepareStatement("select metabolite_abbreviation from metabolites where id = ?;");
 			prep.setInt(1, id);
 			conn.setAutoCommit(true);
 			ResultSet rs = prep.executeQuery();
@@ -163,7 +163,7 @@ public class SBMLProduct implements ModelProduct {
 
 	}
 
-	
+
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 

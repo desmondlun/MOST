@@ -67,10 +67,9 @@ import org.apache.log4j.Logger;
 import layout.TableLayout;
 
 public class GraphicalInterface extends JFrame {
-	//test
 	//log4j
 	static Logger log = Logger.getLogger(GraphicalInterface.class);
-	
+
 	public static JTable reactionsTable = new JTable();
 	public static JTable metabolitesTable = new JTable();
 	public static JTextArea outputTextArea = new JTextArea();
@@ -78,9 +77,9 @@ public class GraphicalInterface extends JFrame {
 	//set tabs south (bottom) = 3
 	public JTabbedPane tabbedPane = new JTabbedPane(3); 
 
-	public DefaultListModel<String> listModel = new DefaultListModel();
-	JScrollPane fileListPane = new JScrollPane(fileList);
+	public static DefaultListModel<String> listModel = new DefaultListModel();
 	public static FileList fileList = new FileList();
+	static JScrollPane fileListPane = new JScrollPane(fileList);	
 
 	private Task task;	
 	public final ProgressBar progressBar = new ProgressBar();	
@@ -88,8 +87,6 @@ public class GraphicalInterface extends JFrame {
 
 	public static boolean highlightUnusedMetabolites;	
 	public static boolean showPrompt;	
-	public static boolean sortReactionTableAscending;
-	public static boolean sortMetabolitesTableAscending;
 
 	public static int currentRow;
 
@@ -100,7 +97,7 @@ public class GraphicalInterface extends JFrame {
 	public static int getCurrentRow() {
 		return currentRow;
 	}
-	
+
 	public static int currentFileListRow;
 
 	public void setCurrentFileListRow(int currentFileListRow){
@@ -109,6 +106,16 @@ public class GraphicalInterface extends JFrame {
 
 	public static int getCurrentFileListRow() {
 		return currentFileListRow;
+	}
+
+	public static int copyColumn;
+
+	public void setCopyColumn(int copyColumn){
+		this.copyColumn = copyColumn;
+	}
+
+	public static int getCopyColumn() {
+		return copyColumn;
 	}
 
 	public static String databaseName;
@@ -268,32 +275,43 @@ public class GraphicalInterface extends JFrame {
 	public ArrayList<Image> getIconsList() {
 		return icons;
 	}    
-	
-  @SuppressWarnings("unchecked")
-public GraphicalInterface(final Connection con)
-      throws SQLException {
 
-	  LocalConfig.getInstance().setProgress(0);
-      progressBar.pack();
-      progressBar.setIconImages(icons);
-	  progressBar.setSize(200, 75);
-      progressBar.setTitle("Loading...");
-	  progressBar.setVisible(false);
-	  
-	  setDatabaseName(ConfigConstants.DEFAULT_DATABASE_NAME);
-	  
-	  setTitle(GraphicalInterfaceConstants.TITLE + " - " + ConfigConstants.DEFAULT_DATABASE_NAME);
-	  
-	  final ArrayList<Image> icons = new ArrayList<Image>(); 
-	  icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
-	  icons.add(new ImageIcon("etc/most32.jpg").getImage());
-	  setIconsList(icons);
-	  
-	  /**************************************************************************/
-	  //set up fileList
-	  /**************************************************************************/
-	  
-	  fileList.setModel(listModel);
+	public static OutputPopout popout;
+
+	public void setPopout(OutputPopout popout) {
+		this.popout = popout;
+	}
+
+	public static OutputPopout getPopout() {
+		return popout;
+	}
+
+	@SuppressWarnings("unchecked")
+	public GraphicalInterface(final Connection con)
+	throws SQLException {
+
+		LocalConfig.getInstance().setProgress(0);
+		progressBar.pack();
+		progressBar.setIconImages(icons);
+		progressBar.setSize(200, 75);
+		progressBar.setTitle("Loading...");
+		progressBar.setVisible(false);
+
+		setDatabaseName(ConfigConstants.DEFAULT_DATABASE_NAME);
+		LocalConfig.getInstance().setLoadedDatabase(ConfigConstants.DEFAULT_DATABASE_NAME);
+
+		setTitle(GraphicalInterfaceConstants.TITLE + " - " + ConfigConstants.DEFAULT_DATABASE_NAME);
+
+		final ArrayList<Image> icons = new ArrayList<Image>(); 
+		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
+		icons.add(new ImageIcon("etc/most32.jpg").getImage());
+		setIconsList(icons);
+
+		/**************************************************************************/
+		//set up fileList
+		/**************************************************************************/
+
+		fileList.setModel(listModel);
 		fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
 
 		fileList.addListSelectionListener(new ListSelectionListener() 
@@ -302,10 +320,16 @@ public GraphicalInterface(final Connection con)
 			{    
 				if(fileList.getSelectedIndex() == 0) {
 					clearOutputPane();
+					if (getPopout() != null) {
+						getPopout().clear();
+					}				  
 					String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
+					LocalConfig.getInstance().setLoadedDatabase(getDatabaseName());
 					try {
 						Class.forName("org.sqlite.JDBC");
 						Connection con = DriverManager.getConnection(fileString);			    
+						highlightUnusedMetabolites = false;
+						highlightUnusedMetabolitesItem.setState(false);
 						setUpMetabolitesTable(con);
 						setUpReactionsTable(con);
 						setTitle(GraphicalInterfaceConstants.TITLE + " - " + getDatabaseName());	
@@ -317,112 +341,190 @@ public GraphicalInterface(final Connection con)
 						e2.printStackTrace();
 					}	
 				} else {
-					//if (getOptimizePath() != null) {
-					//gets the full path of optimize
-					String optimizePath = getOptimizePath();
-					if (optimizePath.contains("\\")) {
-						optimizePath = optimizePath.substring(0, optimizePath.lastIndexOf("\\") + 1) + fileList.getSelectedValue().toString();
-					} else {
-						optimizePath = fileList.getSelectedValue().toString();
-					}
-					setOptimizePath(optimizePath);
-					if (getOptimizePath().endsWith(fileList.getSelectedValue().toString())) {
-						loadOutputPane(getOptimizePath() + ".log");
+					if (fileList.getSelectedValue() != null) {
+						//gets the full path of optimize
+						String optimizePath = getOptimizePath();
+						if (optimizePath.contains("\\")) {
+							optimizePath = optimizePath.substring(0, optimizePath.lastIndexOf("\\") + 1) + fileList.getSelectedValue().toString();
+						} else {
+							optimizePath = fileList.getSelectedValue().toString();
+						}
+						setOptimizePath(optimizePath);
+						if (getOptimizePath().endsWith(fileList.getSelectedValue().toString())) {
+							loadOutputPane(getOptimizePath() + ".log");
+							if (getPopout() != null) {
+								getPopout().load(getOptimizePath() + ".log");
+							}	
 
-						String fileString = "jdbc:sqlite:" + getOptimizePath() + ".db";
-						try {
-							Class.forName("org.sqlite.JDBC");
-							Connection con = DriverManager.getConnection(fileString);			    
-							setUpMetabolitesTable(con);
-							setUpReactionsTable(con);
-							setTitle(GraphicalInterfaceConstants.TITLE + " - " + getOptimizePath());	
-						} catch (ClassNotFoundException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (SQLException e2) {
-							// TODO Auto-generated catch block
-							e2.printStackTrace();
-						}			  
-					} 
+							String fileString = "jdbc:sqlite:" + getOptimizePath() + ".db";
+							LocalConfig.getInstance().setLoadedDatabase(getOptimizePath());
+							try {
+								Class.forName("org.sqlite.JDBC");
+								Connection con = DriverManager.getConnection(fileString);			    
+								highlightUnusedMetabolites = false;
+								highlightUnusedMetabolitesItem.setState(false);
+								setUpMetabolitesTable(con);
+								setUpReactionsTable(con);
+								setTitle(GraphicalInterfaceConstants.TITLE + " - " + getOptimizePath());	
+							} catch (ClassNotFoundException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (SQLException e2) {
+								// TODO Auto-generated catch block
+								e2.printStackTrace();
+							}			  
+						} 
+					}
+
 				}        	  
 			} 
-		});      
-      
-	  /**************************************************************************/
-	  //create menu bar
-	  /**************************************************************************/
-	  JMenuBar menuBar = new JMenuBar();
+		});   
 
-	  setJMenuBar(menuBar);
-	
-	  JMenu modelMenu = new JMenu("Model");
-      modelMenu.setMnemonic(KeyEvent.VK_M);
+		fileList.deleteItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 
+				String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
+				LocalConfig.getInstance().setLoadedDatabase(getDatabaseName());
+				try {
+					Class.forName("org.sqlite.JDBC");
+					Connection con = DriverManager.getConnection(fileString);			    
+					setUpMetabolitesTable(con);
+					setUpReactionsTable(con);
+					setTitle(GraphicalInterfaceConstants.TITLE + " - " + getDatabaseName());	
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}				
+			}
+		});
 
-      JMenuItem loadSBMLItem = new JMenuItem("Load SBML");
-      modelMenu.add(loadSBMLItem);
-      loadSBMLItem.setMnemonic(KeyEvent.VK_L);
-      loadSBMLItem.addActionListener(new LoadSBMLAction());
+		fileList.clearItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 
+				setUpTables();				
+			}
+		});
 
-      JMenuItem loadSQLItem = new JMenuItem("Load SQLite");
-      modelMenu.add(loadSQLItem);
-      loadSQLItem.setMnemonic(KeyEvent.VK_Q);
-      loadSQLItem.addActionListener(new LoadSQLiteItemAction());
-      
-      JMenuItem loadCSVMetabolitesItem = new JMenuItem("Load CSV Metabolites");
-      modelMenu.add(loadCSVMetabolitesItem);
-      loadCSVMetabolitesItem.setToolTipText("Metabolites File must be loaded before Reactions File");
-      loadCSVMetabolitesItem.setMnemonic(KeyEvent.VK_C);
-      loadCSVMetabolitesItem.addActionListener(new LoadCSVMetabolitesTableAction());
-      
-      JMenuItem loadTabDelimitedMetabolitesItem = new JMenuItem("Load Tab Delimited Metabolites");
-      modelMenu.add(loadTabDelimitedMetabolitesItem);
-      loadTabDelimitedMetabolitesItem.setToolTipText("Metabolites File must be loaded before Reactions File");
-      loadTabDelimitedMetabolitesItem.setMnemonic(KeyEvent.VK_T);
-      loadTabDelimitedMetabolitesItem.addActionListener(new LoadTabDelimitedMetabolitesTableAction());
-      
-      JMenuItem loadCSVReactionsItem = new JMenuItem("Load CSV Reactions");
-      modelMenu.add(loadCSVReactionsItem);
-      loadCSVReactionsItem.setToolTipText("Metabolites File must be loaded before Reactions File");
-      loadCSVReactionsItem.setMnemonic(KeyEvent.VK_R);
-      loadCSVReactionsItem.addActionListener(new LoadCSVReactionsTableAction());
-      
-      JMenuItem loadTabDelimitedReactionsItem = new JMenuItem("Load Tab Delimited Reactions");
-      modelMenu.add(loadTabDelimitedReactionsItem);
-      loadTabDelimitedReactionsItem.setToolTipText("Metabolites File must be loaded before Reactions File");
-      loadTabDelimitedReactionsItem.setMnemonic(KeyEvent.VK_B);
-      loadTabDelimitedReactionsItem.addActionListener(new LoadTabDelimitedReactionsTableAction());
-      
-      JMenuItem loadExcel97Item = new JMenuItem("Load Excel 97-2003 Workbook");
-      modelMenu.add(loadExcel97Item);
-      loadExcel97Item.setMnemonic(KeyEvent.VK_X);
-      loadExcel97Item.addActionListener(new LoadExcel97Action());
-      
-      modelMenu.addSeparator();
-      
-      JMenuItem saveSQLiteItem = new JMenuItem("Save As SQLite");
-      modelMenu.add(saveSQLiteItem);
-      saveSQLiteItem.setMnemonic(KeyEvent.VK_A);
-      saveSQLiteItem.addActionListener(new SaveSQLiteItemAction());
-      
-      modelMenu.addSeparator();
-      
-      JMenuItem clearItem = new JMenuItem("Clear");
-      modelMenu.add(clearItem);
-      clearItem.setMnemonic(KeyEvent.VK_E);
-      clearItem.addActionListener(new ClearAction());
+		final JPopupMenu outputPopupMenu = new JPopupMenu(); 
+		JMenuItem popOutItem = new JMenuItem("Pop Out");
+		outputPopupMenu.add(popOutItem);
+		popOutItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 	
+				OutputPopout popout = new OutputPopout();
+				setPopout(popout);
+				if (getOptimizePath() != null) {
+					popout.load(getOptimizePath() + ".log");
+				}							
+			}
+		});
 
-      menuBar.add(modelMenu);
+		outputTextArea.addMouseListener(new MouseAdapter() {
 
-      //Simulate menu
-      JMenu simulateMenu = new JMenu("Simulate");
-      simulateMenu.setMnemonic(KeyEvent.VK_S);
-          
-      JMenuItem fbaItem = new JMenuItem("FBA");
-      simulateMenu.add(fbaItem);
-      
-      fbaItem.addActionListener(new ActionListener() {
+			public void mousePressed(MouseEvent e)  {check(e);}
+			public void mouseReleased(MouseEvent e) {check(e);}
+
+			public void check(MouseEvent e) {
+				if (e.isPopupTrigger()) { //if the event shows the menu
+					outputPopupMenu.show(outputTextArea, e.getX(), e.getY()); 
+				}
+			}
+		});	
+
+		/**************************************************************************/
+		//create menu bar
+		/**************************************************************************/
+		JMenuBar menuBar = new JMenuBar();
+
+		setJMenuBar(menuBar);
+
+		JMenu modelMenu = new JMenu("Model");
+		modelMenu.setMnemonic(KeyEvent.VK_M);
+
+		JMenuItem loadSBMLItem = new JMenuItem("Load SBML");
+		modelMenu.add(loadSBMLItem);
+		loadSBMLItem.setMnemonic(KeyEvent.VK_L);
+		loadSBMLItem.addActionListener(new LoadSBMLAction());
+
+		JMenuItem loadSQLItem = new JMenuItem("Load SQLite");
+		modelMenu.add(loadSQLItem);
+		loadSQLItem.setMnemonic(KeyEvent.VK_Q);
+		loadSQLItem.addActionListener(new LoadSQLiteItemAction());
+
+		JMenuItem loadCSVMetabolitesItem = new JMenuItem("Load CSV Metabolites");
+		modelMenu.add(loadCSVMetabolitesItem);
+		loadCSVMetabolitesItem.setToolTipText("Metabolites File must be loaded before Reactions File");
+		loadCSVMetabolitesItem.setMnemonic(KeyEvent.VK_C);
+		loadCSVMetabolitesItem.addActionListener(new LoadCSVMetabolitesTableAction());
+
+		JMenuItem loadTabDelimitedMetabolitesItem = new JMenuItem("Load Tab Delimited Metabolites");
+		modelMenu.add(loadTabDelimitedMetabolitesItem);
+		loadTabDelimitedMetabolitesItem.setToolTipText("Metabolites File must be loaded before Reactions File");
+		loadTabDelimitedMetabolitesItem.setMnemonic(KeyEvent.VK_T);
+		loadTabDelimitedMetabolitesItem.addActionListener(new LoadTabDelimitedMetabolitesTableAction());
+
+		JMenuItem loadCSVReactionsItem = new JMenuItem("Load CSV Reactions");
+		modelMenu.add(loadCSVReactionsItem);
+		loadCSVReactionsItem.setToolTipText("Metabolites File must be loaded before Reactions File");
+		loadCSVReactionsItem.setMnemonic(KeyEvent.VK_R);
+		loadCSVReactionsItem.addActionListener(new LoadCSVReactionsTableAction());
+
+		JMenuItem loadTabDelimitedReactionsItem = new JMenuItem("Load Tab Delimited Reactions");
+		modelMenu.add(loadTabDelimitedReactionsItem);
+		loadTabDelimitedReactionsItem.setToolTipText("Metabolites File must be loaded before Reactions File");
+		loadTabDelimitedReactionsItem.setMnemonic(KeyEvent.VK_B);
+		loadTabDelimitedReactionsItem.addActionListener(new LoadTabDelimitedReactionsTableAction());
+
+		JMenuItem loadExcel97Item = new JMenuItem("Load Excel 97-2003 Workbook");
+		modelMenu.add(loadExcel97Item);
+		loadExcel97Item.setMnemonic(KeyEvent.VK_X);
+		loadExcel97Item.addActionListener(new LoadExcel97Action());
+
+		modelMenu.addSeparator();
+
+		JMenuItem saveSQLiteItem = new JMenuItem("Save As SQLite");
+		modelMenu.add(saveSQLiteItem);
+		saveSQLiteItem.setMnemonic(KeyEvent.VK_A);
+		saveSQLiteItem.addActionListener(new SaveSQLiteItemAction());
+
+		modelMenu.addSeparator();
+
+		JMenuItem clearItem = new JMenuItem("Clear");
+		modelMenu.add(clearItem);
+		clearItem.setMnemonic(KeyEvent.VK_E);
+		clearItem.addActionListener(new ClearAction());
+
+		menuBar.add(modelMenu);
+
+		//Simulate menu
+		JMenu simulateMenu = new JMenu("Simulate");
+		simulateMenu.setMnemonic(KeyEvent.VK_S);
+
+		JMenuItem fbaItem = new JMenuItem("FBA");
+		simulateMenu.add(fbaItem);
+
+		fbaItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
-								
+                //load original db into tables
+				fileList.removeSelectionInterval(0, listModel.size());
+				String fileString1 = "jdbc:sqlite:" + getDatabaseName() + ".db";
+				LocalConfig.getInstance().setLoadedDatabase(getDatabaseName());
+				try {
+					Class.forName("org.sqlite.JDBC");
+					Connection con = DriverManager.getConnection(fileString1);			    
+					highlightUnusedMetabolites = false;
+					highlightUnusedMetabolitesItem.setState(false);
+					setUpMetabolitesTable(con);
+					setUpReactionsTable(con);
+					setTitle(GraphicalInterfaceConstants.TITLE + " - " + getDatabaseName());	
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+
 				Date date = new Date();
 				Format formatter;
 				formatter = new SimpleDateFormat("_yyMMdd_HHmmss");
@@ -438,25 +540,24 @@ public GraphicalInterface(final Connection con)
 									getDatabaseName().lastIndexOf("\\") + 1) + dateTimeStamp);
 				} else {
 					optimizePath = GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
-							+ getDatabaseName() + dateTimeStamp;
+					+ getDatabaseName() + dateTimeStamp;
 				}
 
 				copier.copyDatabase(getDatabaseName(), optimizePath);
 				listModel
-						.addElement(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
-								+ (getDatabaseName()
-										.substring(
-												getDatabaseName().lastIndexOf(
-														"\\") + 1) + dateTimeStamp));
+				.addElement(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
+						+ (getDatabaseName()
+								.substring(
+										getDatabaseName().lastIndexOf(
+												"\\") + 1) + dateTimeStamp));
 
 				
-				
 				setOptimizePath(optimizePath);
-				
-				
-				
+
+
+
 				// DEGEN: Begin optimization
-				
+
 				ReactionFactory aFactory = new ReactionFactory();
 				Vector<ModelReaction> reactions = aFactory.getAllReactions(
 						"SBML", getDatabaseName()); 
@@ -469,6 +570,7 @@ public GraphicalInterface(final Connection con)
 
 				model.setBiologicalObjective(objReactions);
 				log.debug("create an optimize");
+
 
 				Optimize opt = new Optimize();
 				opt.setDatabaseName(getOptimizePath());
@@ -495,16 +597,16 @@ public GraphicalInterface(final Connection con)
 
 					}
 				}
-
+				
 				Writer writer = null;
 				try {
-					
+
 					outputText.append("\nmax objective flux:"
 							+ opt.getmaxFlux());
 					File file = new File(optimizePath + ".log");
 					writer = new BufferedWriter(new FileWriter(file));
 					writer.write(outputText.toString());
-
+				
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -519,7 +621,11 @@ public GraphicalInterface(final Connection con)
 					}
 				}
 				loadOutputPane(getOptimizePath() + ".log");
+				if (getPopout() != null) {
+					getPopout().load(getOptimizePath() + ".log");
+				}				
 				String fileString = "jdbc:sqlite:" + getOptimizePath() + ".db";
+				LocalConfig.getInstance().setLoadedDatabase(getOptimizePath());
 				try {
 					Class.forName("org.sqlite.JDBC");
 					Connection con = DriverManager.getConnection(fileString);			    
@@ -535,51 +641,51 @@ public GraphicalInterface(final Connection con)
 				}
 			}
 		});
-     
-      menuBar.add(simulateMenu);
-    
-    //Edit menu
-      JMenu editMenu = new JMenu("Edit");
-      editMenu.setMnemonic(KeyEvent.VK_E);
-    
-      highlightUnusedMetabolitesItem.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent ae) {
-        	  boolean state = highlightUnusedMetabolitesItem.getState();
-              if (state == true) {
-            	  highlightUnusedMetabolites = true;
-              } else {
-            	  highlightUnusedMetabolites = false;
-              }
-    		  String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
-    	      try {
-    			Class.forName("org.sqlite.JDBC");
-    			Connection con = DriverManager.getConnection(fileString);
-    			setUpMetabolitesTable(con);
-    			setUpReactionsTable(con);
-    	    	} catch (ClassNotFoundException e) {
-    				 // TODO Auto-generated catch block
-    				 e.printStackTrace();
-    			} catch (SQLException e) {
-    				    // TODO Auto-generated catch block
-    				    e.printStackTrace();
-    			}   
-          }
-       });
-      editMenu.add(highlightUnusedMetabolitesItem);
-      
-      JMenuItem deleteUnusedItem = new JMenuItem("Delete All Unused Metabolites");
-      editMenu.add(deleteUnusedItem);
-      deleteUnusedItem.setMnemonic(KeyEvent.VK_D);
-    
-      deleteUnusedItem.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent ae) {
-        	  MetaboliteFactory mFactory = new MetaboliteFactory();
-        	  mFactory.deleteAllUnusedMetabolites(getDatabaseName());
-        	  try {
-					String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
+
+		menuBar.add(simulateMenu);
+
+		//Edit menu
+		JMenu editMenu = new JMenu("Edit");
+		editMenu.setMnemonic(KeyEvent.VK_E);
+
+		highlightUnusedMetabolitesItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				boolean state = highlightUnusedMetabolitesItem.getState();
+				if (state == true) {
+					highlightUnusedMetabolites = true;
+				} else {
+					highlightUnusedMetabolites = false;
+				}
+				String fileString = "jdbc:sqlite:" + LocalConfig.getInstance().getLoadedDatabase() + ".db";
+				try {
 					Class.forName("org.sqlite.JDBC");
-				    Connection con = DriverManager.getConnection(fileString);					    	
-				    setUpMetabolitesTable(con);	
+					Connection con = DriverManager.getConnection(fileString);
+					setUpMetabolitesTable(con);
+					setUpReactionsTable(con);
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}   
+			}
+		});
+		editMenu.add(highlightUnusedMetabolitesItem);
+
+		JMenuItem deleteUnusedItem = new JMenuItem("Delete All Unused Metabolites");
+		editMenu.add(deleteUnusedItem);
+		deleteUnusedItem.setMnemonic(KeyEvent.VK_D);
+
+		deleteUnusedItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				MetaboliteFactory mFactory = new MetaboliteFactory();
+				mFactory.deleteAllUnusedMetabolites(LocalConfig.getInstance().getLoadedDatabase());
+				try {
+					String fileString = "jdbc:sqlite:" + LocalConfig.getInstance().getLoadedDatabase() + ".db";
+					Class.forName("org.sqlite.JDBC");
+					Connection con = DriverManager.getConnection(fileString);					    	
+					setUpMetabolitesTable(con);	
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -588,210 +694,210 @@ public GraphicalInterface(final Connection con)
 					e.printStackTrace();
 				}
 				highlightUnusedMetabolites = false;
-		    	highlightUnusedMetabolitesItem.setState(false);
-          }
-      });   
-      
-      editMenu.addSeparator(); 
-      
-      JMenuItem addReacRowItem = new JMenuItem("Add Row to Reactions Table");
-      editMenu.add(addReacRowItem);
-      addReacRowItem.setMnemonic(KeyEvent.VK_R);
-      
-      addReacRowItem.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent ae) {
-              DatabaseCreator creator = new DatabaseCreator();
- 	    	  creator.addReactionRow(getDatabaseName(), (reactionsTable.getModel().getRowCount() + 1));
- 	    	  String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
- 	    	  try {
- 				Class.forName("org.sqlite.JDBC");
- 			    Connection con = DriverManager.getConnection(fileString);
- 			    setUpReactionsTable(con);
- 			    //set focus to id cell in new row in order to set row visible
- 			    reactionsTable.changeSelection(reactionsTable.getModel().getRowCount() + 2, 0, false, false);
- 			    reactionsTable.requestFocus();
- 	            } catch (ClassNotFoundException e) {
- 				     // TODO Auto-generated catch block
- 				     e.printStackTrace();
- 			    } catch (SQLException e) {
- 				    // TODO Auto-generated catch block
- 				    e.printStackTrace();
- 			    }
-          }
-      });   	  
-        	          	  
-      JMenuItem addMetabRowItem = new JMenuItem("Add Row to Metabolites Table");      
-      editMenu.add(addMetabRowItem); 
-      addMetabRowItem.setMnemonic(KeyEvent.VK_M);
-      
-      addMetabRowItem.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent ae) {
-        	  DatabaseCreator creator = new DatabaseCreator();
- 	    	  creator.addMetaboliteRow(getDatabaseName(), (metabolitesTable.getModel().getRowCount() + 1));
- 	    	  String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
- 	    	  try {
- 				Class.forName("org.sqlite.JDBC");
- 			    Connection con = DriverManager.getConnection(fileString);
- 			    setUpMetabolitesTable(con);
- 			    //set focus to id cell in new row in order to set row visible
- 			    metabolitesTable.changeSelection(metabolitesTable.getModel().getRowCount() + 2, 0, false, false);
- 			    metabolitesTable.requestFocus();
- 	            } catch (ClassNotFoundException e) {
- 				     // TODO Auto-generated catch block
- 				     e.printStackTrace();
- 			    } catch (SQLException e) {
- 				    // TODO Auto-generated catch block
- 				    e.printStackTrace();
- 			    }
-          }
-      });
-      
-      menuBar.add(editMenu);
-      
-      //Optimize menu
-      JMenu optimizeMenu = new JMenu("Optimize");
-      optimizeMenu.setMnemonic(KeyEvent.VK_O);
-    
-      JMenuItem gdbbItem = new JMenuItem("GDBB");
-      optimizeMenu.add(gdbbItem);
-      
-      //JMenuItem gdlsItem = new JMenuItem("GDLS");
-      //optimizeMenu.add(gdlsItem);
-    
-      menuBar.add(optimizeMenu);
-      
-      JMenu helpMenu = new JMenu("Help");
-      helpMenu.setMnemonic(KeyEvent.VK_H);
-      
-      JMenuItem viewHelpTopics = new JMenuItem("View Help Topics");
-      helpMenu.add(viewHelpTopics);
-      viewHelpTopics.setMnemonic(KeyEvent.VK_H);
-      
-      viewHelpTopics.addActionListener(new ActionListener() {
-    	  public void actionPerformed(ActionEvent a) {
-    		  java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
-    		  if( !desktop.isSupported( java.awt.Desktop.Action.BROWSE ) ) {
-    	            //System.err.println( "Desktop doesn't support the browse action (fatal)" );
-    	            //System.exit( 1 );
-    	            JOptionPane.showMessageDialog(null,                
-  		    				"Default Browser Error. Default Browser May Not Be Set On This System.",                
-  		    				"Default Browser Error",                                
-  		    				JOptionPane.ERROR_MESSAGE); 
-    	        }
+				highlightUnusedMetabolitesItem.setState(false);
+			}
+		});   
 
-    	        try{ 
-    	            String url = GraphicalInterfaceConstants.HELP_TOPICS_URL;  
-    	            java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));  
-    	          }  
-    	          catch (java.io.IOException e) {  
-    	        	  JOptionPane.showMessageDialog(null,                
-  		    				"This URL may not exist. Check internet connection.",                
-  		    				"URL Not Found",                                
-  		    				JOptionPane.ERROR_MESSAGE);   
-    	          }
-    	    }    	     
-      });
-      
-      JMenuItem aboutBox = new JMenuItem("About MOST");
-      helpMenu.add(aboutBox);
-      aboutBox.setMnemonic(KeyEvent.VK_A);
-      
-      aboutBox.addActionListener(new ActionListener() {
-    	  public void actionPerformed(ActionEvent a) {
-    		  JOptionPane.showMessageDialog(null,                
-	    				"MOST - Metabolic Optimization and Simulation Tool." +
-	    				" Version 1.0.0",                
-	    				"About MOST",                                
-	    				JOptionPane.INFORMATION_MESSAGE);
-    	    }    	     
-      });
+		editMenu.addSeparator(); 
 
-      menuBar.add(helpMenu);
-      
-      /**************************************************************************/
-      //end menu bar
-      /**************************************************************************/
+		JMenuItem addReacRowItem = new JMenuItem("Add Row to Reactions Table");
+		editMenu.add(addReacRowItem);
+		addReacRowItem.setMnemonic(KeyEvent.VK_R);
 
-      /**************************************************************************/
-      //create blank tables, set models and layouts
-      /**************************************************************************/
-	  
-      setUpReactionsTable(con);
-	  TableCellListener tcl = new TableCellListener(reactionsTable, rAction);
-	  ReactionsPopupListener reactionsPopupListener = new ReactionsPopupListener();
-	  reactionsTable.addMouseListener(reactionsPopupListener);
-	  reactionsTable.setRowHeight(20);
+		addReacRowItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				DatabaseCreator creator = new DatabaseCreator();
+				creator.addReactionRow(LocalConfig.getInstance().getLoadedDatabase(), (reactionsTable.getModel().getRowCount() + 1));
+				String fileString = "jdbc:sqlite:" + LocalConfig.getInstance().getLoadedDatabase() + ".db";
+				try {
+					Class.forName("org.sqlite.JDBC");
+					Connection con = DriverManager.getConnection(fileString);
+					setUpReactionsTable(con);
+					//set focus to id cell in new row in order to set row visible
+					reactionsTable.changeSelection(reactionsTable.getModel().getRowCount() + 2, 0, false, false);
+					reactionsTable.requestFocus();
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});   	  
 
-      setUpMetabolitesTable(con);
-      TableCellListener mtcl = new TableCellListener(metabolitesTable, mAction);
-      MetabolitesPopupListener metabolitesPopupListener = new MetabolitesPopupListener();
-	  metabolitesTable.addMouseListener(metabolitesPopupListener);
-      metabolitesTable.setRowHeight(20);
-      
-      /************************************************************************/
-      //end blank tables, set models and layouts
-      /************************************************************************/
-      
-      /************************************************************************/
-      //set frame layout 
-      /************************************************************************/
-      
-      JScrollPane scrollPaneReac = new JScrollPane(reactionsTable);
-      tabbedPane.addTab(GraphicalInterfaceConstants.DEFAULT_REACTION_TABLE_TAB_NAME, scrollPaneReac);
-      //tabbedPane.setMnemonicAt(0, KeyEvent.VK_R);
-     
-      JScrollPane scrollPaneMetab = new JScrollPane(metabolitesTable);
-      tabbedPane.addTab(GraphicalInterfaceConstants.DEFAULT_METABOLITE_TABLE_TAB_NAME, scrollPaneMetab);
-      //tabbedPane.setMnemonicAt(1, KeyEvent.VK_B);  	  
-	  
-      JScrollPane outputPane = new JScrollPane(outputTextArea);
-      
-      double border = 10;
-	  double size[][] =
-	        {{border, TableLayout.FILL, 20, 0.20, border},  //Columns
-	         {border, TableLayout.FILL, 20, 0.20, border}}; // Rows  
-      
-	  setLayout (new TableLayout(size)); 
-	  
-      add (tabbedPane, "1, 1, 1, 1"); // Left
-      add (fileListPane, "3, 1, 1, 3"); // Right
-      add (outputPane, "1, 3, 1, 1"); // Bottom
-    
-      setBackground(Color.lightGray);
-  }
-  /********************************************************************************/
-  //end layout
-  /********************************************************************************/
-  
-  /********************************************************************************/
-  //methods
-  /********************************************************************************/
-  
-  public void positionColumn(JTable table,int col_Index) {
-	   table.moveColumn(table.getColumnCount()-1, col_Index);
-  }
+		JMenuItem addMetabRowItem = new JMenuItem("Add Row to Metabolites Table");      
+		editMenu.add(addMetabRowItem); 
+		addMetabRowItem.setMnemonic(KeyEvent.VK_M);
 
-  public void selectCell(int row,int col, JTable table)
-  {
-     if(row!=-1 && col !=-1)            
-     {
-         table.setRowSelectionInterval(row,row);
-         table.setColumnSelectionInterval(col,col);
-     }
-  }
-    
-  //from http://www.roseindia.net/java/example/java/swing/ChangeColumnName.shtml  
-  public void ChangeName(JTable table, int col_index, String col_name){
-	   table.getColumnModel().getColumn(col_index).setHeaderValue(col_name);
-  }
-  /*******************************************************************************/
-  //end methods
-  /*******************************************************************************/
-  
-  /*******************************************************************************/
-  //Actions
-  /*******************************************************************************/ 
-  class LoadSBMLAction implements ActionListener {
+		addMetabRowItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				DatabaseCreator creator = new DatabaseCreator();
+				creator.addMetaboliteRow(LocalConfig.getInstance().getLoadedDatabase(), (metabolitesTable.getModel().getRowCount() + 1));
+				String fileString = "jdbc:sqlite:" + LocalConfig.getInstance().getLoadedDatabase() + ".db";
+				try {
+					Class.forName("org.sqlite.JDBC");
+					Connection con = DriverManager.getConnection(fileString);
+					setUpMetabolitesTable(con);
+					//set focus to id cell in new row in order to set row visible
+					metabolitesTable.changeSelection(metabolitesTable.getModel().getRowCount() + 2, 0, false, false);
+					metabolitesTable.requestFocus();
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+
+		menuBar.add(editMenu);
+
+		//Optimize menu
+		JMenu optimizeMenu = new JMenu("Optimize");
+		optimizeMenu.setMnemonic(KeyEvent.VK_O);
+
+		JMenuItem gdbbItem = new JMenuItem("GDBB");
+		optimizeMenu.add(gdbbItem);
+
+		//JMenuItem gdlsItem = new JMenuItem("GDLS");
+		//optimizeMenu.add(gdlsItem);
+
+		menuBar.add(optimizeMenu);
+
+		JMenu helpMenu = new JMenu("Help");
+		helpMenu.setMnemonic(KeyEvent.VK_H);
+
+		JMenuItem viewHelpTopics = new JMenuItem("View Help Topics");
+		helpMenu.add(viewHelpTopics);
+		viewHelpTopics.setMnemonic(KeyEvent.VK_H);
+
+		viewHelpTopics.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) {
+				java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+				if( !desktop.isSupported( java.awt.Desktop.Action.BROWSE ) ) {
+					//System.err.println( "Desktop doesn't support the browse action (fatal)" );
+					//System.exit( 1 );
+					JOptionPane.showMessageDialog(null,                
+							"Default Browser Error. Default Browser May Not Be Set On This System.",                
+							"Default Browser Error",                                
+							JOptionPane.ERROR_MESSAGE); 
+				}
+
+				try{ 
+					String url = GraphicalInterfaceConstants.HELP_TOPICS_URL;  
+					java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));  
+				}  
+				catch (java.io.IOException e) {  
+					JOptionPane.showMessageDialog(null,                
+							"This URL may not exist. Check internet connection.",                
+							"URL Not Found",                                
+							JOptionPane.ERROR_MESSAGE);   
+				}
+			}    	     
+		});
+
+		JMenuItem aboutBox = new JMenuItem("About MOST");
+		helpMenu.add(aboutBox);
+		aboutBox.setMnemonic(KeyEvent.VK_A);
+
+		aboutBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) {
+				JOptionPane.showMessageDialog(null,                
+						"MOST - Metabolic Optimization and Simulation Tool." +
+						" Version 1.0.0",                
+						"About MOST",                                
+						JOptionPane.INFORMATION_MESSAGE);
+			}    	     
+		});
+
+		menuBar.add(helpMenu);
+
+		/**************************************************************************/
+		//end menu bar
+		/**************************************************************************/
+
+		/**************************************************************************/
+		//create blank tables, set models and layouts
+		/**************************************************************************/
+
+		setUpReactionsTable(con);
+		TableCellListener tcl = new TableCellListener(reactionsTable, rAction);
+		ReactionsPopupListener reactionsPopupListener = new ReactionsPopupListener();
+		reactionsTable.addMouseListener(reactionsPopupListener);
+		reactionsTable.setRowHeight(20);
+
+		setUpMetabolitesTable(con);
+		TableCellListener mtcl = new TableCellListener(metabolitesTable, mAction);
+		MetabolitesPopupListener metabolitesPopupListener = new MetabolitesPopupListener();
+		metabolitesTable.addMouseListener(metabolitesPopupListener);
+		metabolitesTable.setRowHeight(20);
+
+		/************************************************************************/
+		//end blank tables, set models and layouts
+		/************************************************************************/
+
+		/************************************************************************/
+		//set frame layout 
+		/************************************************************************/
+
+		JScrollPane scrollPaneReac = new JScrollPane(reactionsTable);
+		tabbedPane.addTab(GraphicalInterfaceConstants.DEFAULT_REACTION_TABLE_TAB_NAME, scrollPaneReac);
+		tabbedPane.setMnemonicAt(0, KeyEvent.VK_R);
+
+		JScrollPane scrollPaneMetab = new JScrollPane(metabolitesTable);
+		tabbedPane.addTab(GraphicalInterfaceConstants.DEFAULT_METABOLITE_TABLE_TAB_NAME, scrollPaneMetab);
+		tabbedPane.setMnemonicAt(1, KeyEvent.VK_B);  	  
+
+		JScrollPane outputPane = new JScrollPane(outputTextArea);
+
+		double border = 10;
+		double size[][] =
+		{{border, TableLayout.FILL, 20, 0.20, border},  //Columns
+				{border, TableLayout.FILL, 20, 0.20, border}}; // Rows  
+
+		setLayout (new TableLayout(size)); 
+
+		add (tabbedPane, "1, 1, 1, 1"); // Left
+		add (fileListPane, "3, 1, 1, 3"); // Right
+		add (outputPane, "1, 3, 1, 1"); // Bottom
+
+		setBackground(Color.lightGray);
+	}
+	/********************************************************************************/
+	//end layout
+	/********************************************************************************/
+
+	/********************************************************************************/
+	//methods
+	/********************************************************************************/
+
+	public void positionColumn(JTable table,int col_Index) {
+		table.moveColumn(table.getColumnCount()-1, col_Index);
+	}
+
+	public void selectCell(int row,int col, JTable table)
+	{
+		if(row!=-1 && col !=-1)            
+		{
+			table.setRowSelectionInterval(row,row);
+			table.setColumnSelectionInterval(col,col);
+		}
+	}
+
+	//from http://www.roseindia.net/java/example/java/swing/ChangeColumnName.shtml  
+	public void ChangeName(JTable table, int col_index, String col_name){
+		table.getColumnModel().getColumn(col_index).setHeaderValue(col_name);
+	}
+	/*******************************************************************************/
+	//end methods
+	/*******************************************************************************/
+
+	/*******************************************************************************/
+	//Actions
+	/*******************************************************************************/ 
+	class LoadSBMLAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) { 
 			progressBar.progress.setValue(0);
 			LocalConfig.getInstance().setProgress(0);	  
@@ -811,13 +917,17 @@ public GraphicalInterface(final Connection con)
 							"Invalid Excel File",                                
 							JOptionPane.ERROR_MESSAGE);
 				} else {
+					fileList.setSelectedIndex(-1);
+					listModel.clear();
+					fileList.setModel(listModel);
 					if (rawFilename.endsWith(".xml")) {
 						filename = rawFilename.substring(0, rawFilename.length() - 4);
 					} else {
 						filename = rawFilename.substring(0, rawFilename.length() - 5);
 					}
 					setSBMLFile(file);
-					setDatabaseName(filename);  
+					setDatabaseName(filename); 
+					LocalConfig.getInstance().setLoadedDatabase(filename);
 					LocalConfig.getInstance().setProgress(0);
 					// Schedule a job for the event-dispatching thread:
 					// creating and showing this application's GUI.
@@ -849,11 +959,15 @@ public GraphicalInterface(final Connection con)
 							"Invalid Excel File",                                
 							JOptionPane.ERROR_MESSAGE);
 				} else {
+					fileList.setSelectedIndex(-1);
+					listModel.clear();
+					fileList.setModel(listModel);
 					String filename = rawFilename.substring(0, rawFilename.length() - 3);
 					String rawPath = fileChooser.getSelectedFile().getPath();
 					String path = rawPath.substring(0, rawPath.length() - 3);
 					setDatabaseName(path);
-					setUpTables(filename); 
+					LocalConfig.getInstance().setLoadedDatabase(path);
+					setUpTables(); 
 				}
 
 			}
@@ -883,15 +997,22 @@ public GraphicalInterface(final Connection con)
 						"Invalid Excel File",                                
 						JOptionPane.ERROR_MESSAGE);
 			} else {
+				fileList.setSelectedIndex(-1);
+				listModel.clear();
+				fileList.setModel(listModel);
 				setMetabolitesCSVFile(file);
 				String filename = rawFilename.substring(0, rawFilename.length() - 4);      	
 				setDatabaseName(filename);
+				LocalConfig.getInstance().setLoadedDatabase(filename);
 				try {
 					String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
 					Class.forName("org.sqlite.JDBC");
 					Connection con = DriverManager.getConnection(fileString);
+
+					LocalConfig.getInstance().setMetabolitesNextRowCorrection(0);
+
 					TextMetabolitesModelReader reader = new TextMetabolitesModelReader();
-					ArrayList<String> columnNamesFromFile = reader.columnNamesFromFile(file);
+					ArrayList<String> columnNamesFromFile = reader.columnNamesFromFile(file, 0);
 					MetaboliteColumnNameInterface columnNameInterface = new MetaboliteColumnNameInterface(con, columnNamesFromFile);
 
 					columnNameInterface.setModal(true);
@@ -939,13 +1060,19 @@ public GraphicalInterface(final Connection con)
 						"Invalid Excel File",                                
 						JOptionPane.ERROR_MESSAGE);
 			} else {
+				fileList.setSelectedIndex(-1);
+				listModel.clear();
+				fileList.setModel(listModel);
 				setReactionsCSVFile(file);
 				try {
 					String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
 					Class.forName("org.sqlite.JDBC");
 					Connection con = DriverManager.getConnection(fileString);
+
+					LocalConfig.getInstance().setReactionsNextRowCorrection(0);
+
 					TextReactionsModelReader reader = new TextReactionsModelReader();			    
-					ArrayList<String> columnNamesFromFile = reader.columnNamesFromFile(file);
+					ArrayList<String> columnNamesFromFile = reader.columnNamesFromFile(file, 0);
 					ReactionColumnNameInterface columnNameInterface = new ReactionColumnNameInterface(con, columnNamesFromFile);
 
 					columnNameInterface.setModal(true);
@@ -968,51 +1095,51 @@ public GraphicalInterface(final Connection con)
 		}	  
 	}  
 
-  
-  class LoadCSVMetabolitesTableAction implements ActionListener {
-	  public void actionPerformed(ActionEvent ae) {
-		  setSplitCharacter(',');
-		  setExtension(".csv");
-		  loadMetabolitesTextFile();
-		  t.start();
-      }
-  }
-  
-  class LoadTabDelimitedMetabolitesTableAction implements ActionListener {
-	  public void actionPerformed(ActionEvent ae) {
-		  setSplitCharacter('\t');
-		  setExtension(".txt");
-		  loadMetabolitesTextFile();
-		  t.start();
-      }
-  }
-  
-  class LoadCSVReactionsTableAction implements ActionListener {
-	  public void actionPerformed(ActionEvent ae) {
-		  setSplitCharacter(',');
-		  setExtension(".csv");
-		  loadReactionsTextFile();
-		  t.start();
-      }
-  }
-  
-  class LoadTabDelimitedReactionsTableAction implements ActionListener {
-	  public void actionPerformed(ActionEvent ae) {
-		  setSplitCharacter('\t');
-		  setExtension(".txt");
-		  loadReactionsTextFile();
-		  t.start();
-      }
-  }
-  
-  class LoadExcel97Action implements ActionListener {
-      public void actionPerformed(ActionEvent ae) {
-    	  loadExcel97File();
-    	  t.start();
-      }
-  };
-  
-  public void loadExcel97File() {
+
+	class LoadCSVMetabolitesTableAction implements ActionListener {
+		public void actionPerformed(ActionEvent ae) {
+			setSplitCharacter(',');
+			setExtension(".csv");
+			loadMetabolitesTextFile();
+			t.start();
+		}
+	}
+
+	class LoadTabDelimitedMetabolitesTableAction implements ActionListener {
+		public void actionPerformed(ActionEvent ae) {
+			setSplitCharacter('\t');
+			setExtension(".txt");
+			loadMetabolitesTextFile();
+			t.start();
+		}
+	}
+
+	class LoadCSVReactionsTableAction implements ActionListener {
+		public void actionPerformed(ActionEvent ae) {
+			setSplitCharacter(',');
+			setExtension(".csv");
+			loadReactionsTextFile();
+			t.start();
+		}
+	}
+
+	class LoadTabDelimitedReactionsTableAction implements ActionListener {
+		public void actionPerformed(ActionEvent ae) {
+			setSplitCharacter('\t');
+			setExtension(".txt");
+			loadReactionsTextFile();
+			t.start();
+		}
+	}
+
+	class LoadExcel97Action implements ActionListener {
+		public void actionPerformed(ActionEvent ae) {
+			loadExcel97File();
+			t.start();
+		}
+	};
+
+	public void loadExcel97File() {
 		loadSetUp();
 		JTextArea output = null;
 		JFileChooser fileChooser = new JFileChooser();
@@ -1030,7 +1157,11 @@ public GraphicalInterface(final Connection con)
 						"Invalid Excel File",                                
 						JOptionPane.ERROR_MESSAGE);
 			} else {
+				fileList.setSelectedIndex(-1);
+				listModel.clear();
+				fileList.setModel(listModel);
 				setDatabaseName(filename);
+				LocalConfig.getInstance().setLoadedDatabase(filename);
 				ArrayList<String> sheetNames = new ArrayList();
 
 				Excel97Reader reader = new Excel97Reader(); 
@@ -1080,116 +1211,136 @@ public GraphicalInterface(final Connection con)
 			}          	
 		}
 	}
-  
-  public void saveSQLiteFile(){
-	  DatabaseCopier copier = new DatabaseCopier();
-	  //filename is rawFilename - extension
-	  String filename = getDBFilename().substring(0, getDBFilename().length() - 3);
-	  
-  	  //compare strings - same = 0
-  	  if (getDatabaseName().compareTo(getDBPath()) == 0) {
-  		  //creates a backup copy to prevent overwriting a db file
-  		  copier.copyDatabase(getDatabaseName(), getDBPath() + GraphicalInterfaceConstants.DB_COPIER_SUFFIX);
-  	  } else {  		  
-  		  copier.copyDatabase(getDatabaseName(), getDBPath());
-  		  //when db is created in a blank interface, this code
-  		  //creates a copy of db so if user modifies it in the future, 
-  		  //there is a revert option or backup copy, since db is
-  		  //able to be modified in real time
-  		  if (getDatabaseName() == ConfigConstants.DEFAULT_DATABASE_NAME) {
-			      copier.copyDatabase(getDatabaseName(), getDBPath() + GraphicalInterfaceConstants.DB_COPIER_SUFFIX);
-		  }
-    	  setDatabaseName(getDBPath());    	  
-    	try {
-			String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
-			Class.forName("org.sqlite.JDBC");
-		    Connection con = DriverManager.getConnection(fileString);	
-		    setUpReactionsTable(con);			    
-		    setUpMetabolitesTable(con);
-		    setTitle(GraphicalInterfaceConstants.TITLE + " - " + filename);		
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+	public void saveSQLiteFile(){
+		String oldName = getDatabaseName();
+		DatabaseCopier copier = new DatabaseCopier();
+		//filename is rawFilename - extension
+		String filename = getDBFilename().substring(0, getDBFilename().length() - 3);
+
+		//compare strings - same = 0
+		if (getDatabaseName().compareTo(getDBPath()) == 0) {
+			//creates a backup copy to prevent overwriting a db file
+			copier.copyDatabase(getDatabaseName(), getDBPath() + GraphicalInterfaceConstants.DB_COPIER_SUFFIX);
+		} else {  		  
+			copier.copyDatabase(getDatabaseName(), getDBPath());
+			//when db is created in a blank interface, this code
+			//creates a copy of db so if user modifies it in the future, 
+			//there is a revert option or backup copy, since db is
+			//able to be modified in real time
+			if (getDatabaseName() == ConfigConstants.DEFAULT_DATABASE_NAME) {
+				copier.copyDatabase(getDatabaseName(), getDBPath() + GraphicalInterfaceConstants.DB_COPIER_SUFFIX);
+			}
+			setDatabaseName(getDBPath());    	  
+			try {
+				String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
+				Class.forName("org.sqlite.JDBC");
+				Connection con = DriverManager.getConnection(fileString);	
+				setUpReactionsTable(con);			    
+				setUpMetabolitesTable(con);
+				setTitle(GraphicalInterfaceConstants.TITLE + " - " + filename);	
+				fileList.setSelectedIndex(-1);
+				//list holds dateTime stamps from items in old fileList
+				ArrayList<String> suffixList = new ArrayList();
+				for (int i = 1; i < listModel.size(); i++) {
+					//length of dateTime stamp is 14
+					String suffix = listModel.get(i).substring(listModel.get(i).length() - 14);
+					suffixList.add(suffix);
+				}
+				listModel.clear();
+				listModel.addElement(filename);
+				for (int i = 0; i < suffixList.size(); i++) {
+					listModel.addElement(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + filename + suffixList.get(i));
+					copier.copyDatabase(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + oldName + suffixList.get(i), GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + filename + suffixList.get(i));
+					copier.copyLogFile(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + oldName + suffixList.get(i), GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + filename + suffixList.get(i));
+				}
+
+				fileList.setModel(listModel);
+				clearOutputPane();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-  	  }
-  }
-  
-  public void saveFile() {
-	  JTextArea output = null;
-	  JFileChooser fileChooser = new JFileChooser(new File(getDatabaseName()));
-	  boolean done = false;
-	  while (!done) {
-          //... Open a file dialog.
-          int retval = fileChooser.showSaveDialog(output);
-          if (retval == JFileChooser.CANCEL_OPTION) {
-        	  done = true;
-          }
-          if (retval == JFileChooser.APPROVE_OPTION) {            	  
-              //... The user selected a file, get it, use it.
-        	  String rawPath = fileChooser.getSelectedFile().getPath();
-        	  setDBPath(rawPath);
-          	  String rawFilename = fileChooser.getSelectedFile().getName();
-          	  //checks if filename endswith .db else renames file to end with .db
-          	  if (!rawPath.endsWith(".db")) {
-          		  rawPath = rawPath + ".db";
-          	  }
-          	  if (!rawFilename.endsWith(".db")) {
-          		  setDBFilename(rawFilename + ".db");
-        	  } else {
-        		  setDBFilename(rawFilename);
-        	  }
-          	  
-    	      File file = new File(rawPath);
-		      if (rawPath == null) {
-    		      done = true;
-    	      } else {        	    	  
-			      if (file.exists()) {
-			    	  int confirmDialog = JOptionPane.showConfirmDialog(fileChooser, "Replace existing file?");
-    		    	  if (confirmDialog == JOptionPane.YES_OPTION) {
-    		    		  done = true;
-    	
-    		    		  saveSQLiteFile();
-    		    		  
-    		    	  } else if (confirmDialog == JOptionPane.NO_OPTION) {        		    	  
-    		    		  done = false;
-    		    	  } else {
-    		    		  done = true;
-    		    	  }       		    	  
-    		      } else {
-    		    	  done = true;
-    		    	 
-	          		  saveSQLiteFile();
-    		      }
-    	      }			                  	  
-          }
-      }
-  }
-  
-  class SaveSQLiteItemAction implements ActionListener {
-      @SuppressWarnings("unused")
-	public void actionPerformed(ActionEvent ae) {
-    	  saveFile();
-      }
-  };
-  
-  class SaveAsCSVsItemItemAction implements ActionListener {
-      public void actionPerformed(ActionEvent ae) {
-    	  setSplitCharacter(',');
-		  //saveMetabolitesTextFile();
-		  //saveReactionsTextFile();
-      }
-  }
-  
-  class ClearAction implements ActionListener {
+	}
+
+	public void saveFile() {
+		JTextArea output = null;
+		JFileChooser fileChooser = new JFileChooser(new File(getDatabaseName()));
+		boolean done = false;
+		while (!done) {
+			//... Open a file dialog.
+			int retval = fileChooser.showSaveDialog(output);
+			if (retval == JFileChooser.CANCEL_OPTION) {
+				done = true;
+			}
+			if (retval == JFileChooser.APPROVE_OPTION) {            	  
+				//... The user selected a file, get it, use it.
+				String rawPath = fileChooser.getSelectedFile().getPath();
+				setDBPath(rawPath);
+				String rawFilename = fileChooser.getSelectedFile().getName();
+				//checks if filename endswith .db else renames file to end with .db
+				if (!rawPath.endsWith(".db")) {
+					rawPath = rawPath + ".db";
+				}
+				if (!rawFilename.endsWith(".db")) {
+					setDBFilename(rawFilename + ".db");
+				} else {
+					setDBFilename(rawFilename);
+				}
+
+				File file = new File(rawPath);
+				if (rawPath == null) {
+					done = true;
+				} else {        	    	  
+					if (file.exists()) {
+						int confirmDialog = JOptionPane.showConfirmDialog(fileChooser, "Replace existing file?");
+						if (confirmDialog == JOptionPane.YES_OPTION) {
+							done = true;
+
+							saveSQLiteFile();
+
+						} else if (confirmDialog == JOptionPane.NO_OPTION) {        		    	  
+							done = false;
+						} else {
+							done = true;
+						}       		    	  
+					} else {
+						done = true;
+
+						saveSQLiteFile();
+					}
+				}			                  	  
+			}
+		}
+	}
+
+	class SaveSQLiteItemAction implements ActionListener {
+		@SuppressWarnings("unused")
+		public void actionPerformed(ActionEvent ae) {
+			saveFile();
+		}
+	};
+
+	class SaveAsCSVsItemItemAction implements ActionListener {
+		public void actionPerformed(ActionEvent ae) {
+			setSplitCharacter(',');
+			//saveMetabolitesTextFile();
+			//saveReactionsTextFile();
+		}
+	}
+
+	class ClearAction implements ActionListener {
 		public void actionPerformed(ActionEvent cae) {
 			loadSetUp();
 			try {
 				Class.forName("org.sqlite.JDBC");       
 				DatabaseCreator databaseCreator = new DatabaseCreator();
 				setDatabaseName(ConfigConstants.DEFAULT_DATABASE_NAME);
+				LocalConfig.getInstance().setLoadedDatabase(ConfigConstants.DEFAULT_DATABASE_NAME);
 				Connection con = DriverManager.getConnection("jdbc:sqlite:" + ConfigConstants.DEFAULT_DATABASE_NAME + ".db");
 				databaseCreator.createDatabase(LocalConfig.getInstance().getDatabaseName());
 				databaseCreator.addRows(LocalConfig.getInstance().getDatabaseName(), GraphicalInterfaceConstants.BLANK_DB_NUMBER_OF_ROWS, GraphicalInterfaceConstants.BLANK_DB_NUMBER_OF_ROWS);
@@ -1212,76 +1363,78 @@ public GraphicalInterface(final Connection con)
 
 		}
 	}
-  
-  //based on code from http://tips4java.wordpress.com/2009/06/07/table-cell-listener/
-  Action rAction = new AbstractAction()
-  {
-	  public void actionPerformed(ActionEvent ae)
-	  {		  
-		  TableCellListener tcl = (TableCellListener)ae.getSource();
-		  updateReactionsDatabaseRow(tcl.getRow(), Integer.parseInt((String) (reactionsTable.getModel().getValueAt(tcl.getRow(), 0))), "SBML", getDatabaseName());
 
-		  if (tcl.getColumn() == GraphicalInterfaceConstants.REACTION_STRING_COLUMN) {  
-			  if (tcl.getOldValue() != tcl.getNewValue()) {
-				  ReactionParser parser = new ReactionParser();
-				  ReactionFactory rFactory = new ReactionFactory();
-				  MetaboliteFactory mFactory = new MetaboliteFactory();
-				  if (parser.isValid(tcl.getOldValue()) && parser.isValid(tcl.getNewValue())) {
-					  ArrayList<Integer> oldIdList = parser.speciesIdList(tcl.getOldValue(), getDatabaseName());
-					  ArrayList<Integer> newIdList = parser.speciesIdList(tcl.getNewValue(), getDatabaseName());
-					  for (int j = 0; j < newIdList.size(); j++) {
-						  if (!oldIdList.contains(newIdList.get(j))) {
-							  mFactory.setMetaboliteUsedValue(newIdList.get(j), getDatabaseName(), "true");		    
-						  }
-					  }
-					  //removes deleted species from used_metabolites if not required by other rxns
-					  for (int i = 0; i < oldIdList.size(); i++) {
-						  if (!newIdList.contains(oldIdList.get(i))) {
-							  //check if metabolite id is not used by other reactions before removing
-							  if ((rFactory.reactantUsedCount(oldIdList.get(i), getDatabaseName()) + rFactory.productUsedCount(oldIdList.get(i), getDatabaseName())) == 0) {
-								  mFactory.setMetaboliteUsedValue(oldIdList.get(i), getDatabaseName(), "false"); 
-							  }     				    
-						  }
-					  }
-				  } else if (!parser.isValid(tcl.getOldValue()) && parser.isValid(tcl.getNewValue())) {
-					  ArrayList<Integer> newIdList = parser.speciesIdList(tcl.getNewValue(), getDatabaseName());
-					  for (int j = 0; j < newIdList.size(); j++) {
-						  mFactory.setMetaboliteUsedValue(newIdList.get(j), getDatabaseName(), "true");
-					  }   		  
-				  }       		  
-			  }
-		  }
-		  //resets metabolite table to show any changed values of used column
-		  //probably not necessary since this column is not visible
-		  String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
-		  try {
-			  Class.forName("org.sqlite.JDBC");
-			  Connection con = DriverManager.getConnection(fileString);
-			  setUpMetabolitesTable(con);
-		  } catch (ClassNotFoundException e) {
-			  // TODO Auto-generated catch block
-			  e.printStackTrace();
-		  } catch (SQLException e) {
-			  // TODO Auto-generated catch block
-			  e.printStackTrace();
-		  }
-	  }
-  };
+	//based on code from http://tips4java.wordpress.com/2009/06/07/table-cell-listener/
+	Action rAction = new AbstractAction()
+	{
+		public void actionPerformed(ActionEvent ae)
+		{		  
+			TableCellListener tcl = (TableCellListener)ae.getSource();
+			updateReactionsDatabaseRow(tcl.getRow(), Integer.parseInt((String) (reactionsTable.getModel().getValueAt(tcl.getRow(), 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase());
 
-  Action mAction = new AbstractAction()
-  {
-	  public void actionPerformed(ActionEvent e)
-	  {   	  
-		  TableCellListener mtcl = (TableCellListener)e.getSource();
-		  updateMetabolitesDatabaseRow(mtcl.getRow(), Integer.parseInt((String) (metabolitesTable.getModel().getValueAt(mtcl.getRow(), 0))), "SBML", getDatabaseName());  
-	  }
-  };
+			if (tcl.getColumn() == GraphicalInterfaceConstants.REACTION_STRING_COLUMN) {  
+				if (tcl.getOldValue() != tcl.getNewValue()) {
+					highlightUnusedMetabolites = false;
+					highlightUnusedMetabolitesItem.setState(false);
+					ReactionParser parser = new ReactionParser();
+					ReactionFactory rFactory = new ReactionFactory();
+					MetaboliteFactory mFactory = new MetaboliteFactory();
+					if (parser.isValid(tcl.getOldValue()) && parser.isValid(tcl.getNewValue())) {
+						ArrayList<Integer> oldIdList = parser.speciesIdList(tcl.getOldValue(), LocalConfig.getInstance().getLoadedDatabase());
+						ArrayList<Integer> newIdList = parser.speciesIdList(tcl.getNewValue(), LocalConfig.getInstance().getLoadedDatabase());
+						for (int j = 0; j < newIdList.size(); j++) {
+							if (!oldIdList.contains(newIdList.get(j))) {
+								mFactory.setMetaboliteUsedValue(newIdList.get(j), LocalConfig.getInstance().getLoadedDatabase(), "true");		    
+							}
+						}
+						//removes deleted species from used_metabolites if not required by other rxns
+						for (int i = 0; i < oldIdList.size(); i++) {
+							if (!newIdList.contains(oldIdList.get(i))) {
+								//check if metabolite id is not used by other reactions before removing
+								if ((rFactory.reactantUsedCount(oldIdList.get(i), LocalConfig.getInstance().getLoadedDatabase()) + rFactory.productUsedCount(oldIdList.get(i), LocalConfig.getInstance().getLoadedDatabase())) == 0) {
+									mFactory.setMetaboliteUsedValue(oldIdList.get(i), LocalConfig.getInstance().getLoadedDatabase(), "false"); 
+								}     				    
+							}
+						}
+					} else if (!parser.isValid(tcl.getOldValue()) && parser.isValid(tcl.getNewValue())) {
+						ArrayList<Integer> newIdList = parser.speciesIdList(tcl.getNewValue(), LocalConfig.getInstance().getLoadedDatabase());
+						for (int j = 0; j < newIdList.size(); j++) {
+							mFactory.setMetaboliteUsedValue(newIdList.get(j), LocalConfig.getInstance().getLoadedDatabase(), "true");
+						}   		  
+					}       		  
+				}
+			}
+			//resets metabolite table to show any changed values of used column
+			//probably not necessary since this column is not visible
+			String fileString = "jdbc:sqlite:" + LocalConfig.getInstance().getLoadedDatabase() + ".db";
+			try {
+				Class.forName("org.sqlite.JDBC");
+				Connection con = DriverManager.getConnection(fileString);
+				setUpMetabolitesTable(con);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	};
 
-  /*****************************************************************************/
-  //end Actions
-  /*****************************************************************************/
-    
-  /*******************************************************************************/
+	Action mAction = new AbstractAction()
+	{
+		public void actionPerformed(ActionEvent e)
+		{   	  
+			TableCellListener mtcl = (TableCellListener)e.getSource();
+			updateMetabolitesDatabaseRow(mtcl.getRow(), Integer.parseInt((String) (metabolitesTable.getModel().getValueAt(mtcl.getRow(), 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase());  
+		}
+	};
+
+	/*****************************************************************************/
+	//end Actions
+	/*****************************************************************************/
+
+	/*******************************************************************************/
 	//table layouts
 	/*******************************************************************************/
 	private class ReactionsRowListener implements ListSelectionListener {
@@ -1735,656 +1888,638 @@ public GraphicalInterface(final Connection con)
 			} 
 		}	  
 	}
-  /************************************************************************************/
-  //end table layouts
-  /************************************************************************************/
+	/************************************************************************************/
+	//end table layouts
+	/************************************************************************************/
 
-  /*******************************************************************************/
-  //Reactions Table context menus
-  /*******************************************************************************/
-  
-  //based on code from http://www.javakb.com/Uwe/Forum.aspx/java-programmer/21291/popupmenu-for-a-cell-in-a-JTable
-  public class ReactionsPopupListener extends MouseAdapter {
-  
-    public void maybeShowPopup(MouseEvent e) {
-      if (e.isPopupTrigger() && reactionsTable.isEnabled()) {
-         Point p = new Point(e.getX(), e.getY());
-         int col = reactionsTable.columnAtPoint(p);
-         int row = reactionsTable.rowAtPoint(p);
-         setCurrentRow(row);
+	/*******************************************************************************/
+	//Reactions Table context menus
+	/*******************************************************************************/	
+	//based on code from http://www.javakb.com/Uwe/Forum.aspx/java-programmer/21291/popupmenu-for-a-cell-in-a-JTable
+	public class ReactionsPopupListener extends MouseAdapter {
 
-         // translate table index to model index
-         //int mcol = reactionsTable.getColumn(reactionsTable.getColumnName(col)).getModelIndex();
+		public void maybeShowPopup(MouseEvent e) {
+			if (e.isPopupTrigger() && reactionsTable.isEnabled()) {
+				Point p = new Point(e.getX(), e.getY());
+				int col = reactionsTable.columnAtPoint(p);
+				int row = reactionsTable.rowAtPoint(p);
+				setCurrentRow(row);
 
-         if (row >= 0 && row < reactionsTable.getRowCount()) {
-            cancelCellEditing();            
-            // create popup menu...
-            
-            if (col == GraphicalInterfaceConstants.REACTION_STRING_COLUMN) {
-            
-                JPopupMenu reactionsContextMenu = createReactionsContextMenu(row,
-                      col);
-                if (reactionsContextMenu != null
-                        && reactionsContextMenu.getComponentCount() > 0) {
-                	reactionsContextMenu.show(reactionsTable, p.x, p.y);
-                  }
-            } else {
-            	JPopupMenu contextMenu = createContextMenu(row,
-                        col);
-            // ... and show it
-            if (contextMenu != null
-                  && contextMenu.getComponentCount() > 0) {
-               contextMenu.show(reactionsTable, p.x, p.y);
-            }
-            }
-         }
-      }
-   }
+				// translate table index to model index
+				//int mcol = reactionsTable.getColumn(reactionsTable.getColumnName(col)).getModelIndex();
 
-   public void mousePressed(MouseEvent e) {
-      maybeShowPopup(e);
-   }
+				if (row >= 0 && row < reactionsTable.getRowCount()) {
+					cancelCellEditing();            
+					// create popup menu...
 
-   public void mouseReleased(MouseEvent e) {
-      maybeShowPopup(e);
-   }
-  }
-  
-   private void cancelCellEditing() {
-       CellEditor ce = reactionsTable.getCellEditor();
-       if (ce != null) {
-          ce.cancelCellEditing();
-       }
-    }
+					if (col == GraphicalInterfaceConstants.REACTION_STRING_COLUMN) {
 
-   private JPopupMenu createReactionsContextMenu(final int rowIndex,
-	          final int columnIndex) {
-	       JPopupMenu reactionsContextMenu = new JPopupMenu();
-
-	       JMenuItem copyMenu = new JMenuItem();
-	       copyMenu.setText("Copy");
-	       copyMenu.addActionListener(new ActionListener() {
-	          public void actionPerformed(ActionEvent e) {
-	             Object value = reactionsTable.getModel().getValueAt(rowIndex,
-	                   columnIndex);
-	             setClipboardContents(value == null ? "" : value
-	                   .toString());
-	          }
-	       });
-	       reactionsContextMenu.add(copyMenu);
-
-	       JMenuItem pasteMenu = new JMenuItem();
-	       pasteMenu.setText("Paste");
-	       if (isClipboardContainingText(this)
-	             && reactionsTable.getModel().isCellEditable(rowIndex, columnIndex)) {
-	          pasteMenu.addActionListener(new ActionListener() {
-	             public void actionPerformed(ActionEvent e) {
-	                String value = getClipboardContents(GraphicalInterface.this);
-	                reactionsTable.getModel().setValueAt(value, rowIndex,
-	                      columnIndex);
-	                updateReactionsDatabaseRow(rowIndex, Integer.valueOf((String) (reactionsTable.getModel().getValueAt(rowIndex, 0))), "SBML", getDatabaseName());      
-	             }
-	          });
-	       } else {
-	          pasteMenu.setEnabled(false);
-	       }
-	       reactionsContextMenu.add(pasteMenu);
-	       
-	       JMenuItem editMenu = new JMenuItem();
-	       editMenu.setText("Edit");   	   
-	       editMenu.addActionListener(new ActionListener() {
-	    	   @SuppressWarnings("deprecation")
-			public void actionPerformed(ActionEvent e) {
-	    	    	try {
-						Class.forName("org.sqlite.JDBC");
-						Connection con = DriverManager.getConnection("jdbc:sqlite:" + getDatabaseName() + ".db");
-						ReactionInterface reactionInterface = new ReactionInterface(con);
-						setReactionInterface(reactionInterface);
-												
-						reactionInterface.setIconImages(icons);
-						reactionInterface.setSize(1000, 240);
-						reactionInterface.setResizable(false);
-						reactionInterface.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-						reactionInterface.setLocationRelativeTo(null);
-						reactionInterface.setVisible(true);
-						//reactionInterface.setModalityType(ModalityType.APPLICATION_MODAL); 
-						//needs to be a dialog for this to work, but does not work anyway
-						//reactionInterface.setAlwaysOnTop(true);
-						reactionInterface.submitButton.addActionListener(submitButtonActionListener);
-					} catch (ClassNotFoundException e2) {
-						// TODO Auto-generated catch block
-						e2.printStackTrace();
-					} catch (SQLException e2) {
-						// TODO Auto-generated catch block
-						e2.printStackTrace();
+						JPopupMenu reactionsContextMenu = createReactionsContextMenu(row,
+								col);
+						if (reactionsContextMenu != null
+								&& reactionsContextMenu.getComponentCount() > 0) {
+							reactionsContextMenu.show(reactionsTable, p.x, p.y);
+						}
+					} else {
+						JPopupMenu contextMenu = createContextMenu(row,
+								col);
+						// ... and show it
+						if (contextMenu != null
+								&& contextMenu.getComponentCount() > 0) {
+							contextMenu.show(reactionsTable, p.x, p.y);
+						}
 					}
-	            }
-	         });
-	       reactionsContextMenu.add(editMenu);
-	       
-	       reactionsContextMenu.addSeparator();
-	       	       
-	       JMenuItem deleteRowMenu = new JMenuItem();
-	       deleteRowMenu.setText("Delete Row");
-	       deleteRowMenu.addActionListener(new ActionListener() {
-	          public void actionPerformed(ActionEvent ae) {
-	        	  ReactionFactory aFactory = new ReactionFactory();
+				}
+			}
+		}
 
-	  		      SBMLReaction aReaction = (SBMLReaction)aFactory.getReactionById(getIdFromCurrentRow(getCurrentRow()), "SBML", getDatabaseName()); 
-	        	  ReactionParser parser = new ReactionParser();
-	        	  MetaboliteFactory mFactory = new MetaboliteFactory();
-	        	  ArrayList<Integer> oldIdList = parser.speciesIdList(aReaction.getReactionString(), getDatabaseName());
-	        	  
-	        	  for (int i = 0; i < oldIdList.size(); i++) {
-	    				//check if metabolite id is not used by other reactions before setting to false
-	    				if ((aFactory.reactantUsedCount(oldIdList.get(i), getDatabaseName()) + aFactory.productUsedCount(oldIdList.get(i), getDatabaseName())) == 1) {
-	    					mFactory.setMetaboliteUsedValue(oldIdList.get(i), getDatabaseName(), "false"); 
-	    				}     				    	    			    
-	    		    }   
-	        	  
-	              DatabaseCreator creator = new DatabaseCreator();
-	              creator.deleteReactionRow(getDatabaseName(), getIdFromCurrentRow(getCurrentRow()));
-	      	      //aFactory.listUsedMetabolites(getDatabaseName());
-	              String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
-	  	    	   try {
-	  				Class.forName("org.sqlite.JDBC");
-	  			    Connection con = DriverManager.getConnection(fileString);
-	  			    setUpReactionsTable(con);
-	  			    setUpMetabolitesTable(con);
-	  	            } catch (ClassNotFoundException e) {
-	  				     // TODO Auto-generated catch block
-	  				     e.printStackTrace();
-	  			    } catch (SQLException e) {
-	  				    // TODO Auto-generated catch block
-	  				    e.printStackTrace();
-	  			    }
-	          }
-	       });
-	       reactionsContextMenu.add(deleteRowMenu);
+		public void mousePressed(MouseEvent e) {
+			maybeShowPopup(e);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			maybeShowPopup(e);
+		}
+	}
+
+	private void cancelCellEditing() {
+		CellEditor ce = reactionsTable.getCellEditor();
+		if (ce != null) {
+			ce.cancelCellEditing();
+		}
+	}
+
+	private JPopupMenu createReactionsContextMenu(final int rowIndex,
+			final int columnIndex) {
+		JPopupMenu reactionsContextMenu = new JPopupMenu();
+
+		JMenuItem copyMenu = new JMenuItem();
+		copyMenu.setText("Copy");
+		copyMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				reactionsCopy(rowIndex, columnIndex);
+			}
+		});
+		reactionsContextMenu.add(copyMenu);
+
+		JMenuItem pasteMenu = new JMenuItem();
+		pasteMenu.setText("Paste");
+		if (isClipboardContainingText(this)
+				&& reactionsTable.getModel().isCellEditable(rowIndex, columnIndex)
+				&& getCopyColumn() == columnIndex) {
+			pasteMenu.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					reactionsPaste(columnIndex);
+				}
+			});
+		} else {
+			pasteMenu.setEnabled(false);
+		}
+		reactionsContextMenu.add(pasteMenu);
+
+		JMenuItem editMenu = new JMenuItem();
+		editMenu.setText("Edit");   	   
+		editMenu.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Class.forName("org.sqlite.JDBC");
+					Connection con = DriverManager.getConnection("jdbc:sqlite:" + LocalConfig.getInstance().getLoadedDatabase() + ".db");
+					ReactionInterface reactionInterface = new ReactionInterface(con);
+					setReactionInterface(reactionInterface);
+
+					reactionInterface.setIconImages(icons);
+					reactionInterface.setSize(1000, 240);
+					reactionInterface.setResizable(false);
+					reactionInterface.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+					reactionInterface.setLocationRelativeTo(null);
+					reactionInterface.setVisible(true);
+					//reactionInterface.setModalityType(ModalityType.APPLICATION_MODAL); 
+					//needs to be a dialog for this to work, but does not work anyway
+					//reactionInterface.setAlwaysOnTop(true);
+					reactionInterface.submitButton.addActionListener(submitButtonActionListener);
+				} catch (ClassNotFoundException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (SQLException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+			}
+		});
+		reactionsContextMenu.add(editMenu);
+
+		reactionsContextMenu.addSeparator();
+
+		JMenuItem deleteRowMenu = new JMenuItem();
+		deleteRowMenu.setText("Delete Row");
+		deleteRowMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				ReactionFactory aFactory = new ReactionFactory();
+
+				SBMLReaction aReaction = (SBMLReaction)aFactory.getReactionById(getIdFromCurrentRow(getCurrentRow()), "SBML", LocalConfig.getInstance().getLoadedDatabase()); 
+				ReactionParser parser = new ReactionParser();
+				MetaboliteFactory mFactory = new MetaboliteFactory();
+				ArrayList<Integer> oldIdList = parser.speciesIdList(aReaction.getReactionString(), LocalConfig.getInstance().getLoadedDatabase());
+
+				for (int i = 0; i < oldIdList.size(); i++) {
+					//check if metabolite id is not used by other reactions before setting to false
+					if ((aFactory.reactantUsedCount(oldIdList.get(i), LocalConfig.getInstance().getLoadedDatabase()) + aFactory.productUsedCount(oldIdList.get(i), LocalConfig.getInstance().getLoadedDatabase())) == 1) {
+						mFactory.setMetaboliteUsedValue(oldIdList.get(i), LocalConfig.getInstance().getLoadedDatabase(), "false"); 
+					}     				    	    			    
+				}   
+
+				DatabaseCreator creator = new DatabaseCreator();
+				creator.deleteReactionRow(LocalConfig.getInstance().getLoadedDatabase(), getIdFromCurrentRow(getCurrentRow()));
+				
+				String fileString = "jdbc:sqlite:" + LocalConfig.getInstance().getLoadedDatabase() + ".db";
+				try {
+					Class.forName("org.sqlite.JDBC");
+					Connection con = DriverManager.getConnection(fileString);
+					setUpReactionsTable(con);
+					setUpMetabolitesTable(con);
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		reactionsContextMenu.add(deleteRowMenu);
 
 		return reactionsContextMenu;
-	  }
-   
-   private JPopupMenu createContextMenu(final int rowIndex,
-	          final int columnIndex) {
-	       JPopupMenu contextMenu = new JPopupMenu();
-
-	       JMenuItem copyMenu = new JMenuItem();
-	       copyMenu.setText("Copy");
-	       copyMenu.addActionListener(new ActionListener() {
-	          public void actionPerformed(ActionEvent e) {
-	             Object value = reactionsTable.getModel().getValueAt(rowIndex,
-	                   columnIndex);
-	             setClipboardContents(value == null ? "" : value
-	                   .toString());
-	             //System.out.println(getClipboardContents(GraphicalInterface.this));
-	          }
-	       });
-	       contextMenu.add(copyMenu);
-
-	       JMenuItem pasteMenu = new JMenuItem();
-	       pasteMenu.setText("Paste");
-	       if (isClipboardContainingText(this)
-	             && reactionsTable.getModel().isCellEditable(rowIndex, columnIndex)) {
-	          pasteMenu.addActionListener(new ActionListener() {
-	             public void actionPerformed(ActionEvent e) {
-	                String value = getClipboardContents(GraphicalInterface.this);
-	                reactionsTable.getModel().setValueAt(value, rowIndex,
-	                      columnIndex);
-	                updateReactionsDatabaseRow(rowIndex, Integer.valueOf((String) (reactionsTable.getModel().getValueAt(rowIndex, 0))), "SBML", getDatabaseName());      
-	             }
-	          });
-	       } else {
-	          pasteMenu.setEnabled(false);
-	       }
-	       contextMenu.add(pasteMenu);
-	       
-	       contextMenu.addSeparator();
-	       
-	       JMenuItem deleteRowMenu = new JMenuItem();
-	       deleteRowMenu.setText("Delete Row");
-	       deleteRowMenu.addActionListener(new ActionListener() {
-		          public void actionPerformed(ActionEvent ae) {
-		        	  ReactionFactory aFactory = new ReactionFactory();
-
-		  		      SBMLReaction aReaction = (SBMLReaction)aFactory.getReactionById(getIdFromCurrentRow(getCurrentRow()), "SBML", getDatabaseName()); 
-		        	  ReactionParser parser = new ReactionParser();
-		        	  MetaboliteFactory mFactory = new MetaboliteFactory();
-		        	  ArrayList<Integer> oldIdList = parser.speciesIdList(aReaction.getReactionString(), getDatabaseName());
-		        	  
-		        	  for (int i = 0; i < oldIdList.size(); i++) {
-		    				//check if metabolite id is not used by other reactions before setting to false
-		    				if ((aFactory.reactantUsedCount(oldIdList.get(i), getDatabaseName()) + aFactory.productUsedCount(oldIdList.get(i), getDatabaseName())) == 1) {
-		    					mFactory.setMetaboliteUsedValue(oldIdList.get(i), getDatabaseName(), "false"); 
-		    				}     				    	    			    
-		    		    }   
-		        	  
-		              DatabaseCreator creator = new DatabaseCreator();
-		              creator.deleteReactionRow(getDatabaseName(), getIdFromCurrentRow(getCurrentRow()));
-		      	      //aFactory.listUsedMetabolites(getDatabaseName());
-		              String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
-		  	    	   try {
-		  				Class.forName("org.sqlite.JDBC");
-		  			    Connection con = DriverManager.getConnection(fileString);
-		  			    setUpReactionsTable(con);
-		  			    setUpMetabolitesTable(con);
-		  	            } catch (ClassNotFoundException e) {
-		  				     // TODO Auto-generated catch block
-		  				     e.printStackTrace();
-		  			    } catch (SQLException e) {
-		  				    // TODO Auto-generated catch block
-		  				    e.printStackTrace();
-		  			    }
-		          }
-		       });
-	       contextMenu.add(deleteRowMenu);	       
-	       
-	       return contextMenu;
-	  }  
-   /****************************************************************************/
-   // end Reactions Table context menus
-   /****************************************************************************/
-   
-   /****************************************************************************/
-   // Metabolites Table context menus
-   /****************************************************************************/
-   
-   public class MetabolitesPopupListener extends MouseAdapter {
-	   
-	    public void maybeShowPopup(MouseEvent e) {
-	      if (e.isPopupTrigger() && metabolitesTable.isEnabled()) {
-	         Point p = new Point(e.getX(), e.getY());
-	         int col = metabolitesTable.columnAtPoint(p);
-	         int row = metabolitesTable.rowAtPoint(p);
-	         setCurrentRow(row);
-
-	         if (row >= 0 && row < metabolitesTable.getRowCount()) {
-	            cancelCellEditing();            
-	            // create popup menu...
-	            
-	            if (col == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
-	            	JPopupMenu abbrevContextMenu = createMetaboliteAbbreviationContextMenu(row,
-	                        col);
-	            	// ... and show it
-	            	if (abbrevContextMenu != null
-	            			&& abbrevContextMenu.getComponentCount() > 0) {
-	            		abbrevContextMenu.show(metabolitesTable, p.x, p.y);
-	            	}
-	            } else {
-	            	JPopupMenu contextMenu = createMetabolitesContextMenu(row,
-	                        col);
-	            	// ... and show it
-	            	if (contextMenu != null
-	            			&& contextMenu.getComponentCount() > 0) {
-	            		contextMenu.show(metabolitesTable, p.x, p.y);
-	            	}	            	
-	            }
-	         }
-	      }
-	   }
-
-	   public void mousePressed(MouseEvent e) {
-	      maybeShowPopup(e);
-	   }
-
-	   public void mouseReleased(MouseEvent e) {
-	      maybeShowPopup(e);
-	   }
 	}
-   
-   private JPopupMenu createMetaboliteAbbreviationContextMenu(final int rowIndex,
-	          final int columnIndex) {
-	       JPopupMenu contextMenu = new JPopupMenu();
 
-	       JMenuItem copyMenu = new JMenuItem();
-	       copyMenu.setText("Copy");
-	       copyMenu.addActionListener(new ActionListener() {
-	          public void actionPerformed(ActionEvent e) {
-	             Object value = metabolitesTable.getModel().getValueAt(rowIndex,
-	                   columnIndex);
-	             setClipboardContents(value == null ? "" : value
-	                   .toString());
-	             //System.out.println(getClipboardContents(GraphicalInterface.this));
-	          }
-	       });
-	       contextMenu.add(copyMenu);
+	private JPopupMenu createContextMenu(final int rowIndex,
+			final int columnIndex) {
+		JPopupMenu contextMenu = new JPopupMenu();
 
-	       JMenuItem pasteMenu = new JMenuItem();
-	       pasteMenu.setText("Paste");
-	       if (isClipboardContainingText(this)
-	             && metabolitesTable.getModel().isCellEditable(rowIndex, columnIndex)) {
-	          pasteMenu.addActionListener(new ActionListener() {
-	             public void actionPerformed(ActionEvent e) {
-	                String value = getClipboardContents(GraphicalInterface.this);
-	                metabolitesTable.getModel().setValueAt(value, rowIndex,
-	                      columnIndex);
-	                updateMetabolitesDatabaseRow(rowIndex, Integer.valueOf((String) (metabolitesTable.getModel().getValueAt(rowIndex, 0))), "SBML", getDatabaseName());      
-	             }
-	          });
-	       } else {
-	          pasteMenu.setEnabled(false);
-	       }
-	       contextMenu.add(pasteMenu);
-	       
-	       contextMenu.addSeparator();
-	       
-	       //final JCheckBoxMenuItem participatingReactionsMenu = new JCheckBoxMenuItem();
-	       final JMenuItem participatingReactionsMenu = new JMenuItem();
-	       participatingReactionsMenu.setText("Highlight Participating Reactions");
-	       String abbreviation = (String) metabolitesTable.getModel().getValueAt(rowIndex,
-		             columnIndex);
-	       if (abbreviation == null) {
-    	       participatingReactionsMenu.setEnabled(false);
-	       }
-	       participatingReactionsMenu.addActionListener(new ActionListener() {
-		   public void actionPerformed(ActionEvent e) {
-			   setParticipatingMetabolite((String) metabolitesTable.getModel().getValueAt(rowIndex, columnIndex));
-		       }
-		   });
-	       contextMenu.add(participatingReactionsMenu);
-	       
-	       final JMenuItem unhighlightParticipatingReactionsMenu = new JMenuItem();
-	       unhighlightParticipatingReactionsMenu.setText("Unhighlight Participating Reactions");
-	       if (abbreviation == null || getParticipatingMetabolite() == null || getParticipatingMetabolite() == "   ") {
-	    	   unhighlightParticipatingReactionsMenu.setEnabled(false);
-	       }
-	       unhighlightParticipatingReactionsMenu.addActionListener(new ActionListener() {
-		   public void actionPerformed(ActionEvent ae) {
-			   //to make sure that if user entered two spaces in reaction equation - still no highlight results
-			   setParticipatingMetabolite("   "); 
-			   String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
-			   try {
-	    			Class.forName("org.sqlite.JDBC");
-	    			Connection con = DriverManager.getConnection(getDatabaseName());
-	    			setUpMetabolitesTable(con);
-	    			setUpReactionsTable(con);
-	    	    	} catch (ClassNotFoundException e) {
-	    				 // TODO Auto-generated catch block
-	    				 e.printStackTrace();
-	    			} catch (SQLException e) {
-	    				    // TODO Auto-generated catch block
-	    				    e.printStackTrace();
-	    			} 
-		       }
-		   });
-	       contextMenu.add(unhighlightParticipatingReactionsMenu);
-	       
-	       contextMenu.addSeparator();
-	       
-	       JMenuItem deleteRowMenu = new JMenuItem();
-	       deleteRowMenu.setText("Delete Row");
-	       
-	       MetaboliteFactory mFactory = new MetaboliteFactory();
-	       if (mFactory.isUnused(getMetaboliteIdFromCurrentRow(getCurrentRow()), getDatabaseName())) {
-	    	   deleteRowMenu.setEnabled(true);
-	    	   deleteRowMenu.addActionListener(new ActionListener() {
-	 	          public void actionPerformed(ActionEvent ae) {
-	 	             DatabaseCreator creator = new DatabaseCreator();
-	 	             creator.deleteMetabolitesRow(getDatabaseName(), getMetaboliteIdFromCurrentRow(getCurrentRow()));
-	 	             String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
-	 	  	    	   try {
-	 	  				Class.forName("org.sqlite.JDBC");
-	 	  			    Connection con = DriverManager.getConnection(fileString);
-	 	  			    setUpMetabolitesTable(con);
-	 	  	            } catch (ClassNotFoundException e) {
-	 	  				     // TODO Auto-generated catch block
-	 	  				     e.printStackTrace();
-	 	  			    } catch (SQLException e) {
-	 	  				    // TODO Auto-generated catch block
-	 	  				    e.printStackTrace();
-	 	  			    }
-	 	          }
-	 	       });
-	       } else {
-	    	   deleteRowMenu.setEnabled(false);
-	       }
-	       
-	       contextMenu.add(deleteRowMenu);
-	       
-	       return contextMenu;
-	  }
-   
-   private JPopupMenu createMetabolitesContextMenu(final int rowIndex,
-	          final int columnIndex) {
-	       JPopupMenu contextMenu = new JPopupMenu();
+		JMenuItem copyMenu = new JMenuItem();
+		copyMenu.setText("Copy");
+		copyMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				reactionsCopy(rowIndex, columnIndex);
+			}
+		});
+		contextMenu.add(copyMenu);
 
-	       JMenuItem copyMenu = new JMenuItem();
-	       copyMenu.setText("Copy");
-	       copyMenu.addActionListener(new ActionListener() {
-	          public void actionPerformed(ActionEvent e) {
-	             Object value = metabolitesTable.getModel().getValueAt(rowIndex,
-	                   columnIndex);
-	             setClipboardContents(value == null ? "" : value
-	                   .toString());
-	             //System.out.println(getClipboardContents(GraphicalInterface.this));
-	          }
-	       });
-	       contextMenu.add(copyMenu);
+		JMenuItem pasteMenu = new JMenuItem();
+		pasteMenu.setText("Paste");
+		if (isClipboardContainingText(this)
+				&& reactionsTable.getModel().isCellEditable(rowIndex, columnIndex)
+				&& getCopyColumn() == columnIndex) {
+			pasteMenu.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					reactionsPaste(columnIndex);
+				}
+			});
+		} else {
+			pasteMenu.setEnabled(false);
+		}
+		contextMenu.add(pasteMenu);
 
-	       JMenuItem pasteMenu = new JMenuItem();
-	       pasteMenu.setText("Paste");
-	       if (isClipboardContainingText(this)
-	             && metabolitesTable.getModel().isCellEditable(rowIndex, columnIndex)) {
-	          pasteMenu.addActionListener(new ActionListener() {
-	             public void actionPerformed(ActionEvent e) {
-	                String value = getClipboardContents(GraphicalInterface.this);
-	                metabolitesTable.getModel().setValueAt(value, rowIndex,
-	                      columnIndex);
-	                updateMetabolitesDatabaseRow(rowIndex, Integer.valueOf((String) (metabolitesTable.getModel().getValueAt(rowIndex, 0))), "SBML", getDatabaseName());      
-	             }
-	          });
-	       } else {
-	          pasteMenu.setEnabled(false);
-	       }
-	       contextMenu.add(pasteMenu);
-	       
-	       contextMenu.addSeparator();
-	       	       
-	       
-	       
-	       JMenuItem deleteRowMenu = new JMenuItem();
-	       deleteRowMenu.setText("Delete Row");
-	       
-	       MetaboliteFactory mFactory = new MetaboliteFactory();
-	       if (mFactory.isUnused(getMetaboliteIdFromCurrentRow(getCurrentRow()), getDatabaseName())) {
-	    	   deleteRowMenu.setEnabled(true);
-	    	   deleteRowMenu.addActionListener(new ActionListener() {
-	 	          public void actionPerformed(ActionEvent ae) {
-	 	             DatabaseCreator creator = new DatabaseCreator();
-	 	             creator.deleteMetabolitesRow(getDatabaseName(), getMetaboliteIdFromCurrentRow(getCurrentRow()));
-	 	             String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
-	 	  	    	   try {
-	 	  				Class.forName("org.sqlite.JDBC");
-	 	  			    Connection con = DriverManager.getConnection(fileString);
-	 	  			    setUpMetabolitesTable(con);
-	 	  	            } catch (ClassNotFoundException e) {
-	 	  				     // TODO Auto-generated catch block
-	 	  				     e.printStackTrace();
-	 	  			    } catch (SQLException e) {
-	 	  				    // TODO Auto-generated catch block
-	 	  				    e.printStackTrace();
-	 	  			    }
-	 	          }
-	 	       });
-	       } else {
-	    	   deleteRowMenu.setEnabled(false);
-	       }
-	       
-	       
-	       contextMenu.add(deleteRowMenu);
-	       
-	       return contextMenu;
-	  }  
-   
-   /****************************************************************************/
-   // end Metabolites Table context menus
-   /****************************************************************************/
-   
-   /*******************************************************************************/
-   //end context menu  
-   /*******************************************************************************/  
-  
-    //listens for submit button event in ReactionInterface
-    ActionListener submitButtonActionListener = new ActionListener() {
+		contextMenu.addSeparator();
+
+		JMenuItem deleteRowMenu = new JMenuItem();
+		deleteRowMenu.setText("Delete Row");
+		deleteRowMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				ReactionFactory aFactory = new ReactionFactory();
+
+				SBMLReaction aReaction = (SBMLReaction)aFactory.getReactionById(getIdFromCurrentRow(getCurrentRow()), "SBML", LocalConfig.getInstance().getLoadedDatabase()); 
+				ReactionParser parser = new ReactionParser();
+				MetaboliteFactory mFactory = new MetaboliteFactory();
+				ArrayList<Integer> oldIdList = parser.speciesIdList(aReaction.getReactionString(), LocalConfig.getInstance().getLoadedDatabase());
+
+				for (int i = 0; i < oldIdList.size(); i++) {
+					//check if metabolite id is not used by other reactions before setting to false
+					if ((aFactory.reactantUsedCount(oldIdList.get(i), LocalConfig.getInstance().getLoadedDatabase()) + aFactory.productUsedCount(oldIdList.get(i), LocalConfig.getInstance().getLoadedDatabase())) == 1) {
+						mFactory.setMetaboliteUsedValue(oldIdList.get(i), LocalConfig.getInstance().getLoadedDatabase(), "false"); 
+					}     				    	    			    
+				}   
+
+				DatabaseCreator creator = new DatabaseCreator();
+				creator.deleteReactionRow(LocalConfig.getInstance().getLoadedDatabase(), getIdFromCurrentRow(getCurrentRow()));
+				String fileString = "jdbc:sqlite:" + LocalConfig.getInstance().getLoadedDatabase() + ".db";
+				try {
+					Class.forName("org.sqlite.JDBC");
+					Connection con = DriverManager.getConnection(fileString);
+					setUpReactionsTable(con);
+					setUpMetabolitesTable(con);
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		contextMenu.add(deleteRowMenu);	       
+
+		return contextMenu;
+	}  
+	/****************************************************************************/
+	// end Reactions Table context menus
+	/****************************************************************************/
+
+	/****************************************************************************/
+	// Metabolites Table context menus
+	/****************************************************************************/
+
+	public class MetabolitesPopupListener extends MouseAdapter {
+
+		public void maybeShowPopup(MouseEvent e) {
+			if (e.isPopupTrigger() && metabolitesTable.isEnabled()) {
+				Point p = new Point(e.getX(), e.getY());
+				int col = metabolitesTable.columnAtPoint(p);
+				int row = metabolitesTable.rowAtPoint(p);
+				setCurrentRow(row);
+
+				if (row >= 0 && row < metabolitesTable.getRowCount()) {
+					cancelCellEditing();            
+					// create popup menu...
+
+					if (col == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
+						JPopupMenu abbrevContextMenu = createMetaboliteAbbreviationContextMenu(row,
+								col);
+						// ... and show it
+						if (abbrevContextMenu != null
+								&& abbrevContextMenu.getComponentCount() > 0) {
+							abbrevContextMenu.show(metabolitesTable, p.x, p.y);
+						}
+					} else {
+						JPopupMenu contextMenu = createMetabolitesContextMenu(row,
+								col);
+						// ... and show it
+						if (contextMenu != null
+								&& contextMenu.getComponentCount() > 0) {
+							contextMenu.show(metabolitesTable, p.x, p.y);
+						}	            	
+					}
+				}
+			}
+		}
+
+		public void mousePressed(MouseEvent e) {
+			maybeShowPopup(e);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			maybeShowPopup(e);
+		}
+	}
+
+	private JPopupMenu createMetaboliteAbbreviationContextMenu(final int rowIndex,
+			final int columnIndex) {
+		JPopupMenu contextMenu = new JPopupMenu();
+
+		JMenuItem copyMenu = new JMenuItem();
+		copyMenu.setText("Copy");
+		copyMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				metabolitesCopy(rowIndex, columnIndex);
+			}
+		});
+		contextMenu.add(copyMenu);
+
+		JMenuItem pasteMenu = new JMenuItem();
+		pasteMenu.setText("Paste");
+		if (isClipboardContainingText(this)
+				&& metabolitesTable.getModel().isCellEditable(rowIndex, columnIndex)
+				&& getCopyColumn() == columnIndex) {
+			pasteMenu.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					metabolitesPaste(columnIndex);
+				}
+			});
+		} else {
+			pasteMenu.setEnabled(false);
+		}
+		contextMenu.add(pasteMenu);
+
+		contextMenu.addSeparator();
+
+		//final JCheckBoxMenuItem participatingReactionsMenu = new JCheckBoxMenuItem();
+		final JMenuItem participatingReactionsMenu = new JMenuItem();
+		participatingReactionsMenu.setText("Highlight Participating Reactions");
+		String abbreviation = (String) metabolitesTable.getModel().getValueAt(rowIndex,
+				columnIndex);
+		if (abbreviation == null) {
+			participatingReactionsMenu.setEnabled(false);
+		}
+		participatingReactionsMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setParticipatingMetabolite((String) metabolitesTable.getModel().getValueAt(rowIndex, columnIndex));
+			}
+		});
+		contextMenu.add(participatingReactionsMenu);
+
+		final JMenuItem unhighlightParticipatingReactionsMenu = new JMenuItem();
+		unhighlightParticipatingReactionsMenu.setText("Unhighlight Participating Reactions");
+		if (abbreviation == null || getParticipatingMetabolite() == null || getParticipatingMetabolite() == "   ") {
+			unhighlightParticipatingReactionsMenu.setEnabled(false);
+		}
+		unhighlightParticipatingReactionsMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				//to make sure that if user entered two spaces in reaction equation - still no highlight results
+				setParticipatingMetabolite("   "); 
+				String fileString = "jdbc:sqlite:" + LocalConfig.getInstance().getLoadedDatabase() + ".db";
+				try {
+					Class.forName("org.sqlite.JDBC");
+					Connection con = DriverManager.getConnection(LocalConfig.getInstance().getLoadedDatabase());
+					setUpMetabolitesTable(con);
+					setUpReactionsTable(con);
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
+			}
+		});
+		contextMenu.add(unhighlightParticipatingReactionsMenu);
+
+		contextMenu.addSeparator();
+
+		JMenuItem deleteRowMenu = new JMenuItem();
+		deleteRowMenu.setText("Delete Row");
+
+		MetaboliteFactory mFactory = new MetaboliteFactory();
+		if (mFactory.isUnused(getMetaboliteIdFromCurrentRow(getCurrentRow()), LocalConfig.getInstance().getLoadedDatabase())) {
+			deleteRowMenu.setEnabled(true);
+			deleteRowMenu.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					DatabaseCreator creator = new DatabaseCreator();
+					creator.deleteMetabolitesRow(LocalConfig.getInstance().getLoadedDatabase(), getMetaboliteIdFromCurrentRow(getCurrentRow()));
+					String fileString = "jdbc:sqlite:" + LocalConfig.getInstance().getLoadedDatabase() + ".db";
+					try {
+						Class.forName("org.sqlite.JDBC");
+						Connection con = DriverManager.getConnection(fileString);
+						setUpMetabolitesTable(con);
+					} catch (ClassNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
+		} else {
+			deleteRowMenu.setEnabled(false);
+		}
+
+		contextMenu.add(deleteRowMenu);
+
+		return contextMenu;
+	}
+
+	private JPopupMenu createMetabolitesContextMenu(final int rowIndex,
+			final int columnIndex) {
+		JPopupMenu contextMenu = new JPopupMenu();
+
+		JMenuItem copyMenu = new JMenuItem();
+		copyMenu.setText("Copy");
+		copyMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				metabolitesCopy(rowIndex, columnIndex);
+			}
+		});
+		contextMenu.add(copyMenu);
+
+		JMenuItem pasteMenu = new JMenuItem();
+		pasteMenu.setText("Paste");
+		if (isClipboardContainingText(this)
+				&& metabolitesTable.getModel().isCellEditable(rowIndex, columnIndex)
+				&& getCopyColumn() == columnIndex) {
+			pasteMenu.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					metabolitesPaste(columnIndex);
+				}
+			});
+		} else {
+			pasteMenu.setEnabled(false);
+		}
+		contextMenu.add(pasteMenu);
+
+		contextMenu.addSeparator();
+
+
+
+		JMenuItem deleteRowMenu = new JMenuItem();
+		deleteRowMenu.setText("Delete Row");
+
+		MetaboliteFactory mFactory = new MetaboliteFactory();
+		if (mFactory.isUnused(getMetaboliteIdFromCurrentRow(getCurrentRow()), LocalConfig.getInstance().getLoadedDatabase())) {
+			deleteRowMenu.setEnabled(true);
+			deleteRowMenu.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					DatabaseCreator creator = new DatabaseCreator();
+					creator.deleteMetabolitesRow(LocalConfig.getInstance().getLoadedDatabase(), getMetaboliteIdFromCurrentRow(getCurrentRow()));
+					String fileString = "jdbc:sqlite:" + LocalConfig.getInstance().getLoadedDatabase() + ".db";
+					try {
+						Class.forName("org.sqlite.JDBC");
+						Connection con = DriverManager.getConnection(fileString);
+						setUpMetabolitesTable(con);
+					} catch (ClassNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
+		} else {
+			deleteRowMenu.setEnabled(false);
+		}
+
+
+		contextMenu.add(deleteRowMenu);
+
+		return contextMenu;
+	}  
+
+	/****************************************************************************/
+	// end Metabolites Table context menus
+	/****************************************************************************/
+
+	/*******************************************************************************/
+	//end context menu  
+	/*******************************************************************************/  
+
+	//listens for submit button event in ReactionInterface
+	ActionListener submitButtonActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			reactionInterface.setReactionEquation(reactionInterface.reactionField.getText());
-		    reactionsTable.getModel().setValueAt(reactionInterface.getReactionEquation(), getCurrentRow(), GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
-		    updateReactionsDatabaseRow(getCurrentRow(), Integer.parseInt((String) (reactionsTable.getModel().getValueAt(getCurrentRow(), 0))), "SBML", getDatabaseName());
-		    
-		    MetaboliteFactory mFactory = new MetaboliteFactory();
-		    ReactionFactory rFactory = new ReactionFactory();
-            SBMLReaction aReaction = (SBMLReaction)rFactory.getReactionById(getIdFromCurrentRow(getCurrentRow()), "SBML", getDatabaseName()); 
-            ReactionParser parser = new ReactionParser();
-		    if (parser.isValid(aReaction.getReactionString())) {
-	    		    ArrayList reactantsAndProducts = parser.parseReaction(reactionInterface.getReactionEquation(), getIdFromCurrentRow(getCurrentRow()));
-	    		    aReaction.setReactantsList((ArrayList) reactantsAndProducts.get(0));
-		    	    aReaction.clearReactants();
-		    	    aReaction.updateReactants();
-		    	    if (reactantsAndProducts.size() > 1) {
-		    		    aReaction.setProductsList((ArrayList) reactantsAndProducts.get(1));
-		    		    aReaction.clearProducts();
-		    		    aReaction.updateProducts();
-		    	    } else {
-		    		    aReaction.clearProducts();
-		    	    }
-		    }		    
-		    
-		    if (parser.isValid(reactionInterface.getOldReaction()) && parser.isValid(reactionInterface.getReactionEquation())) {
-		    	ArrayList<Integer> oldIdList = parser.speciesIdList(reactionInterface.getOldReaction(), getDatabaseName());
-			    ArrayList<Integer> newIdList = parser.speciesIdList(reactionInterface.getReactionEquation(), getDatabaseName());
-			    //adds new species to used_metabolites table
-      		    for (int j = 0; j < newIdList.size(); j++) {
-      			    if (!oldIdList.contains(newIdList.get(j))) {
-      			    	mFactory.setMetaboliteUsedValue(newIdList.get(j), getDatabaseName(), "true"); 		    
-      			    }
-      		    }
-      		    //removes deleted species from used_metabolites if not required by other rxns
-    		    for (int i = 0; i < oldIdList.size(); i++) {
-    			    if (!newIdList.contains(oldIdList.get(i))) {
-    				    //check if metabolite id is not used by other reactions before removing
-    				    if ((rFactory.reactantUsedCount(oldIdList.get(i), getDatabaseName()) + rFactory.productUsedCount(oldIdList.get(i), getDatabaseName())) == 0) {
-    				    	mFactory.setMetaboliteUsedValue(oldIdList.get(i), getDatabaseName(), "false"); 
-    				    }     				    
-    			    }
-    		    }    
-		    } else if (!parser.isValid(reactionInterface.getOldReaction()) && parser.isValid(reactionInterface.getReactionEquation())) {
-		    	ArrayList<Integer> newIdList = parser.speciesIdList(reactionInterface.getReactionEquation(), getDatabaseName());
-		    	for (int j = 0; j < newIdList.size(); j++) {
-		    		mFactory.setMetaboliteUsedValue(newIdList.get(j), getDatabaseName(), "true"); 		          			    
-      		    }		    	
-		    }
-		      //resets metabolite table to show any changed values of used column
-	          //probably not necessary since this column is not visible
-	          String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
-		      try {
-				  Class.forName("org.sqlite.JDBC");
-				  Connection con = DriverManager.getConnection(fileString);
-				  setUpMetabolitesTable(con);
-		          } catch (ClassNotFoundException e) {
-					   // TODO Auto-generated catch block
-					   e.printStackTrace();
-				  } catch (SQLException e) {
-					  // TODO Auto-generated catch block
-					  e.printStackTrace();
-				  }
-	    }
+			reactionsTable.getModel().setValueAt(reactionInterface.getReactionEquation(), getCurrentRow(), GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
+			updateReactionsDatabaseRow(getCurrentRow(), Integer.parseInt((String) (reactionsTable.getModel().getValueAt(getCurrentRow(), 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase());
+
+			MetaboliteFactory mFactory = new MetaboliteFactory();
+			ReactionFactory rFactory = new ReactionFactory();
+			SBMLReaction aReaction = (SBMLReaction)rFactory.getReactionById(getIdFromCurrentRow(getCurrentRow()), "SBML", LocalConfig.getInstance().getLoadedDatabase()); 
+			ReactionParser parser = new ReactionParser();
+			if (parser.isValid(aReaction.getReactionString())) {
+				ArrayList reactantsAndProducts = parser.parseReaction(reactionInterface.getReactionEquation(), getIdFromCurrentRow(getCurrentRow()), LocalConfig.getInstance().getLoadedDatabase());
+				aReaction.setReactantsList((ArrayList) reactantsAndProducts.get(0));
+				aReaction.clearReactants();
+				aReaction.updateReactants();
+				if (reactantsAndProducts.size() > 1) {
+					aReaction.setProductsList((ArrayList) reactantsAndProducts.get(1));
+					aReaction.clearProducts();
+					aReaction.updateProducts();
+				} else {
+					aReaction.clearProducts();
+				}
+			}		    
+
+			if (parser.isValid(reactionInterface.getOldReaction()) && parser.isValid(reactionInterface.getReactionEquation())) {
+				ArrayList<Integer> oldIdList = parser.speciesIdList(reactionInterface.getOldReaction(), LocalConfig.getInstance().getLoadedDatabase());
+				ArrayList<Integer> newIdList = parser.speciesIdList(reactionInterface.getReactionEquation(), LocalConfig.getInstance().getLoadedDatabase());
+				//adds new species to used_metabolites table
+				for (int j = 0; j < newIdList.size(); j++) {
+					if (!oldIdList.contains(newIdList.get(j))) {
+						mFactory.setMetaboliteUsedValue(newIdList.get(j), LocalConfig.getInstance().getLoadedDatabase(), "true"); 		    
+					}
+				}
+				//removes deleted species from used_metabolites if not required by other rxns
+				for (int i = 0; i < oldIdList.size(); i++) {
+					if (!newIdList.contains(oldIdList.get(i))) {
+						//check if metabolite id is not used by other reactions before removing
+						if ((rFactory.reactantUsedCount(oldIdList.get(i), LocalConfig.getInstance().getLoadedDatabase()) + rFactory.productUsedCount(oldIdList.get(i), LocalConfig.getInstance().getLoadedDatabase())) == 0) {
+							mFactory.setMetaboliteUsedValue(oldIdList.get(i), LocalConfig.getInstance().getLoadedDatabase(), "false"); 
+						}     				    
+					}
+				}    
+			} else if (!parser.isValid(reactionInterface.getOldReaction()) && parser.isValid(reactionInterface.getReactionEquation())) {
+				ArrayList<Integer> newIdList = parser.speciesIdList(reactionInterface.getReactionEquation(), LocalConfig.getInstance().getLoadedDatabase());
+				for (int j = 0; j < newIdList.size(); j++) {
+					mFactory.setMetaboliteUsedValue(newIdList.get(j), LocalConfig.getInstance().getLoadedDatabase(), "true"); 		          			    
+				}		    	
+			}
+			//resets metabolite table to show any changed values of used column
+			//necessary for MetabolitesTableCellRenderer to highlight correct cells
+			String fileString = "jdbc:sqlite:" + LocalConfig.getInstance().getLoadedDatabase() + ".db";
+			try {
+				Class.forName("org.sqlite.JDBC");
+				Connection con = DriverManager.getConnection(fileString);
+				setUpMetabolitesTable(con);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}; 
 
-    
-  /***********************************************************************************/
-  //clipboard
-  /***********************************************************************************/
-  
-  //from http://www.javakb.com/Uwe/Forum.aspx/java-programmer/21291/popupmenu-for-a-cell-in-a-JTable
-  private static String getClipboardContents(Object requestor) {
-      Transferable t = Toolkit.getDefaultToolkit()
-            .getSystemClipboard().getContents(requestor);
-      if (t != null) {
-         DataFlavor df = DataFlavor.stringFlavor;
-         if (df != null) {
-            try {
-               Reader r = df.getReaderForText(t);
-               char[] charBuf = new char[512];
-               StringBuffer buf = new StringBuffer();
-               int n;
-               while ((n = r.read(charBuf, 0, charBuf.length)) > 0) {
-                  buf.append(charBuf, 0, n);
-               }
-               r.close();
-               return (buf.toString());
-            } catch (IOException ex) {
-               ex.printStackTrace();
-            } catch (UnsupportedFlavorException ex) {
-               ex.printStackTrace();
-            }
-         }
-      }
-      return null;
-   }
 
-   private static boolean isClipboardContainingText(Object requestor) {
-      Transferable t = Toolkit.getDefaultToolkit()
-            .getSystemClipboard().getContents(requestor);
-      return t != null
-            && (t.isDataFlavorSupported(DataFlavor.stringFlavor) || t
-                  .isDataFlavorSupported(DataFlavor.plainTextFlavor));
-   }
+	/***********************************************************************************/
+	//clipboard
+	/***********************************************************************************/
 
-   private static void setClipboardContents(String s) {
-      StringSelection selection = new StringSelection(s);
-      Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
-            selection, selection);
-   }
-   
-   /*****************************************************************************/
-   //end clipboard
-   /******************************************************************************/
-  
-    public void setUpMetabolitesTable(Connection con) {
-        	   
+	//from http://www.javakb.com/Uwe/Forum.aspx/java-programmer/21291/popupmenu-for-a-cell-in-a-JTable
+	private static String getClipboardContents(Object requestor) {
+		Transferable t = Toolkit.getDefaultToolkit()
+		.getSystemClipboard().getContents(requestor);
+		if (t != null) {
+			DataFlavor df = DataFlavor.stringFlavor;
+			if (df != null) {
+				try {
+					Reader r = df.getReaderForText(t);
+					char[] charBuf = new char[512];
+					StringBuffer buf = new StringBuffer();
+					int n;
+					while ((n = r.read(charBuf, 0, charBuf.length)) > 0) {
+						buf.append(charBuf, 0, n);
+					}
+					r.close();
+					return (buf.toString());
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				} catch (UnsupportedFlavorException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+		return null;
+	}
+
+	private static boolean isClipboardContainingText(Object requestor) {
+		Transferable t = Toolkit.getDefaultToolkit()
+		.getSystemClipboard().getContents(requestor);
+		return t != null
+		&& (t.isDataFlavorSupported(DataFlavor.stringFlavor) || t
+				.isDataFlavorSupported(DataFlavor.plainTextFlavor));
+	}
+
+	private static void setClipboardContents(String s) {
+		StringSelection selection = new StringSelection(s);
+		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
+				selection, selection);
+	}
+
+	/*****************************************************************************/
+	//end clipboard
+	/******************************************************************************/
+
+	public void setUpMetabolitesTable(Connection con) {
+
 		try {
 			MetabolitesDatabaseTableModel metabModel = new MetabolitesDatabaseTableModel(con, new String("select * from metabolites"));
 			metabolitesTable.setModel(metabModel);
 			setMetabolitesTableLayout();
-			
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	   
-    }
-    
-    public void setUpReactionsTable(Connection con) {
- 	   
+	}
+
+	public void setUpReactionsTable(Connection con) {
+
 		try {
 			ReactionsDatabaseTableModel reacModel = new ReactionsDatabaseTableModel(con, new String("select * from reactions"));
 			reactionsTable.setModel(reacModel);
 			setReactionsTableLayout();			
 			setParticipatingMetabolite("   ");			
-			
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	   
-    }
-   
-    public void setUpTables(String filename) {
-    	try {
+	}
+
+	public void setUpTables() {
+		String titleName = "";
+		if (getDatabaseName().contains("\\")) {
+			titleName = getDatabaseName().substring(getDatabaseName().lastIndexOf("\\") + 1, getDatabaseName().length());
+		} else {
+			titleName = getDatabaseName();
+		}
+		try {
 			String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
 			Class.forName("org.sqlite.JDBC");
-		    Connection con = DriverManager.getConnection(fileString);			    
-		    setUpMetabolitesTable(con);
-		    setUpReactionsTable(con);
-		    //set focus to top left
+			Connection con = DriverManager.getConnection(fileString);			    
+			setUpMetabolitesTable(con);
+			setUpReactionsTable(con);
+			//set focus to top left
 			metabolitesTable.changeSelection(0, 0, false, false);
 			metabolitesTable.requestFocus();
 			reactionsTable.changeSelection(0, 0, false, false);
 			reactionsTable.requestFocus();
-			setTitle(GraphicalInterfaceConstants.TITLE + " - " + filename);
+			setTitle(GraphicalInterfaceConstants.TITLE + " - " + titleName);
 			tabbedPane.setTitleAt(0, GraphicalInterfaceConstants.DEFAULT_REACTION_TABLE_TAB_NAME);
 			tabbedPane.setTitleAt(1, GraphicalInterfaceConstants.DEFAULT_METABOLITE_TABLE_TAB_NAME);
-			listModel.clear();
-			listModel.addElement(getDatabaseName());
-	  	    fileList.setModel(listModel);
+			//fileList.setSelectedIndex(-1);
+			//listModel.clear();
+			listModel.addElement(titleName);
+			fileList.setModel(listModel);
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -2392,184 +2527,187 @@ public GraphicalInterface(final Connection con)
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    }
-    
-    //sets parameters to initial values on load
-    public void loadSetUp() {
-    	showPrompt = true;
-  	    highlightUnusedMetabolites = false;
-  	    highlightUnusedMetabolitesItem.setState(false);  	    
-    }
-    
-    
-   /******************************************************************************/
-   //update database methods, called when table rows changed 
-   /******************************************************************************/
-   
-   public void updateReactionsDatabaseRow(int rowIndex, Integer reactionId, String sourceType, String databaseName)  {
+	}
 
-	    try { 
-	    	ReactionFactory aFactory = new ReactionFactory();
+	//sets parameters to initial values on load
+	public void loadSetUp() {
+		clearOutputPane();
+		if (getPopout() != null) {
+			getPopout().clear();
+		}
+		showPrompt = true;
+		highlightUnusedMetabolites = false;
+		highlightUnusedMetabolitesItem.setState(false);  	    
+	}
 
-		    SBMLReaction aReaction = (SBMLReaction)aFactory.getReactionById(reactionId, sourceType, databaseName); 
-		    aReaction.setKnockout((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.KO_COLUMN));			
-		    
-		    if (reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN) != null) {
-		        aReaction.setFluxValue(Double.valueOf((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN)));
-		    }
-		    
-		    aReaction.setReactionAbbreviation((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN));
-		    aReaction.setReactionName((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_NAME_COLUMN));
-		    aReaction.setReactionString((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_STRING_COLUMN));		    
-		    
-		    if (aReaction.getReactionString() != null) {
-		    	if (aReaction.getReactionString().contains("<") || aReaction.getReactionString().contains("=")) {
-		    		aReaction.setReversible("true");
-		    	} else if (aReaction.getReactionString().contains("-->") || aReaction.getReactionString().contains("->")) {
-		    		aReaction.setReversible("false");		    		
-		    	}
-		    		
-		    	ReactionParser parser = new ReactionParser();
-		    	if (parser.isValid(aReaction.getReactionString())) {
-		    		ArrayList reactantsAndProducts = parser.parseReaction(aReaction.getReactionString(), reactionId);
-		    		aReaction.setReactantsList((ArrayList) reactantsAndProducts.get(0));
-			    	aReaction.clearReactants();
-			    	aReaction.updateReactants();
-			    	if (reactantsAndProducts.size() > 1) {
-			    		aReaction.setProductsList((ArrayList) reactantsAndProducts.get(1));
-			    		aReaction.clearProducts();
-			    		aReaction.updateProducts();
-			    	}			 	    
-			    	Class.forName("org.sqlite.JDBC");       
-		  		    Connection con = DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db");
-			    	//refresh metabolites table in case any new metabolites are added
-		  		    setUpMetabolitesTable(con);
-		    	} else {
-		    		JOptionPane.showMessageDialog(null,                
-		    				"Not a valid reaction.",                
-		    				"Invalid Reaction Warning",                                
-		    				JOptionPane.ERROR_MESSAGE);                              
+	/******************************************************************************/
+	//update database methods, called when table rows changed 
+	/******************************************************************************/
 
-		    		aReaction.clearReactants();
-			    	aReaction.clearProducts();
-		    	}
-		    } else {
-		    	aReaction.clearReactants();
-		    	aReaction.clearProducts();
-		    }
-		  
-		    //string cannot be cast to double but valueOf works, from http://www.java-examples.com/convert-java-string-double-example		    
-		    if (reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN) != null) {
-		        aReaction.setLowerBound(Double.valueOf((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));
-		    } else {
-		    	aReaction.setLowerBound(-999999);
-		    }
-		    if (reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN) != null) {
-		        aReaction.setUpperBound(Double.valueOf((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));
-		    } else {
-		    	aReaction.setUpperBound(999999);
-		    }
-		    if (reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN) != null) {
-		        aReaction.setBiologicalObjective(Double.valueOf((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN)));
-		    }
-		    
-		    aReaction.setMeta1((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META1_COLUMN));			
-		    aReaction.setMeta2((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META2_COLUMN));
-		    aReaction.setMeta3((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META3_COLUMN));			
-		    aReaction.setMeta4((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META4_COLUMN));			
-		    aReaction.setMeta5((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META5_COLUMN));			
-		    aReaction.setMeta6((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META6_COLUMN));			
-		    aReaction.setMeta7((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META7_COLUMN));			
-		    aReaction.setMeta8((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META8_COLUMN));			
-		    aReaction.setMeta9((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META9_COLUMN));			
-		    aReaction.setMeta10((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META10_COLUMN));			
-		    aReaction.setMeta11((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META11_COLUMN));			
-		    aReaction.setMeta12((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META12_COLUMN));			
-		    aReaction.setMeta13((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META13_COLUMN));			
-		    aReaction.setMeta14((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META14_COLUMN));			
-		    aReaction.setMeta15((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META15_COLUMN));			
-		    
+	public void updateReactionsDatabaseRow(int rowIndex, Integer reactionId, String sourceType, String databaseName)  {
+
+		try { 
+			ReactionFactory aFactory = new ReactionFactory();
+
+			SBMLReaction aReaction = (SBMLReaction)aFactory.getReactionById(reactionId, sourceType, databaseName); 
+			aReaction.setKnockout((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.KO_COLUMN));			
+
+			if (reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN) != null) {
+				aReaction.setFluxValue(Double.valueOf((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN)));
+			}
+
+			aReaction.setReactionAbbreviation((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN));
+			aReaction.setReactionName((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_NAME_COLUMN));
+			aReaction.setReactionString((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_STRING_COLUMN));		    
+
+			if (aReaction.getReactionString() != null) {
+				if (aReaction.getReactionString().contains("<") || (aReaction.getReactionString().contains("=") && !aReaction.getReactionString().contains(">"))) {
+					aReaction.setReversible("true");
+				} else if (aReaction.getReactionString().contains("-->") || aReaction.getReactionString().contains("->") || aReaction.getReactionString().contains("=>")) {
+					aReaction.setReversible("false");		    		
+				}
+
+				ReactionParser parser = new ReactionParser();
+				if (parser.isValid(aReaction.getReactionString())) {
+					ArrayList reactantsAndProducts = parser.parseReaction(aReaction.getReactionString(), reactionId, LocalConfig.getInstance().getLoadedDatabase());
+					aReaction.setReactantsList((ArrayList) reactantsAndProducts.get(0));
+					aReaction.clearReactants();
+					aReaction.updateReactants();
+					if (reactantsAndProducts.size() > 1) {
+						aReaction.setProductsList((ArrayList) reactantsAndProducts.get(1));
+						aReaction.clearProducts();
+						aReaction.updateProducts();
+					}			 	    
+					Class.forName("org.sqlite.JDBC");       
+					Connection con = DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db");
+					//refresh metabolites table in case any new metabolites are added
+					setUpMetabolitesTable(con);
+				} else {
+					JOptionPane.showMessageDialog(null,                
+							"Not a valid reaction.",                
+							"Invalid Reaction Warning",                                
+							JOptionPane.ERROR_MESSAGE);                              
+
+					aReaction.clearReactants();
+					aReaction.clearProducts();
+				}
+			} else {
+				aReaction.clearReactants();
+				aReaction.clearProducts();
+			}
+
+			//string cannot be cast to double but valueOf works, from http://www.java-examples.com/convert-java-string-double-example		    
+			if (reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN) != null) {
+				aReaction.setLowerBound(Double.valueOf((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));
+			} else {
+				aReaction.setLowerBound(-999999);
+			}
+			if (reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN) != null) {
+				aReaction.setUpperBound(Double.valueOf((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));
+			} else {
+				aReaction.setUpperBound(999999);
+			}
+			if (reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN) != null) {
+				aReaction.setBiologicalObjective(Double.valueOf((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN)));
+			}
+
+			aReaction.setMeta1((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META1_COLUMN));			
+			aReaction.setMeta2((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META2_COLUMN));
+			aReaction.setMeta3((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META3_COLUMN));			
+			aReaction.setMeta4((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META4_COLUMN));			
+			aReaction.setMeta5((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META5_COLUMN));			
+			aReaction.setMeta6((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META6_COLUMN));			
+			aReaction.setMeta7((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META7_COLUMN));			
+			aReaction.setMeta8((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META8_COLUMN));			
+			aReaction.setMeta9((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META9_COLUMN));			
+			aReaction.setMeta10((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META10_COLUMN));			
+			aReaction.setMeta11((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META11_COLUMN));			
+			aReaction.setMeta12((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META12_COLUMN));			
+			aReaction.setMeta13((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META13_COLUMN));			
+			aReaction.setMeta14((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META14_COLUMN));			
+			aReaction.setMeta15((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META15_COLUMN));			
+
 			aReaction.update();
-			
+
 			//aFactory.listUsedMetabolites(getDatabaseName());
-			
+
 			String fileString = "jdbc:sqlite:" + databaseName + ".db";
 			Class.forName("org.sqlite.JDBC");
-		    Connection con = DriverManager.getConnection(fileString);
-            setUpReactionsTable(con);
-			
-	    } catch (Exception e1) {
-		    // TODO Auto-generated catch block
-		    e1.printStackTrace();			
-        }
-	}
-   
-   public void updateMetabolitesDatabaseRow(int rowIndex, Integer metaboliteId, String sourceType, String databaseName)  {
-   	try {
-		    MetaboliteFactory aFactory = new MetaboliteFactory();
-		    SBMLMetabolite aMetabolite = (SBMLMetabolite)aFactory.getMetaboliteById(Integer.parseInt((String) metabolitesTable.getModel().getValueAt(rowIndex, 0)), "SBML", getDatabaseName()); 
-		  
-		    aMetabolite.setMetaboliteAbbreviation((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN));
-		    aMetabolite.setMetaboliteName((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN));
-		    aMetabolite.setCharge((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.CHARGE_COLUMN));
-		    aMetabolite.setCompartment((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.COMPARTMENT_COLUMN));
-		    aMetabolite.setBoundary((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.BOUNDARY_COLUMN));
-		    aMetabolite.setMeta1((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META1_COLUMN));
-		    aMetabolite.setMeta2((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META2_COLUMN));
-		    aMetabolite.setMeta3((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META3_COLUMN));
-		    aMetabolite.setMeta4((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META4_COLUMN));
-		    aMetabolite.setMeta5((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META5_COLUMN));
-		    aMetabolite.setMeta6((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META6_COLUMN));
-		    aMetabolite.setMeta7((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META7_COLUMN));
-		    aMetabolite.setMeta8((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META8_COLUMN));
-		    aMetabolite.setMeta9((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META9_COLUMN));
-		    aMetabolite.setMeta10((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META10_COLUMN));
-		    aMetabolite.setUsed((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.USED_COLUMN));
-		    
-		    aMetabolite.update();
-		  
-	  } catch (Exception e1) {
+			Connection con = DriverManager.getConnection(fileString);
+			setUpReactionsTable(con);
+
+		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();			
-     }    
-   }
-   
-   //based on http://www.java2s.com/Code/Java/File-Input-Output/Textfileviewer.htm
-   public static void loadOutputPane(String path) {
-	    File file;
-	    FileReader in = null;
-	    
-	    try {
-	      file = new File(path); 
-	      in = new FileReader(file); 
-	      char[] buffer = new char[4096]; // Read 4K characters at a time
-	      int len; 
-	      outputTextArea.setText(""); 
-	      while ((len = in.read(buffer)) != -1) { // Read a batch of chars
-	          String s = new String(buffer, 0, len); 
-	          outputTextArea.append(s); 
-	      }
-	      outputTextArea.setCaretPosition(0); 
-	    }
-	    
-	    catch (IOException e) {
-	    	
-	    }
-	    
-	    finally {
-	      try {
-	        if (in != null)
-	          in.close();
-	      } catch (IOException e) {
-	      }
-	    }
-	  }
+		}
+	}
 
-   public void clearOutputPane() {
+	public void updateMetabolitesDatabaseRow(int rowIndex, Integer metaboliteId, String sourceType, String databaseName)  {
+		try {
+			MetaboliteFactory aFactory = new MetaboliteFactory();
+			SBMLMetabolite aMetabolite = (SBMLMetabolite)aFactory.getMetaboliteById(Integer.parseInt((String) metabolitesTable.getModel().getValueAt(rowIndex, 0)), "SBML", LocalConfig.getInstance().getLoadedDatabase()); 
+
+			aMetabolite.setMetaboliteAbbreviation((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN));
+			aMetabolite.setMetaboliteName((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN));
+			aMetabolite.setCharge((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.CHARGE_COLUMN));
+			aMetabolite.setCompartment((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.COMPARTMENT_COLUMN));
+			aMetabolite.setBoundary((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.BOUNDARY_COLUMN));
+			aMetabolite.setMeta1((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META1_COLUMN));
+			aMetabolite.setMeta2((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META2_COLUMN));
+			aMetabolite.setMeta3((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META3_COLUMN));
+			aMetabolite.setMeta4((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META4_COLUMN));
+			aMetabolite.setMeta5((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META5_COLUMN));
+			aMetabolite.setMeta6((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META6_COLUMN));
+			aMetabolite.setMeta7((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META7_COLUMN));
+			aMetabolite.setMeta8((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META8_COLUMN));
+			aMetabolite.setMeta9((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META9_COLUMN));
+			aMetabolite.setMeta10((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_META10_COLUMN));
+			aMetabolite.setUsed((String) metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.USED_COLUMN));
+
+			aMetabolite.update();
+
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();			
+		}    
+	}
+
+	//based on http://www.java2s.com/Code/Java/File-Input-Output/Textfileviewer.htm
+	public static void loadOutputPane(String path) {
+		File file;
+		FileReader in = null;
+
+		try {
+			file = new File(path); 
+			in = new FileReader(file); 
+			char[] buffer = new char[4096]; // Read 4K characters at a time
+			int len; 
+			outputTextArea.setText(""); 
+			while ((len = in.read(buffer)) != -1) { // Read a batch of chars
+				String s = new String(buffer, 0, len); 
+				outputTextArea.append(s); 
+			}
+			outputTextArea.setCaretPosition(0); 
+		}
+
+		catch (IOException e) {
+
+		}
+
+		finally {
+			try {
+				if (in != null)
+					in.close();
+			} catch (IOException e) {
+			}
+		}
+	}
+
+	public void clearOutputPane() {
 		outputTextArea.setText(""); 
 	}
-   
-   class Task extends SwingWorker<Void, Void> {
+
+	class Task extends SwingWorker<Void, Void> {
 
 		@Override
 		public void done() {
@@ -2610,48 +2748,89 @@ public GraphicalInterface(final Connection con)
 			return null;
 		}
 	}
-   
-   class TimeListener implements ActionListener {
+
+	class TimeListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			progressBar.progress.setValue(LocalConfig.getInstance().getProgress());
 			progressBar.progress.repaint();
 			if (LocalConfig.getInstance().getProgress() == 100) {
-				setUpTables(LocalConfig.getInstance().getDatabaseName());
+				setUpTables();
 				t.stop();
 				progressBar.setVisible(false);
 				progressBar.dispose();
 			}
 		}
 	}
-     
-   /******************************************************************************/
-   //end update database methods
-   /******************************************************************************/
-   
-   public static void main(String[] args) throws Exception {
-	   Class.forName("org.sqlite.JDBC");       
-	   DatabaseCreator databaseCreator = new DatabaseCreator();
-	   setDatabaseName(ConfigConstants.DEFAULT_DATABASE_NAME);
-	   Connection con = DriverManager.getConnection("jdbc:sqlite:" + LocalConfig.getInstance().getDatabaseName() + ".db");
-	   databaseCreator.createDatabase(LocalConfig.getInstance().getDatabaseName());
-	   databaseCreator.addRows(LocalConfig.getInstance().getDatabaseName(), GraphicalInterfaceConstants.BLANK_DB_NUMBER_OF_ROWS, GraphicalInterfaceConstants.BLANK_DB_NUMBER_OF_ROWS);
-	   
-	   //based on code from http://stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
-	   final ArrayList<Image> icons = new ArrayList<Image>(); 
-       icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
-       icons.add(new ImageIcon("etc/most32.jpg").getImage());
-       
-	   GraphicalInterface frame = new GraphicalInterface(con);	   
-	   
-	   frame.setIconImages(icons);
-	   frame.setSize(1000, 600);
-	   frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-	   frame.setLocationRelativeTo(null);
-	   frame.setVisible(true);
-	  
-	   showPrompt = true;
 
-  }
+	public void reactionsCopy(int rowIndex, int columnIndex) {
+		Object value = reactionsTable.getModel().getValueAt(rowIndex,
+				columnIndex);
+		setClipboardContents(value == null ? "" : value
+				.toString());
+		setCopyColumn(columnIndex);
+	}
+
+	public void reactionsPaste(int columnIndex) {
+		// Get the min and max ranges of selected cells
+		int rowIndexStart = reactionsTable.getSelectedRow();
+		int rowIndexEnd = reactionsTable.getSelectionModel().getMaxSelectionIndex();
+		String value = getClipboardContents(GraphicalInterface.this);
+		for (int r = rowIndexStart; r <= rowIndexEnd; r++) {
+			reactionsTable.getModel().setValueAt(value, r,
+					columnIndex);
+			updateReactionsDatabaseRow(r, Integer.valueOf((String) (reactionsTable.getModel().getValueAt(r, 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase()); 
+		}
+	}
+
+	public void metabolitesCopy(int rowIndex, int columnIndex) {
+		Object value = metabolitesTable.getModel().getValueAt(rowIndex,
+				columnIndex);
+		setClipboardContents(value == null ? "" : value
+				.toString());
+		setCopyColumn(columnIndex);
+	}
+
+	public void metabolitesPaste(int columnIndex) {
+		// Get the min and max ranges of selected cells
+		int rowIndexStart = metabolitesTable.getSelectedRow();
+		int rowIndexEnd = metabolitesTable.getSelectionModel().getMaxSelectionIndex();
+		String value = getClipboardContents(GraphicalInterface.this);
+		for (int r = rowIndexStart; r <= rowIndexEnd; r++) {
+			metabolitesTable.getModel().setValueAt(value, r,
+					columnIndex);
+			updateMetabolitesDatabaseRow(r, Integer.valueOf((String) (metabolitesTable.getModel().getValueAt(r, 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase()); 
+		}
+	}
+
+	/******************************************************************************/
+	//end update database methods
+	/******************************************************************************/
+
+	public static void main(String[] args) throws Exception {
+		Class.forName("org.sqlite.JDBC");       
+		DatabaseCreator databaseCreator = new DatabaseCreator();
+		setDatabaseName(ConfigConstants.DEFAULT_DATABASE_NAME);
+		LocalConfig.getInstance().setLoadedDatabase(ConfigConstants.DEFAULT_DATABASE_NAME);
+		Connection con = DriverManager.getConnection("jdbc:sqlite:" + LocalConfig.getInstance().getDatabaseName() + ".db");
+		databaseCreator.createDatabase(LocalConfig.getInstance().getDatabaseName());
+		databaseCreator.addRows(LocalConfig.getInstance().getDatabaseName(), GraphicalInterfaceConstants.BLANK_DB_NUMBER_OF_ROWS, GraphicalInterfaceConstants.BLANK_DB_NUMBER_OF_ROWS);
+
+		//based on code from http://stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
+		final ArrayList<Image> icons = new ArrayList<Image>(); 
+		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
+		icons.add(new ImageIcon("etc/most32.jpg").getImage());
+
+		GraphicalInterface frame = new GraphicalInterface(con);	   
+
+		frame.setIconImages(icons);
+		frame.setSize(1000, 600);
+		frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+
+		showPrompt = true;
+
+	}
 }
 
 

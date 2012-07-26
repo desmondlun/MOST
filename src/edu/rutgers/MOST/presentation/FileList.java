@@ -2,10 +2,27 @@ package edu.rutgers.MOST.presentation;
 
 import javax.swing.*;
 
+import edu.rutgers.MOST.config.LocalConfig;
+
 import java.awt.event.*;
 
 //based on code from http://www.roseindia.net/java/example/java/swing/TooltipTextOfList.shtml
 class FileList extends JList {
+
+	public static int row;
+
+	public static int getRow() {
+		return row;
+	}
+
+	public static void setRow(int row) {
+		FileList.row = row;
+	}
+
+	public JPopupMenu jPopupMenu = new JPopupMenu();
+	public JMenuItem deleteItem = new JMenuItem("Delete");
+	public JMenuItem clearItem = new JMenuItem("Clear Optimizations");
+
 	public FileList() {
 		super();
 
@@ -15,14 +32,76 @@ class FileList extends JList {
 				FileList fileList = (FileList) e.getSource();
 				ListModel model = fileList.getModel();
 				int index = fileList.locationToIndex(e.getPoint());
-				if (index > -1) {
+				if (index > -1 && index <= model.getSize()) {
 					fileList.setToolTipText(null);
 					String text = (String) 
 					model.getElementAt(index);
-					fileList.setToolTipText(text);
+					if (text.length() > 26) {
+						fileList.setToolTipText(text);
+					}					
 				}
 			}
 		});
+
+		addMouseListener(new MouseAdapter() {
+
+			public void mousePressed(MouseEvent e)  {check(e);}
+			public void mouseReleased(MouseEvent e) {check(e);}
+
+			public void check(MouseEvent e) {
+				if (e.isPopupTrigger()) { //if the event shows the menu
+					FileList fileList = (FileList) e.getSource();
+					ListModel model = fileList.getModel();
+					setSelectedIndex(-1);       
+					setSelectedIndex(locationToIndex(e.getPoint())); //select the item    	    	  
+					fileList.setSelectedIndex(-1);       
+					fileList.setSelectedIndex(fileList.locationToIndex(e.getPoint())); //select the item    	    	      			  
+					int index = fileList.locationToIndex(e.getPoint());
+					if (index > -1 && index <= model.getSize()) {
+						String text = (String) 
+						model.getElementAt(index);
+						setRow(index);
+						if (text.length() > 0) {
+							jPopupMenu.show(fileList, e.getX(), e.getY()); //and show the menu
+							if (index > 0 && index <= model.getSize()) {
+								deleteItem.setEnabled(true);
+								clearItem.setEnabled(true);
+							}
+						}
+
+					} 	          
+				}
+			}
+		});	
+
+
+		jPopupMenu.add(deleteItem);
+		deleteItem.setEnabled(false);
+		deleteItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 
+				if (getRow() > 0) {
+					LocalConfig.getInstance().setLoadedDatabase(LocalConfig.getInstance().getDatabaseName());
+					GraphicalInterface.listModel.remove(getRow());
+					GraphicalInterface.fileList.setModel(GraphicalInterface.listModel);
+					GraphicalInterface.fileListPane.repaint();					
+				}				
+			}
+		});
+
+		jPopupMenu.add(clearItem);
+		clearItem.setEnabled(false);
+		clearItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) {
+				LocalConfig.getInstance().setLoadedDatabase(LocalConfig.getInstance().getDatabaseName());
+				GraphicalInterface.listModel.clear();
+				GraphicalInterface.listModel.addElement(GraphicalInterface.getDatabaseName());
+				GraphicalInterface.fileList.setModel(GraphicalInterface.listModel);
+				GraphicalInterface.fileListPane.repaint();
+				GraphicalInterface.outputTextArea.setText("");
+			}
+		});
+
+		add(jPopupMenu);
 	}
 
 	// Expose the getToolTipText event of our JList
@@ -30,3 +109,5 @@ class FileList extends JList {
 		return super.getToolTipText();
 	}
 }
+
+

@@ -163,7 +163,7 @@ public class SBMLReaction implements ModelReaction {
 		}
 		Connection conn;
 		try {
-			conn = DriverManager.getConnection(createConnectionStatement(getDatabaseName())); // TODO:
+			conn = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getLoadedDatabase())); // TODO:
 
 			PreparedStatement prep = conn
 			.prepareStatement("update reactions set knockout=?, flux_value=?, reaction_abbreviation=?, reaction_name=?, " 
@@ -218,7 +218,7 @@ public class SBMLReaction implements ModelReaction {
 		}
 		Connection conn;
 		try {
-			conn = DriverManager.getConnection(createConnectionStatement(getDatabaseName())); // TODO:
+			conn = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getLoadedDatabase())); // TODO:
 			// Make
 			// this
 			// configurable
@@ -275,7 +275,7 @@ public class SBMLReaction implements ModelReaction {
 		+ ", biologicalObjective=" + biologicalObjective
 		+ ", upperBound=" + upperBound + ", lowerBound=" + lowerBound
 		+ ", reactionName=" + reactionName + ", reversible="
-		+ reversible + ", knockout=" + knockout + "]";
+		+ reversible + ", flux_value=" + fluxValue + ", knockout=" + knockout + "]";
 	}
 
 	public boolean clearReactants() {
@@ -289,7 +289,7 @@ public class SBMLReaction implements ModelReaction {
 		}
 		Connection conn;
 		try {
-			conn = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getDatabaseName())); // TODO:
+			conn = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getLoadedDatabase())); // TODO:
 
 			PreparedStatement prep = conn
 			.prepareStatement("delete from reaction_reactants where reaction_id=?;");
@@ -318,7 +318,7 @@ public class SBMLReaction implements ModelReaction {
 		}
 		Connection conn;
 		try {
-			conn = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getDatabaseName())); // TODO:
+			conn = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getLoadedDatabase())); // TODO:
 
 			PreparedStatement prep = conn
 			.prepareStatement("delete from reaction_products where reaction_id=?;");

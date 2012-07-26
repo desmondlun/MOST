@@ -15,7 +15,7 @@ public class MetabolitesDatabaseTableModel extends DefaultTableModel {
 			return false; 
 		} else {
 			return true; 
-		} 
+		} 		
 	} 	
 	private final QueryRunner queryRunner = new QueryRunner();
 	public MetabolitesDatabaseTableModel(Connection con, String query)
