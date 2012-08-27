@@ -17,7 +17,7 @@ import au.com.bytecode.opencsv.CSVReader;
 //http://beginwithjava.blogspot.com/2011/05/java-csv-file-reader.html
 public class TextReactionsModelReader{
 
-	public ArrayList<String> columnNamesFromFile(File file) {
+	public ArrayList<String> columnNamesFromFile(File file, int row) {
 		ArrayList<String> columnNamesFromFile = new ArrayList();
 
 		String[] dataArray = null;
@@ -48,7 +48,36 @@ public class TextReactionsModelReader{
 						columnNamesFromFile.add(dataArray[h]);
 					}					
 				}			
-			}   		
+			}
+
+			if (row > 0) {
+				for (int i = 0; i < row; i++) {
+					dataRow = CSVFile.readLine();
+
+					if ((GraphicalInterface.getSplitCharacter().compareTo(',')) == 0) {
+						dataArray = dataRow.split(",");				
+					} else {
+						dataArray = dataRow.split("\t");
+					}
+					columnNamesFromFile.clear();
+					//add all column names to list			
+					for (int h = 0; h < dataArray.length; h++) { 
+						//remove quotes if exist
+						if (dataArray[h].startsWith("\"")) {
+							//removes " " and null strings
+							if (dataArray[h].compareTo("\" \"") != 0 && dataArray[h].trim().length() > 0) {
+								columnNamesFromFile.add(dataArray[h].substring(1, dataArray[h].length() - 1));
+							}					
+						} else {
+							if (dataArray[h].trim().length() > 0) {
+								columnNamesFromFile.add(dataArray[h]);
+							}					
+						}			
+					} 
+				}				
+			}
+
+			CSVFile.close();
 
 		} catch (FileNotFoundException e1) {
 			// TODO Auto-generated catch block
@@ -71,6 +100,7 @@ public class TextReactionsModelReader{
 				while ((dataArray = reader.readNext()) != null) {
 					count++; 	
 				}
+				reader.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -81,10 +111,11 @@ public class TextReactionsModelReader{
 		}
 		return count;		
 	}
-	
+
 	public void load(File file, String databaseName) {
 		int numOfLines = numberOfLines(file);
 		int row = 1;
+		int correction = LocalConfig.getInstance().getReactionsNextRowCorrection();
 		//BufferedReader CSVFile;
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
 		try {
@@ -120,8 +151,7 @@ public class TextReactionsModelReader{
 							}
 						}
 
-						//start with row 1 to avoid reading headers
-						if (row > 1) {
+						if (row > 1 + correction) {
 							ReactionFactory aFactory = new ReactionFactory();
 
 							SBMLReaction aReaction = (SBMLReaction)aFactory.getReactionById(row, "SBML", "untitled"); 
@@ -137,20 +167,19 @@ public class TextReactionsModelReader{
 								aReaction.setKnockout("false");
 							}	
 							if (LocalConfig.getInstance().getFluxValueColumnIndex() > -1) {
-								aReaction.setFluxValue(Double.valueOf(dataArray[LocalConfig.getInstance().getFluxValueColumnIndex()]));
+								if (dataArray[LocalConfig.getInstance().getFluxValueColumnIndex()].compareTo("") != 0) {
+									aReaction.setFluxValue(Double.valueOf(dataArray[LocalConfig.getInstance().getFluxValueColumnIndex()]));
+								} else {
+									aReaction.setFluxValue(0.0);
+								}
 							} else {
 								aReaction.setFluxValue(0.0);
 							}				
 							//column numbers are corrected for change of position due to insertion of "ko" column (constants - 1)
-							aReaction.setReactionAbbreviation(dataArray[LocalConfig.getInstance().getReactionAbbreviationColumnIndex()]);
+							aReaction.setReactionAbbreviation(dataArray[LocalConfig.getInstance().getReactionAbbreviationColumnIndex()]);							
 							aReaction.setReactionName(dataArray[LocalConfig.getInstance().getReactionNameColumnIndex()]);
-							String equation;
-							if (dataArray[LocalConfig.getInstance().getReactionEquationColumnIndex()].startsWith("[")) {
-								equation = dataArray[LocalConfig.getInstance().getReactionEquationColumnIndex()].substring(5);
-							} else {
-								equation = dataArray[LocalConfig.getInstance().getReactionEquationColumnIndex()];
-							}
-							aReaction.setReactionString(equation.trim());
+
+							aReaction.setReactionString(dataArray[LocalConfig.getInstance().getReactionEquationColumnIndex()]);
 
 							if (LocalConfig.getInstance().getReversibleColumnIndex() > -1) {
 								if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("false") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("FALSE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0.0") == 0) {
@@ -163,14 +192,33 @@ public class TextReactionsModelReader{
 							}
 
 							//string cannot be cast to double but valueOf works, from http://www.java-examples.com/convert-java-string-double-example							
-							aReaction.setLowerBound(Float.valueOf(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()]));
-							aReaction.setUpperBound(Float.valueOf(dataArray[LocalConfig.getInstance().getUpperBoundColumnIndex()]));							
+							if (LocalConfig.getInstance().getLowerBoundColumnIndex() > -1) {
+								if (dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()].compareTo("") != 0) {
+									aReaction.setLowerBound(Float.valueOf(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()]));							
+								} else {
+									aReaction.setLowerBound(-99999);
+								}
+							} else {
+								aReaction.setLowerBound(-99999);
+							}
+							if (LocalConfig.getInstance().getUpperBoundColumnIndex() > -1) {
+								if (dataArray[LocalConfig.getInstance().getUpperBoundColumnIndex()].compareTo("") != 0) {
+									aReaction.setUpperBound(Float.valueOf(dataArray[LocalConfig.getInstance().getUpperBoundColumnIndex()]));							
+								} else {
+									aReaction.setUpperBound(-99999);
+								}
+							} else {
+								aReaction.setUpperBound(-99999);
+							}
 							if (LocalConfig.getInstance().getBiologicalObjectiveColumnIndex() > -1) {
-								aReaction.setBiologicalObjective(Float.valueOf(dataArray[LocalConfig.getInstance().getBiologicalObjectiveColumnIndex()]));							
+								if (dataArray[LocalConfig.getInstance().getBiologicalObjectiveColumnIndex()].compareTo("") != 0) {
+									aReaction.setBiologicalObjective(Float.valueOf(dataArray[LocalConfig.getInstance().getBiologicalObjectiveColumnIndex()]));							
+								} else {
+									aReaction.setBiologicalObjective(0);
+								}								
 							} else {
 								aReaction.setBiologicalObjective(0);
 							}
-
 
 							if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 0) {
 								aReaction.setMeta1(dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)]);
@@ -220,11 +268,11 @@ public class TextReactionsModelReader{
 
 							PreparedStatement prep = conn.prepareStatement(
 									"insert into reactions (id, knockout, flux_value, reaction_abbreviation, "
-											+ " reaction_name, reaction_string, reversible, " 
-											+ " lower_bound, upper_bound, biological_objective, "
-											+ " meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, "
-											+ " meta_9, meta_10, meta_11, meta_12, meta_13, meta_14, meta_15) "
-											+ " values (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+									+ " reaction_name, reaction_string, reversible, " 
+									+ " lower_bound, upper_bound, biological_objective, "
+									+ " meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, "
+									+ " meta_9, meta_10, meta_11, meta_12, meta_13, meta_14, meta_15) "
+									+ " values (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 							prep.setString(1, aReaction.getKnockout());
 							prep.setDouble(2, aReaction.getFluxValue());
 							prep.setString(3, aReaction.getReactionAbbreviation());
@@ -258,7 +306,7 @@ public class TextReactionsModelReader{
 
 							ReactionParser parser = new ReactionParser();
 							if (parser.isValid(aReaction.getReactionString())) {
-								ArrayList reactantsAndProducts = parser.parseReaction(aReaction.getReactionString(), (row - 1));
+								ArrayList reactantsAndProducts = parser.parseReaction(aReaction.getReactionString(), (row - 1), databaseName);
 								aReaction.setReactantsList((ArrayList) reactantsAndProducts.get(0));
 								aReaction.updateReactants();
 								if (reactantsAndProducts.size() > 1) {
@@ -273,6 +321,7 @@ public class TextReactionsModelReader{
 					ReactionFactory aFactory = new ReactionFactory();
 					aFactory.setMetabolitesUsedStatus(LocalConfig.getInstance().getDatabaseName());
 					conn.close();
+					reader.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

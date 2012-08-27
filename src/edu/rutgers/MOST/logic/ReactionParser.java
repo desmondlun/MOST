@@ -25,7 +25,7 @@ public class ReactionParser {
 
 	boolean addMetaboliteOption = true;	
 
-	public ArrayList parseReaction(String reactionEquation, int reactionId) {
+	public ArrayList parseReaction(String reactionEquation, int reactionId, String databaseName) {
 		DatabaseCreator creator = new DatabaseCreator();
 
 		ReactionFactory rFactory = new ReactionFactory();			
@@ -34,8 +34,6 @@ public class ReactionParser {
 		ArrayList<SBMLProduct> productList = new ArrayList();
 		ArrayList<ArrayList> reactantsAndProductsList = new ArrayList();
 
-		String queryString = "jdbc:sqlite:" + LocalConfig.getInstance().getDatabaseName() + ".db";
-
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
@@ -43,30 +41,35 @@ public class ReactionParser {
 			e.printStackTrace();
 		}
 
+		reactionEquation = reactionEquation.trim();
+		String noPrefix = compartmentPrefixRemoved(reactionEquation);
+		String correctedReaction = correctReaction(noPrefix);
+		
 		String splitString = "";
 		//reversible options
-		if (reactionEquation.contains("<==>")) {
+		if (correctedReaction.contains("<==>")) {
 			//trailing space on splitString gets rid of preceding space on first split
 			//of productsAndCoeff
 			splitString = "<==> ";
-		} else if (reactionEquation.contains("<=>")) {
+		} else if (correctedReaction.contains("<=>")) {
 			splitString = "<=> ";
-		} else if (reactionEquation.contains("=")) {
+		} else if (correctedReaction.contains("=") && !correctedReaction.contains(">")) {
 			splitString = "= ";
 			//not reversible options
-		} else if (reactionEquation.contains("-->")) {
+		} else if (correctedReaction.contains("=>")) {
+			splitString = "=> ";
+		} else if (correctedReaction.contains("-->")) {
 			splitString = "--> ";
-		} else if (reactionEquation.contains("->")) {
+		} else if (correctedReaction.contains("->")) {
 			splitString = "-> ";
 		}
 
-
 		//space after splitString not needed and removed to check for reactions of
-		//the type "metabolite <==>" (no product), removes splitString from reactionEquation
-		if (reactionEquation.endsWith(splitString.substring(0, splitString.length() - 1))) {
-			reactionEquation = reactionEquation.substring(0, reactionEquation.length() - (splitString.length() - 1));
+		//the type "metabolite <==>" (no product), removes splitString from correctedReaction
+		if (correctedReaction.endsWith(splitString.substring(0, splitString.length() - 1))) {
+			correctedReaction = correctedReaction.substring(0, correctedReaction.length() - (splitString.length() - 1));
 		}
-		java.util.List<String> halfEquations = Arrays.asList(reactionEquation.split(splitString));	
+		java.util.List<String> halfEquations = Arrays.asList(correctedReaction.split(splitString));	
 		java.util.List<String> reactantsAndCoeff = Arrays.asList(halfEquations.get(0).split("\\s+"));
 
 		//create arrays of SBMLReactants and factories
@@ -100,12 +103,12 @@ public class ReactionParser {
 
 				MetaboliteFactory mFactory = new MetaboliteFactory();
 
-				if (mFactory.metaboliteCount(reactant) == 0) {
+				if (mFactory.metaboliteCount(reactant, databaseName) == 0) {
 					if (addMetaboliteOption) {
 						if (GraphicalInterface.showPrompt) {
-							addMetabolitePrompt(mFactory, reactant, reactionId);
+							addMetabolitePrompt(mFactory, reactant, reactionId, databaseName);
 						} else {
-							mFactory.addMetabolite(reactant);
+							mFactory.addMetabolite(reactant, databaseName);
 						}
 					}				    					
 				} 
@@ -137,7 +140,7 @@ public class ReactionParser {
 		}	
 
 		MetaboliteFactory nFactory = new MetaboliteFactory();
-		if (nFactory.metaboliteCount(reactant) == 0) {
+		if (nFactory.metaboliteCount(reactant, databaseName) == 0) {
 			//if user enters values into blank tables on original load of gui, 
 			//this code gets rid of blank rows 
 			if (LocalConfig.getInstance().getDatabaseName() == ConfigConstants.DEFAULT_DATABASE_NAME) {
@@ -149,9 +152,9 @@ public class ReactionParser {
 			}
 			if (addMetaboliteOption) {
 				if (GraphicalInterface.showPrompt) {
-					addMetabolitePrompt(nFactory, reactant, reactionId);
+					addMetabolitePrompt(nFactory, reactant, reactionId, databaseName);
 				} else {
-					nFactory.addMetabolite(reactant);
+					nFactory.addMetabolite(reactant, databaseName);
 				}
 			}		    
 		} 
@@ -199,13 +202,13 @@ public class ReactionParser {
 					}
 
 					MetaboliteFactory mFactory = new MetaboliteFactory();
-					if (mFactory.metaboliteCount(product) == 0) {
+					if (mFactory.metaboliteCount(product, databaseName) == 0) {
 
 						if (addMetaboliteOption) {
 							if (GraphicalInterface.showPrompt) {
-								addMetabolitePrompt(mFactory, product, reactionId);
+								addMetabolitePrompt(mFactory, product, reactionId, databaseName);
 							} else {
-								mFactory.addMetabolite(product);
+								mFactory.addMetabolite(product, databaseName);
 							}
 						}
 
@@ -238,13 +241,13 @@ public class ReactionParser {
 			}
 
 			MetaboliteFactory oFactory = new MetaboliteFactory();
-			if (oFactory.metaboliteCount(product) == 0) {
+			if (oFactory.metaboliteCount(product, databaseName) == 0) {
 
 				if (addMetaboliteOption) {
 					if (GraphicalInterface.showPrompt) {
-						addMetabolitePrompt(oFactory, product, reactionId);
+						addMetabolitePrompt(oFactory, product, reactionId, databaseName);
 					} else {
-						oFactory.addMetabolite(product);
+						oFactory.addMetabolite(product, databaseName);
 					}
 				}				
 			}
@@ -293,7 +296,7 @@ public class ReactionParser {
 		return numProducts;		
 	}
 
-	public void addMetabolitePrompt(MetaboliteFactory mFactory, String reactant, int reactionId)
+	public void addMetabolitePrompt(MetaboliteFactory mFactory, String reactant, int reactionId, String databaseName)
 	{
 		if (reactant != null || reactant.trim().length() > 0) {
 			// display the showOptionDialog
@@ -312,13 +315,13 @@ public class ReactionParser {
 			// interpret the user's choice	  
 			if (choice == JOptionPane.YES_OPTION)
 			{
-				mFactory.addMetabolite(reactant);
+				mFactory.addMetabolite(reactant, databaseName);
 			}
 			//No option actually corresponds to "Yes to All" button
 			if (choice == JOptionPane.NO_OPTION)
 			{
 				GraphicalInterface.showPrompt = false;
-				mFactory.addMetabolite(reactant);
+				mFactory.addMetabolite(reactant, databaseName);
 			}
 			//Cancel option actually corresponds to "No" button
 			if (choice == JOptionPane.CANCEL_OPTION) {
@@ -341,29 +344,35 @@ public class ReactionParser {
 	public ArrayList<Integer> speciesIdList(String reactionEquation, String databaseName) {
 		ArrayList<Integer> speciesIdList = new ArrayList();
 
+		reactionEquation = reactionEquation.trim();
+		String noPrefix = compartmentPrefixRemoved(reactionEquation);
+		String correctedReaction = correctReaction(noPrefix);
+        
 		String splitString = "";
 		//reversible options
-		if (reactionEquation.contains("<==>")) {
+		if (correctedReaction.contains("<==>")) {
 			//trailing space on splitString gets rid of preceding space on first split
 			//of productsAndCoeff
 			splitString = "<==> ";
-		} else if (reactionEquation.contains("<=>")) {
+		} else if (correctedReaction.contains("<=>")) {
 			splitString = "<=> ";
-		} else if (reactionEquation.contains("=")) {
+		} else if (correctedReaction.contains("=") && !correctedReaction.contains(">")) {
 			splitString = "= ";
 			//not reversible options
-		} else if (reactionEquation.contains("-->")) {
+		} else if (correctedReaction.contains("=>")) {
+			splitString = "=> ";
+		} else if (correctedReaction.contains("-->")) {
 			splitString = "--> ";
-		} else if (reactionEquation.contains("->")) {
+		} else if (correctedReaction.contains("->")) {
 			splitString = "-> ";
 		}
-
+		
 		//space after splitString not needed and removed to check for reactions of
-		//the type "metabolite <==>" (no product), removes splitString from reactionEquation
-		if (reactionEquation.endsWith(splitString.substring(0, splitString.length() - 1))) {
-			reactionEquation = reactionEquation.substring(0, reactionEquation.length() - (splitString.length() - 1));
+		//the type "metabolite <==>" (no product), removes splitString from correctedReaction
+		if (correctedReaction.endsWith(splitString.substring(0, splitString.length() - 1))) {
+			correctedReaction = correctedReaction.substring(0, correctedReaction.length() - (splitString.length() - 1));
 		}
-		java.util.List<String> halfEquations = Arrays.asList(reactionEquation.split(splitString));	
+		java.util.List<String> halfEquations = Arrays.asList(correctedReaction.split(splitString));	
 		java.util.List<String> reactantsAndCoeff = Arrays.asList(halfEquations.get(0).split("\\s+"));
 
 		MetaboliteFactory mFactory = new MetaboliteFactory();
@@ -447,8 +456,42 @@ public class ReactionParser {
 		return speciesIdList;
 	}
 
+	public String correctReaction(String reactionEquation) {
+		String correctedReaction = "";
+		if (reactionEquation.contains("+")) {
+			char[] rxnChar = reactionEquation.toCharArray();
+			StringBuffer newRxn = new StringBuffer(reactionEquation); 
+			int insertCorrection = 0;
+			for (int i = 0; i < reactionEquation.length(); i++) {
+				if (rxnChar[i] == '+') {
+					if (rxnChar[i - 1] != ' ') {
+						newRxn.insert(i + insertCorrection, " ");
+						insertCorrection += 1; 
+					}
+					if (rxnChar[i + 1] != ' ') {
+						newRxn.insert(i + 1 + insertCorrection, " ");
+						insertCorrection += 1;
+					} 	
+				}
+			}
+			correctedReaction = newRxn.toString();
+			return correctedReaction;
+		}		
+		return reactionEquation;		
+	}
+	
+	//removes compartment prefix such as "[c] :"
+	public String compartmentPrefixRemoved(String reactionEquation) {
+		String correctedReaction = "";
+		if (reactionEquation.startsWith("[") && reactionEquation.indexOf("]") == 2 && reactionEquation.contains(":")) {
+			   correctedReaction = reactionEquation.substring(5, reactionEquation.length()).trim();
+			   return correctedReaction;			   
+		   }
+		return reactionEquation;
+	}
+	
 	public static void main(String[] args) {
-
+       
 	}		
 }
 

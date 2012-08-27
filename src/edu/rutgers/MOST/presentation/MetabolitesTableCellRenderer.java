@@ -17,20 +17,18 @@ public class MetabolitesTableCellRenderer extends DefaultTableCellRenderer{
 				table, obj, isSelected, hasFocus, row, column);
 
 		if (isSelected) {
-			//cell.setBackground(Color.green);
-		} 	  
-
-		if (table.getModel().getValueAt(row, 1) != null) {
+			cell.setBackground(new Color(180, 216, 231));
+		} else if (table.getModel().getValueAt(row, 1) != null) {
 			int id = Integer.valueOf((String) table.getModel().getValueAt(row, 0));
 			MetaboliteFactory mFactory = new MetaboliteFactory();
-			if (GraphicalInterface.highlightUnusedMetabolites == true && mFactory.isUnused(id, GraphicalInterface.getDatabaseName())) {
+			if (GraphicalInterface.highlightUnusedMetabolites == true && table.getModel().getValueAt(row, GraphicalInterfaceConstants.USED_COLUMN).equals("false")) {
 				cell.setBackground(Color.yellow);
 			} else {
-				cell.setBackground(null);
+				cell.setBackground(Color.white);
 			}
 		} else {
-			cell.setBackground(null);
-		}
+			cell.setBackground(Color.white);
+		}	  
 
 		//based on code from http://tech.chitgoks.com/2009/11/05/display-tooltip-in-jtable-cell-if-text-is-truncated/
 		int availableWidth = table.getColumnModel().getColumn(column).getWidth();

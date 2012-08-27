@@ -6,17 +6,14 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.logic.ReactionParser;
-import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 import edu.rutgers.MOST.presentation.ProgressConstants;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -170,7 +167,7 @@ public class Excel97Reader {
 				//HSSFSheet metabolitesSheet = workbook.getSheetAt(0);
 				HSSFSheet metabolitesSheet = workbook.getSheet(sheetNames.get(0));
 				List<String> metabolitesData = new ArrayList();
-				
+
 				//start with row 1 to avoid reading headers
 				for (int r = 1; r <= metabolitesSheet.getLastRowNum(); r++) {
 					LocalConfig.getInstance().setProgress((r*ProgressConstants.METABOLITE_LOAD_PERCENT)/metabolitesSheet.getLastRowNum());	
@@ -187,7 +184,7 @@ public class Excel97Reader {
 					}
 					MetaboliteFactory aFactory = new MetaboliteFactory();
 
-					if (aFactory.metaboliteCount(metabolitesData.get(0)) == 0) {
+					if (aFactory.metaboliteCount(metabolitesData.get(0), databaseName) == 0) {
 						SBMLMetabolite aMetabolite = (SBMLMetabolite)aFactory.getMetaboliteById(r, "SBML", "untitled");//getDatabaseName()); 
 
 						aMetabolite.setMetaboliteAbbreviation(metabolitesData.get(LocalConfig.getInstance().getMetaboliteAbbreviationColumnIndex()));	
@@ -211,7 +208,7 @@ public class Excel97Reader {
 						} else {
 							aMetabolite.setBoundary("false");
 						}
-												
+
 						if (metabolitesData.size() > (columnExistsMetabCorrection + 2) && LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 0) {
 							aMetabolite.setMeta1(metabolitesData.get(LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(0)));
 						}
@@ -246,8 +243,8 @@ public class Excel97Reader {
 
 						PreparedStatement prep = conn.prepareStatement(
 								"insert into metabolites (id, metabolite_abbreviation, metabolite_name, charge, compartment," 
-										+ " boundary, meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, used) " 
-										+ " values (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'false');");
+								+ " boundary, meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, used) " 
+								+ " values (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'false');");
 						prep.setString(1, aMetabolite.getMetaboliteAbbreviation());
 						prep.setString(2, aMetabolite.getMetaboliteName());
 						prep.setString(3, aMetabolite.getCharge());
@@ -302,7 +299,7 @@ public class Excel97Reader {
 					ReactionFactory aFactory = new ReactionFactory();
 
 					SBMLReaction aReaction = (SBMLReaction)aFactory.getReactionById(r, "SBML", "untitled"); 
-					
+
 					if (reactionsData.size() > 0 && LocalConfig.getInstance().getKnockoutColumnIndex() > -1) {						
 						if (reactionsData.get(LocalConfig.getInstance().getKnockoutColumnIndex()).compareTo("false") == 0 || reactionsData.get(LocalConfig.getInstance().getKnockoutColumnIndex()).compareTo("FALSE") == 0 || reactionsData.get(LocalConfig.getInstance().getKnockoutColumnIndex()).compareTo("0") == 0 || reactionsData.get(LocalConfig.getInstance().getKnockoutColumnIndex()).compareTo("0.0") == 0) {
 							aReaction.setKnockout("false");
@@ -315,7 +312,7 @@ public class Excel97Reader {
 					} else {
 						aReaction.setKnockout("false");
 					}
-					
+
 					if (LocalConfig.getInstance().getFluxValueColumnIndex() > -1) {
 						aReaction.setFluxValue(Double.valueOf(reactionsData.get(LocalConfig.getInstance().getFluxValueColumnIndex())));
 						columnExistsCorrection += 1;
@@ -325,13 +322,8 @@ public class Excel97Reader {
 
 					aReaction.setReactionAbbreviation(reactionsData.get(LocalConfig.getInstance().getReactionAbbreviationColumnIndex()));
 					aReaction.setReactionName(reactionsData.get(LocalConfig.getInstance().getReactionNameColumnIndex()));
-					String equation;
-					if (reactionsData.get(LocalConfig.getInstance().getReactionEquationColumnIndex()).startsWith("[")) {
-						equation = reactionsData.get(LocalConfig.getInstance().getReactionEquationColumnIndex()).substring(5);
-					} else {
-						equation = reactionsData.get(LocalConfig.getInstance().getReactionEquationColumnIndex());
-					}
-					aReaction.setReactionString(equation.trim());
+
+					aReaction.setReactionString(reactionsData.get(LocalConfig.getInstance().getReactionEquationColumnIndex()));
 
 					//there are three columns that must be present, hence columnExistsCorrection + 3
 					if (reactionsData.size() > (columnExistsCorrection + 3) && LocalConfig.getInstance().getReversibleColumnIndex() > -1) {
@@ -419,11 +411,11 @@ public class Excel97Reader {
 
 					PreparedStatement prep = conn.prepareStatement(
 							"insert into reactions (id, knockout, flux_value, reaction_abbreviation, "
-									+ " reaction_name, reaction_string, reversible, " 
-									+ " lower_bound, upper_bound, biological_objective, "
-									+ " meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, "
-									+ " meta_9, meta_10, meta_11, meta_12, meta_13, meta_14, meta_15) "
-									+ " values (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+							+ " reaction_name, reaction_string, reversible, " 
+							+ " lower_bound, upper_bound, biological_objective, "
+							+ " meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, "
+							+ " meta_9, meta_10, meta_11, meta_12, meta_13, meta_14, meta_15) "
+							+ " values (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 					prep.setString(1, aReaction.getKnockout());
 					prep.setDouble(2, aReaction.getFluxValue());			
 					prep.setString(3, aReaction.getReactionAbbreviation());
@@ -457,7 +449,7 @@ public class Excel97Reader {
 
 					ReactionParser parser = new ReactionParser();
 					if (parser.isValid(aReaction.getReactionString())) {
-						ArrayList reactantsAndProducts = parser.parseReaction(aReaction.getReactionString(), r);
+						ArrayList reactantsAndProducts = parser.parseReaction(aReaction.getReactionString(), r, databaseName);
 						aReaction.setReactantsList((ArrayList) reactantsAndProducts.get(0));
 						aReaction.updateReactants();
 						if (reactantsAndProducts.size() > 1) {

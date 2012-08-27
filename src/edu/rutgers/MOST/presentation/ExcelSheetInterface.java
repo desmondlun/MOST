@@ -193,7 +193,7 @@ public class ExcelSheetInterface  extends JDialog {
 					columnNameInterface.setModal(true);
 					columnNameInterface.setIconImages(icons);
 
-					columnNameInterface.setSize(600, 600);
+					columnNameInterface.setSize(600, 700);
 					columnNameInterface.setResizable(false);
 					columnNameInterface.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 					columnNameInterface.setLocationRelativeTo(null);

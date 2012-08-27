@@ -9,10 +9,8 @@ import edu.rutgers.MOST.presentation.ProgressConstants;
 
 
 public class SBMLModelReader {
-	String databaseName;
-	Integer numberOfMetabolites;
-	Integer numberOfReactions;
-	boolean readNotes;
+	private String databaseName;
+	private boolean readNotes;
 
 	public void setDatabaseName(String databaseName) {
 		this.databaseName = databaseName;
@@ -24,16 +22,12 @@ public class SBMLModelReader {
 
 	private SBMLDocument doc;
 
-
-
 	public SBMLModelReader(SBMLDocument doc) {
 		this.doc = doc;
 	}
 
-
-
 	public void load(){
-		readNotes = false;
+		readNotes = true;
 		DatabaseCreator databaseCreator = new DatabaseCreator();
 		databaseCreator.createDatabase(getDatabaseName());
 
@@ -50,18 +44,20 @@ public class SBMLModelReader {
 				DriverManager.getConnection(queryString);
 
 			new SBMLModelReader(doc);
-			String id = doc.getModel().getId(); 
+			//String id = doc.getModel().getId(); 
 
 			//add boundary condition column name
 			MetabolitesMetaColumnManager metabolitesMetaColumnManager = new MetabolitesMetaColumnManager();
 			ArrayList<String> metabMetaColumnNames = new ArrayList();
 
 			ListOf<Species> metabolites = doc.getModel().getListOfSpecies();
+
+			SBMLMetabolite metab[] = new SBMLMetabolite[metabolites.size()];
+
 			for (int i = 0; i < metabolites.size(); i++) {
 				if (i%10 == 0) {
 					LocalConfig.getInstance().setProgress((i*ProgressConstants.METABOLITE_LOAD_PERCENT)/metabolites.size());		
 				}		
-				SBMLMetabolite metab[] = new SBMLMetabolite[metabolites.size()];
 				metab[i] = new SBMLMetabolite();
 
 				metab[i].setMetaboliteAbbreviation(metabolites.get(i).getId());
@@ -73,11 +69,11 @@ public class SBMLModelReader {
 
 				metab[i].setMetaboliteName(metabolites.get(i).getName());
 
-				if (!metabolites.get(i).getBoundaryCondition()) {
-					String boundary = "false"; 
+				if (metabolites.get(i).getBoundaryCondition()) {
+					String boundary = "true"; 
 					metab[i].setBoundary(boundary);
 				} else {
-					String boundary = "true";
+					String boundary = "false";
 					metab[i].setBoundary(boundary);
 				}		
 
@@ -89,16 +85,16 @@ public class SBMLModelReader {
 						String noteItem = "";
 						//removes xmlns (xml namespace tags)
 						if (noteString.contains("xmlns")) {
-							noteString = noteString.substring(noteString.indexOf(">") + 1, noteString.lastIndexOf("<"));
-							String endtag = noteString.substring(noteString.lastIndexOf("<"));
+							noteString = noteString.substring(noteString.indexOf('>') + 1, noteString.lastIndexOf('<'));
+							String endtag = noteString.substring(noteString.lastIndexOf('<'));
 							String[] nameSpaces = noteString.split(endtag);
 							for (int n = 0; n < nameSpaces.length; n++) {
-								noteItem = nameSpaces[n].substring(nameSpaces[n].indexOf(">") + 1); 
+								noteItem = nameSpaces[n].substring(nameSpaces[n].indexOf('>') + 1); 
 								metabNoteItemList.add(noteItem);
 							}
 						} else {
 							//for "<>", "</>" types of nodes, tags are removed
-							noteItem = noteString.substring(noteString.indexOf(">") + 1, noteString.lastIndexOf("<"));
+							noteItem = noteString.substring(noteString.indexOf('>') + 1, noteString.lastIndexOf('<'));
 							metabNoteItemList.add(noteItem);
 						}			
 
@@ -198,14 +194,16 @@ public class SBMLModelReader {
 				prep.executeBatch();
 				conn.setAutoCommit(true);
 
-			}
+			}		
 
 			ListOf<Reaction> reactions = doc.getModel().getListOfReactions();
+
+			SBMLReaction reac[] = new SBMLReaction[reactions.size()];
+
 			for (int j = 0; j < reactions.size(); j++) {
 				if (j%10 == 0) {
 					LocalConfig.getInstance().setProgress((j*ProgressConstants.REACTION_LOAD_PERCENT)/reactions.size() + ProgressConstants.METABOLITE_LOAD_PERCENT);		
 				}
-				SBMLReaction reac[] = new SBMLReaction[reactions.size()];
 				reac[j] = new SBMLReaction();
 
 				reac[j].setReactionAbbreviation(reactions.get(j).getId());
@@ -218,7 +216,7 @@ public class SBMLModelReader {
 				ListOf<SpeciesReference> reactants = reactions.get(j).getListOfReactants();
 				for (int r = 0; r < reactants.size(); r++) {
 					PreparedStatement prep1 = conn.prepareStatement(
-							"insert into reaction_reactants values (?, (select id from metabolites where metabolite_abbreviation = ?), ?);");
+					"insert into reaction_reactants values (?, (select id from metabolites where metabolite_abbreviation = ?), ?);");
 					prep1.setDouble(1, j + 1);
 					prep1.setString(2, reactants.get(r).getSpecies());
 					prep1.setDouble(3, reactants.get(r).getStoichiometry());
@@ -254,7 +252,7 @@ public class SBMLModelReader {
 				ListOf<SpeciesReference> products = reactions.get(j).getListOfProducts();
 				for (int p = 0; p < products.size(); p++) {
 					PreparedStatement prep1 = conn.prepareStatement(
-							"insert into reaction_products values (?, (select id from metabolites where metabolite_abbreviation = ?), ?);");
+					"insert into reaction_products values (?, (select id from metabolites where metabolite_abbreviation = ?), ?);");
 					prep1.setDouble(1, j + 1);
 					prep1.setString(2, products.get(p).getSpecies());
 					prep1.setDouble(3, products.get(p).getStoichiometry());
@@ -332,12 +330,14 @@ public class SBMLModelReader {
 						String noteItem = "";
 						//removes xmlns (xml namespace tags)
 						if (noteString.contains("xmlns")) {
-							noteString = noteString.substring(noteString.indexOf(">") + 1, noteString.lastIndexOf("<"));
-							String endtag = noteString.substring(noteString.lastIndexOf("<"));
-							String[] nameSpaces = noteString.split(endtag);
-							for (int n = 0; n < nameSpaces.length; n++) {
-								noteItem = nameSpaces[n].substring(nameSpaces[n].indexOf(">") + 1); 
-								noteItemList.add(noteItem);
+							if (!noteString.endsWith("/>")) {
+								noteString = noteString.substring(noteString.indexOf(">") + 1, noteString.lastIndexOf("<"));
+								String endtag = noteString.substring(noteString.lastIndexOf("<"));
+								String[] nameSpaces = noteString.split(endtag);
+								for (int n = 0; n < nameSpaces.length; n++) {
+									noteItem = nameSpaces[n].substring(nameSpaces[n].indexOf(">") + 1); 
+									noteItemList.add(noteItem);
+								}
 							}
 						} else {
 							//for "<>", "</>" types of nodes, tags are removed

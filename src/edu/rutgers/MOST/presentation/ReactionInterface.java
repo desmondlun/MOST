@@ -160,7 +160,7 @@ public class ReactionInterface extends JFrame {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		setDatabaseName(LocalConfig.getInstance().getDatabaseName());
+		setDatabaseName(LocalConfig.getInstance().getLoadedDatabase());
 		Connection conn = DriverManager.getConnection("jdbc:sqlite:" + getDatabaseName() + ".db");
 
 		//these should be equal, otherwise layout is flawed
@@ -182,7 +182,7 @@ public class ReactionInterface extends JFrame {
 		if (GraphicalInterface.reactionsTable.getModel().getValueAt(GraphicalInterface.getCurrentRow(), GraphicalInterfaceConstants.REACTION_STRING_COLUMN) != null) {
 			if (parser.isValid((GraphicalInterface.reactionsTable.getModel().getValueAt(GraphicalInterface.getCurrentRow(), GraphicalInterfaceConstants.REACTION_STRING_COLUMN)).toString())) {
 				setOldReaction((GraphicalInterface.reactionsTable.getModel().getValueAt(GraphicalInterface.getCurrentRow(), GraphicalInterfaceConstants.REACTION_STRING_COLUMN)).toString());
-				ArrayList reactantsAndProducts = parser.parseReaction((GraphicalInterface.reactionsTable.getModel().getValueAt(GraphicalInterface.getCurrentRow(), GraphicalInterfaceConstants.REACTION_STRING_COLUMN)).toString(), getIdFromCurrentRow(GraphicalInterface.getCurrentRow()));
+				ArrayList reactantsAndProducts = parser.parseReaction((GraphicalInterface.reactionsTable.getModel().getValueAt(GraphicalInterface.getCurrentRow(), GraphicalInterfaceConstants.REACTION_STRING_COLUMN)).toString(), getIdFromCurrentRow(GraphicalInterface.getCurrentRow()), LocalConfig.getInstance().getLoadedDatabase());
 				setReactantsList((ArrayList) reactantsAndProducts.get(0));
 				setReactantCount(getReactantsList().size());
 				//reactionField.setText(aReaction.getReactionString());
@@ -628,7 +628,7 @@ public class ReactionInterface extends JFrame {
 			public void actionPerformed(ActionEvent revActionEvent) {
 				int id = getIdFromCurrentRow(GraphicalInterface.getCurrentRow());
 				ReactionFactory rFactory = new ReactionFactory();			
-				SBMLReaction aReaction = (SBMLReaction)rFactory.getReactionById(id, "SBML", databaseName);
+				SBMLReaction aReaction = (SBMLReaction)rFactory.getReactionById(id, "SBML", getDatabaseName());
 				cbProduct[0].grabFocus();
 				if (trueButton.isSelected()) {
 					setArrowString(" <==> ");

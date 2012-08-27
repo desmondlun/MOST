@@ -14,7 +14,7 @@ import au.com.bytecode.opencsv.CSVReader;
 //http://beginwithjava.blogspot.com/2011/05/java-csv-file-reader.html
 public class TextMetabolitesModelReader{
 
-	public ArrayList<String> columnNamesFromFile(File file) {
+	public ArrayList<String> columnNamesFromFile(File file, int row) {
 		ArrayList<String> columnNamesFromFile = new ArrayList();
 
 		String[] dataArray = null;
@@ -45,7 +45,36 @@ public class TextMetabolitesModelReader{
 						columnNamesFromFile.add(dataArray[h]);
 					}					
 				}			
-			}   		
+			} 	
+
+			if (row > 0) {
+				for (int i = 0; i < row; i++) {
+					dataRow = CSVFile.readLine();
+
+					if ((GraphicalInterface.getSplitCharacter().compareTo(',')) == 0) {
+						dataArray = dataRow.split(",");				
+					} else {
+						dataArray = dataRow.split("\t");
+					}
+					columnNamesFromFile.clear();
+					//add all column names to list			
+					for (int h = 0; h < dataArray.length; h++) { 
+						//remove quotes if exist
+						if (dataArray[h].startsWith("\"")) {
+							//removes " " and null strings
+							if (dataArray[h].compareTo("\" \"") != 0 && dataArray[h].trim().length() > 0) {
+								columnNamesFromFile.add(dataArray[h].substring(1, dataArray[h].length() - 1));
+							}					
+						} else {
+							if (dataArray[h].trim().length() > 0) {
+								columnNamesFromFile.add(dataArray[h]);
+							}					
+						}			
+					} 
+				}				
+			}
+
+			CSVFile.close();
 
 		} catch (FileNotFoundException e1) {
 			// TODO Auto-generated catch block
@@ -53,8 +82,7 @@ public class TextMetabolitesModelReader{
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		} 
-
+		} 		
 		return columnNamesFromFile;
 	}
 
@@ -68,6 +96,7 @@ public class TextMetabolitesModelReader{
 				while ((dataArray = reader.readNext()) != null) {
 					count++; 	
 				}
+				reader.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -76,13 +105,17 @@ public class TextMetabolitesModelReader{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 		return count;		
 	}
-	
+
 	public void load(File file, String databaseName) {
 		int numOfLines = numberOfLines(file);
 		DatabaseCreator creator = new DatabaseCreator();		
 		creator.createBlankReactionsTable(databaseName);
+		
+		//if first row of file in not column names, starts reading after row that contains names
+		int correction = LocalConfig.getInstance().getMetabolitesNextRowCorrection();
 		int row = 1;
 		//BufferedReader CSVFile;
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
@@ -109,11 +142,11 @@ public class TextMetabolitesModelReader{
 							}
 						}						
 
-						if (row > 1) {
+						if (row > 1 + correction) {
 							MetaboliteFactory aFactory = new MetaboliteFactory();
 							//check that metabolite abbreviation does not exist to 
 							//avoid duplicate entries of abbreviations
-							if (aFactory.metaboliteCount(dataArray[0]) == 0) {
+							if (aFactory.metaboliteCount(dataArray[0], databaseName) == 0 && dataArray[0].length() > 0) {
 								SBMLMetabolite aMetabolite = (SBMLMetabolite)aFactory.getMetaboliteById(row, "SBML", "untitled");//getDatabaseName()); 
 
 								aMetabolite.setMetaboliteAbbreviation(dataArray[LocalConfig.getInstance().getMetaboliteAbbreviationColumnIndex()]);
@@ -169,8 +202,8 @@ public class TextMetabolitesModelReader{
 
 								PreparedStatement prep = conn.prepareStatement(
 										"insert into metabolites (id, metabolite_abbreviation, metabolite_name, charge, compartment," 
-												+ " boundary, meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, used) " 
-												+ " values (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'false');");
+										+ " boundary, meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, used) " 
+										+ " values (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'false');");
 								prep.setString(1, aMetabolite.getMetaboliteAbbreviation());
 								prep.setString(2, aMetabolite.getMetaboliteName());
 								prep.setString(3, aMetabolite.getCharge());
@@ -200,6 +233,7 @@ public class TextMetabolitesModelReader{
 						LocalConfig.getInstance().setProgress(row*100/numOfLines);
 					}
 					conn.close();
+					reader.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -213,8 +247,6 @@ public class TextMetabolitesModelReader{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
-		//ReactionFactory aFactory = new ReactionFactory();	
-		//aFactory.setMetabolitesUsedStatus(LocalConfig.getInstance().getDatabaseName());
 		LocalConfig.getInstance().setProgress(100);
 	}	    	
 }

@@ -11,10 +11,10 @@ import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 
 public class MetaboliteFactory {
-    
-    public ModelMetabolite getMetaboliteById(Integer metaboliteId, String sourceType, String databaseName){
-		
-		
+
+	public ModelMetabolite getMetaboliteById(Integer metaboliteId, String sourceType, String databaseName){
+
+
 		if("SBML".equals(sourceType)){
 			SBMLMetabolite metabolite = new SBMLMetabolite();
 			metabolite.setDatabaseName(databaseName);
@@ -23,10 +23,10 @@ public class MetaboliteFactory {
 		}
 		return new SBMLMetabolite(); //Default behavior.
 	}
-    
-    public int metaboliteCount(String metabolite) {
-    	int count = 0;
-    	String queryString = "jdbc:sqlite:" + LocalConfig.getInstance().getDatabaseName() + ".db"; //TODO:DEGEN:Call LocalConfig
+
+	public int metaboliteCount(String metabolite, String databaseName) {
+		int count = 0;
+		String queryString = "jdbc:sqlite:" + databaseName + ".db"; 
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
@@ -47,10 +47,10 @@ public class MetaboliteFactory {
 			e.printStackTrace();			
 		}
 		return count;
-    }
-    
-    public void addMetabolite(String metabolite) {
-		String queryString = "jdbc:sqlite:" + LocalConfig.getInstance().getDatabaseName() + ".db"; //TODO:DEGEN:Call LocalConfig
+	}
+
+	public void addMetabolite(String metabolite, String databaseName) {
+		String queryString = "jdbc:sqlite:" + databaseName + ".db"; 
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
@@ -60,24 +60,23 @@ public class MetaboliteFactory {
 		Connection conn;
 		try {
 			conn = DriverManager.getConnection(queryString);
-			PreparedStatement prep1 = conn.prepareStatement("insert into metabolites (metabolite_abbreviation) values(?);");
-            prep1.setString(1, metabolite);
-            
-            prep1.addBatch();
-	    	
-	    	conn.setAutoCommit(false);
-		    prep1.executeBatch();
-		    conn.setAutoCommit(true);
-		    
+			PreparedStatement prep1 = conn.prepareStatement("insert into metabolites (metabolite_abbreviation, boundary, used) values(?, 'false', 'true');");
+			prep1.setString(1, metabolite);
+
+			prep1.addBatch();
+
+			conn.setAutoCommit(false);
+			prep1.executeBatch();
+			conn.setAutoCommit(true);
+
 			conn.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();			
 		}		
+	}
 
-    }
-    
-    public boolean isUnused(int id, String databaseName) {
+	public boolean isUnused(int id, String databaseName) {
 		String used = "";
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
 		try {
@@ -107,9 +106,9 @@ public class MetaboliteFactory {
 		}
 		return false;		
 	}
-    
-    public void setMetaboliteUsedValue(Integer metaboliteId, String databaseName, String booleanValue) {
-		String queryString = "jdbc:sqlite:" + LocalConfig.getInstance().getDatabaseName() + ".db"; //TODO:DEGEN:Call LocalConfig
+
+	public void setMetaboliteUsedValue(Integer metaboliteId, String databaseName, String booleanValue) {
+		String queryString = "jdbc:sqlite:" + databaseName + ".db"; 
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
@@ -120,7 +119,7 @@ public class MetaboliteFactory {
 		try {
 			conn = DriverManager.getConnection(queryString);    		    		
 			PreparedStatement prep1 = conn.prepareStatement(
-					"update metabolites set used=? where id=?;");
+			"update metabolites set used=? where id=?;");
 			prep1.setString(1, booleanValue);
 			prep1.setInt(2, metaboliteId);
 
@@ -133,9 +132,9 @@ public class MetaboliteFactory {
 			e.printStackTrace();			
 		}
 	}
-    
-    public int maximumId(String databaseName) {
-    	int max = 0;
+
+	public int maximumId(String databaseName) {
+		int max = 0;
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -156,9 +155,9 @@ public class MetaboliteFactory {
 			e.printStackTrace();			
 		}
 		return max;
-    }
-        
-    public void deleteAllUnusedMetabolites(String databaseName) {
+	}
+
+	public void deleteAllUnusedMetabolites(String databaseName) {
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -180,11 +179,11 @@ public class MetaboliteFactory {
 			e.printStackTrace();			
 		}		
 	}
-    
-    public Integer metaboliteId(String databaseName, String metaboliteAbbreviation) {
-    	Integer metaboliteId = 0;
-    	
-    	String queryString = "jdbc:sqlite:" + databaseName + ".db";
+
+	public Integer metaboliteId(String databaseName, String metaboliteAbbreviation) {
+		Integer metaboliteId = 0;
+
+		String queryString = "jdbc:sqlite:" + databaseName + ".db";
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
@@ -195,37 +194,27 @@ public class MetaboliteFactory {
 		try {
 			conn = DriverManager.getConnection(queryString);
 			PreparedStatement prep1 = conn.prepareStatement("select id from metabolites where metabolite_abbreviation=?;");
-            prep1.setString(1, metaboliteAbbreviation);
-            
-            conn.setAutoCommit(true);
+			prep1.setString(1, metaboliteAbbreviation);
+
+			conn.setAutoCommit(true);
 			ResultSet rs = prep1.executeQuery();
-            metaboliteId = rs.getInt("id");
-            
+			metaboliteId = rs.getInt("id");
+
 			conn.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();			
 		}	
-    	
+
 		return metaboliteId;
-    	
-    }
-    
-    public static void main(String[] args) {
-    	String databaseName = "Model_Reconstruction_corrected";
-    	MetaboliteFactory mFactory = new MetaboliteFactory();
-  	    mFactory.deleteAllUnusedMetabolites(databaseName);
-    	/*
-    	String data = "yeast_3.0";
-    	//listUsedMetabolites(data);
-    	int id = 100;
-    	if (isUnused(1798, data)) {
-    		System.out.println(id + " unused");
-    	} else {
-    		System.out.println(id + " used");
-    	}
-    	*/
-    }
+
+	}
+
+	public static void main(String[] args) {
+		String databaseName = "Model_Reconstruction_corrected";
+		MetaboliteFactory mFactory = new MetaboliteFactory();
+		mFactory.deleteAllUnusedMetabolites(databaseName);
+	}
 
 }
 

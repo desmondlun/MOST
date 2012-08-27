@@ -28,4 +28,3 @@ public class ColumnInterfaceConstants {
     public static final String BIOLOGICAL_OBJECTIVE_LABEL = "Biological Objective Column        "; 
 
 }
-

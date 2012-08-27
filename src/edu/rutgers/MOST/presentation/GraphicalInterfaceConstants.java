@@ -184,11 +184,11 @@ public class GraphicalInterfaceConstants {
     };
     
     public static final String[] LOWER_BOUND_FILTER =
-    {"lower bound", "lb"
+    {"lower bound", "lb", "lower_bound"
     };
     
     public static final String[] UPPER_BOUND_FILTER =
-    {"upper bound", "ub"
+    {"upper bound", "ub", "upper_bound"
     };
     
     public static final String[] BIOLOGICAL_OBJECTIVE_FILTER =
@@ -258,7 +258,15 @@ public class GraphicalInterfaceConstants {
     
     public static final String DEFAULT_METABOLITE_TABLE_TAB_NAME = "Metabolites";
     
-    public static final String DEFAULT_REACTION_TABLE_TAB_NAME = "Reactions  ";
+    public static final String DEFAULT_REACTION_TABLE_TAB_NAME = " Reactions ";
+    
+    public static final String[] REVERSIBLE_ARROWS =
+    {"<==> ", "<=>", "="
+    };
+    
+    public static final String[] NOT_REVERSIBLE_ARROWS =
+    {"=>", "-->", "->"
+    };
     
 }
 
