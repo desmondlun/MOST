@@ -1,18 +1,21 @@
 package edu.rutgers.MOST.data;
 
-import java.io.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import au.com.bytecode.opencsv.CSVReader;
 
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
-import au.com.bytecode.opencsv.CSVReader;
 
-//http://beginwithjava.blogspot.com/2011/05/java-csv-file-reader.html
-public class TextMetabolitesModelReader{
+public class TextMetabolitesModelReader {
 
 	public ArrayList<String> columnNamesFromFile(File file, int row) {
 		ArrayList<String> columnNamesFromFile = new ArrayList();
@@ -27,9 +30,7 @@ public class TextMetabolitesModelReader{
 
 			if ((GraphicalInterface.getSplitCharacter().compareTo(',')) == 0) {
 				dataArray = dataRow.split(",");				
-			} else {
-				dataArray = dataRow.split("\t");
-			}
+			} 
 
 			//add all column names to list			
 			for (int h = 0; h < dataArray.length; h++) { 
@@ -53,9 +54,8 @@ public class TextMetabolitesModelReader{
 
 					if ((GraphicalInterface.getSplitCharacter().compareTo(',')) == 0) {
 						dataArray = dataRow.split(",");				
-					} else {
-						dataArray = dataRow.split("\t");
-					}
+					} 
+
 					columnNamesFromFile.clear();
 					//add all column names to list			
 					for (int h = 0; h < dataArray.length; h++) { 
@@ -109,145 +109,245 @@ public class TextMetabolitesModelReader{
 		return count;		
 	}
 
-	public void load(File file, String databaseName) {
-		int numOfLines = numberOfLines(file);
+	public void load(File file, String databaseName){
 		DatabaseCreator creator = new DatabaseCreator();		
 		creator.createBlankReactionsTable(databaseName);
-		
+
 		//if first row of file in not column names, starts reading after row that contains names
 		int correction = LocalConfig.getInstance().getMetabolitesNextRowCorrection();
 		int row = 1;
-		//BufferedReader CSVFile;
+
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
+
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		Connection conn;
-		try {
-			conn = DriverManager.getConnection(queryString);
-
+		try{
+			Connection conn =
+				DriverManager.getConnection(queryString);
+			Statement stat = conn.createStatement();
+			
 			CSVReader reader;
+			
+			Map<String, Object> metaboliteIdNameMap = new HashMap<String, Object>();
+			
 			try {
 				reader = new CSVReader(new FileReader(file), GraphicalInterface.getSplitCharacter());
 				String [] dataArray;
-				try {
-					while ((dataArray = reader.readNext()) != null) {
-						for (int s = 0; s < dataArray.length; s++) {
-							if (dataArray[s].length() > 0 && dataArray[s].substring(0,1).matches("\"")) {
-								dataArray[s] = dataArray[s].substring(1, (dataArray[s].length() - 1));
-							}
-						}						
-
-						if (row > 1 + correction) {
-							MetaboliteFactory aFactory = new MetaboliteFactory();
-							//check that metabolite abbreviation does not exist to 
-							//avoid duplicate entries of abbreviations
-							if (aFactory.metaboliteCount(dataArray[0], databaseName) == 0 && dataArray[0].length() > 0) {
-								SBMLMetabolite aMetabolite = (SBMLMetabolite)aFactory.getMetaboliteById(row, "SBML", "untitled");//getDatabaseName()); 
-
-								aMetabolite.setMetaboliteAbbreviation(dataArray[LocalConfig.getInstance().getMetaboliteAbbreviationColumnIndex()]);
-								aMetabolite.setMetaboliteName(dataArray[LocalConfig.getInstance().getMetaboliteNameColumnIndex()]);
-								if (LocalConfig.getInstance().getChargeColumnIndex() > -1) {
-									aMetabolite.setCharge(dataArray[LocalConfig.getInstance().getChargeColumnIndex()]);	
-								}
-								if (LocalConfig.getInstance().getCompartmentColumnIndex() > -1) {
-									aMetabolite.setCompartment(dataArray[LocalConfig.getInstance().getCompartmentColumnIndex()]);	
-								} 
-								if (LocalConfig.getInstance().getBoundaryColumnIndex() > -1) {
-									if (dataArray[LocalConfig.getInstance().getBoundaryColumnIndex()].compareTo("false") == 0 || dataArray[LocalConfig.getInstance().getBoundaryColumnIndex()].compareTo("FALSE") == 0 || dataArray[LocalConfig.getInstance().getBoundaryColumnIndex()].compareTo("0") == 0 || dataArray[LocalConfig.getInstance().getBoundaryColumnIndex()].compareTo("0.0") == 0) {
-										aMetabolite.setBoundary("false");
-									} else if (dataArray[LocalConfig.getInstance().getBoundaryColumnIndex()].compareTo("true") == 0 || dataArray[LocalConfig.getInstance().getBoundaryColumnIndex()].compareTo("TRUE") == 0 || dataArray[LocalConfig.getInstance().getBoundaryColumnIndex()].compareTo("1") == 0 || dataArray[LocalConfig.getInstance().getBoundaryColumnIndex()].compareTo("1.0") == 0) {
-										aMetabolite.setBoundary("true");													
-									} else {
-										aMetabolite.setBoundary("false");
-									}
-								} else {
-									aMetabolite.setBoundary("false");
-								}	
-								if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 0) {
-									aMetabolite.setMeta1(dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(0)]);
-								}
-								if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 1) {
-									aMetabolite.setMeta2(dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(1)]);
-								}
-								if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 2) {
-									aMetabolite.setMeta3(dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(2)]);
-								}
-								if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 3) {
-									aMetabolite.setMeta4(dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(3)]);
-								}
-								if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 4) {
-									aMetabolite.setMeta5(dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(4)]);
-								}
-								if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 5) {
-									aMetabolite.setMeta6(dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(5)]);
-								}
-								if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 6) {
-									aMetabolite.setMeta7(dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(6)]);
-								}
-								if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 7) {
-									aMetabolite.setMeta8(dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(7)]);
-								}
-								if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 8) {
-									aMetabolite.setMeta9(dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(8)]);
-								}
-								if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 9) {
-									aMetabolite.setMeta10(dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(9)]);
-								}
-
-
-								PreparedStatement prep = conn.prepareStatement(
-										"insert into metabolites (id, metabolite_abbreviation, metabolite_name, charge, compartment," 
-										+ " boundary, meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, used) " 
-										+ " values (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'false');");
-								prep.setString(1, aMetabolite.getMetaboliteAbbreviation());
-								prep.setString(2, aMetabolite.getMetaboliteName());
-								prep.setString(3, aMetabolite.getCharge());
-								prep.setString(4, aMetabolite.getCompartment());
-								prep.setString(5, aMetabolite.getBoundary());
-								prep.setString(6, aMetabolite.getMeta1());
-								prep.setString(7, aMetabolite.getMeta2());
-								prep.setString(8, aMetabolite.getMeta3());
-								prep.setString(9, aMetabolite.getMeta4());
-								prep.setString(10, aMetabolite.getMeta5());
-								prep.setString(11, aMetabolite.getMeta6());
-								prep.setString(12, aMetabolite.getMeta7());
-								prep.setString(13, aMetabolite.getMeta8());
-								prep.setString(14, aMetabolite.getMeta9());
-								prep.setString(15, aMetabolite.getMeta10());
-
-								prep.addBatch();
-
-								conn.setAutoCommit(false);
-								prep.executeBatch();
-								conn.setAutoCommit(true);
-							} else {
-								//System.out.println("duplicate metabolite");
-							}						 						    						    
-						} 
-						row += 1;	
-						LocalConfig.getInstance().setProgress(row*100/numOfLines);
-					}
-					conn.close();
-					reader.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			try {
+				reader = new CSVReader(new FileReader(file), GraphicalInterface.getSplitCharacter());
+				
+				int numLines = numberOfLines(file);
+				
+				//sets maximum metabolite id for use in adding metabolites to metaboliteIdNameMap
+				//when reactions contain metabolites not present in file being read
+				LocalConfig.getInstance().setMaxMetaboliteId(numLines - 1 - correction);
+				
+				stat.executeUpdate("BEGIN TRANSACTION");			
+				for (int i = 0; i < numLines; i++) {
+					LocalConfig.getInstance().setProgress(i*100/numLines);
+					String [] dataArray = reader.readNext();
+					for (int s = 0; s < dataArray.length; s++) {
+						if (dataArray[s].length() > 0 && dataArray[s].substring(0,1).matches("\"")) {
+							dataArray[s] = dataArray[s].substring(1, (dataArray[s].length() - 1));
+						}
+					}
+					if (i >= (row + correction)) {
+						String metaboliteAbbreviation = "";
+						String metaboliteName = "";
+						String chargeString = "";
+						String compartment = "";
+						String boundary = "";
+						String used = "false"; 
+						String meta1 = "";
+						String meta2 = "";
+						String meta3 = "";
+						String meta4 = "";
+						String meta5 = "";
+						String meta6 = "";
+						String meta7 = "";
+						String meta8 = "";
+						String meta9 = "";
+						String meta10 = "";
+						String meta11 = "";
+						String meta12 = "";
+						String meta13 = "";
+						String meta14 = "";
+						String meta15 = "";
+						
+						//if strings contain ' (single quote), it will not execute insert statement
+						//this code escapes ' as '' - sqlite syntax for escaping '
+						if (dataArray[LocalConfig.getInstance().getMetaboliteAbbreviationColumnIndex()].contains("'")) {
+							metaboliteAbbreviation = dataArray[LocalConfig.getInstance().getMetaboliteAbbreviationColumnIndex()].replaceAll("'", "''");
+						} else {
+							metaboliteAbbreviation = dataArray[LocalConfig.getInstance().getMetaboliteAbbreviationColumnIndex()];
+						}
+						
+						metaboliteIdNameMap.put(metaboliteAbbreviation, new Integer(i - correction));
+						
+						if (dataArray[LocalConfig.getInstance().getMetaboliteNameColumnIndex()].contains("'")) {
+							metaboliteName = dataArray[LocalConfig.getInstance().getMetaboliteNameColumnIndex()].replaceAll("'", "''");
+						} else {
+							metaboliteName = dataArray[LocalConfig.getInstance().getMetaboliteNameColumnIndex()];
+						}
+						if (LocalConfig.getInstance().getChargeColumnIndex() > -1) {
+							chargeString = dataArray[LocalConfig.getInstance().getChargeColumnIndex()];	
+						}
+						if (LocalConfig.getInstance().getCompartmentColumnIndex() > -1) {
+							if (dataArray[LocalConfig.getInstance().getCompartmentColumnIndex()].contains("'")) {
+								compartment = dataArray[LocalConfig.getInstance().getCompartmentColumnIndex()].replaceAll("'", "''");	
+							} else {
+								compartment = dataArray[LocalConfig.getInstance().getCompartmentColumnIndex()];	
+							}	
+						}								
+						if (LocalConfig.getInstance().getBoundaryColumnIndex() > -1) {									
+							if (dataArray[LocalConfig.getInstance().getBoundaryColumnIndex()].compareTo("false") == 0 || dataArray[LocalConfig.getInstance().getBoundaryColumnIndex()].compareTo("FALSE") == 0 || dataArray[LocalConfig.getInstance().getBoundaryColumnIndex()].compareTo("0") == 0 || dataArray[LocalConfig.getInstance().getBoundaryColumnIndex()].compareTo("0.0") == 0) {
+								boundary = "false"; 
+							} else if (dataArray[LocalConfig.getInstance().getBoundaryColumnIndex()].compareTo("true") == 0 || dataArray[LocalConfig.getInstance().getBoundaryColumnIndex()].compareTo("TRUE") == 0 || dataArray[LocalConfig.getInstance().getBoundaryColumnIndex()].compareTo("1") == 0 || dataArray[LocalConfig.getInstance().getBoundaryColumnIndex()].compareTo("1.0") == 0) {
+								boundary = "true";
+							}
+						} else {
+							boundary = "false";
+						}					
+						
+						if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 0) {
+							if (dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(0)].contains("'")) {
+								meta1 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(0)].replaceAll("'", "''");
+							} else {
+								meta1 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(0)];
+							}							
+						}
+						if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 1) {
+							if (dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(0)].contains("'")) {
+								meta2 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(1)].replaceAll("'", "''");
+							} else {
+								meta2 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(1)];
+							}
+						}
+						if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 2) {
+							if (dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(0)].contains("'")) {
+								meta3 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(2)].replaceAll("'", "''");
+							} else {
+								meta3 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(2)];
+							}
+						}
+						if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 3) {
+							if (dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(0)].contains("'")) {
+								meta4 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(3)].replaceAll("'", "''");
+							} else {
+								meta4 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(3)];
+							}
+						}
+						if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 4) {
+							if (dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(0)].contains("'")) {
+								meta5 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(4)].replaceAll("'", "''");
+							} else {
+								meta5 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(4)];
+							}
+						}
+						if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 5) {
+							if (dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(0)].contains("'")) {
+								meta6 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(5)].replaceAll("'", "''");
+							} else {
+								meta6 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(5)];
+							}
+						}
+						if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 6) {
+							if (dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(0)].contains("'")) {
+								meta7 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(6)].replaceAll("'", "''");
+							} else {
+								meta7 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(6)];
+							}
+						}
+						if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 7) {
+							if (dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(0)].contains("'")) {
+								meta8 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(7)].replaceAll("'", "''");
+							} else {
+								meta8 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(7)];
+							}
+						}
+						if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 8) {
+							if (dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(0)].contains("'")) {
+								meta9 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(8)].replaceAll("'", "''");
+							} else {
+								meta9 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(8)];
+							}
+						}
+						if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 9) {
+							if (dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(0)].contains("'")) {
+								meta10 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(9)].replaceAll("'", "''");
+							} else {
+								meta10 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(9)];
+							}
+						}
+						if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 10) {
+							if (dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(0)].contains("'")) {
+								meta11 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(10)].replaceAll("'", "''");
+							} else {
+								meta11 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(10)];
+							}
+						}
+						if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 11) {
+							if (dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(0)].contains("'")) {
+								meta12 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(11)].replaceAll("'", "''");
+							} else {
+								meta12 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(11)];
+							}
+						}
+						if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 12) {
+							if (dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(0)].contains("'")) {
+								meta13 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(12)].replaceAll("'", "''");
+							} else {
+								meta13 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(12)];
+							}
+						}
+						if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 13) {
+							if (dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(0)].contains("'")) {
+								meta14 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(13)].replaceAll("'", "''");
+							} else {
+								meta14 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(13)];
+							}
+						}
+						if (LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().size() > 14) {
+							if (dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(0)].contains("'")) {
+								meta15 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(14)].replaceAll("'", "''");
+							} else {
+								meta15 = dataArray[LocalConfig.getInstance().getMetabolitesMetaColumnIndexList().get(14)];
+							}
+						}
+						
+						String insert = "INSERT INTO metabolites(metabolite_abbreviation, metabolite_name, charge, compartment, boundary, meta_1, meta_2, "
+							+ " meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, "
+							+ " meta_11, meta_12, meta_13, meta_14, meta_15, used) values" 
+							+ " (" + "'" + metaboliteAbbreviation + "', '" + metaboliteName + "', '" + chargeString + "', '" + compartment + "', '" + boundary + "', '" + meta1 + "', '" + meta2 + "', '" + meta3 + "', '" + meta4 + "', '" + meta5 + "', '" + meta6 + "', '" + meta7 + "', '" + meta8 + "', '" + meta9 + "', '" + meta10 + "', '" + meta11 + "', '" + meta12 + "', '" + meta13 + "', '" + meta14 + "', '" + meta15 + "', '" + used + "');";
+						stat.executeUpdate(insert);	
+					}					
+				}
+				LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
+				stat.executeUpdate("COMMIT");
+			} catch (Exception e) {
+				stat.executeUpdate("ROLLBACK"); // throw away all updates since BEGIN TRANSACTION
+			}
+
+			conn.close();
+			LocalConfig.getInstance().setProgress(100);		
+
+		}catch(SQLException e){
+
 			e.printStackTrace();
-		}		
-		LocalConfig.getInstance().setProgress(100);
-	}	    	
+
+		}
+
+		//System.out.println("Done");
+	}
 }
+
 

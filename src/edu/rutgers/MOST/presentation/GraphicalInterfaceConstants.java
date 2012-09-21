@@ -12,7 +12,7 @@ public class GraphicalInterfaceConstants {
 	{ 
 	"id",                    
 	"ko",  
-	"flux value", 
+	"flux_value", 
 	"reaction_id",           
 	"reaction_name",         
 	"reaction_string",       
@@ -117,7 +117,12 @@ public class GraphicalInterfaceConstants {
     public static final int METABOLITE_META8_COLUMN = 13;
     public static final int METABOLITE_META9_COLUMN = 14;
     public static final int METABOLITE_META10_COLUMN = 15;
-    public static final int USED_COLUMN = 16;
+    public static final int METABOLITE_META11_COLUMN = 16;
+    public static final int METABOLITE_META12_COLUMN = 17;
+    public static final int METABOLITE_META13_COLUMN = 18;
+    public static final int METABOLITE_META14_COLUMN = 19;
+    public static final int METABOLITE_META15_COLUMN = 20;
+    public static final int USED_COLUMN = 21;
     public static final int METABOLITE_META_DEFAULT_WIDTH = 150;
     
     public static final String[] BOOLEAN_VALUES = {"false", "true"};
@@ -267,6 +272,15 @@ public class GraphicalInterfaceConstants {
     public static final String[] NOT_REVERSIBLE_ARROWS =
     {"=>", "-->", "->"
     };
+    
+    public static final String COLUMN_ADD_INTERFACE_TITLE = "Add Column";
+    
+    public static final String COLUMN_RENAME_INTERFACE_TITLE = "Rename Column";
+    
+    public static final String COLUMN_ADD_RENAME_LABEL = "Enter Column Name";
+    
+    
+    
     
 }
 
