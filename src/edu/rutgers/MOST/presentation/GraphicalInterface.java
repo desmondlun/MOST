@@ -74,6 +74,7 @@ import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
 
 import layout.TableLayout;
 
+//test
 public class GraphicalInterface extends JFrame {
 	//log4j
 	static Logger log = Logger.getLogger(GraphicalInterface.class);
