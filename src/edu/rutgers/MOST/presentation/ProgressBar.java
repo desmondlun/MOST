@@ -8,7 +8,6 @@ import javax.swing.JProgressBar;
 public class ProgressBar extends JFrame {
 
 	public JProgressBar progress = new JProgressBar(0, 100);
-	int num = 0;
 	public ProgressBar() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		JPanel pane = new JPanel();

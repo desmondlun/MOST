@@ -25,6 +25,11 @@ public class SBMLMetabolite implements ModelMetabolite {
 	private String meta8;
 	private String meta9;
 	private String meta10;
+	private String meta11;
+	private String meta12;
+	private String meta13;
+	private String meta14;
+	private String meta15;
 	private String used;
 
 	public void setDatabaseName(String databaseName) {
@@ -95,7 +100,8 @@ public class SBMLMetabolite implements ModelMetabolite {
 			PreparedStatement prep = conn
 			.prepareStatement("update metabolites set metabolite_abbreviation=?, metabolite_name=?, charge=?, " 
 					+ " compartment=?, boundary=?, meta_1=?, meta_2=?, meta_3=?, meta_4=?, meta_5=?, "
-					+ " meta_6=?, meta_7=?, meta_8=?, meta_9=?, meta_10=?, used=? where id=?;");
+					+ " meta_6=?, meta_7=?, meta_8=?, meta_9=?, meta_10=?, "
+					+ " meta_11=?, meta_12=?, meta_13=?, meta_14=?, meta_15=?, used=? where id=?;");
 			prep.setString(1, this.getMetaboliteAbbreviation());
 			prep.setString(2, this.getMetaboliteName());
 			prep.setString(3, this.getCharge());
@@ -111,8 +117,13 @@ public class SBMLMetabolite implements ModelMetabolite {
 			prep.setString(13, this.getMeta8());
 			prep.setString(14, this.getMeta9());
 			prep.setString(15, this.getMeta10());
-			prep.setString(16, this.getUsed());
-			prep.setInt(17, this.getId());
+			prep.setString(16, this.getMeta11());
+			prep.setString(17, this.getMeta12());
+			prep.setString(18, this.getMeta13());
+			prep.setString(19, this.getMeta14());
+			prep.setString(20, this.getMeta15());
+			prep.setString(21, this.getUsed());
+			prep.setInt(22, this.getId());
 			conn.setAutoCommit(true);
 			prep.executeUpdate();
 
@@ -143,7 +154,8 @@ public class SBMLMetabolite implements ModelMetabolite {
 			PreparedStatement prep = conn
 			.prepareStatement("select id, metabolite_abbreviation, metabolite_name, charge, compartment, " 
 					+ " boundary, meta_1, meta_2, meta_3, meta_4, meta_5, "
-					+ " meta_6, meta_7, meta_8, meta_9, meta_10, used from metabolites where id = ?;");
+					+ " meta_6, meta_7, meta_8, meta_9, meta_10, "
+					+ " meta_11, meta_12, meta_13, meta_14, meta_15, used from metabolites where id = ?;");
 			prep.setInt(1, id);
 			conn.setAutoCommit(true);
 			ResultSet rs = prep.executeQuery();
@@ -164,6 +176,11 @@ public class SBMLMetabolite implements ModelMetabolite {
 				this.setMeta8(rs.getString("meta_8"));
 				this.setMeta9(rs.getString("meta_9"));
 				this.setMeta10(rs.getString("meta_10"));
+				this.setMeta11(rs.getString("meta_11"));
+				this.setMeta12(rs.getString("meta_12"));
+				this.setMeta13(rs.getString("meta_13"));
+				this.setMeta14(rs.getString("meta_14"));
+				this.setMeta15(rs.getString("meta_15"));
 				this.setUsed(rs.getString("used"));
 			}
 			rs.close();
@@ -274,6 +291,46 @@ public class SBMLMetabolite implements ModelMetabolite {
 		return meta10;
 	}
 
+	public void setMeta11(String meta11) {
+		this.meta11 = meta11;
+	}
+
+	public String getMeta11() {
+		return meta11;
+	}
+
+	public void setMeta12(String meta12) {
+		this.meta12 = meta12;
+	}
+
+	public String getMeta12() {
+		return meta12;
+	}
+
+	public void setMeta13(String meta13) {
+		this.meta13 = meta13;
+	}
+
+	public String getMeta13() {
+		return meta13;
+	}
+
+	public void setMeta14(String meta14) {
+		this.meta14 = meta14;
+	}
+
+	public String getMeta14() {
+		return meta14;
+	}
+
+	public void setMeta15(String meta15) {
+		this.meta15 = meta15;
+	}
+
+	public String getMeta15() {
+		return meta15;
+	}
+	
 	public void setUsed(String used) {
 		this.used = used;
 	}

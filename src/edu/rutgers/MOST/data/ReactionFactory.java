@@ -25,40 +25,6 @@ public class ReactionFactory {
 		return new SBMLReaction(); //Default behavior.
 	}
 
-	public void setMetabolitesUsedStatus(String databaseName) {
-		MetaboliteFactory mFactory = new MetaboliteFactory();
-		int numMetabolites = 0;
-		String queryString = "jdbc:sqlite:" + databaseName + ".db"; //TODO:DEGEN:Call LocalConfig
-		try {
-			Class.forName("org.sqlite.JDBC");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Connection conn;
-		try {
-			conn = DriverManager.getConnection(queryString);
-			PreparedStatement prep = conn
-			.prepareStatement("SELECT MAX(id) FROM metabolites;");
-			conn.setAutoCommit(true);
-			ResultSet rs1 = prep.executeQuery();
-			numMetabolites = rs1.getInt("MAX(id)"); 
-			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();			
-		}    
-		for (int i = 1; i < numMetabolites + 1; i++) {
-			if (i%10 == 0) {
-				LocalConfig.getInstance().setProgress((i*ProgressConstants.UPDATE_USED_PERCENT)/numMetabolites + ProgressConstants.METABOLITE_LOAD_PERCENT + ProgressConstants.REACTION_LOAD_PERCENT);
-			}
-			if ((reactantUsedCount(i, databaseName) + productUsedCount(i, databaseName)) > 0) {
-				mFactory.setMetaboliteUsedValue(i, databaseName, "true");  
-			}		    
-		}
-		LocalConfig.getInstance().setProgress(100);
-	}
-
 	public int reactantUsedCount(Integer id, String databaseName) {
 		int count = 0;
 		String queryString = "jdbc:sqlite:" + databaseName + ".db"; //TODO:DEGEN:Call LocalConfig

@@ -1,25 +1,28 @@
 package edu.rutgers.MOST.data;
 
-import java.io.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.*;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
+
+import au.com.bytecode.opencsv.CSVReader;
 
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.logic.ReactionParser;
+import edu.rutgers.MOST.logic.ReactionParser1;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
-import edu.rutgers.MOST.presentation.ProgressConstants;
-import au.com.bytecode.opencsv.CSVReader;
 
-//http://beginwithjava.blogspot.com/2011/05/java-csv-file-reader.html
-public class TextReactionsModelReader{
-
+public class TextReactionsModelReader {
+	
+	boolean addMetaboliteOption = true;
+	
 	public ArrayList<String> columnNamesFromFile(File file, int row) {
 		ArrayList<String> columnNamesFromFile = new ArrayList();
-
+		
 		String[] dataArray = null;
 
 		//use fileReader to read first line to get headers
@@ -30,9 +33,7 @@ public class TextReactionsModelReader{
 
 			if ((GraphicalInterface.getSplitCharacter().compareTo(',')) == 0) {
 				dataArray = dataRow.split(",");				
-			} else {
-				dataArray = dataRow.split("\t");
-			}
+			} 
 
 			//add all column names to list			
 			for (int h = 0; h < dataArray.length; h++) { 
@@ -56,9 +57,8 @@ public class TextReactionsModelReader{
 
 					if ((GraphicalInterface.getSplitCharacter().compareTo(',')) == 0) {
 						dataArray = dataRow.split(",");				
-					} else {
-						dataArray = dataRow.split("\t");
-					}
+					} 
+					
 					columnNamesFromFile.clear();
 					//add all column names to list			
 					for (int h = 0; h < dataArray.length; h++) { 
@@ -112,21 +112,23 @@ public class TextReactionsModelReader{
 		return count;		
 	}
 
-	public void load(File file, String databaseName) {
-		int numOfLines = numberOfLines(file);
-		int row = 1;
+	public void load(File file, String databaseName){
+		//if first row of file in not column names, starts reading after row that contains names
 		int correction = LocalConfig.getInstance().getReactionsNextRowCorrection();
-		//BufferedReader CSVFile;
+		int row = 1;
+		int maxMetabId = LocalConfig.getInstance().getMaxMetaboliteId();
+
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
+
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Connection conn;
-		try {
-			conn = DriverManager.getConnection(queryString);
+		try{
+			Connection conn =
+				DriverManager.getConnection(queryString);
 			Statement stat = conn.createStatement();
 
 			stat.executeUpdate("drop table if exists reactions;");
@@ -143,198 +145,394 @@ public class TextReactionsModelReader{
 			try {
 				reader = new CSVReader(new FileReader(file), GraphicalInterface.getSplitCharacter());
 				String [] dataArray;
-				try {
-					while ((dataArray = reader.readNext()) != null) {
-						for (int s = 0; s < dataArray.length; s++) {
-							if (dataArray[s].length() > 0 && dataArray[s].substring(0,1).matches("\"")) {
-								dataArray[s] = dataArray[s].substring(1, (dataArray[s].length() - 1));
-							}
-						}
-
-						if (row > 1 + correction) {
-							ReactionFactory aFactory = new ReactionFactory();
-
-							SBMLReaction aReaction = (SBMLReaction)aFactory.getReactionById(row, "SBML", "untitled"); 
-							if (LocalConfig.getInstance().getKnockoutColumnIndex() > -1) {
-								if (dataArray[LocalConfig.getInstance().getKnockoutColumnIndex()].compareTo("false") == 0 || dataArray[LocalConfig.getInstance().getKnockoutColumnIndex()].compareTo("FALSE") == 0 || dataArray[LocalConfig.getInstance().getKnockoutColumnIndex()].compareTo("0") == 0 || dataArray[LocalConfig.getInstance().getKnockoutColumnIndex()].compareTo("0.0") == 0) {
-									aReaction.setKnockout("false");
-								} else if (dataArray[LocalConfig.getInstance().getKnockoutColumnIndex()].compareTo("true") == 0 || dataArray[LocalConfig.getInstance().getKnockoutColumnIndex()].compareTo("TRUE") == 0 || dataArray[LocalConfig.getInstance().getKnockoutColumnIndex()].compareTo("1") == 0 || dataArray[LocalConfig.getInstance().getKnockoutColumnIndex()].compareTo("1.0") == 0) {
-									aReaction.setKnockout("true");													
-								} else {
-									aReaction.setKnockout("false");
-								}
-							} else {
-								aReaction.setKnockout("false");
-							}	
-							if (LocalConfig.getInstance().getFluxValueColumnIndex() > -1) {
-								if (dataArray[LocalConfig.getInstance().getFluxValueColumnIndex()].compareTo("") != 0) {
-									aReaction.setFluxValue(Double.valueOf(dataArray[LocalConfig.getInstance().getFluxValueColumnIndex()]));
-								} else {
-									aReaction.setFluxValue(0.0);
-								}
-							} else {
-								aReaction.setFluxValue(0.0);
-							}				
-							//column numbers are corrected for change of position due to insertion of "ko" column (constants - 1)
-							aReaction.setReactionAbbreviation(dataArray[LocalConfig.getInstance().getReactionAbbreviationColumnIndex()]);							
-							aReaction.setReactionName(dataArray[LocalConfig.getInstance().getReactionNameColumnIndex()]);
-
-							aReaction.setReactionString(dataArray[LocalConfig.getInstance().getReactionEquationColumnIndex()]);
-
-							if (LocalConfig.getInstance().getReversibleColumnIndex() > -1) {
-								if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("false") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("FALSE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0.0") == 0) {
-									aReaction.setReversible("false");
-								} else if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("true") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("TRUE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1.0") == 0) {
-									aReaction.setReversible("true");													
-								} else {
-									aReaction.setReversible(dataArray[LocalConfig.getInstance().getReversibleColumnIndex()]);
-								}
-							}
-
-							//string cannot be cast to double but valueOf works, from http://www.java-examples.com/convert-java-string-double-example							
-							if (LocalConfig.getInstance().getLowerBoundColumnIndex() > -1) {
-								if (dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()].compareTo("") != 0) {
-									aReaction.setLowerBound(Float.valueOf(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()]));							
-								} else {
-									aReaction.setLowerBound(-99999);
-								}
-							} else {
-								aReaction.setLowerBound(-99999);
-							}
-							if (LocalConfig.getInstance().getUpperBoundColumnIndex() > -1) {
-								if (dataArray[LocalConfig.getInstance().getUpperBoundColumnIndex()].compareTo("") != 0) {
-									aReaction.setUpperBound(Float.valueOf(dataArray[LocalConfig.getInstance().getUpperBoundColumnIndex()]));							
-								} else {
-									aReaction.setUpperBound(-99999);
-								}
-							} else {
-								aReaction.setUpperBound(-99999);
-							}
-							if (LocalConfig.getInstance().getBiologicalObjectiveColumnIndex() > -1) {
-								if (dataArray[LocalConfig.getInstance().getBiologicalObjectiveColumnIndex()].compareTo("") != 0) {
-									aReaction.setBiologicalObjective(Float.valueOf(dataArray[LocalConfig.getInstance().getBiologicalObjectiveColumnIndex()]));							
-								} else {
-									aReaction.setBiologicalObjective(0);
-								}								
-							} else {
-								aReaction.setBiologicalObjective(0);
-							}
-
-							if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 0) {
-								aReaction.setMeta1(dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)]);
-							}
-							if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 1) {
-								aReaction.setMeta2(dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(1)]);
-							}
-							if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 2) {
-								aReaction.setMeta3(dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(2)]);
-							}
-							if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 3) {
-								aReaction.setMeta4(dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(3)]);
-							}
-							if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 4) {
-								aReaction.setMeta5(dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(4)]);
-							}
-							if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 5) {
-								aReaction.setMeta6(dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(5)]);
-							}
-							if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 6) {
-								aReaction.setMeta7(dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(6)]);
-							}
-							if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 7) {
-								aReaction.setMeta8(dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(7)]);
-							}
-							if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 8) {
-								aReaction.setMeta9(dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(8)]);
-							}
-							if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 9) {
-								aReaction.setMeta10(dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(9)]);
-							}						
-							if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 10) {
-								aReaction.setMeta11(dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(10)]);
-							}
-							if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 11) {
-								aReaction.setMeta12(dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(11)]);
-							}
-							if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 12) {
-								aReaction.setMeta13(dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(12)]);
-							}
-							if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 13) {
-								aReaction.setMeta14(dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(13)]);
-							}
-							if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 14) {
-								aReaction.setMeta15(dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(15)]);
-							}	
-
-							PreparedStatement prep = conn.prepareStatement(
-									"insert into reactions (id, knockout, flux_value, reaction_abbreviation, "
-									+ " reaction_name, reaction_string, reversible, " 
-									+ " lower_bound, upper_bound, biological_objective, "
-									+ " meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, "
-									+ " meta_9, meta_10, meta_11, meta_12, meta_13, meta_14, meta_15) "
-									+ " values (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-							prep.setString(1, aReaction.getKnockout());
-							prep.setDouble(2, aReaction.getFluxValue());
-							prep.setString(3, aReaction.getReactionAbbreviation());
-							prep.setString(4, aReaction.getReactionName());
-							prep.setString(5, aReaction.getReactionString());
-							prep.setString(6, aReaction.getReversible());
-							prep.setDouble(7, aReaction.getLowerBound());
-							prep.setDouble(8, aReaction.getUpperBound());
-							prep.setDouble(9, aReaction.getBiologicalObjective());	    
-							prep.setString(10, aReaction.getMeta1());
-							prep.setString(11, aReaction.getMeta2());
-							prep.setString(12, aReaction.getMeta3());
-							prep.setString(13, aReaction.getMeta4());
-							prep.setString(14, aReaction.getMeta5());
-							prep.setString(15, aReaction.getMeta6());
-							prep.setString(16, aReaction.getMeta7());
-							prep.setString(17, aReaction.getMeta8());
-							prep.setString(18, aReaction.getMeta9());
-							prep.setString(19, aReaction.getMeta10());
-							prep.setString(20, aReaction.getMeta11());
-							prep.setString(21, aReaction.getMeta12());
-							prep.setString(22, aReaction.getMeta13());
-							prep.setString(23, aReaction.getMeta14());
-							prep.setString(24, aReaction.getMeta15());
-
-							prep.addBatch();
-
-							conn.setAutoCommit(false);
-							prep.executeBatch();
-							conn.setAutoCommit(true);
-
-							ReactionParser parser = new ReactionParser();
-							if (parser.isValid(aReaction.getReactionString())) {
-								ArrayList reactantsAndProducts = parser.parseReaction(aReaction.getReactionString(), (row - 1), databaseName);
-								aReaction.setReactantsList((ArrayList) reactantsAndProducts.get(0));
-								aReaction.updateReactants();
-								if (reactantsAndProducts.size() > 1) {
-									aReaction.setProductsList((ArrayList) reactantsAndProducts.get(1));
-									aReaction.updateProducts();
-								}
-							}
-						} 
-						row += 1;	
-						LocalConfig.getInstance().setProgress(row*ProgressConstants.CSV_REACTION_LOAD_PERCENT/numOfLines);
-					}
-					ReactionFactory aFactory = new ReactionFactory();
-					aFactory.setMetabolitesUsedStatus(LocalConfig.getInstance().getDatabaseName());
-					conn.close();
-					reader.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			try {
+				reader = new CSVReader(new FileReader(file), GraphicalInterface.getSplitCharacter());
+				
+				int numLines = numberOfLines(file);
+				
+				stat.executeUpdate("BEGIN TRANSACTION");	
+				for (int i = 0; i < numLines; i++) {
+					LocalConfig.getInstance().setProgress(i*100/numLines);
+					
+					String [] dataArray = reader.readNext();
+					for (int s = 0; s < dataArray.length; s++) {
+						if (dataArray[s].length() > 0 && dataArray[s].substring(0,1).matches("\"")) {
+							dataArray[s] = dataArray[s].substring(1, (dataArray[s].length() - 1));			
+						}
+					}
+					
+					if (i >= (row + correction)) {
+						String knockout = "false";
+						Double fluxValue = 0.0;
+						String reactionAbbreviation = "";
+						String reactionName = "";
+						String reactionString = "";
+						String reversible = "false";
+						Double lowerBound = -999999.0;
+						Double upperBound =	999999.0;
+						Double objective = 0.0;
+						String meta1 = "";
+						String meta2 = "";
+						String meta3 = "";
+						String meta4 = "";
+						String meta5 = "";
+						String meta6 = "";
+						String meta7 = "";
+						String meta8 = "";
+						String meta9 = "";
+						String meta10 = "";
+						String meta11 = "";
+						String meta12 = "";
+						String meta13 = "";
+						String meta14 = "";
+						String meta15 = "";
+                        
+						if (LocalConfig.getInstance().getKnockoutColumnIndex() > -1) {
+							if (dataArray[LocalConfig.getInstance().getKnockoutColumnIndex()].compareTo("false") == 0 || dataArray[LocalConfig.getInstance().getKnockoutColumnIndex()].compareTo("FALSE") == 0 || dataArray[LocalConfig.getInstance().getKnockoutColumnIndex()].compareTo("0") == 0 || dataArray[LocalConfig.getInstance().getKnockoutColumnIndex()].compareTo("0.0") == 0) {
+								knockout = "false";
+							} else if (dataArray[LocalConfig.getInstance().getKnockoutColumnIndex()].compareTo("true") == 0 || dataArray[LocalConfig.getInstance().getKnockoutColumnIndex()].compareTo("TRUE") == 0 || dataArray[LocalConfig.getInstance().getKnockoutColumnIndex()].compareTo("1") == 0 || dataArray[LocalConfig.getInstance().getKnockoutColumnIndex()].compareTo("1.0") == 0) {
+								knockout = "true";													
+							} 
+						} 
+						if (LocalConfig.getInstance().getFluxValueColumnIndex() > -1) {
+							if (dataArray[LocalConfig.getInstance().getFluxValueColumnIndex()].compareTo("") != 0) {
+								fluxValue = Double.valueOf(dataArray[LocalConfig.getInstance().getFluxValueColumnIndex()]);
+							} 
+						} 
+						
+						//if strings contain ' (single quote), it will not execute insert statement
+						//this code escapes ' as '' - sqlite syntax for escaping '
+						if (dataArray[LocalConfig.getInstance().getReactionAbbreviationColumnIndex()].contains("'")) {
+							reactionAbbreviation = dataArray[LocalConfig.getInstance().getReactionAbbreviationColumnIndex()].replaceAll("'", "''");
+						} else {
+							reactionAbbreviation = dataArray[LocalConfig.getInstance().getReactionAbbreviationColumnIndex()];
+						}
+												
+						if (dataArray[LocalConfig.getInstance().getReactionNameColumnIndex()].contains("'")) {
+							reactionName = dataArray[LocalConfig.getInstance().getReactionNameColumnIndex()].replaceAll("'", "''");
+						} else {
+							reactionName = dataArray[LocalConfig.getInstance().getReactionNameColumnIndex()];
+						}	
+						
+						if (dataArray[LocalConfig.getInstance().getReactionEquationColumnIndex()].contains("'")) {
+							reactionString = dataArray[LocalConfig.getInstance().getReactionEquationColumnIndex()].replaceAll("'", "''");
+						} else {
+							reactionString = dataArray[LocalConfig.getInstance().getReactionEquationColumnIndex()];
+						}
+						reactionString = reactionString.trim();
+						
+						if (LocalConfig.getInstance().getReversibleColumnIndex() > -1) {
+							if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("false") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("FALSE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0.0") == 0) {
+								reversible = "false";
+							} else if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("true") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("TRUE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1.0") == 0) {
+								reversible = "true";													
+							} else {
+								reversible = dataArray[LocalConfig.getInstance().getReversibleColumnIndex()];
+							}
+						}
+						
+						try {
+							ReactionParser1 parser = new ReactionParser1();
+							boolean valid = true;
+							
+							ArrayList<ArrayList> reactants = parser.reactionList(reactionString.trim()).get(0);
+							//reactions of the type ==> b will be size 1, assigned the value [0] in parser
+							if (reactants.get(0).size() == 1) {
+							} else {
+								for (int r = 0; r < reactants.size(); r++) {
+									if (reactants.get(r).size() == 2) {
+										String stoicStr = (String) reactants.get(r).get(0);
+										String reactant = (String) reactants.get(r).get(1);
+										String addMetab = "insert into metabolites (metabolite_abbreviation, boundary, used) values('"  + reactant + "', 'false', 'true');";	
+										
+										if (!(LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(reactant.trim()))) {
+											if (GraphicalInterface.showPrompt) {
+												Object[] options = {"Yes",
+														"Yes to All",
+												"No"};
+
+												int choice = JOptionPane.showOptionDialog(null, 
+														"The metabolite " + reactant + " does not exist. Do you wish to add it?", 
+														"Add Metabolite?", 
+														JOptionPane.YES_NO_CANCEL_OPTION, 
+														JOptionPane.QUESTION_MESSAGE, 
+														null, options, options[0]);
+												//options[0] sets "Yes" as default button
+
+												// interpret the user's choice	  
+												if (choice == JOptionPane.YES_OPTION)
+												{
+													stat.executeUpdate(addMetab);
+													maxMetabId += 1;
+													LocalConfig.getInstance().getMetaboliteIdNameMap().put(reactant, new Integer(maxMetabId));
+												}
+												//No option actually corresponds to "Yes to All" button
+												if (choice == JOptionPane.NO_OPTION)
+												{
+													GraphicalInterface.showPrompt = false;
+													stat.executeUpdate(addMetab);
+													maxMetabId += 1;
+													LocalConfig.getInstance().getMetaboliteIdNameMap().put(reactant, new Integer(maxMetabId));
+												}
+												//Cancel option actually corresponds to "No" button
+												if (choice == JOptionPane.CANCEL_OPTION) {
+													addMetaboliteOption = false;
+													reactionString = "";
+													valid = false;
+												}	  
+											} else {
+												stat.executeUpdate(addMetab);
+												maxMetabId += 1;
+												LocalConfig.getInstance().getMetaboliteIdNameMap().put(reactant, new Integer(maxMetabId));
+											}											
+										}										
+										
+										Integer id = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(reactant);
+										
+										String insert = "INSERT INTO reaction_reactants(reaction_id, stoic, metabolite_id) values (" + (i - correction) + ", " + stoicStr + ", " + id + ");";
+										stat.executeUpdate(insert);
+										String update = "update metabolites set used='true' where id=" + id + ";";
+										stat.executeUpdate(update);
+										
+									} else {
+										//Invalid reaction
+										valid = false;
+										break;
+									}								
+								}
+							}
+							//reactions of the type a ==> will be size 1, assigned the value [0] in parser
+							ArrayList<ArrayList> products = parser.reactionList(reactionString.trim()).get(1);
+							if (products.get(0).size() == 1) {
+							} else {
+								for (int p = 0; p < products.size(); p++) {
+									if (products.get(p).size() == 2) {
+										String stoicStr = (String) products.get(p).get(0);
+										String product = (String) products.get(p).get(1);
+										String addMetab = "insert into metabolites (metabolite_abbreviation, boundary, used) values('"  + product + "', 'false', 'true');";
+										
+										if (!(LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(product))) {
+											if (GraphicalInterface.showPrompt) {
+												Object[] options = {"Yes",
+														"Yes to All",
+												"No"};
+
+												int choice = JOptionPane.showOptionDialog(null, 
+														"The metabolite " + product + " does not exist. Do you wish to add it?", 
+														"Add Metabolite?", 
+														JOptionPane.YES_NO_CANCEL_OPTION, 
+														JOptionPane.QUESTION_MESSAGE, 
+														null, options, options[0]);
+												//options[0] sets "Yes" as default button
+
+												// interpret the user's choice	  
+												if (choice == JOptionPane.YES_OPTION)
+												{
+													stat.executeUpdate(addMetab);
+													maxMetabId += 1;
+													LocalConfig.getInstance().getMetaboliteIdNameMap().put(product, new Integer(maxMetabId));
+												}
+												//No option actually corresponds to "Yes to All" button
+												if (choice == JOptionPane.NO_OPTION)
+												{
+													GraphicalInterface.showPrompt = false;
+													stat.executeUpdate(addMetab);
+													maxMetabId += 1;
+													LocalConfig.getInstance().getMetaboliteIdNameMap().put(product, new Integer(maxMetabId));
+												}
+												//Cancel option actually corresponds to "No" button
+												if (choice == JOptionPane.CANCEL_OPTION) {
+													addMetaboliteOption = false;
+													reactionString = "";
+													valid = false;
+												}	  
+											} else {
+												stat.executeUpdate(addMetab);
+												maxMetabId += 1;
+												LocalConfig.getInstance().getMetaboliteIdNameMap().put(product, new Integer(maxMetabId));
+											}		
+										}
+										
+										Integer id = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(product);
+										
+										String insert = "INSERT INTO reaction_products(reaction_id, stoic, metabolite_id) values (" + (i - correction) + ", " + stoicStr + ", " + id + ");";
+										stat.executeUpdate(insert);	
+										String update = "update metabolites set used='true' where id=" + id + ";";
+										stat.executeUpdate(update);
+										
+									} else {
+										//Invalid reaction
+										valid = false;
+										break;
+									}
+								}							
+							}
+							
+							if (!valid) {
+								String deleteReac = "delete from reaction_reactants where reaction_id=" + (i - correction) + ";";
+								stat.executeUpdate(deleteReac);
+								String deleteProd = "delete from reaction_products where reaction_id=" + (i - correction) + ";";
+								stat.executeUpdate(deleteProd);
+								if (reactionString != null || reactionString.length() > 0) {
+									LocalConfig.getInstance().getInvalidReactions().add(reactionString);
+								}	
+							}										
+						} catch (Throwable t) {
+							
+						}
+						
+						if (LocalConfig.getInstance().getLowerBoundColumnIndex() > -1) {
+							if (dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()].compareTo("") != 0) {
+								lowerBound = Double.valueOf(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()]);							
+							} 
+						} 
+						if (LocalConfig.getInstance().getUpperBoundColumnIndex() > -1) {
+							if (dataArray[LocalConfig.getInstance().getUpperBoundColumnIndex()].compareTo("") != 0) {
+								upperBound = Double.valueOf(dataArray[LocalConfig.getInstance().getUpperBoundColumnIndex()]);							
+							}
+						} 
+						if (LocalConfig.getInstance().getBiologicalObjectiveColumnIndex() > -1) {
+							if (dataArray[LocalConfig.getInstance().getBiologicalObjectiveColumnIndex()].compareTo("") != 0) {
+								objective = Double.valueOf(dataArray[LocalConfig.getInstance().getBiologicalObjectiveColumnIndex()]);							
+							} 							
+						} 
+						
+						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 0) {
+							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
+								meta1 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].replaceAll("'", "''");
+							} else {
+								meta1 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)];
+							}							
+						}
+						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 1) {
+							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
+								meta2 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(1)].replaceAll("'", "''");
+							} else {
+								meta2 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(1)];
+							}
+						}
+						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 2) {
+							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
+								meta3 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(2)].replaceAll("'", "''");
+							} else {
+								meta3 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(2)];
+							}
+						}
+						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 3) {
+							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
+								meta4 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(3)].replaceAll("'", "''");
+							} else {
+								meta4 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(3)];
+							}
+						}
+						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 4) {
+							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
+								meta5 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(4)].replaceAll("'", "''");
+							} else {
+								meta5 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(4)];
+							}
+						}
+						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 5) {
+							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
+								meta6 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(5)].replaceAll("'", "''");
+							} else {
+								meta6 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(5)];
+							}
+						}
+						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 6) {
+							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
+								meta7 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(6)].replaceAll("'", "''");
+							} else {
+								meta7 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(6)];
+							}
+						}
+						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 7) {
+							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
+								meta8 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(7)].replaceAll("'", "''");
+							} else {
+								meta8 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(7)];
+							}
+						}
+						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 8) {
+							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
+								meta9 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(8)].replaceAll("'", "''");
+							} else {
+								meta9 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(8)];
+							}
+						}
+						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 9) {
+							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
+								meta10 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(9)].replaceAll("'", "''");
+							} else {
+								meta10 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(9)];
+							}
+						}
+						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 10) {
+							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
+								meta11 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(10)].replaceAll("'", "''");
+							} else {
+								meta11 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(10)];
+							}
+						}
+						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 11) {
+							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
+								meta12 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(11)].replaceAll("'", "''");
+							} else {
+								meta12 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(11)];
+							}
+						}
+						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 12) {
+							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
+								meta13 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(12)].replaceAll("'", "''");
+							} else {
+								meta13 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(12)];
+							}
+						}
+						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 13) {
+							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
+								meta14 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(13)].replaceAll("'", "''");
+							} else {
+								meta14 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(13)];
+							}
+						}
+						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 14) {
+							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
+								meta15 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(14)].replaceAll("'", "''");
+							} else {
+								meta15 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(14)];
+							}
+						}
+						
+						String insert = "INSERT INTO reactions(knockout, flux_value, reaction_abbreviation, " 
+							+ " reaction_name, reaction_string, reversible, lower_bound, upper_bound, biological_objective," 
+							+ " meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, "
+							+ " meta_9, meta_10, meta_11, meta_12, meta_13, meta_14, meta_15) values " 
+							+ " (" + "'" + knockout + "', '" + fluxValue + "', '" + reactionAbbreviation + "', '" + reactionName + "', '" + reactionString + "', '" + reversible + "', '" + lowerBound + "', '" + upperBound + "', '" + objective + "', '" + meta1 + "', '" + meta2 + "', '" + meta3 + "', '" + meta4 + "', '" + meta5 + "', '" + meta6 + "', '" + meta7 + "', '" + meta8 + "', '" + meta9 + "', '" + meta10 + "', '" + meta11 + "', '" + meta12 + "', '" + meta13 + "', '" + meta14 + "', '" + meta15 + "');";
+						stat.executeUpdate(insert);
+					}					
+				}
+				stat.executeUpdate("COMMIT");
+			} catch (Exception e) {
+				stat.executeUpdate("ROLLBACK"); // throw away all updates since BEGIN TRANSACTION
+			}
+
+			conn.close();
+			LocalConfig.getInstance().setProgress(100);		
+
+		}catch(SQLException e){
+
 			e.printStackTrace();
-		}			
+
+		}
+
+		//System.out.println("Done");
 	}
 }
+
+
 

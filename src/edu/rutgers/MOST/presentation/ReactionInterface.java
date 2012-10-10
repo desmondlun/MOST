@@ -145,14 +145,7 @@ public class ReactionInterface extends JFrame {
 	// private final JList names;
 	public ReactionInterface(final Connection con)
 	throws SQLException {
-
-		setTitle("Reaction Editor");
-
-		if (((String) GraphicalInterface.reactionsTable.getModel().getValueAt(GraphicalInterface.getCurrentRow(), GraphicalInterfaceConstants.REVERSIBLE_COLUMN)).compareTo("true") == 0) {
-			setArrowString("<==>");
-		} else {
-			setArrowString("-->");
-		} 
+	setTitle("Reaction Editor");
 
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -174,23 +167,42 @@ public class ReactionInterface extends JFrame {
 		final JTable tempTable = new JTable();
 		tempTable.setModel(new MetabolitesDatabaseTableModel(conn, new String("select * from metabolites")));
 		final int metabCount = tempTable.getModel().getRowCount();
-
-		//get id from row selected in graphical interface
-		//int id = getIdFromCurrentRow(GraphicalInterface.getCurrentRow());
-
+		
+		int viewRow = GraphicalInterface.reactionsTable.convertRowIndexToModel(GraphicalInterface.getCurrentRow());
+		String reactionEquation = ((String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_STRING_COLUMN));
+        System.out.println(viewRow);
+        System.out.println(reactionEquation);
+		
+		if (((String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN)).compareTo("true") == 0) {
+			setArrowString("<==>");
+		} else {
+			setArrowString("-->");
+		}
+		
 		ReactionParser parser = new ReactionParser();
-		if (GraphicalInterface.reactionsTable.getModel().getValueAt(GraphicalInterface.getCurrentRow(), GraphicalInterfaceConstants.REACTION_STRING_COLUMN) != null) {
-			if (parser.isValid((GraphicalInterface.reactionsTable.getModel().getValueAt(GraphicalInterface.getCurrentRow(), GraphicalInterfaceConstants.REACTION_STRING_COLUMN)).toString())) {
-				setOldReaction((GraphicalInterface.reactionsTable.getModel().getValueAt(GraphicalInterface.getCurrentRow(), GraphicalInterfaceConstants.REACTION_STRING_COLUMN)).toString());
-				ArrayList reactantsAndProducts = parser.parseReaction((GraphicalInterface.reactionsTable.getModel().getValueAt(GraphicalInterface.getCurrentRow(), GraphicalInterfaceConstants.REACTION_STRING_COLUMN)).toString(), getIdFromCurrentRow(GraphicalInterface.getCurrentRow()), LocalConfig.getInstance().getLoadedDatabase());
-				setReactantsList((ArrayList) reactantsAndProducts.get(0));
-				setReactantCount(getReactantsList().size());
-				//reactionField.setText(aReaction.getReactionString());
-				//checks if reaction equation has products
-				if (reactantsAndProducts.size() > 1) {
-					setProductsList((ArrayList) reactantsAndProducts.get(1));
-					setProductCount(getProductsList().size());
-				}        	
+		if (reactionEquation != null) {
+			if (parser.isValid(reactionEquation)) {
+				setOldReaction(reactionEquation);
+				try {
+					ArrayList reactantsAndProducts = parser.parseReaction(reactionEquation, viewRow, LocalConfig.getInstance().getLoadedDatabase());
+					setReactantsList((ArrayList) reactantsAndProducts.get(0));
+					setReactantCount(getReactantsList().size());
+					//reactionField.setText(aReaction.getReactionString());
+					//checks if reaction equation has products
+					if (reactantsAndProducts.size() > 1) {
+						setProductsList((ArrayList) reactantsAndProducts.get(1));
+						setProductCount(getProductsList().size());
+					}   
+				} catch (Throwable t) {
+	                System.out.println("Invalid reaction");
+	                if (getReactantsList() != null) {
+	                	getReactantsList().clear();
+	                }	                
+	                if (getProductsList() != null) {
+	                	getProductsList().clear();
+	                }
+	                reactionField.setText("");
+	            } 					
 			}
 		} else {
 			reactionField.setText("");
@@ -330,7 +342,7 @@ public class ReactionInterface extends JFrame {
 					}
 
 					setReactantString(reacString);
-					if (getReactantString() != null && getProductString() != null) {
+					if (getReactantString() != null) {
 						reactionField.setText(getReactantString() + " " + getArrowString() + " " + getProductString());
 						submitButton.setEnabled(true);
 					} else {
@@ -456,7 +468,7 @@ public class ReactionInterface extends JFrame {
 					}
 
 					setProductString(prodString);
-					if (getReactantString() != null && prodString != null) {
+					if (getReactantString() != null) {
 						reactionField.setText(getReactantString() + " " + getArrowString() + " " + prodString);
 						submitButton.setEnabled(true);
 					}
@@ -590,14 +602,6 @@ public class ReactionInterface extends JFrame {
 		//add reaction pane to reaction (middle) box
 		hbReaction.add(reactionPane);
 
-		if (GraphicalInterface.reactionsTable.getModel().getValueAt(GraphicalInterface.getCurrentRow(), GraphicalInterfaceConstants.REACTION_STRING_COLUMN) != null) {
-			if (getProductCount() > 0) {
-				submitButton.setEnabled(true);
-			} else {
-				submitButton.setEnabled(false);
-			}
-		}
-
 		//submitButton.setEnabled(false);
 		submitButton.setMnemonic(KeyEvent.VK_S);
 		JLabel blank = new JLabel("      ");    
@@ -626,23 +630,19 @@ public class ReactionInterface extends JFrame {
 
 		ActionListener revActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent revActionEvent) {
-				int id = getIdFromCurrentRow(GraphicalInterface.getCurrentRow());
 				ReactionFactory rFactory = new ReactionFactory();			
-				SBMLReaction aReaction = (SBMLReaction)rFactory.getReactionById(id, "SBML", getDatabaseName());
 				cbProduct[0].grabFocus();
 				if (trueButton.isSelected()) {
 					setArrowString(" <==> ");
-					aReaction.setReversible("true");
-					GraphicalInterface.reactionsTable.getModel().setValueAt("true", GraphicalInterface.getCurrentRow(), GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
 				} else if (falseButton.isSelected()) {
 					setArrowString("-->");
-					aReaction.setReversible("false");
-					GraphicalInterface.reactionsTable.getModel().setValueAt("false", GraphicalInterface.getCurrentRow(), GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
 				}
 				if (getReactantString()!= null && getProductString() != null) {
 					reactionField.setText(getReactantString() + " " + getArrowString() + " " + getProductString());	
+				} else if (getReactantString()!= null) {
+					reactionField.setText(getReactantString() + " " + getArrowString());
 				} else {
-					reactionField.setText(getReactantString());
+					reactionField.setText("");
 				}
 			}
 		};
@@ -696,9 +696,8 @@ public class ReactionInterface extends JFrame {
 
 		//submitButton.addActionListener(submitButtonActionListener);
 		clearButton.addActionListener(clearButtonActionListener);
-		exitButton.addActionListener(exitButtonActionListener);
-
-
+		exitButton.addActionListener(exitButtonActionListener);		
+		
 	}
 
 }
