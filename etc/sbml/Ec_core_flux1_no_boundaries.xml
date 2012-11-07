@@ -78,20 +78,6 @@
 	<species id="M_succ_e" name="M_Succinate_C4H4O4" compartment="Extra_organism" charge="-2" boundaryCondition="false"/>
 	<species id="M_succoa_c" name="M_Succinyl_CoA_C25H35N7O19P3S" compartment="Cytosol" charge="-5" boundaryCondition="false"/>
 	<species id="M_xu5p_D_c" name="M_D_Xylulose_5_phosphate_C5H9O8P" compartment="Cytosol" charge="-2" boundaryCondition="false"/>
-	<species id="M_ac_b" name="M_Acetate_C2H3O2" compartment="Extra_organism" charge="-1" boundaryCondition="true"/>
-	<species id="M_akg_b" name="M_2_Oxoglutarate_C5H4O5" compartment="Extra_organism" charge="-2" boundaryCondition="true"/>
-	<species id="M_co2_b" name="M_CO2_CO2" compartment="Extra_organism" charge="0" boundaryCondition="true"/>
-	<species id="M_etoh_b" name="M_Ethanol_C2H6O" compartment="Extra_organism" charge="0" boundaryCondition="true"/>
-	<species id="M_for_b" name="M_Formate_CH1O2" compartment="Extra_organism" charge="-1" boundaryCondition="true"/>
-	<species id="M_fum_b" name="M_Fumarate_C4H2O4" compartment="Extra_organism" charge="-2" boundaryCondition="true"/>
-	<species id="M_glc_D_b" name="M_D_Glucose_C6H12O6" compartment="Extra_organism" charge="0" boundaryCondition="true"/>
-	<species id="M_h2o_b" name="M_H2O_H2O" compartment="Extra_organism" charge="0" boundaryCondition="true"/>
-	<species id="M_h_b" name="M_H_H" compartment="Extra_organism" charge="1" boundaryCondition="true"/>
-	<species id="M_lac_D_b" name="M_D_Lactate_C3H5O3" compartment="Extra_organism" charge="-1" boundaryCondition="true"/>
-	<species id="M_o2_b" name="M_O2_O2" compartment="Extra_organism" charge="0" boundaryCondition="true"/>
-	<species id="M_pi_b" name="M_Phosphate_HO4P" compartment="Extra_organism" charge="-2" boundaryCondition="true"/>
-	<species id="M_pyr_b" name="M_Pyruvate_C3H3O3" compartment="Extra_organism" charge="-1" boundaryCondition="true"/>
-	<species id="M_succ_b" name="M_Succinate_C4H4O4" compartment="Extra_organism" charge="-2" boundaryCondition="true"/>
 </listOfSpecies>
 <listOfReactions>
 	<reaction id="R_ACKr" name="R_acetate_kinase" reversible="true">
@@ -575,7 +561,6 @@
 			<speciesReference species="M_ac_e" stoichiometry="1.000000"/>
 		</listOfReactants>
 		<listOfProducts>
-			<speciesReference species="M_ac_e" stoichiometry="1.000000"/>
 		</listOfProducts>
 		<kineticLaw>
 			<math xmlns="http://www.w3.org/1998/Math/MathML">
@@ -601,7 +586,6 @@
 			<speciesReference species="M_akg_e" stoichiometry="1.000000"/>
 		</listOfReactants>
 		<listOfProducts>
-			<speciesReference species="M_akg_e" stoichiometry="1.000000"/>
 		</listOfProducts>
 		<kineticLaw>
 			<math xmlns="http://www.w3.org/1998/Math/MathML">
@@ -627,7 +611,6 @@
 			<speciesReference species="M_co2_e" stoichiometry="1.000000"/>
 		</listOfReactants>
 		<listOfProducts>
-			<speciesReference species="M_co2_e" stoichiometry="1.000000"/>
 		</listOfProducts>
 		<kineticLaw>
 			<math xmlns="http://www.w3.org/1998/Math/MathML">
@@ -653,7 +636,6 @@
 			<speciesReference species="M_etoh_e" stoichiometry="1.000000"/>
 		</listOfReactants>
 		<listOfProducts>
-			<speciesReference species="M_etoh_e" stoichiometry="1.000000"/>
 		</listOfProducts>
 		<kineticLaw>
 			<math xmlns="http://www.w3.org/1998/Math/MathML">
@@ -679,7 +661,6 @@
 			<speciesReference species="M_for_e" stoichiometry="1.000000"/>
 		</listOfReactants>
 		<listOfProducts>
-			<speciesReference species="M_for_e" stoichiometry="1.000000"/>
 		</listOfProducts>
 		<kineticLaw>
 			<math xmlns="http://www.w3.org/1998/Math/MathML">
@@ -705,7 +686,6 @@
 			<speciesReference species="M_fum_e" stoichiometry="1.000000"/>
 		</listOfReactants>
 		<listOfProducts>
-			<speciesReference species="M_fum_e" stoichiometry="1.000000"/>
 		</listOfProducts>
 		<kineticLaw>
 			<math xmlns="http://www.w3.org/1998/Math/MathML">
@@ -731,7 +711,6 @@
 			<speciesReference species="M_glc_D_e" stoichiometry="1.000000"/>
 		</listOfReactants>
 		<listOfProducts>
-			<speciesReference species="M_glc_D_e" stoichiometry="1.000000"/>
 		</listOfProducts>
 		<kineticLaw>
 			<math xmlns="http://www.w3.org/1998/Math/MathML">
@@ -757,7 +736,6 @@
 			<speciesReference species="M_h2o_e" stoichiometry="1.000000"/>
 		</listOfReactants>
 		<listOfProducts>
-			<speciesReference species="M_h2o_e" stoichiometry="1.000000"/>
 		</listOfProducts>
 		<kineticLaw>
 			<math xmlns="http://www.w3.org/1998/Math/MathML">
@@ -783,7 +761,6 @@
 			<speciesReference species="M_h_e" stoichiometry="1.000000"/>
 		</listOfReactants>
 		<listOfProducts>
-			<speciesReference species="M_h_e" stoichiometry="1.000000"/>
 		</listOfProducts>
 		<kineticLaw>
 			<math xmlns="http://www.w3.org/1998/Math/MathML">
@@ -809,7 +786,6 @@
 			<speciesReference species="M_lac_D_e" stoichiometry="1.000000"/>
 		</listOfReactants>
 		<listOfProducts>
-			<speciesReference species="M_lac_D_e" stoichiometry="1.000000"/>
 		</listOfProducts>
 		<kineticLaw>
 			<math xmlns="http://www.w3.org/1998/Math/MathML">
@@ -835,7 +811,6 @@
 			<speciesReference species="M_o2_e" stoichiometry="1.000000"/>
 		</listOfReactants>
 		<listOfProducts>
-			<speciesReference species="M_o2_e" stoichiometry="1.000000"/>
 		</listOfProducts>
 		<kineticLaw>
 			<math xmlns="http://www.w3.org/1998/Math/MathML">
@@ -861,7 +836,6 @@
 			<speciesReference species="M_pi_e" stoichiometry="1.000000"/>
 		</listOfReactants>
 		<listOfProducts>
-			<speciesReference species="M_pi_e" stoichiometry="1.000000"/>
 		</listOfProducts>
 		<kineticLaw>
 			<math xmlns="http://www.w3.org/1998/Math/MathML">
@@ -887,7 +861,6 @@
 			<speciesReference species="M_pyr_e" stoichiometry="1.000000"/>
 		</listOfReactants>
 		<listOfProducts>
-			<speciesReference species="M_pyr_e" stoichiometry="1.000000"/>
 		</listOfProducts>
 		<kineticLaw>
 			<math xmlns="http://www.w3.org/1998/Math/MathML">
@@ -913,7 +886,6 @@
 			<speciesReference species="M_succ_e" stoichiometry="1.000000"/>
 		</listOfReactants>
 		<listOfProducts>
-			<speciesReference species="M_succ_e" stoichiometry="1.000000"/>
 		</listOfProducts>
 		<kineticLaw>
 			<math xmlns="http://www.w3.org/1998/Math/MathML">
