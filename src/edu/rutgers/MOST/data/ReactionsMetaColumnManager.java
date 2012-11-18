@@ -32,6 +32,9 @@ public class ReactionsMetaColumnManager {
 		Connection conn;
 		try {
 			conn = DriverManager.getConnection(queryString);
+			Statement stat = conn.createStatement();
+			stat.executeUpdate("drop table if exists reactions_meta_info;");		    
+			stat.executeUpdate("CREATE TABLE reactions_meta_info (id INTEGER, meta_column_name varchar(100));");
 			for (int m = 0; m < metaColumnNames.size(); m++) {
 				PreparedStatement prep1 = conn.prepareStatement("insert into reactions_meta_info (id, meta_column_name) values (?, ?);");
 				prep1.setInt(1, m + 1);

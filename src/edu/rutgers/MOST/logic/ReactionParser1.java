@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-//NOTE: There are two reaction parser classes because all methods have not been rewritten
-//in this new parser from the old parser. This will be remedied shortly.
 public class ReactionParser1 {
 	
 	static boolean parse = true;
 
 	public static ArrayList<ArrayList> reactionList(String reactionEquation){
+		reactionEquation = compartmentPrefixRemoved(reactionEquation);
 		ArrayList<ArrayList> reactionList = new ArrayList();
 		ArrayList<String> reactantAndStoicList = new ArrayList();
 		ArrayList<String> productAndStoicList = new ArrayList();
@@ -143,7 +142,7 @@ public class ReactionParser1 {
 	}
 	
 	//removes compartment prefix such as "[c] :"
-	public String compartmentPrefixRemoved(String reactionEquation) {
+	public static String compartmentPrefixRemoved(String reactionEquation) {
 		String correctedReaction = "";
 		if (reactionEquation.startsWith("[") && reactionEquation.indexOf("]") == 2 && reactionEquation.contains(":")) {
 			   correctedReaction = reactionEquation.substring(5, reactionEquation.length()).trim();
@@ -210,6 +209,15 @@ public class ReactionParser1 {
 		}
 		numSpecies += 1;
 		return numSpecies;		
+	}
+	
+	public boolean isValid(String reactionEquation) {
+		if (reactionEquation != null) {
+			if (reactionEquation.contains(">") || reactionEquation.contains("=")) {
+				return true;
+			}
+		}		
+		return false;
 	}
 	
 	public static void main(String[] args) {

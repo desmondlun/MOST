@@ -14,6 +14,7 @@ import au.com.bytecode.opencsv.CSVReader;
 
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
+import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 public class TextMetabolitesModelReader {
 
@@ -111,7 +112,7 @@ public class TextMetabolitesModelReader {
 
 	public void load(File file, String databaseName){
 		DatabaseCreator creator = new DatabaseCreator();		
-		creator.createBlankReactionsTable(databaseName);
+		creator.createBlankReactionsTable(databaseName, GraphicalInterfaceConstants.BLANK_DB_REACTION_ROW_COUNT);
 
 		//if first row of file in not column names, starts reading after row that contains names
 		int correction = LocalConfig.getInstance().getMetabolitesNextRowCorrection();
@@ -133,6 +134,8 @@ public class TextMetabolitesModelReader {
 			CSVReader reader;
 			
 			Map<String, Object> metaboliteIdNameMap = new HashMap<String, Object>();
+			ArrayList<Integer> blankMetabIds = new ArrayList<Integer>();
+			ArrayList<Integer> duplicateIds = new ArrayList<Integer>();
 			
 			try {
 				reader = new CSVReader(new FileReader(file), GraphicalInterface.getSplitCharacter());
@@ -161,12 +164,11 @@ public class TextMetabolitesModelReader {
 						}
 					}
 					if (i >= (row + correction)) {
-						String metaboliteAbbreviation = "";
+						
 						String metaboliteName = "";
 						String chargeString = "";
 						String compartment = "";
 						String boundary = "";
-						String used = "false"; 
 						String meta1 = "";
 						String meta2 = "";
 						String meta3 = "";
@@ -185,14 +187,23 @@ public class TextMetabolitesModelReader {
 						
 						//if strings contain ' (single quote), it will not execute insert statement
 						//this code escapes ' as '' - sqlite syntax for escaping '
-						if (dataArray[LocalConfig.getInstance().getMetaboliteAbbreviationColumnIndex()].contains("'")) {
-							metaboliteAbbreviation = dataArray[LocalConfig.getInstance().getMetaboliteAbbreviationColumnIndex()].replaceAll("'", "''");
+						String metaboliteAbbreviation = dataArray[LocalConfig.getInstance().getMetaboliteAbbreviationColumnIndex()];
+						
+						if (metaboliteAbbreviation == null || metaboliteAbbreviation.trim().length() == 0) {
+							blankMetabIds.add(i - correction);		
 						} else {
-							metaboliteAbbreviation = dataArray[LocalConfig.getInstance().getMetaboliteAbbreviationColumnIndex()];
+							if (metaboliteIdNameMap.containsKey(metaboliteAbbreviation)) {
+								duplicateIds.add(i - correction);
+							} else {
+								metaboliteIdNameMap.put(metaboliteAbbreviation, new Integer(i - correction));
+							}							
 						}
 						
-						metaboliteIdNameMap.put(metaboliteAbbreviation, new Integer(i - correction));
-						
+						String sqlMetaboliteAbbreviation = dataArray[LocalConfig.getInstance().getMetaboliteAbbreviationColumnIndex()];
+						if (sqlMetaboliteAbbreviation.contains("'")) {
+							sqlMetaboliteAbbreviation = sqlMetaboliteAbbreviation.replaceAll("'", "''");
+						} 
+							
 						if (dataArray[LocalConfig.getInstance().getMetaboliteNameColumnIndex()].contains("'")) {
 							metaboliteName = dataArray[LocalConfig.getInstance().getMetaboliteNameColumnIndex()].replaceAll("'", "''");
 						} else {
@@ -326,12 +337,14 @@ public class TextMetabolitesModelReader {
 						
 						String insert = "INSERT INTO metabolites(metabolite_abbreviation, metabolite_name, charge, compartment, boundary, meta_1, meta_2, "
 							+ " meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, "
-							+ " meta_11, meta_12, meta_13, meta_14, meta_15, used) values" 
-							+ " (" + "'" + metaboliteAbbreviation + "', '" + metaboliteName + "', '" + chargeString + "', '" + compartment + "', '" + boundary + "', '" + meta1 + "', '" + meta2 + "', '" + meta3 + "', '" + meta4 + "', '" + meta5 + "', '" + meta6 + "', '" + meta7 + "', '" + meta8 + "', '" + meta9 + "', '" + meta10 + "', '" + meta11 + "', '" + meta12 + "', '" + meta13 + "', '" + meta14 + "', '" + meta15 + "', '" + used + "');";
+							+ " meta_11, meta_12, meta_13, meta_14, meta_15) values" 
+							+ " (" + "'" + sqlMetaboliteAbbreviation + "', '" + metaboliteName + "', '" + chargeString + "', '" + compartment + "', '" + boundary + "', '" + meta1 + "', '" + meta2 + "', '" + meta3 + "', '" + meta4 + "', '" + meta5 + "', '" + meta6 + "', '" + meta7 + "', '" + meta8 + "', '" + meta9 + "', '" + meta10 + "', '" + meta11 + "', '" + meta12 + "', '" + meta13 + "', '" + meta14 + "', '" + meta15 + "');";
 						stat.executeUpdate(insert);	
 					}					
 				}
 				LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
+				LocalConfig.getInstance().setBlankMetabIds(blankMetabIds);				
+				LocalConfig.getInstance().setDuplicateIds(duplicateIds);
 				stat.executeUpdate("COMMIT");
 			} catch (Exception e) {
 				stat.executeUpdate("ROLLBACK"); // throw away all updates since BEGIN TRANSACTION

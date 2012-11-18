@@ -10,32 +10,23 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
-
 import javax.swing.JFrame;
-
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.ReactionFactory;
-import edu.rutgers.MOST.data.SBMLProduct;
-import edu.rutgers.MOST.data.SBMLReactant;
-import edu.rutgers.MOST.data.SBMLReaction;
-import edu.rutgers.MOST.logic.ReactionParser;
+import edu.rutgers.MOST.logic.ReactionParser1;
 
 public class ReactionInterface extends JFrame {
 
-	JButton submitButton = new JButton("Submit");
+	JButton okButton = new JButton("   OK   ");
 	JButton clearButton = new JButton(" Clear ");
 	final JTextField reactionField = new JTextField();
 
 	private String reactantString;
 	private int numReactantFields;
 	private int numProductFields;
-	private int reactantCount;
-	private int productCount;
 	private String arrowString;
 	private String productString;
 	private String reactionEquation;
-	private ArrayList reactantsList;
-	private ArrayList productsList;
 	private String oldReaction;
 
 	static String databaseName;
@@ -72,22 +63,6 @@ public class ReactionInterface extends JFrame {
 		return numReactantFields;
 	}
 
-	public void setProductCount(int productCount) {
-		this.productCount = productCount;
-	}
-
-	public int getProductCount() {
-		return productCount;
-	}
-
-	public void setReactantCount(int reactantCount) {
-		this.reactantCount = reactantCount;
-	}
-
-	public int getReactantCount() {
-		return reactantCount;
-	}
-
 	public void setNumProductFields(int numProductFields) {
 		this.numProductFields = numProductFields;
 	}
@@ -110,22 +85,6 @@ public class ReactionInterface extends JFrame {
 
 	public String getReactionEquation() {
 		return reactionEquation;
-	}
-
-	public void setReactantsList(ArrayList<SBMLReactant> reactantsList) {
-		this.reactantsList = reactantsList;
-	}
-
-	public ArrayList<SBMLReactant> getReactantsList() {
-		return reactantsList;
-	}
-
-	public void setProductsList(ArrayList<SBMLProduct> productsList) {
-		this.productsList = productsList;
-	}
-
-	public ArrayList<SBMLProduct> getProductsList() {
-		return productsList;
 	}
 
 	public Integer getIdFromCurrentRow(int row) {
@@ -160,52 +119,22 @@ public class ReactionInterface extends JFrame {
 		//100 an arbitrary number, should be large enough to accomodate the large reaction
 		setNumReactantFields(100);
 		setNumProductFields(100);
-		setReactantCount(0);
-		setProductCount(0);
 
 		//temporary table model to populate metabolite combo boxes, only holds data for metabolite boxes 
 		final JTable tempTable = new JTable();
 		tempTable.setModel(new MetabolitesDatabaseTableModel(conn, new String("select * from metabolites")));
-		final int metabCount = tempTable.getModel().getRowCount();
+		ArrayList<String> metabList = new ArrayList<String>();
+		for (int m = 0; m < tempTable.getModel().getRowCount(); m++) {
+			metabList.add((String) tempTable.getModel().getValueAt(m, 1));
+		}
 		
 		int viewRow = GraphicalInterface.reactionsTable.convertRowIndexToModel(GraphicalInterface.getCurrentRow());
 		String reactionEquation = ((String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_STRING_COLUMN));
-        System.out.println(viewRow);
-        System.out.println(reactionEquation);
 		
 		if (((String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN)).compareTo("true") == 0) {
 			setArrowString("<==>");
 		} else {
 			setArrowString("-->");
-		}
-		
-		ReactionParser parser = new ReactionParser();
-		if (reactionEquation != null) {
-			if (parser.isValid(reactionEquation)) {
-				setOldReaction(reactionEquation);
-				try {
-					ArrayList reactantsAndProducts = parser.parseReaction(reactionEquation, viewRow, LocalConfig.getInstance().getLoadedDatabase());
-					setReactantsList((ArrayList) reactantsAndProducts.get(0));
-					setReactantCount(getReactantsList().size());
-					//reactionField.setText(aReaction.getReactionString());
-					//checks if reaction equation has products
-					if (reactantsAndProducts.size() > 1) {
-						setProductsList((ArrayList) reactantsAndProducts.get(1));
-						setProductCount(getProductsList().size());
-					}   
-				} catch (Throwable t) {
-	                System.out.println("Invalid reaction");
-	                if (getReactantsList() != null) {
-	                	getReactantsList().clear();
-	                }	                
-	                if (getProductsList() != null) {
-	                	getProductsList().clear();
-	                }
-	                reactionField.setText("");
-	            } 					
-			}
-		} else {
-			reactionField.setText("");
 		}
 
 		/*************************************************************************/
@@ -229,11 +158,6 @@ public class ReactionInterface extends JFrame {
 		Box hbReaction = Box.createHorizontalBox(); //holds reaction (middle box)  
 		Box hbButton = Box.createHorizontalBox(); //holds buttons (bottom box)
 		Box vbAll = Box.createVerticalBox();    
-
-		final String reactantCoeff[] = new String[numReactantFields];
-		final String reactant[] = new String[numProductFields];
-		final String productCoeff[] = new String[numReactantFields];
-		final String product[] = new String[numProductFields];
 
 		//labels for comboboxes
 		String reacNum[] = new String[numReactantFields];
@@ -268,14 +192,9 @@ public class ReactionInterface extends JFrame {
 		for (int i = 0; i < numReactantFields; i++) {
 			cbReactant[i] = new JComboBox<String>();
 			cbReactant[i].setEditable(true);
-
-			//set all comboboxes disabled except first pair for blank tables (size = 0)
-			//or up to size of reactantsList if reactants table is populated
-
-			if (GraphicalInterface.reactionsTable.getModel().getValueAt(GraphicalInterface.getCurrentRow(), GraphicalInterfaceConstants.REACTION_STRING_COLUMN) != null) {
-				if (i > getReactantCount()) {
-					cbReactant[i].setEnabled(false);
-				}
+			
+			for (int m = 0; m < metabList.size(); m++) {
+				cbReactant[i].addItem(metabList.get(m));
 			}
 
 			reactantCoeffField[i] = new JTextField();
@@ -311,6 +230,11 @@ public class ReactionInterface extends JFrame {
 			//add labeled boxes to reactants panel
 			panelReactants.add(vbLabeledReactant[i]);
 
+			cbReactant[i].setSelectedIndex(-1);
+			reactantEditor[i] = new JTextField();
+			reactantEditor[i] = (JTextField)cbReactant[i].getEditor().getEditorComponent();
+			reactantEditor[i].addKeyListener(new ComboKeyHandler(cbReactant[i]));
+			
 			ActionListener reactantsActionListener = new ActionListener() {
 				public void actionPerformed(ActionEvent actionEvent) {
 					String reactantSelection[] = new String[numReactantFields];
@@ -328,8 +252,7 @@ public class ReactionInterface extends JFrame {
 							}
 							tempReactantsList.add(reactant[h]);
 						}      	    	      
-					}  
-
+					} 
 					//set reaction equation into text box
 					String reacString = "";
 
@@ -342,29 +265,15 @@ public class ReactionInterface extends JFrame {
 					}
 
 					setReactantString(reacString);
-					if (getReactantString() != null) {
-						reactionField.setText(getReactantString() + " " + getArrowString() + " " + getProductString());
-						submitButton.setEnabled(true);
+					if (getReactantString() == null || getReactantString().length() == 0) {
+						reactionField.setText(getArrowString() + " " + getProductString());
+						okButton.setEnabled(true);
+					} else if (getProductString() == null || getProductString().length() == 0) {
+						reactionField.setText(getReactantString() + " " + getArrowString());
+						okButton.setEnabled(true);
 					} else {
-						reactionField.setText(reacString);
-					}
-
-					//enable and populate next combobox
-					if ((tempReactantsList.size()) < numReactantFields) {
-						if (cbReactant[tempReactantsList.size()].getItemCount() == 0) {
-							//add metabolite list to second reactant combobox
-							for (int y = 0; y < metabCount; y++) {
-								if (tempTable.getModel().getValueAt(y, 1) != null) {
-									String metabName = tempTable.getModel().getValueAt(y, 1).toString();
-									cbReactant[tempReactantsList.size()].addItem(metabName);
-								}
-							}
-							cbReactant[tempReactantsList.size()].setEnabled(true);
-							cbReactant[tempReactantsList.size()].setSelectedIndex(-1);
-							reactantEditor[tempReactantsList.size()] = new JTextField();
-							reactantEditor[tempReactantsList.size()] = (JTextField)cbReactant[tempReactantsList.size()].getEditor().getEditorComponent();
-							reactantEditor[tempReactantsList.size()].addKeyListener(new ComboKeyHandler(cbReactant[tempReactantsList.size()]));
-						}
+						reactionField.setText(getReactantString() + " " + getArrowString() + " " + getProductString());
+						okButton.setEnabled(true);
 					}
 				}
 			};
@@ -372,38 +281,17 @@ public class ReactionInterface extends JFrame {
 			cbReactant[i].addActionListener(reactantsActionListener);
 		} 
 
-		//add metabolite list to first reactant combobox
-		if (cbReactant[0].getItemCount() == 0) {
-			for (int y = 0; y < metabCount; y++) {
-				if (tempTable.getModel().getValueAt(y, 1) != null) {
-					if (tempTable.getModel().getValueAt(y, 1) != null) {
-						String metabName = tempTable.getModel().getValueAt(y, 1).toString();
-						cbReactant[0].addItem(metabName);
-					}
-				}
-			}
-		}
-
-		cbReactant[0].setSelectedIndex(-1);
-		reactantEditor[0] = new JTextField();
-		reactantEditor[0] = (JTextField)cbReactant[0].getEditor().getEditorComponent();
-		reactantEditor[0].addKeyListener(new ComboKeyHandler(cbReactant[0]));
 		//end reactant combo boxes
 		/***************************************************************************/
-
 
 		//create product combo boxes
 		for (int j = 0; j < numProductFields; j++) {
 			cbProduct[j] = new JComboBox<String>();
 			cbProduct[j].setEditable(true);
-
-			//set all comboboxes disabled except first pair for blank tables (size = 0)
-			//or up to size of productsList if products table is populated
-			if (GraphicalInterface.reactionsTable.getModel().getValueAt(GraphicalInterface.getCurrentRow(), GraphicalInterfaceConstants.REACTION_STRING_COLUMN) != null) {
-				if (j > getProductCount()) {
-					cbProduct[j].setEnabled(false);
-				}
-			}                    
+			
+			for (int m = 0; m < metabList.size(); m++) {
+				cbProduct[j].addItem(metabList.get(m));
+			}                
 
 			productCoeffField[j] = new JTextField();
 			productCoeffField[j].setPreferredSize(new Dimension(50, 20));
@@ -437,6 +325,11 @@ public class ReactionInterface extends JFrame {
 
 			//add labeled boxes to products panel
 			panelProducts.add(vbLabeledProduct[j]);
+			
+			cbProduct[j].setSelectedIndex(-1);
+			productEditor[j] = new JTextField();
+			productEditor[j] = (JTextField)cbProduct[j].getEditor().getEditorComponent();
+			productEditor[j].addKeyListener(new ComboKeyHandler(cbProduct[j]));
 
 			ActionListener productsActionListener = new ActionListener() {
 				public void actionPerformed(ActionEvent actionEvent) {
@@ -455,7 +348,6 @@ public class ReactionInterface extends JFrame {
 							tempProductsList.add(product[h]);
 						}      	    	      
 					}
-
 					//set reaction equation into text box
 					String prodString = "";
 
@@ -468,50 +360,21 @@ public class ReactionInterface extends JFrame {
 					}
 
 					setProductString(prodString);
-					if (getReactantString() != null) {
+					if (getReactantString() == null || getReactantString().length() == 0) {
+						reactionField.setText(getArrowString() + " " + prodString);
+						okButton.setEnabled(true);
+					} else if (getProductString() == null || getProductString().length() == 0) {
+						reactionField.setText(getReactantString() + " " + getArrowString());
+						okButton.setEnabled(true);
+					} else {
 						reactionField.setText(getReactantString() + " " + getArrowString() + " " + prodString);
-						submitButton.setEnabled(true);
-					}
-
-					//enable and populate next combobox
-					if ((tempProductsList.size()) < numProductFields) {
-						if (cbProduct[tempProductsList.size()].getItemCount() == 0) {
-							//add metabolite list to second reactant combobox
-							for (int y = 0; y < metabCount; y++) {
-								if (tempTable.getModel().getValueAt(y, 1) != null) {
-									String metabName = tempTable.getModel().getValueAt(y, 1).toString();
-									cbProduct[tempProductsList.size()].addItem(metabName);
-								}
-							}
-							cbProduct[tempProductsList.size()].setEnabled(true);
-							cbProduct[tempProductsList.size()].setSelectedIndex(-1);
-							productEditor[tempProductsList.size()] = new JTextField();
-							productEditor[tempProductsList.size()] = (JTextField)cbProduct[tempProductsList.size()].getEditor().getEditorComponent();
-							productEditor[tempProductsList.size()].addKeyListener(new ComboKeyHandler(cbProduct[tempProductsList.size()]));
-						}
+						okButton.setEnabled(true);
 					}
 				}
 			};
 			productCoeffField[j].addActionListener(productsActionListener);
 			cbProduct[j].addActionListener(productsActionListener);
 		} 
-
-		//add metabolite list to first product combobox
-		if (cbProduct[0].getItemCount() == 0) {
-			for (int y = 0; y < metabCount; y++) {
-				if (tempTable.getModel().getValueAt(y, 1) != null) {
-					if (tempTable.getModel().getValueAt(y, 1) != null) {
-						String metabName = tempTable.getModel().getValueAt(y, 1).toString();
-						cbProduct[0].addItem(metabName);
-					}
-				}
-			}
-		}
-
-		cbProduct[0].setSelectedIndex(-1);
-		productEditor[0] = new JTextField();
-		productEditor[0] = (JTextField)cbProduct[0].getEditor().getEditorComponent();
-		productEditor[0].addKeyListener(new ComboKeyHandler(cbProduct[0]));
 
 		/*****************************************************************************/
 		//end create box layout
@@ -522,31 +385,46 @@ public class ReactionInterface extends JFrame {
 		//create reaction string from these species
 		/*****************************************************************************/
 
-
-		for (int i = 0; i < getReactantCount(); i++ ) {
-			if (getReactantsList().get(i).getStoic() != 1) {
-				double reacCoeff = (getReactantsList().get(i).getStoic());
-				String rc = Double.toString(reacCoeff);
-				if (rc.endsWith(".0")) {
-					rc = rc.substring(0, rc.length() - 2);
-				}
-				reactantCoeffField[i].setText(rc);
+		ReactionParser1 parser = new ReactionParser1();
+		if (parser.isValid(reactionEquation)) {
+			setOldReaction(reactionEquation);
+			ArrayList<ArrayList> reactants = parser.reactionList(reactionEquation.trim()).get(0);
+			//reactions of the type ==> b will be size 1, assigned the value [0] in parser
+			if (reactants.get(0).size() == 1) {				
+			} else {
+				for (int r = 0; r < reactants.size(); r++) {
+					if (reactants.get(r).size() == 2) {
+						String stoicStr = (String) reactants.get(r).get(0);
+						if (!(Double.valueOf(stoicStr) == 1)) {
+							if (stoicStr.endsWith(".0")) {
+								stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
+							}
+							reactantCoeffField[r].setText(stoicStr);
+						}
+						String reactant = (String) reactants.get(r).get(1);
+						cbReactant[r].setSelectedItem(reactant);
+					}
+				}			
 			}
-			cbReactant[i].setSelectedItem(getReactantsList().get(i).getMetaboliteAbbreviation());
-		}
-
-		for (int j = 0; j < getProductCount(); j++ ) {
-			if (getProductsList().get(j).getStoic() != 1) {
-				double prodCoeff = (getProductsList().get(j).getStoic());
-				String pc = Double.toString(prodCoeff);
-				if (pc.endsWith(".0")) {
-					pc = pc.substring(0, pc.length() - 2);
-				}
-				productCoeffField[j].setText(pc);
+			ArrayList<ArrayList> products = parser.reactionList(reactionEquation.trim()).get(1);
+			//reactions of the type ==> b will be size 1, assigned the value [0] in parser
+			if (products.get(0).size() == 1) {				
+			} else {
+				for (int p = 0; p < products.size(); p++) {
+					if (products.get(p).size() == 2) {
+						String stoicStr = (String) products.get(p).get(0);
+						if (!(Double.valueOf(stoicStr) == 1)) {
+							if (stoicStr.endsWith(".0")) {
+								stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
+							}
+							productCoeffField[p].setText(stoicStr);
+						}
+						String product = (String) products.get(p).get(1);
+						cbProduct[p].setSelectedItem(product);
+					}
+				}			
 			}
-			cbProduct[j].setSelectedItem(getProductsList().get(j).getMetaboliteAbbreviation());
 		}
-
 
 		/*****************************************************************************/
 		//end populate text fields of combo boxes
@@ -602,22 +480,23 @@ public class ReactionInterface extends JFrame {
 		//add reaction pane to reaction (middle) box
 		hbReaction.add(reactionPane);
 
-		//submitButton.setEnabled(false);
-		submitButton.setMnemonic(KeyEvent.VK_S);
+		okButton.setMnemonic(KeyEvent.VK_O);
 		JLabel blank = new JLabel("      ");    
-		clearButton.setMnemonic(KeyEvent.VK_C);
+		clearButton.setMnemonic(KeyEvent.VK_E);
 		JLabel blank2 = new JLabel("      ");
-		JButton exitButton = new JButton("  Exit  ");
-		exitButton.setMnemonic(KeyEvent.VK_X);
+		JButton cancelButton = new JButton("Cancel");
+		cancelButton.setMnemonic(KeyEvent.VK_C);
 
 		JPanel lowerPanel = new JPanel();
 		lowerPanel.setLayout(new BoxLayout(lowerPanel, BoxLayout.X_AXIS));
-		lowerPanel.add(submitButton);
+		lowerPanel.add(okButton);
 		lowerPanel.add(blank);
+		lowerPanel.add(cancelButton);
+		lowerPanel.add(blank2);		
 		lowerPanel.add(clearButton);
-		lowerPanel.add(blank2);
-		lowerPanel.add(exitButton);
 		lowerPanel.setBorder(BorderFactory.createEmptyBorder(0,20,10,20));
+
+		hbButton.add(lowerPanel);
 
 		hbButton.add(lowerPanel);
 
@@ -647,7 +526,7 @@ public class ReactionInterface extends JFrame {
 			}
 		};
 
-		ActionListener exitButtonActionListener = new ActionListener() {
+		ActionListener cancelButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
 				setVisible(false);
 				dispose();
@@ -683,7 +562,7 @@ public class ReactionInterface extends JFrame {
 				 */
 
 				reactionField.setText("");
-				submitButton.setEnabled(false);
+				okButton.setEnabled(false);
 				trueButton.setSelected(false);
 				falseButton.setSelected(true);    	    
 				//sends cursor to first reactant coefficient combobox
@@ -694,9 +573,8 @@ public class ReactionInterface extends JFrame {
 		trueButton.addActionListener(revActionListener);
 		falseButton.addActionListener(revActionListener);
 
-		//submitButton.addActionListener(submitButtonActionListener);
 		clearButton.addActionListener(clearButtonActionListener);
-		exitButton.addActionListener(exitButtonActionListener);		
+		cancelButton.addActionListener(cancelButtonActionListener);		
 		
 	}
 

@@ -30,7 +30,6 @@ public class SBMLMetabolite implements ModelMetabolite {
 	private String meta13;
 	private String meta14;
 	private String meta15;
-	private String used;
 
 	public void setDatabaseName(String databaseName) {
 		this.databaseName = databaseName;
@@ -101,7 +100,7 @@ public class SBMLMetabolite implements ModelMetabolite {
 			.prepareStatement("update metabolites set metabolite_abbreviation=?, metabolite_name=?, charge=?, " 
 					+ " compartment=?, boundary=?, meta_1=?, meta_2=?, meta_3=?, meta_4=?, meta_5=?, "
 					+ " meta_6=?, meta_7=?, meta_8=?, meta_9=?, meta_10=?, "
-					+ " meta_11=?, meta_12=?, meta_13=?, meta_14=?, meta_15=?, used=? where id=?;");
+					+ " meta_11=?, meta_12=?, meta_13=?, meta_14=?, meta_15=? where id=?;");
 			prep.setString(1, this.getMetaboliteAbbreviation());
 			prep.setString(2, this.getMetaboliteName());
 			prep.setString(3, this.getCharge());
@@ -122,8 +121,7 @@ public class SBMLMetabolite implements ModelMetabolite {
 			prep.setString(18, this.getMeta13());
 			prep.setString(19, this.getMeta14());
 			prep.setString(20, this.getMeta15());
-			prep.setString(21, this.getUsed());
-			prep.setInt(22, this.getId());
+			prep.setInt(21, this.getId());
 			conn.setAutoCommit(true);
 			prep.executeUpdate();
 
@@ -155,7 +153,7 @@ public class SBMLMetabolite implements ModelMetabolite {
 			.prepareStatement("select id, metabolite_abbreviation, metabolite_name, charge, compartment, " 
 					+ " boundary, meta_1, meta_2, meta_3, meta_4, meta_5, "
 					+ " meta_6, meta_7, meta_8, meta_9, meta_10, "
-					+ " meta_11, meta_12, meta_13, meta_14, meta_15, used from metabolites where id = ?;");
+					+ " meta_11, meta_12, meta_13, meta_14, meta_15 from metabolites where id = ?;");
 			prep.setInt(1, id);
 			conn.setAutoCommit(true);
 			ResultSet rs = prep.executeQuery();
@@ -181,7 +179,6 @@ public class SBMLMetabolite implements ModelMetabolite {
 				this.setMeta13(rs.getString("meta_13"));
 				this.setMeta14(rs.getString("meta_14"));
 				this.setMeta15(rs.getString("meta_15"));
-				this.setUsed(rs.getString("used"));
 			}
 			rs.close();
 			conn.close();
@@ -329,14 +326,6 @@ public class SBMLMetabolite implements ModelMetabolite {
 
 	public String getMeta15() {
 		return meta15;
-	}
-	
-	public void setUsed(String used) {
-		this.used = used;
-	}
-
-	public String getUsed() {
-		return used;
 	}
 
 }

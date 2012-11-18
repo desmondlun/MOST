@@ -266,6 +266,16 @@ public class LocalConfig {
 	
     private static Integer numberCopiedRows;
 	
+	public void setNumberCopiedColumns(Integer numberCopiedColumns) {
+		this.numberCopiedColumns = numberCopiedColumns;
+	}
+	
+	public Integer getNumberCopiedColumns() {
+		return numberCopiedColumns;
+	}
+	
+	private static Integer numberCopiedColumns;
+	
 	public void setNumberCopiedRows(Integer numberCopiedRows) {
 		this.numberCopiedRows = numberCopiedRows;
 	}
@@ -296,6 +306,28 @@ public class LocalConfig {
 		this.metaboliteIdNameMap = metaboliteIdNameMap;
 	}
 	
+    private static ArrayList<Integer> blankMetabIds = new ArrayList<Integer>();
+	
+	public ArrayList<Integer> getBlankMetabIds() {
+		return blankMetabIds;
+	}
+	
+	public void setBlankMetabIds(ArrayList<Integer> blankMetabIds) {
+		this.blankMetabIds = blankMetabIds;
+	}
+	
+	private static ArrayList<Integer> duplicateIds = new ArrayList<Integer>();
+	
+	public ArrayList<Integer> getDuplicateIds() {
+		return duplicateIds;
+	}
+	
+	public void setDuplicateIds(ArrayList<Integer> duplicateIds) {
+		this.duplicateIds = duplicateIds;
+	}
+	
+	//used for determining id when adding a metabolite when a reaction is
+	//read and metabolite is not present
 	private static Integer maxMetaboliteId;
 	
 	public void setMaxMetaboliteId(Integer maxMetaboliteId) {
@@ -304,6 +336,19 @@ public class LocalConfig {
 	
 	public Integer getMaxMetaboliteId() {
 		return maxMetaboliteId;
+	}
+
+	//Map used to hold number of reactions a metabolite is used in. if a metabolites
+	//is not present in map, it is unused. Also used when adding, deleting or changing
+	//reactions to determine whether the used status of a metabolite must be changed.
+	private static Map<String, Object> metaboliteUsedMap = new HashMap<String, Object>();
+	
+	public static Map<String, Object> getMetaboliteUsedMap() {
+		return metaboliteUsedMap;
+	}
+
+	public void setMetaboliteUsedMap(Map<String, Object> metaboliteUsedMap) {
+		this.metaboliteUsedMap = metaboliteUsedMap;
 	}
 	
 }
