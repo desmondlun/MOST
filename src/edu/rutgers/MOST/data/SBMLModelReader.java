@@ -7,6 +7,7 @@ import java.util.Map;
 import org.sbml.jsbml.*;
 
 import edu.rutgers.MOST.config.LocalConfig;
+import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 import edu.rutgers.MOST.presentation.ProgressConstants;
 
@@ -119,7 +120,7 @@ public class SBMLModelReader {
 					} else {
 						boundary = "true";
 					}
-					String used = "false"; 
+
 					String metabMeta1 = " ";
 					String metabMeta2 = " ";
 					String metabMeta3 = " ";
@@ -250,8 +251,8 @@ public class SBMLModelReader {
 
 					String metabInsert = "INSERT INTO metabolites(metabolite_abbreviation, metabolite_name, charge, compartment, boundary, meta_1, meta_2, "
 						+ " meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, "
-						+ " meta_11, meta_12, meta_13, meta_14, meta_15, used) values" 
-						+ " (" + "'" + metaboliteAbbreviation + "', '" + metaboliteName + "', '" + chargeString + "', '" + compartment + "', '" + boundary + "', '" + metabMeta1 + "', '" + metabMeta2 + "', '" + metabMeta3 + "', '" + metabMeta4 + "', '" + metabMeta5 + "', '" + metabMeta6 + "', '" + metabMeta7 + "', '" + metabMeta8 + "', '" + metabMeta9 + "', '" + metabMeta10 + "', '" + metabMeta11 + "', '" + metabMeta12 + "', '" + metabMeta13 + "', '" + metabMeta14 + "', '" + metabMeta15 + "', '" + used + "');";
+						+ " meta_11, meta_12, meta_13, meta_14, meta_15) values" 
+						+ " (" + "'" + metaboliteAbbreviation + "', '" + metaboliteName + "', '" + chargeString + "', '" + compartment + "', '" + boundary + "', '" + metabMeta1 + "', '" + metabMeta2 + "', '" + metabMeta3 + "', '" + metabMeta4 + "', '" + metabMeta5 + "', '" + metabMeta6 + "', '" + metabMeta7 + "', '" + metabMeta8 + "', '" + metabMeta9 + "', '" + metabMeta10 + "', '" + metabMeta11 + "', '" + metabMeta12 + "', '" + metabMeta13 + "', '" + metabMeta14 + "', '" + metabMeta15 + "');";
 					stat.executeUpdate(metabInsert);	
 				}
 				LocalConfig.getInstance().setMaxMetaboliteId(metabolites.size());
@@ -282,8 +283,6 @@ public class SBMLModelReader {
 								Integer id = (Integer) metaboliteIdNameMap.get(reactants.get(r).getSpecies());
 								String rrInsert = "INSERT INTO reaction_reactants(reaction_id, stoic, metabolite_id) values (" + (j + 1) + ", " + reactants.get(r).getStoichiometry() + ", " + id + ");";
 								stat.executeUpdate(rrInsert);
-								String update = "update metabolites set used='true' where id=" + id + ";";
-								stat.executeUpdate(update);	
 								if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(reactants.get(r).getSpecies())) {
 									int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(reactants.get(r).getSpecies());
 									LocalConfig.getInstance().getMetaboliteUsedMap().put(reactants.get(r).getSpecies(), new Integer(usedCount + 1));
@@ -326,8 +325,6 @@ public class SBMLModelReader {
 								Integer id = (Integer) metaboliteIdNameMap.get(products.get(p).getSpecies());
 								String rpInsert = "INSERT INTO reaction_products(reaction_id, stoic, metabolite_id) values (" + (j + 1) + ", " + products.get(p).getStoichiometry() + ", " + id + ");";
 								stat.executeUpdate(rpInsert);
-								String update = "update metabolites set used='true' where id=" + id + ";";
-								stat.executeUpdate(update);
 								if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(products.get(p).getSpecies())) {
 									int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(products.get(p).getSpecies());
 									LocalConfig.getInstance().getMetaboliteUsedMap().put(products.get(p).getSpecies(), new Integer(usedCount + 1));
