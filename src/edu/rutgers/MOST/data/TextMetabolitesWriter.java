@@ -4,7 +4,6 @@ import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
@@ -29,7 +28,7 @@ public class TextMetabolitesWriter {
 			//String extension = ".csv";
 			CSVWriter writer;
 			try {
-				writer = new CSVWriter(new FileWriter(file), GraphicalInterface.getSplitCharacter());
+				writer = new CSVWriter(new FileWriter(file), ',');
 
 				String headerNames = "";
 				//start with 1 to avoid reading database id

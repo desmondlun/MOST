@@ -1,13 +1,16 @@
 package edu.rutgers.MOST.data;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.xml.stream.XMLStreamException;
+
 import org.sbml.jsbml.*;
 
 import edu.rutgers.MOST.config.LocalConfig;
-import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 import edu.rutgers.MOST.presentation.ProgressConstants;
 
@@ -29,7 +32,7 @@ public class SBMLModelReader {
 		this.doc = doc;
 	}
 
-	private static ArrayList<String> reactionsMetaColumnNames = new ArrayList();
+	private static ArrayList<String> reactionsMetaColumnNames = new ArrayList<String>();
 
 	public ArrayList<String> getReactionsMetaColumnNames() {
 		return reactionsMetaColumnNames;
@@ -39,7 +42,7 @@ public class SBMLModelReader {
 		this.reactionsMetaColumnNames = reactionsMetaColumnNames;
 	}
 
-	private static ArrayList<String> metabolitesMetaColumnNames = new ArrayList();
+	private static ArrayList<String> metabolitesMetaColumnNames = new ArrayList<String>();
 
 	public ArrayList<String> getMetabolitesMetaColumnNames() {
 		return metabolitesMetaColumnNames;
@@ -77,21 +80,25 @@ public class SBMLModelReader {
 			e.printStackTrace();
 		}
 		try{
-			Connection conn =
-				DriverManager.getConnection(queryString);
+			Connection conn = DriverManager.getConnection(queryString);
 			Statement stat = conn.createStatement();
+			PreparedStatement metabInsertPrep = conn.prepareStatement("INSERT INTO metabolites(metabolite_abbreviation, metabolite_name, "
+					+ " charge, compartment, boundary, meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, "
+					+ " meta_11, meta_12, meta_13, meta_14, meta_15) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); 
 
 			new SBMLModelReader(doc);
 
-			ArrayList<String> metabMetaColumnNames = new ArrayList();
+			ArrayList<String> metabMetaColumnNames = new ArrayList<String>();
 
 			try {
+//				long startTime = System.currentTimeMillis();
 				stat.executeUpdate("BEGIN TRANSACTION");
 				
 				ListOf<Species> metabolites = doc.getModel().getListOfSpecies();
 				for (int i = 0; i < metabolites.size(); i++) {
 					if (i%10 == 0) {
-						LocalConfig.getInstance().setProgress((i*ProgressConstants.METABOLITE_LOAD_PERCENT)/metabolites.size());		
+						LocalConfig.getInstance().setProgress((i * ProgressConstants.METABOLITE_LOAD_PERCENT) / metabolites.size()
+								+ ProgressConstants.SBML_LOAD_PERCENT);		
 					}
 					
 					//if strings contain ' (single quote), it will not execute insert statement
@@ -138,25 +145,27 @@ public class SBMLModelReader {
 					String metabMeta15 = " ";
 
 					if (metabolites.get(i).isSetNotes()) {
-						ArrayList<String> metabNoteItemList = new ArrayList();
+						ArrayList<String> metabNoteItemList = new ArrayList<String>();
 
-						for (int u = 0; u < metabolites.get(i).getNotes().getNumChildren(); u++) {
-							String noteString = metabolites.get(i).getNotes().getChild(u).toXMLString();
-							String noteItem = "";
-							//removes xmlns (xml namespace tags)
-							if (noteString.contains("xmlns")) {
-								noteString = noteString.substring(noteString.indexOf('>') + 1, noteString.lastIndexOf('<'));
-								String endtag = noteString.substring(noteString.lastIndexOf('<'));
-								String[] nameSpaces = noteString.split(endtag);
-								for (int n = 0; n < nameSpaces.length; n++) {
-									noteItem = nameSpaces[n].substring(nameSpaces[n].indexOf('>') + 1); 
+						for (int u = 0; u < metabolites.get(i).getNotes().getChildCount(); u++) {
+							if (!metabolites.get(i).getNotes().getChildAt(u).getName().isEmpty()) {
+								String noteString = metabolites.get(i).getNotes().getChildAt(u).toXMLString();
+								String noteItem = "";
+								//removes xmlns (xml namespace tags)
+								if (noteString.contains("xmlns")) {
+									noteString = noteString.substring(noteString.indexOf('>') + 1, noteString.lastIndexOf('<'));
+									String endtag = noteString.substring(noteString.lastIndexOf('<'));
+									String[] nameSpaces = noteString.split(endtag);
+									for (int n = 0; n < nameSpaces.length; n++) {
+										noteItem = nameSpaces[n].substring(nameSpaces[n].indexOf('>') + 1); 
+										metabNoteItemList.add(noteItem);
+									}
+								} else {
+									//for "<>", "</>" types of nodes, tags are removed
+									noteItem = noteString.substring(noteString.indexOf('>') + 1, noteString.lastIndexOf('<'));
 									metabNoteItemList.add(noteItem);
 								}
-							} else {
-								//for "<>", "</>" types of nodes, tags are removed
-								noteItem = noteString.substring(noteString.indexOf('>') + 1, noteString.lastIndexOf('<'));
-								metabNoteItemList.add(noteItem);
-							}			
+							}
                             
 							if (i == 0) {
 								//set list of notes names to meta columns			
@@ -249,20 +258,49 @@ public class SBMLModelReader {
 						}
 					}
 
-					String metabInsert = "INSERT INTO metabolites(metabolite_abbreviation, metabolite_name, charge, compartment, boundary, meta_1, meta_2, "
-						+ " meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, "
-						+ " meta_11, meta_12, meta_13, meta_14, meta_15) values" 
-						+ " (" + "'" + metaboliteAbbreviation + "', '" + metaboliteName + "', '" + chargeString + "', '" + compartment + "', '" + boundary + "', '" + metabMeta1 + "', '" + metabMeta2 + "', '" + metabMeta3 + "', '" + metabMeta4 + "', '" + metabMeta5 + "', '" + metabMeta6 + "', '" + metabMeta7 + "', '" + metabMeta8 + "', '" + metabMeta9 + "', '" + metabMeta10 + "', '" + metabMeta11 + "', '" + metabMeta12 + "', '" + metabMeta13 + "', '" + metabMeta14 + "', '" + metabMeta15 + "');";
-					stat.executeUpdate(metabInsert);	
+					metabInsertPrep.setString(1, metaboliteAbbreviation);
+					metabInsertPrep.setString(2, metaboliteName);
+					metabInsertPrep.setString(3, chargeString);
+					metabInsertPrep.setString(4, compartment);
+					metabInsertPrep.setString(5, boundary);
+					metabInsertPrep.setString(6, metabMeta1);
+					metabInsertPrep.setString(7, metabMeta2);
+					metabInsertPrep.setString(8, metabMeta3);
+					metabInsertPrep.setString(9, metabMeta4);
+					metabInsertPrep.setString(10, metabMeta5);
+					metabInsertPrep.setString(11, metabMeta6);
+					metabInsertPrep.setString(12, metabMeta7);
+					metabInsertPrep.setString(13, metabMeta8);
+					metabInsertPrep.setString(14, metabMeta9);
+					metabInsertPrep.setString(15, metabMeta10);
+					metabInsertPrep.setString(16, metabMeta11);
+					metabInsertPrep.setString(17, metabMeta12);
+					metabInsertPrep.setString(18, metabMeta13);
+					metabInsertPrep.setString(19, metabMeta14);
+					metabInsertPrep.setString(20, metabMeta15);
+					
+					metabInsertPrep.executeUpdate();	
 				}
 				LocalConfig.getInstance().setMaxMetaboliteId(metabolites.size());
 				LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
-				System.out.println("id name map " + LocalConfig.getInstance().getMetaboliteIdNameMap());
+				
+//				long endTime = System.currentTimeMillis();
+//				System.out.println("Metabolite read time: " + (endTime - startTime));
+//								
+//				startTime = System.currentTimeMillis();
+				
+				PreparedStatement reacInsertPrep = conn.prepareStatement("INSERT INTO reactions(knockout, flux_value, reaction_abbreviation, " 
+						+ " reaction_name, reaction_string, reversible, lower_bound, upper_bound, biological_objective," 
+						+ " meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, meta_11, "
+						+ "meta_12, meta_13, meta_14, meta_15) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); 
+				PreparedStatement rrInsertPrep = conn.prepareStatement("INSERT INTO reaction_reactants(reaction_id, stoic, metabolite_id) values (?, ?, ?)");
+				PreparedStatement rpInsertPrep = conn.prepareStatement("INSERT INTO reaction_products(reaction_id, stoic, metabolite_id) values (?, ?, ?)");
 								
 				ListOf<Reaction> reactions = doc.getModel().getListOfReactions();
 				for (int j = 0; j < reactions.size(); j++) {
 					if (j%10 == 0) {
-						LocalConfig.getInstance().setProgress((j*ProgressConstants.REACTION_LOAD_PERCENT)/reactions.size() + ProgressConstants.METABOLITE_LOAD_PERCENT);		
+						LocalConfig.getInstance().setProgress((j * ProgressConstants.REACTION_LOAD_PERCENT) / reactions.size() 
+								+ ProgressConstants.METABOLITE_LOAD_PERCENT + ProgressConstants.SBML_LOAD_PERCENT);		
 					}
 					
 					StringBuffer reacBfr = new StringBuffer();
@@ -281,8 +319,10 @@ public class SBMLModelReader {
 						for (int r = 0; r < reactants.size(); r++) {
 							if (reactants.get(r).isSetSpecies()) {
 								Integer id = (Integer) metaboliteIdNameMap.get(reactants.get(r).getSpecies());
-								String rrInsert = "INSERT INTO reaction_reactants(reaction_id, stoic, metabolite_id) values (" + (j + 1) + ", " + reactants.get(r).getStoichiometry() + ", " + id + ");";
-								stat.executeUpdate(rrInsert);
+								rrInsertPrep.setInt(1, j + 1);
+								rrInsertPrep.setDouble(2, reactants.get(r).getStoichiometry());
+								rrInsertPrep.setInt(3, id);
+								rrInsertPrep.executeUpdate();
 								if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(reactants.get(r).getSpecies())) {
 									int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(reactants.get(r).getSpecies());
 									LocalConfig.getInstance().getMetaboliteUsedMap().put(reactants.get(r).getSpecies(), new Integer(usedCount + 1));
@@ -323,8 +363,10 @@ public class SBMLModelReader {
 						for (int p = 0; p < products.size(); p++) {	
 							if (products.get(p).isSetSpecies()) {
 								Integer id = (Integer) metaboliteIdNameMap.get(products.get(p).getSpecies());
-								String rpInsert = "INSERT INTO reaction_products(reaction_id, stoic, metabolite_id) values (" + (j + 1) + ", " + products.get(p).getStoichiometry() + ", " + id + ");";
-								stat.executeUpdate(rpInsert);
+								rpInsertPrep.setInt(1, j + 1);
+								rpInsertPrep.setDouble(2, products.get(p).getStoichiometry());
+								rpInsertPrep.setInt(3, id);
+								rpInsertPrep.executeUpdate();
 								if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(products.get(p).getSpecies())) {
 									int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(products.get(p).getSpecies());
 									LocalConfig.getInstance().getMetaboliteUsedMap().put(products.get(p).getSpecies(), new Integer(usedCount + 1));
@@ -422,32 +464,34 @@ public class SBMLModelReader {
 					String meta15 = " ";
 
 					if (reactions.get(j).isSetNotes() && readNotes == true) {
-						ArrayList<String> noteItemList = new ArrayList();	
-
-						for (int u = 0; u < reactions.get(j).getNotes().getNumChildren(); u++) {
-							String noteString = reactions.get(j).getNotes().getChild(u).toXMLString();
-							String noteItem = "";
-							//removes xmlns (xml namespace tags)
-							if (noteString.contains("xmlns")) {
-								if (!noteString.endsWith("/>")) {
-									noteString = noteString.substring(noteString.indexOf(">") + 1, noteString.lastIndexOf("<"));
-									String endtag = noteString.substring(noteString.lastIndexOf("<"));
-									String[] nameSpaces = noteString.split(endtag);
-									for (int n = 0; n < nameSpaces.length; n++) {
-										noteItem = nameSpaces[n].substring(nameSpaces[n].indexOf(">") + 1); 
-										noteItemList.add(noteItem);
+						ArrayList<String> noteItemList = new ArrayList<String>();	
+						
+						for (int u = 0; u < reactions.get(j).getNotes().getChildCount(); u++) {
+							if (!reactions.get(j).getNotes().getChildAt(u).getName().isEmpty()) {
+								String noteString = reactions.get(j).getNotes().getChildAt(u).toXMLString();
+								String noteItem = "";
+								//removes xmlns (xml namespace tags)
+								if (noteString.contains("xmlns")) {
+									if (!noteString.endsWith("/>")) {
+										noteString = noteString.substring(noteString.indexOf(">") + 1, noteString.lastIndexOf("<"));
+										String endtag = noteString.substring(noteString.lastIndexOf("<"));
+										String[] nameSpaces = noteString.split(endtag);
+										for (int n = 0; n < nameSpaces.length; n++) {
+											noteItem = nameSpaces[n].substring(nameSpaces[n].indexOf(">") + 1); 
+											noteItemList.add(noteItem);
+										}
 									}
-								}
-							} else {
-								//for "<>", "</>" types of nodes, tags are removed
-								noteItem = noteString.substring(noteString.indexOf(">") + 1, noteString.lastIndexOf("<"));
-								noteItemList.add(noteItem);
-							}				
+								} else {
+									//for "<>", "</>" types of nodes, tags are removed
+									noteItem = noteString.substring(noteString.indexOf(">") + 1, noteString.lastIndexOf("<"));
+									noteItemList.add(noteItem);
+								}	
+							}
 						}
 
 						if (j == 0) {
 							//set list of notes names to meta columns
-							ArrayList<String> reactionsMetaColumnNames = new ArrayList();				
+							ArrayList<String> reactionsMetaColumnNames = new ArrayList<String>();				
 							for (int n = 0; n < noteItemList.size(); n++) {
 								if (noteItemList.get(n).contains(":")) {
 									//accounts for condition of multiple ":"
@@ -528,15 +572,38 @@ public class SBMLModelReader {
 							}
 						}	
 					}
-                 				
-					String reacInsert = "INSERT INTO reactions(knockout, flux_value, reaction_abbreviation, " 
-						+ " reaction_name, reaction_string, reversible, lower_bound, upper_bound, biological_objective," 
-						+ " meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, "
-						+ " meta_9, meta_10, meta_11, meta_12, meta_13, meta_14, meta_15) values " 
-						+ " (" + "'" + knockout + "', '" + fluxValue + "', '" + reactionAbbreviation + "', '" + reactionName + "', '" + reactionString + "', '" + reversible + "', '" + lowerBound + "', '" + upperBound + "', '" + objective + "', '" + meta1 + "', '" + meta2 + "', '" + meta3 + "', '" + meta4 + "', '" + meta5 + "', '" + meta6 + "', '" + meta7 + "', '" + meta8 + "', '" + meta9 + "', '" + meta10 + "', '" + meta11 + "', '" + meta12 + "', '" + meta13 + "', '" + meta14 + "', '" + meta15 + "');";
-					stat.executeUpdate(reacInsert);	
+                 	
+					reacInsertPrep.setString(1, knockout);
+					reacInsertPrep.setDouble(2, fluxValue);
+					reacInsertPrep.setString(3, reactionAbbreviation);
+					reacInsertPrep.setString(4, reactionName);
+					reacInsertPrep.setString(5, reactionString);
+					reacInsertPrep.setString(6, reversible);
+					reacInsertPrep.setDouble(7, lowerBound);
+					reacInsertPrep.setDouble(8, upperBound);
+					reacInsertPrep.setDouble(9, objective);
+					reacInsertPrep.setString(10, meta1);
+					reacInsertPrep.setString(11, meta2);
+					reacInsertPrep.setString(12, meta3);
+					reacInsertPrep.setString(13, meta4);
+					reacInsertPrep.setString(14, meta5);
+					reacInsertPrep.setString(15, meta6);
+					reacInsertPrep.setString(16, meta7);
+					reacInsertPrep.setString(17, meta8);
+					reacInsertPrep.setString(18, meta9);
+					reacInsertPrep.setString(19, meta10);
+					reacInsertPrep.setString(20, meta11);
+					reacInsertPrep.setString(21, meta12);
+					reacInsertPrep.setString(22, meta13);
+					reacInsertPrep.setString(23, meta14);
+					reacInsertPrep.setString(24, meta15);
+					
+					reacInsertPrep.executeUpdate();
 				}
 				stat.executeUpdate("COMMIT");
+				
+//				endTime = System.currentTimeMillis();
+//				System.out.println("Reaction read time: " + (endTime - startTime));				
 			} catch (Exception e) {
 				e.printStackTrace();
 				stat.executeUpdate("ROLLBACK"); // throw away all updates since BEGIN TRANSACTION
@@ -544,7 +611,6 @@ public class SBMLModelReader {
 
 			conn.close();
 			LocalConfig.getInstance().setProgress(100);	
-			System.out.println("used map " + LocalConfig.getInstance().getMetaboliteUsedMap());
 			
 		}catch(SQLException e){
 
@@ -553,5 +619,9 @@ public class SBMLModelReader {
 		}
 
 		//System.out.println("Done");
+	}
+	
+	public static void main(String[] args) {
+		
 	}
 }

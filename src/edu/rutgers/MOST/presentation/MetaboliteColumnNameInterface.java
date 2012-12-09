@@ -54,7 +54,7 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 
 	public final ProgressBar progressBar = new ProgressBar();
 
-	javax.swing.Timer t = new javax.swing.Timer(1000, new TimeListener());
+	javax.swing.Timer timer = new javax.swing.Timer(1000, new TimeListener());
 
 	public MetaboliteColumnNameInterface(final Connection con, ArrayList<String> columnNamesFromFile)
 	throws SQLException {
@@ -369,7 +369,7 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 
 				progressBar.setVisible(true);
 
-				t.start();
+				timer.start();
 
 				task = new Task();
 				task.execute();
@@ -406,9 +406,9 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 			public void actionPerformed(ActionEvent prodActionEvent) {
 				TextMetabolitesModelReader reader = new TextMetabolitesModelReader();
 				int correction = LocalConfig.getInstance().getMetabolitesNextRowCorrection();
-				if ((correction + 1) < reader.numberOfLines(GraphicalInterface.getMetabolitesCSVFile())) {
+				if ((correction + 1) < reader.numberOfLines(LocalConfig.getInstance().getMetabolitesCSVFile())) {
 					LocalConfig.getInstance().setMetabolitesNextRowCorrection(correction + 1);	
-					ArrayList<String> newColumnNamesFromFile = reader.columnNamesFromFile(GraphicalInterface.getMetabolitesCSVFile(), LocalConfig.getInstance().getMetabolitesNextRowCorrection());
+					ArrayList<String> newColumnNamesFromFile = reader.columnNamesFromFile(LocalConfig.getInstance().getMetabolitesCSVFile(), LocalConfig.getInstance().getMetabolitesNextRowCorrection());
 					setColumnNamesFromFile(newColumnNamesFromFile);
 					populateNamesFromFileBoxes(newColumnNamesFromFile);
 				}
@@ -472,14 +472,14 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		protected Void doInBackground() throws Exception {
 			int progress = 0;
 			TextMetabolitesModelReader reader = new TextMetabolitesModelReader();
-			reader.load(GraphicalInterface.getMetabolitesCSVFile(), LocalConfig.getInstance().getDatabaseName());	
+			reader.load(LocalConfig.getInstance().getMetabolitesCSVFile(), LocalConfig.getInstance().getDatabaseName());	
 			while (progress < 100) {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException ignore) {
 				}			
 			}
-			t.stop();
+			timer.stop();
 			return null;
 		}
 	}
@@ -500,7 +500,7 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		DatabaseCreator databaseCreator = new DatabaseCreator();
 		Connection con = DriverManager.getConnection("jdbc:sqlite:" + "untitled" + ".db");
 
-		//based on code from http://stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
+		//based on code from http:stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
 		icons.add(new ImageIcon("images/most16.jpg").getImage()); 
 		icons.add(new ImageIcon("images/most32.jpg").getImage());

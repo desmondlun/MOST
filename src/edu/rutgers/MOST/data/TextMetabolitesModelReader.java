@@ -13,7 +13,6 @@ import java.util.Map;
 import au.com.bytecode.opencsv.CSVReader;
 
 import edu.rutgers.MOST.config.LocalConfig;
-import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 public class TextMetabolitesModelReader {
@@ -28,10 +27,7 @@ public class TextMetabolitesModelReader {
 		try {
 			CSVFile = new BufferedReader(new FileReader(file));
 			String dataRow = CSVFile.readLine();
-
-			if ((GraphicalInterface.getSplitCharacter().compareTo(',')) == 0) {
-				dataArray = dataRow.split(",");				
-			} 
+			dataArray = dataRow.split(",");				
 
 			//add all column names to list			
 			for (int h = 0; h < dataArray.length; h++) { 
@@ -52,10 +48,7 @@ public class TextMetabolitesModelReader {
 			if (row > 0) {
 				for (int i = 0; i < row; i++) {
 					dataRow = CSVFile.readLine();
-
-					if ((GraphicalInterface.getSplitCharacter().compareTo(',')) == 0) {
-						dataArray = dataRow.split(",");				
-					} 
+					dataArray = dataRow.split(",");				
 
 					columnNamesFromFile.clear();
 					//add all column names to list			
@@ -91,7 +84,7 @@ public class TextMetabolitesModelReader {
 		int count = 0;
 		CSVReader reader;
 		try {
-			reader = new CSVReader(new FileReader(file), GraphicalInterface.getSplitCharacter());
+			reader = new CSVReader(new FileReader(file), ',');
 			String [] dataArray;
 			try {
 				while ((dataArray = reader.readNext()) != null) {
@@ -110,7 +103,7 @@ public class TextMetabolitesModelReader {
 		return count;		
 	}
 
-	public void load(File file, String databaseName){
+	public void load(File file, String databaseName){		
 		DatabaseCreator creator = new DatabaseCreator();		
 		creator.createBlankReactionsTable(databaseName, GraphicalInterfaceConstants.BLANK_DB_REACTION_ROW_COUNT);
 
@@ -138,7 +131,7 @@ public class TextMetabolitesModelReader {
 			ArrayList<Integer> duplicateIds = new ArrayList<Integer>();
 			
 			try {
-				reader = new CSVReader(new FileReader(file), GraphicalInterface.getSplitCharacter());
+				reader = new CSVReader(new FileReader(file), ',');
 				String [] dataArray;
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -146,8 +139,7 @@ public class TextMetabolitesModelReader {
 			}
 
 			try {
-				reader = new CSVReader(new FileReader(file), GraphicalInterface.getSplitCharacter());
-				
+				reader = new CSVReader(new FileReader(file), ',');
 				int numLines = numberOfLines(file);
 				
 				//sets maximum metabolite id for use in adding metabolites to metaboliteIdNameMap

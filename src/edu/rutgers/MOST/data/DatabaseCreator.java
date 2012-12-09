@@ -89,7 +89,6 @@ public class DatabaseCreator {
 							+ "(" + r + ", '" + GraphicalInterfaceConstants.KO_DEFAULT + "', " + GraphicalInterfaceConstants.FLUX_VALUE_DEFAULT + "" 
 							+ ", '"  + GraphicalInterfaceConstants.REVERSIBLE_DEFAULT + "', " + GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT + "" 
 							+ ", " + GraphicalInterfaceConstants.UPPER_BOUND_DEFAULT + ", " + GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_DEFAULT + ");";
-					//System
 					stat.executeUpdate(reacInsert);				
 				}
 				stat.executeUpdate("COMMIT");

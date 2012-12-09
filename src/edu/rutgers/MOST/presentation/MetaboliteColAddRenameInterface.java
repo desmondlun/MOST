@@ -29,7 +29,7 @@ public class MetaboliteColAddRenameInterface  extends JDialog {
 
 	public JTextField columnNameField = new JTextField();
 
-	public static JButton submitButton = new JButton("  Submit  ");
+	public static JButton okButton = new JButton("    OK    ");
 	public static JButton cancelButton = new JButton("  Cancel  ");
 	public static final JTextField textField = new JTextField();
 
@@ -62,8 +62,8 @@ public class MetaboliteColAddRenameInterface  extends JDialog {
 		topLabel.setMinimumSize(new Dimension(200, 15));
 		textField.setEditable(true);
 
-		submitButton.setMnemonic(KeyEvent.VK_S);
-		submitButton.setEnabled(false);
+		okButton.setMnemonic(KeyEvent.VK_O);
+		okButton.setEnabled(false);
 		JLabel blank = new JLabel("    "); 
 		cancelButton.setMnemonic(KeyEvent.VK_C);
 
@@ -80,7 +80,7 @@ public class MetaboliteColAddRenameInterface  extends JDialog {
 
 			public void enableSubmitButton() {
 				if (textField.getText() != null) {
-					submitButton.setEnabled(true);
+					okButton.setEnabled(true);
 				}
 			}
 		});
@@ -95,7 +95,7 @@ public class MetaboliteColAddRenameInterface  extends JDialog {
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-		buttonPanel.add(submitButton);
+		buttonPanel.add(okButton);
 		buttonPanel.add(blank);
 		buttonPanel.add(cancelButton);
 		buttonPanel.setBorder(BorderFactory.createEmptyBorder(5,20,15,20));

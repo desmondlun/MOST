@@ -9,7 +9,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import edu.rutgers.MOST.config.LocalConfig;
-import edu.rutgers.MOST.optimization.FBA.Optimize;
+import edu.rutgers.MOST.optimization.FBA.FBA;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 public class SolverFactory {

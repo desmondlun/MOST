@@ -509,7 +509,7 @@ public class ReactionInterface extends JFrame {
 
 		ActionListener revActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent revActionEvent) {
-				ReactionFactory rFactory = new ReactionFactory();			
+				ReactionFactory rFactory = new ReactionFactory("SBML", LocalConfig.getInstance().getLoadedDatabase());			
 				cbProduct[0].grabFocus();
 				if (trueButton.isSelected()) {
 					setArrowString(" <==> ");
@@ -540,27 +540,7 @@ public class ReactionInterface extends JFrame {
 					cbReactant[i].setSelectedIndex(-1);
 					cbProduct[i].setSelectedIndex(-1);
 				}
-				/*
-			for (int i = 0; i < reactantsCount; i++) {
-				reactantCoeffField[i].setText("");
-				reactantEditor[i].setText("");
-			}
-			for (int i = 1; i < numReactantFields; i++) {
-				//cbReacCoeff[i].setEnabled(false);
-	    	    //cbReactant[i].setEnabled(false);
-			}
-            for (int i = 0; i < numProductFields; i++) {
-                //cbProdCoeff[i].setSelectedIndex(-1);
-				cbProduct[i].setSelectedIndex(-1);
-				//cbProdCoeff[i].setEnabled(false);
-	    	    //cbProduct[i].setEnabled(false);				
-			}            
-            for (int i = 0; i < productsCount; i++) {
-            	productCoeffField[i].setText("");
-            	productEditor[i].setText("");
-			}
-				 */
-
+			
 				reactionField.setText("");
 				okButton.setEnabled(false);
 				trueButton.setSelected(false);

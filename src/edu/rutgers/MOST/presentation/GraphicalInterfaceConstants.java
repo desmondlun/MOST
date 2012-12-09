@@ -129,6 +129,7 @@ public class GraphicalInterfaceConstants {
     public static final double FLUX_VALUE_DEFAULT = 0.0;
     public static final double LOWER_BOUND_DEFAULT = 0.0;
     public static final double UPPER_BOUND_DEFAULT = 999999.0;
+    public static final String UPPER_BOUND_DEFAULT_STRING = "999999.0";
     public static final double BIOLOGICAL_OBJECTIVE_DEFAULT = 0.0;
     public static final String KO_DEFAULT = "false";
     public static final String REVERSIBLE_DEFAULT = "false";
@@ -136,6 +137,9 @@ public class GraphicalInterfaceConstants {
         
     public static final String LOWER_BOUND_ERROR_TITLE = "Lower Bound Error.";
     public static final String LOWER_BOUND_ERROR_MESSAGE = "Reaction is irreversible and lower bound is negative. Do you wish to set it to 0?";
+    public static final String LOWER_BOUND_ERROR_MESSAGE2 = "Lower bound must be less than or equal to upper bound. Do you wish to set it to 0?";
+    public static final String UPPER_BOUND_ERROR_TITLE = "Upper Bound Error.";
+    public static final String UPPER_BOUND_ERROR_MESSAGE = "Upper bound must be greater than or equal to lower bound. Do you wish to set it to default value?";
     
     public static final String NUMERIC_VALUE_ERROR_TITLE = "Invalid numeric entry.";
     public static final String NUMERIC_VALUE_ERROR_MESSAGE = "Number Format Error";
@@ -146,7 +150,10 @@ public class GraphicalInterfaceConstants {
     public static final String BOOLEAN_VALUE_ERROR_TITLE = "Invalid entry. Enter \"t\" for \"true\", \"f\" for \"false\"";
     public static final String BOOLEAN_VALUE_ERROR_MESSAGE = "Boolean Value Error";
 	
-    public static final String HELP_TOPICS_URL = "http://most.codeplex.com/wikipage?title=MOST%20Help";
+    public static final String PARTICIPATING_METAB_ERROR_TITLE = "Participating Metabolite Deletion Error";
+    public static final String PARTICIPATING_METAB_ERROR_MESSAGE = "One or more selected metabolites participate in reactions and cannot be deleted.";
+    
+    public static final String HELP_TOPICS_URL = "https://github.com/dennisegen/MOST/wiki";
     
     public static final String DB_COPIER_SUFFIX = "_orig";
     
@@ -298,5 +305,9 @@ public class GraphicalInterfaceConstants {
     
     public static final String COLUMN_ADD_RENAME_LABEL = "Enter Column Name";
       
+    public static final String CSV_FILE_LOAD_INTERFACE_TITLE = "CSV File Load";    
+    public static final String CSV_FILE_LOAD_METAB_BUTTON = "Load Metabolites File";
+    public static final String CSV_FILE_LOAD_REAC_BUTTON = " Load Reactions File ";
+    
 }
 

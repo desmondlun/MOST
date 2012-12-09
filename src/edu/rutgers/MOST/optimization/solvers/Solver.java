@@ -1,17 +1,17 @@
 package edu.rutgers.MOST.optimization.solvers;
+
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Set;
 import java.util.HashMap;
-
 
 public abstract class Solver {
 	protected ObjType objType;
 	protected VarType[] varTypes;
 	protected Map<Integer,Double> obj = new HashMap<Integer, Double>();
 	
-		
 	public abstract String getName();
+	public abstract ArrayList<Double> getSoln(); 
+	
 	public abstract void setVar(String varName,VarType types, double lb, double ub);
 	public abstract void setVars(VarType[] types, double[] lb, double[] ub);
 	public abstract void setObjType(ObjType objType);

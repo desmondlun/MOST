@@ -61,7 +61,7 @@ public class ReactionColumnNameInterface  extends JDialog {
 
 	public final ProgressBar progressBar = new ProgressBar();
 
-	javax.swing.Timer t = new javax.swing.Timer(1000, new TimeListener());
+	javax.swing.Timer timer = new javax.swing.Timer(1000, new TimeListener());
 
 	public ReactionColumnNameInterface(final Connection con, ArrayList<String> columnNamesFromFile)
 	throws SQLException {
@@ -540,7 +540,7 @@ public class ReactionColumnNameInterface  extends JDialog {
 
 				progressBar.setVisible(true);
 
-				t.start();
+				timer.start();
 
 				task = new Task();
 				task.execute();
@@ -577,10 +577,10 @@ public class ReactionColumnNameInterface  extends JDialog {
 			public void actionPerformed(ActionEvent prodActionEvent) {
 				TextReactionsModelReader reader = new TextReactionsModelReader();
 				int correction = LocalConfig.getInstance().getReactionsNextRowCorrection();
-				if ((correction + 1) < reader.numberOfLines(GraphicalInterface.getReactionsCSVFile())) {
+				if ((correction + 1) < reader.numberOfLines(LocalConfig.getInstance().getReactionsCSVFile())) {
 					LocalConfig.getInstance().setReactionsNextRowCorrection(correction + 1);	
 					System.out.println("corr " + LocalConfig.getInstance().getReactionsNextRowCorrection());
-					ArrayList<String> newColumnNamesFromFile = reader.columnNamesFromFile(GraphicalInterface.getReactionsCSVFile(), LocalConfig.getInstance().getReactionsNextRowCorrection());
+					ArrayList<String> newColumnNamesFromFile = reader.columnNamesFromFile(LocalConfig.getInstance().getReactionsCSVFile(), LocalConfig.getInstance().getReactionsNextRowCorrection());
 					setColumnNamesFromFile(newColumnNamesFromFile);
 					populateNamesFromFileBoxes(newColumnNamesFromFile);
 				}
@@ -680,14 +680,14 @@ public class ReactionColumnNameInterface  extends JDialog {
 		protected Void doInBackground() throws Exception {
 			int progress = 0;
 			TextReactionsModelReader reader = new TextReactionsModelReader();
-			reader.load(GraphicalInterface.getReactionsCSVFile(), LocalConfig.getInstance().getDatabaseName());	
+			reader.load(LocalConfig.getInstance().getReactionsCSVFile(), LocalConfig.getInstance().getDatabaseName());	
 			while (progress < 100) {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException ignore) {
 				}			
 			}
-			t.stop();
+			timer.stop();
 			return null;
 		}
 	}
@@ -708,7 +708,7 @@ public class ReactionColumnNameInterface  extends JDialog {
 		DatabaseCreator databaseCreator = new DatabaseCreator();
 		Connection con = DriverManager.getConnection("jdbc:sqlite:" + "untitled" + ".db");
 
-		//based on code from http://stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
+		//based on code from http:stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
 		icons.add(new ImageIcon("images/most16.jpg").getImage()); 
 		icons.add(new ImageIcon("images/most32.jpg").getImage());

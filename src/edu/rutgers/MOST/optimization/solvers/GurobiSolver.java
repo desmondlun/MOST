@@ -2,18 +2,10 @@ package edu.rutgers.MOST.optimization.solvers;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.sbml.jsbml.ext.groups.GroupList;
-
-import edu.rutgers.MOST.config.LocalConfig;
-import edu.rutgers.MOST.data.ReactionFactory;
-import edu.rutgers.MOST.data.SBMLReaction;
-import edu.rutgers.MOST.optimization.FBA.Optimize;
-import edu.rutgers.MOST.config.LocalConfig;
 
 import gurobi.*;
 
@@ -22,7 +14,7 @@ public class GurobiSolver extends Solver {
 	static Logger log = Logger.getLogger(GurobiSolver.class);
 	private GRBEnv env;
 	private GRBModel model;
-	private List<GRBVar> vars = new ArrayList<GRBVar>();
+	private ArrayList<GRBVar> vars = new ArrayList<GRBVar>();
 
 	public GurobiSolver(String logName) {
 		try {
@@ -55,8 +47,8 @@ public class GurobiSolver extends Solver {
 		try {
 			GRBVar var = this.model.addVar(lb, ub, 0.0, getGRBVarType(types),
 					varName);
-			System.out.println("adding var: lb = " + lb + "ub=" + ub +
-			 "type =" + types + "name=" + varName);
+//			System.out.println("adding var: lb = " + lb + " ub = " + ub +
+//			 " type = " + types + " name = " + varName);
 			this.vars.add(var);
 		} catch (GRBException e) {
 			// TODO Auto-generated catch block
@@ -69,11 +61,21 @@ public class GurobiSolver extends Solver {
 			e.printStackTrace();
 		}
 	}
-
-	public List<GRBVar> getVars() {
-		return vars;
+	
+	public ArrayList<Double> getSoln() {
+		ArrayList<Double> soln = new ArrayList<Double>(vars.size());
+		for (int i = 0; i < this.vars.size(); i++) {
+			try {
+				soln.add(this.vars.get(i).get(GRB.DoubleAttr.X));
+			} catch (GRBException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();				
+			}
+		}
+		
+		return soln;
 	}
-
+	
 	@Override
 	public void setVars(VarType[] types, double[] lb, double[] ub) {
 		// TODO Auto-generated method stub
@@ -121,8 +123,8 @@ public class GurobiSolver extends Solver {
 			Double value = (Double) m.getValue();
 			GRBVar var = this.vars.get(key);
 			expr.addTerm(value, var);
-			System.out.println("key=" + key + " value=" + value);
-			System.out.println("objType:" + this.objType);
+			System.out.println("key = " + key + " value = " + value);
+			System.out.println("objType: " + this.objType);
 		}
 
 		try {
@@ -165,7 +167,7 @@ public class GurobiSolver extends Solver {
 	}
 
 	public void finalize() {
-		// Not guarrantee to be invoked
+		// Not guaranteed to be invoked
 		this.model.dispose();
 		try {
 			this.env.dispose();
@@ -217,24 +219,22 @@ public class GurobiSolver extends Solver {
 
 	@Override
 	public double optimize() {
-		// TODO Auto-generated method stub
 		try {
-
 			model.optimize();
-			model.write("model.lp");
-			model.write("model.mps");
-
+//			model.write("model.lp");
+//			model.write("model.mps");
 		} catch (GRBException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-			
+			e.printStackTrace();	
 		}
+		
 		try {
 			return this.model.get(GRB.DoubleAttr.ObjVal);
 		} catch (GRBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		return 0;
 	}
 

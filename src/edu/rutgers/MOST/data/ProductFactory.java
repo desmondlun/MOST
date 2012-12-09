@@ -1,13 +1,17 @@
 package edu.rutgers.MOST.data;
 
 import java.util.ArrayList;
-public class ProductFactory {
 
+public class ProductFactory {
+	private String sourceType;
+	private String databaseName;
 	
+	public ProductFactory(String sourceType, String databaseName) {
+		this.sourceType = sourceType;
+		this.databaseName = databaseName;
+	}
 	
-	public ModelProduct getProductByReactionId(Integer reactionId, String sourceType, String databaseName){
-		
-		
+	public ModelProduct getProductByReactionId(Integer reactionId) {
 		if("SBML".equals(sourceType)){
 			SBMLProduct product = new SBMLProduct();
 			product.setDatabaseName(databaseName);
@@ -17,24 +21,24 @@ public class ProductFactory {
 		return new SBMLProduct(); //Default behavior.
 	}
 	
-	public ArrayList<ModelProduct> getProductsByReactionId(Integer reactionId, String sourceType, String databaseName)
-	{
-		
+	public ArrayList<ModelProduct> getProductsByReactionId(Integer reactionId) {
 		SBMLProductCollection aProductCollection = new SBMLProductCollection();
-		if("SBML".equals(sourceType)){
-			
+		if("SBML".equals(sourceType)){			
 			aProductCollection.setDatabaseName(databaseName);
-			boolean hasProducts = aProductCollection.loadByReactionId(reactionId);
-			
-			
+			aProductCollection.loadByReactionId(reactionId);					
 		}
 		
-		
 		return aProductCollection.getProductList();
+	}
+	
+	public ArrayList<ModelProduct> getAllProducts() {
+		SBMLProductCollection aProductCollection = new SBMLProductCollection();
+		if("SBML".equals(sourceType)){			
+			aProductCollection.setDatabaseName(databaseName);
+			aProductCollection.loadAll();					
+		}
 		
-		
-		
-		
+		return aProductCollection.getProductList();	
 	}
 }
 

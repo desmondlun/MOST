@@ -2,10 +2,10 @@ package edu.rutgers.MOST.data;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 
@@ -106,10 +106,8 @@ public class ReactionsUpdater {
 						if (parser1.isValid(reactionEquation)) {
 							ArrayList<ArrayList> newReactionList = parser1.reactionList(reactionEquation);
 
-							System.out.println("ru new " + LocalConfig.getInstance().getMetaboliteUsedMap());
 							//add new species to used map
 							for (int x = 0; x < newReactionList.size(); x++) {
-								System.out.println("ru new " + newReactionList.get(x));
 								for (int y = 0; y < newReactionList.get(x).size(); y++) {
 									if (((ArrayList) newReactionList.get(x).get(y)).size() > 1) {
 
@@ -136,7 +134,6 @@ public class ReactionsUpdater {
 							}
 							
 						}
-						System.out.println("pasted " + LocalConfig.getInstance().getMetaboliteUsedMap());
 					} else {
 						reactionEquation = " ";						
 					}
@@ -316,12 +313,14 @@ public class ReactionsUpdater {
 			e.printStackTrace();
 
 		}
+		GraphicalInterface.showPrompt = true;
 	}
 	
 	//used for updating when a single row is edited
 	public void updateReactionEquations(int id, String oldEquation, String newEquation, String databaseName) {
 
 		ReactionParser1 parser1 = new ReactionParser1();
+		DatabaseCreator creator = new DatabaseCreator();
 
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
 
@@ -364,199 +363,185 @@ public class ReactionsUpdater {
 				stat.executeUpdate("ROLLBACK"); // throw away all updates since BEGIN TRANSACTION
 			}
 			
+			// get maximum metabolite id in case any metabolites need to be added
+			// when parsing reactions
+			Map<String, Object> idMap = LocalConfig.getInstance().getMetaboliteIdNameMap();
+			ArrayList<Integer> idList = new ArrayList(idMap.values());
+			int maxMetabId = 0;
+			for (int i = 0; i < idList.size(); i++) {
+				if (idList.get(i) > maxMetabId) {
+					maxMetabId = idList.get(i);
+				}
+			}
+			
 			//update for new reaction
-			int maxMetabId = LocalConfig.getInstance().getMaxMetaboliteId();
 			try {
 				ReactionParser1 parser = new ReactionParser1();
 				boolean valid = true;
 				
 				if (parser.isValid(newEquation)) {
-					ArrayList<ArrayList> reactants = parser.reactionList(newEquation.trim()).get(0);
-					//reactions of the type ==> b will be size 1, assigned the value [0] in parser
-					if (reactants.get(0).size() == 1) {
+					ArrayList<ArrayList> reactionList = parser.reactionList(newEquation.trim());					
+					// if reaction contains a prefix such as [c]: and a compartment suffix
+					// such as a[c], it is invalid
+					if (parser.invalidSyntax) {
+						valid = false;
 					} else {
-						for (int r = 0; r < reactants.size(); r++) {
-							if (reactants.get(r).size() == 2) {
-								String stoicStr = (String) reactants.get(r).get(0);
-								String reactant = (String) reactants.get(r).get(1);
-								String addMetab = "insert into metabolites (metabolite_abbreviation, boundary, used) values('"  + reactant + "', 'false', 'true');";
-								String update = "update metabolites set metabolite_abbreviation='" + reactant + "', boundary='false' where id=" + (LocalConfig.getInstance().getMaxMetaboliteId() + 1) + ";";	
-								
-								if (!(LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(reactant.trim()))) {
-									if (GraphicalInterface.showPrompt) {
-										Object[] options = {"Yes",
-												"Yes to All",
-										"No"};
+						ArrayList<ArrayList> reactants = reactionList.get(0);
+						//reactions of the type ==> b will be size 1, assigned the value [0] in parser
+						
+						if (reactants.get(0).size() == 1) {
+						} else {
+							for (int r = 0; r < reactants.size(); r++) {
+								if (reactants.get(r).size() == 2) {
+									String stoicStr = (String) reactants.get(r).get(0);
+									String reactant = (String) reactants.get(r).get(1);
+									String update = "update metabolites set metabolite_abbreviation='" + reactant + "', boundary='false' where id=" + (maxMetabId + 1) + ";";	
+									
+									if (!(LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(reactant.trim()))) {
+										if (GraphicalInterface.showPrompt) {
+											Object[] options = {"Yes",
+													"Yes to All",
+											"No"};
 
-										int choice = JOptionPane.showOptionDialog(null, 
-												"The metabolite " + reactant + " does not exist. Do you wish to add it?", 
-												"Add Metabolite?", 
-												JOptionPane.YES_NO_CANCEL_OPTION, 
-												JOptionPane.QUESTION_MESSAGE, 
-												null, options, options[0]);
-										//options[0] sets "Yes" as default button
+											int choice = JOptionPane.showOptionDialog(null, 
+													"The metabolite " + reactant + " does not exist. Do you wish to add it?", 
+													"Add Metabolite?", 
+													JOptionPane.YES_NO_CANCEL_OPTION, 
+													JOptionPane.QUESTION_MESSAGE, 
+													null, options, options[0]);
+											//options[0] sets "Yes" as default button
 
-										// interpret the user's choice	  
-										if (choice == JOptionPane.YES_OPTION)
-										{
-											//if blank load database starts at 1 instead of 101 ecause the blank load
-											// table has 100 rows
-											if (LocalConfig.getInstance().getLoadedDatabase().compareTo(GraphicalInterfaceConstants.DEFAULT_DATABASE_NAME) == 0) {
+											// interpret the user's choice	  
+											if (choice == JOptionPane.YES_OPTION)
+											{
+												creator.addMetaboliteRow(databaseName);
 												stat.executeUpdate(update);
-											} else {
-												stat.executeUpdate(addMetab);			
+												LocalConfig.getInstance().getMetaboliteIdNameMap().put(reactant, (maxMetabId + 1));
+												maxMetabId += 1;
 											}
-											
-											maxMetabId += 1;
-											LocalConfig.getInstance().setMaxMetaboliteId(maxMetabId);
-											LocalConfig.getInstance().getMetaboliteIdNameMap().put(reactant, new Integer(LocalConfig.getInstance().getMaxMetaboliteId()));
-										}
-										//No option actually corresponds to "Yes to All" button
-										if (choice == JOptionPane.NO_OPTION)
-										{
-											GraphicalInterface.showPrompt = false;
-											if (LocalConfig.getInstance().getLoadedDatabase().compareTo(GraphicalInterfaceConstants.DEFAULT_DATABASE_NAME) == 0) {
+											//No option actually corresponds to "Yes to All" button
+											if (choice == JOptionPane.NO_OPTION)
+											{
+												GraphicalInterface.showPrompt = false;
+												creator.addMetaboliteRow(databaseName);
 												stat.executeUpdate(update);
-											} else {
-												stat.executeUpdate(addMetab);				
+												LocalConfig.getInstance().getMetaboliteIdNameMap().put(reactant, (maxMetabId + 1));
+												maxMetabId += 1;
 											}
-											
-											maxMetabId += 1;
-											LocalConfig.getInstance().setMaxMetaboliteId(maxMetabId);
-											LocalConfig.getInstance().getMetaboliteIdNameMap().put(reactant, new Integer(LocalConfig.getInstance().getMaxMetaboliteId()));
-										}
-										//Cancel option actually corresponds to "No" button
-										if (choice == JOptionPane.CANCEL_OPTION) {
-											//addMetaboliteOption = false;
-											//reactionString = "";
-											valid = false;
-										}	  
-									} else {
-										if (LocalConfig.getInstance().getLoadedDatabase().compareTo(GraphicalInterfaceConstants.DEFAULT_DATABASE_NAME) == 0) {
-											stat.executeUpdate(update);
+											// TODO: set reactionEquation to "" for No button
+											//Cancel option actually corresponds to "No" button
+											if (choice == JOptionPane.CANCEL_OPTION) {
+												//addMetaboliteOption = false;
+												//reactionString = "";
+												valid = false;
+											}	  
 										} else {
-											stat.executeUpdate(addMetab);			
-										}
-										
-										maxMetabId += 1;
-										LocalConfig.getInstance().setMaxMetaboliteId(maxMetabId);
-										LocalConfig.getInstance().getMetaboliteIdNameMap().put(reactant, new Integer(LocalConfig.getInstance().getMaxMetaboliteId()));
-									}											
-								}										
-								
-								Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(reactant);
-								
-								String insert = "INSERT INTO reaction_reactants(reaction_id, stoic, metabolite_id) values (" + id + ", " + stoicStr + ", " + metabId + ");";
-								stat.executeUpdate(insert);
-								
-								if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(reactant)) {
-									int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(reactant);
-									LocalConfig.getInstance().getMetaboliteUsedMap().put(reactant, new Integer(usedCount + 1));									
+											creator.addMetaboliteRow(databaseName);
+											stat.executeUpdate(update);
+											LocalConfig.getInstance().getMetaboliteIdNameMap().put(reactant, (maxMetabId + 1));
+											maxMetabId += 1;
+										}											
+									}										
+									
+									Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(reactant);
+									
+									String insert = "INSERT INTO reaction_reactants(reaction_id, stoic, metabolite_id) values (" + id + ", " + stoicStr + ", " + metabId + ");";
+									stat.executeUpdate(insert);
+									
+									if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(reactant)) {
+										int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(reactant);
+										LocalConfig.getInstance().getMetaboliteUsedMap().put(reactant, new Integer(usedCount + 1));									
+									} else {
+										LocalConfig.getInstance().getMetaboliteUsedMap().put(reactant, new Integer(1));
+									}	
+									
 								} else {
-									LocalConfig.getInstance().getMetaboliteUsedMap().put(reactant, new Integer(1));
-								}	
-								
-							} else {
-								//Invalid reaction
-								valid = false;
-								break;
-							}								
+									//Invalid reaction
+									valid = false;
+									break;
+								}								
+							}
+						}
+						//reactions of the type a ==> will be size 1, assigned the value [0] in parser
+						ArrayList<ArrayList> products = reactionList.get(1);
+						if (products.get(0).size() == 1) {
+						} else {
+							for (int p = 0; p < products.size(); p++) {
+								if (products.get(p).size() == 2) {
+									String stoicStr = (String) products.get(p).get(0);
+									String product = (String) products.get(p).get(1);	
+									//String update = "update metabolites set metabolite_abbreviation='" + product + "', boundary='false' where id=" + (LocalConfig.getInstance().getMetaboliteIdNameMap().size() + 1) + ";";	
+									String update = "update metabolites set metabolite_abbreviation='" + product + "', boundary='false' where id=" + (maxMetabId + 1) + ";";
+									
+									if (!(LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(product))) {
+										if (GraphicalInterface.showPrompt) {
+											Object[] options = {"Yes",
+													"Yes to All",
+											"No"};
+
+											int choice = JOptionPane.showOptionDialog(null, 
+													"The metabolite " + product + " does not exist. Do you wish to add it?", 
+													"Add Metabolite?", 
+													JOptionPane.YES_NO_CANCEL_OPTION, 
+													JOptionPane.QUESTION_MESSAGE, 
+													null, options, options[0]);
+											//options[0] sets "Yes" as default button
+
+											// interpret the user's choice	  
+											if (choice == JOptionPane.YES_OPTION)
+											{
+												creator.addMetaboliteRow(databaseName);
+												stat.executeUpdate(update);
+											    LocalConfig.getInstance().getMetaboliteIdNameMap().put(product, (maxMetabId + 1));
+												maxMetabId += 1;
+											}
+											//No option actually corresponds to "Yes to All" button
+											if (choice == JOptionPane.NO_OPTION)
+											{
+												GraphicalInterface.showPrompt = false;
+												creator.addMetaboliteRow(databaseName);
+												stat.executeUpdate(update);
+												LocalConfig.getInstance().getMetaboliteIdNameMap().put(product, (maxMetabId + 1));
+												maxMetabId += 1;
+											}
+											//Cancel option actually corresponds to "No" button
+											if (choice == JOptionPane.CANCEL_OPTION) {
+												//addMetaboliteOption = false;
+												//reactionString = "";
+												valid = false;
+											}	  
+										} else {
+											creator.addMetaboliteRow(databaseName);
+											stat.executeUpdate(update);
+											LocalConfig.getInstance().getMetaboliteIdNameMap().put(product, (maxMetabId + 1));
+											maxMetabId += 1;
+										}		
+									}
+									
+									Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(product);
+									
+									String insert = "INSERT INTO reaction_products(reaction_id, stoic, metabolite_id) values (" + id + ", " + stoicStr + ", " + metabId + ");";
+									stat.executeUpdate(insert);	
+									if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(product)) {
+										int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(product);
+										LocalConfig.getInstance().getMetaboliteUsedMap().put(product, new Integer(usedCount + 1));									
+									} else {
+										LocalConfig.getInstance().getMetaboliteUsedMap().put(product, new Integer(1));
+									}
+									
+								} else {
+									//Invalid reaction
+									valid = false;
+									break;
+								}
+							}							
 						}
 					}
-					//reactions of the type a ==> will be size 1, assigned the value [0] in parser
-					ArrayList<ArrayList> products = parser.reactionList(newEquation.trim()).get(1);
-					if (products.get(0).size() == 1) {
-					} else {
-						for (int p = 0; p < products.size(); p++) {
-							if (products.get(p).size() == 2) {
-								String stoicStr = (String) products.get(p).get(0);
-								String product = (String) products.get(p).get(1);
-								String addMetab = "insert into metabolites (metabolite_abbreviation, boundary, used) values('"  + product + "', 'false', 'true');";
-								String update = "update metabolites set metabolite_abbreviation='" + product + "', boundary='false' where id=" + (LocalConfig.getInstance().getMaxMetaboliteId() + 1) + ";";	
-								
-								if (!(LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(product))) {
-									if (GraphicalInterface.showPrompt) {
-										Object[] options = {"Yes",
-												"Yes to All",
-										"No"};
-
-										int choice = JOptionPane.showOptionDialog(null, 
-												"The metabolite " + product + " does not exist. Do you wish to add it?", 
-												"Add Metabolite?", 
-												JOptionPane.YES_NO_CANCEL_OPTION, 
-												JOptionPane.QUESTION_MESSAGE, 
-												null, options, options[0]);
-										//options[0] sets "Yes" as default button
-
-										// interpret the user's choice	  
-										if (choice == JOptionPane.YES_OPTION)
-										{
-											if (LocalConfig.getInstance().getLoadedDatabase().compareTo(GraphicalInterfaceConstants.DEFAULT_DATABASE_NAME) == 0) {
-												stat.executeUpdate(update);
-											} else {
-												stat.executeUpdate(addMetab);				
-											}
-											
-											maxMetabId += 1;
-											LocalConfig.getInstance().setMaxMetaboliteId(maxMetabId);
-											LocalConfig.getInstance().getMetaboliteIdNameMap().put(product, new Integer(LocalConfig.getInstance().getMaxMetaboliteId()));
-										}
-										//No option actually corresponds to "Yes to All" button
-										if (choice == JOptionPane.NO_OPTION)
-										{
-											GraphicalInterface.showPrompt = false;
-											if (LocalConfig.getInstance().getLoadedDatabase().compareTo(GraphicalInterfaceConstants.DEFAULT_DATABASE_NAME) == 0) {
-												stat.executeUpdate(update);
-											} else {
-												stat.executeUpdate(addMetab);				
-											}
-											
-											maxMetabId += 1;
-											LocalConfig.getInstance().setMaxMetaboliteId(maxMetabId);
-											LocalConfig.getInstance().getMetaboliteIdNameMap().put(product, new Integer(LocalConfig.getInstance().getMaxMetaboliteId()));
-										}
-										//Cancel option actually corresponds to "No" button
-										if (choice == JOptionPane.CANCEL_OPTION) {
-											//addMetaboliteOption = false;
-											//reactionString = "";
-											valid = false;
-										}	  
-									} else {
-										if (LocalConfig.getInstance().getLoadedDatabase().compareTo(GraphicalInterfaceConstants.DEFAULT_DATABASE_NAME) == 0) {
-											stat.executeUpdate(update);
-										} else {
-											stat.executeUpdate(addMetab);				
-										}
-										
-										maxMetabId += 1;
-										LocalConfig.getInstance().setMaxMetaboliteId(maxMetabId);
-										LocalConfig.getInstance().getMetaboliteIdNameMap().put(product, new Integer(LocalConfig.getInstance().getMaxMetaboliteId()));
-									}		
-								}
-								
-								Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(product);
-								
-								String insert = "INSERT INTO reaction_products(reaction_id, stoic, metabolite_id) values (" + id + ", " + stoicStr + ", " + metabId + ");";
-								stat.executeUpdate(insert);	
-								if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(product)) {
-									int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(product);
-									LocalConfig.getInstance().getMetaboliteUsedMap().put(product, new Integer(usedCount + 1));									
-								} else {
-									LocalConfig.getInstance().getMetaboliteUsedMap().put(product, new Integer(1));
-								}
-								
-							} else {
-								//Invalid reaction
-								valid = false;
-								break;
-							}
-						}							
-					}
+					
 				} else {
 					//Invalid reaction
 					valid = false;
 				}
-				
 				
 				if (!valid) {
 					String deleteReac = "delete from reaction_reactants where reaction_id=" + id + ";";
@@ -566,7 +551,8 @@ public class ReactionsUpdater {
 					if (newEquation != null || newEquation.length() > 0) {
 						LocalConfig.getInstance().getInvalidReactions().add(newEquation);
 					}	
-				}									
+				}
+				parser.invalidSyntax = false;
 			} catch (Throwable t) {
 				
 			}
@@ -576,6 +562,7 @@ public class ReactionsUpdater {
 			e.printStackTrace();
 
 		}
+		GraphicalInterface.showPrompt = true;
 	}
 	
 	public void deleteRows(ArrayList<Integer> idList, ArrayList<String> deletedReactions, String databaseName) {
@@ -633,5 +620,6 @@ public class ReactionsUpdater {
 				}
 			}			
 		}
-	}	
+	}
+	
 }

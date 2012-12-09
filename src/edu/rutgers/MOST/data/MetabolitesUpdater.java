@@ -176,12 +176,11 @@ public class MetabolitesUpdater {
 					} else {
 						meta15 = " ";
 					}
-					String used = (String) GraphicalInterface.metabolitesTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.USED_COLUMN);
 					
 					String update = "update metabolites set metabolite_abbreviation='" + metaboliteAbbreviation + "', metabolite_name='" + metaboliteName + "', charge='" + charge + "', " 
 						+ " compartment='" + compartment + "', boundary='" + boundary + "', meta_1='" + meta1 + "', meta_2='" + meta2 + "', meta_3='" + meta3 + "', meta_4='" + meta4 + "', meta_5='" + meta5 + "', "
 						+ " meta_6='" + meta6 + "', meta_7='" + meta7 + "', meta_8='" + meta8 + "', meta_9='" + meta9 + "', meta_10='" + meta10 + "', "
-						+ " meta_11='" + meta11 + "', meta_12='" + meta12 + "', meta_13='" + meta13 + "', meta_14='" + meta14 + "', meta_15='" + meta15 + "', used='" + used + "' where id=" + metabIdList.get(i) + ";";
+						+ " meta_11='" + meta11 + "', meta_12='" + meta12 + "', meta_13='" + meta13 + "', meta_14='" + meta14 + "', meta_15='" + meta15 + "' where id=" + metabIdList.get(i) + ";";
 					stat.executeUpdate(update);
 				}
 				
@@ -231,7 +230,7 @@ public class MetabolitesUpdater {
 	}
 	
 	//unusedList is list of objects, need to cast to integer, hence need for different method
-	public void deleteUnused(ArrayList<Object> unusedList, String databaseName) {
+	public void deleteUnused(ArrayList<Integer> unusedList, String databaseName) {
 		//TODO: need to check if unused
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
 		
@@ -244,7 +243,7 @@ public class MetabolitesUpdater {
 				stat.executeUpdate("BEGIN TRANSACTION");
 
 				for (int i = 0; i < unusedList.size(); i++) {
-					String delete = "delete from metabolites where id = " + new Integer((Integer) unusedList.get(i)) + ";";
+					String delete = "delete from metabolites where id = " + unusedList.get(i) + ";";
 					stat.executeUpdate(delete);
 				}
 				for (int j = 0; j < LocalConfig.getInstance().getBlankMetabIds().size(); j++) {

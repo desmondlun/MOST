@@ -81,9 +81,46 @@ public class SBMLProductCollection implements ModelProductCollection {
 		return true;
 	}
 
-	
-	
+	public boolean loadAll() {
 
+		try {
+			Class.forName("org.sqlite.JDBC");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		Connection conn;
+		try {
+			conn = DriverManager.getConnection(createConnectionStatement(getDatabaseName())); // TODO:
+																		// Make
+																		// this
+																		// configurable
+			PreparedStatement prep = conn
+					.prepareStatement("select reaction_id, metabolite_id, stoic, metabolite_abbreviation from reaction_products, metabolites where reaction_products.metabolite_id = metabolites.id;");
+			conn.setAutoCommit(true);
+			ResultSet rs = prep.executeQuery();
+			productList = new ArrayList<ModelProduct>();
+			
+			while (rs.next()) {
+				SBMLProduct aProduct = new SBMLProduct();
+				aProduct.setReactionId(rs.getInt("reaction_id"));
+				aProduct.setMetaboliteId(rs.getInt("metabolite_id"));
+				aProduct.setStoic(rs.getDouble("stoic"));
+				aProduct.setMetaboliteAbbreviation(rs.getString("metabolite_abbreviation"));
+				this.productList.add(aProduct);
+			}
+			
+			rs.close();
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+
+		return true;
+	}	
 
 	public String createConnectionStatement(String databaseName) {
 		return "jdbc:sqlite:" + getDatabaseName() + ".db";
@@ -94,8 +131,8 @@ public class SBMLProductCollection implements ModelProductCollection {
 	
 
 	public static void main(String[] args) {
-		ProductFactory aProductFactory = new ProductFactory();
-		ArrayList<ModelProduct> products = aProductFactory.getProductsByReactionId(1, "SBML", "test_03182012");
+		ProductFactory aProductFactory = new ProductFactory("SBML", "test_03182012");
+		ArrayList<ModelProduct> products = aProductFactory.getProductsByReactionId(1);
 		Iterator<ModelProduct> iterator = products.iterator();
 		 
 		while(iterator.hasNext()){

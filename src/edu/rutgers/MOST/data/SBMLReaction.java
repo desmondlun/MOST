@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import edu.rutgers.MOST.config.LocalConfig;
+import edu.rutgers.MOST.presentation.GraphicalInterface;
 
 public class SBMLReaction implements ModelReaction {
 
@@ -207,6 +208,62 @@ public class SBMLReaction implements ModelReaction {
 		return true;
 	}
 
+	// TODO: see if method is used
+	public boolean optimizeUpdate() {
+
+		try {
+			Class.forName("org.sqlite.JDBC");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		Connection conn;
+		try {
+			conn = DriverManager.getConnection(createConnectionStatement(GraphicalInterface.getOptimizePath())); // TODO:
+
+			PreparedStatement prep = conn
+			.prepareStatement("update reactions set knockout=?, flux_value=?, reaction_abbreviation=?, reaction_name=?, " 
+					+ " reaction_string=?, reversible=?, lower_bound=?, upper_bound=?, biological_objective=?, " 
+					+ " meta_1=?, meta_2=?, meta_3=?, meta_4=?, meta_5=?, meta_6=?, meta_7=?, meta_8=?, "
+					+ " meta_9=?, meta_10=?, meta_11=?, meta_12=?, meta_13=?, meta_14=?, meta_15=? where id=?;");
+			prep.setString(1, this.getKnockout());
+			prep.setDouble(2, this.getFluxValue());	
+			prep.setString(3, this.getReactionAbbreviation());
+			prep.setString(4, this.getReactionName());
+			prep.setString(5, this.getReactionString());
+			prep.setString(6, this.getReversible());			
+			prep.setDouble(7, this.getLowerBound());
+			prep.setDouble(8, this.getUpperBound());
+			prep.setDouble(9, this.getBiologicalObjective());			
+			prep.setString(10, this.getMeta1());
+			prep.setString(11, this.getMeta2());
+			prep.setString(12, this.getMeta3());
+			prep.setString(13, this.getMeta4());
+			prep.setString(14, this.getMeta5());
+			prep.setString(15, this.getMeta6());
+			prep.setString(16, this.getMeta7());
+			prep.setString(17, this.getMeta8());
+			prep.setString(18, this.getMeta9());
+			prep.setString(19, this.getMeta10());
+			prep.setString(20, this.getMeta11());
+			prep.setString(21, this.getMeta12());
+			prep.setString(22, this.getMeta13());
+			prep.setString(23, this.getMeta14());
+			prep.setString(24, this.getMeta15());	
+			prep.setInt(25, this.getId());
+			conn.setAutoCommit(true);
+			prep.executeUpdate();
+
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
 	public boolean loadById(Integer id) {
 
 		try {
