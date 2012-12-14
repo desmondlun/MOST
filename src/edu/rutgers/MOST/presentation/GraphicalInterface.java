@@ -1223,6 +1223,13 @@ public class GraphicalInterface extends JFrame {
 	public void saveMetabolitesTextFileChooser() {
 		JTextArea output = null;
 		JFileChooser fileChooser = new JFileChooser(new File(getDatabaseName()));
+		
+		String lastCSV_path = curSettings.get("LastCSV");
+		if (lastCSV_path == null) {
+			lastCSV_path = ".";	
+		}
+		fileChooser.setCurrentDirectory(new File(lastCSV_path));
+		
 		boolean done = false;
 		while (!done) {
 			//... Open a file dialog.
@@ -1300,6 +1307,13 @@ public class GraphicalInterface extends JFrame {
 	public void saveReactionsTextFileChooser() {
 		JTextArea output = null;
 		JFileChooser fileChooser = new JFileChooser(new File(getDatabaseName()));
+		
+		String lastCSV_path = curSettings.get("LastCSV");
+		if (lastCSV_path == null) {
+			lastCSV_path = ".";	
+		}
+		fileChooser.setCurrentDirectory(new File(lastCSV_path));
+		
 		boolean done = false;
 		while (!done) {
 			//... Open a file dialog.
