@@ -221,7 +221,7 @@ public class JSBMLWriter implements TreeModelListener{
 		
 		public void parseAllMetabolites() {
 			MetaboliteFactory mFactory = new MetaboliteFactory("SBML", databaseName);
-			int length = mFactory.maximumId(databaseName);
+			int length = mFactory.maximumId();
 			
 			//mFactory.getMetaboliteById(metaboliteId, sourceType, databaseName);
 			
@@ -230,7 +230,7 @@ public class JSBMLWriter implements TreeModelListener{
 			System.out.print("\n");
 			
 			for (int i=1; i <= length; i++) {
-				SBMLMetabolite curMeta = (SBMLMetabolite) mFactory.getMetaboliteById(i, sourceType, databaseName);
+				SBMLMetabolite curMeta = (SBMLMetabolite) mFactory.getMetaboliteById(i);
 				//System.out.println(curMeta);
 				this.allMetabolites.add(curMeta);
 				mapping.put(i, curMeta);
@@ -436,7 +436,7 @@ public class JSBMLWriter implements TreeModelListener{
 					SBMLReactant curR = (SBMLReactant) curReactant;
 					
 					int inId = curR.getMetaboliteId();
-					SBMLMetabolite sMReactant = (SBMLMetabolite) mFactory.getMetaboliteById(inId, sourceType, databaseName);
+					SBMLMetabolite sMReactant = (SBMLMetabolite) mFactory.getMetaboliteById(inId);
 					
 					String reactAbbrv = sMReactant.getMetaboliteAbbreviation();
 										

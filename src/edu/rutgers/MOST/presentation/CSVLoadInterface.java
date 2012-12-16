@@ -25,7 +25,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import edu.rutgers.MOST.config.LocalConfig;
-import edu.rutgers.MOST.presentation.GraphicalInterface.Task;
+import edu.rutgers.MOST.data.SettingsFactory;
+import edu.rutgers.MOST.presentation.GraphicalInterface;
 
 public class CSVLoadInterface  extends JDialog {
 
@@ -138,14 +139,25 @@ public class CSVLoadInterface  extends JDialog {
 			public void actionPerformed(ActionEvent prodActionEvent) {
 				JTextArea output = null;
 				JFileChooser fileChooser = new JFileChooser(); 
+				
+				String lastCSV_path = GraphicalInterface.curSettings.get("LastCSV");
+				if (lastCSV_path == null) {
+					lastCSV_path = ".";
+				}
+				fileChooser.setCurrentDirectory(new File(lastCSV_path));
+				
 				//... Open a file dialog.
 				int retval = fileChooser.showOpenDialog(output);
 				if (retval == JFileChooser.APPROVE_OPTION) {
 					//... The user selected a file, get it, use it.          	
 					File file = fileChooser.getSelectedFile();
-					String rawFilename = fileChooser.getSelectedFile().getName();
-					String filename = rawFilename.substring(0, rawFilename.length() - 4);      	
-					String path = fileChooser.getSelectedFile().getPath();
+					String rawPathName = file.getAbsolutePath();
+					GraphicalInterface.curSettings.add("LastCSV", rawPathName);
+
+					String rawFilename = file.getName();					
+					String filename = rawFilename.substring(0, rawFilename.length() - 4); 
+					
+					String path = file.getPath();
 					if (!path.endsWith(".csv")) {
 						JOptionPane.showMessageDialog(null,                
 								"Not a Valid CSV File.",                
@@ -165,12 +177,22 @@ public class CSVLoadInterface  extends JDialog {
 			public void actionPerformed(ActionEvent prodActionEvent) {
 				JTextArea output = null;
 				JFileChooser fileChooser = new JFileChooser(); 
+				
+				String lastCSV_path = GraphicalInterface.curSettings.get("LastCSV");
+				if (lastCSV_path == null) {
+					lastCSV_path = ".";
+				}
+				fileChooser.setCurrentDirectory(new File(lastCSV_path));
+								
 				//... Open a file dialog.
 				int retval = fileChooser.showOpenDialog(output);
 				if (retval == JFileChooser.APPROVE_OPTION) {
 					//... The user selected a file, get it, use it.          	
 					File file = fileChooser.getSelectedFile();
-					String path = fileChooser.getSelectedFile().getPath();
+					String rawPathName = file.getAbsolutePath();
+					GraphicalInterface.curSettings.add("LastCSV", rawPathName);
+					
+					String path = file.getPath();
 					if (!path.endsWith(".csv")) {
 						JOptionPane.showMessageDialog(null,                
 								"Not a Valid CSV File.",                

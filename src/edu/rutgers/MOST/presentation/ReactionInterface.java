@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.ReactionFactory;
-import edu.rutgers.MOST.logic.ReactionParser1;
+import edu.rutgers.MOST.logic.ReactionParser;
 
 public class ReactionInterface extends JFrame {
 
@@ -385,10 +385,10 @@ public class ReactionInterface extends JFrame {
 		//create reaction string from these species
 		/*****************************************************************************/
 
-		ReactionParser1 parser = new ReactionParser1();
+		ReactionParser parser = new ReactionParser();
 		if (parser.isValid(reactionEquation)) {
 			setOldReaction(reactionEquation);
-			ArrayList<ArrayList> reactants = parser.reactionList(reactionEquation.trim()).get(0);
+			ArrayList<ArrayList<String>> reactants = parser.reactionList(reactionEquation.trim()).get(0);
 			//reactions of the type ==> b will be size 1, assigned the value [0] in parser
 			if (reactants.get(0).size() == 1) {				
 			} else {
@@ -406,7 +406,7 @@ public class ReactionInterface extends JFrame {
 					}
 				}			
 			}
-			ArrayList<ArrayList> products = parser.reactionList(reactionEquation.trim()).get(1);
+			ArrayList<ArrayList<String>> products = parser.reactionList(reactionEquation.trim()).get(1);
 			//reactions of the type ==> b will be size 1, assigned the value [0] in parser
 			if (products.get(0).size() == 1) {				
 			} else {
@@ -508,7 +508,7 @@ public class ReactionInterface extends JFrame {
 		//create listeners
 
 		ActionListener revActionListener = new ActionListener() {
-			public void actionPerformed(ActionEvent revActionEvent) {
+			public void actionPerformed(ActionEvent revActionEvent) {		
 				ReactionFactory rFactory = new ReactionFactory("SBML", LocalConfig.getInstance().getLoadedDatabase());			
 				cbProduct[0].grabFocus();
 				if (trueButton.isSelected()) {

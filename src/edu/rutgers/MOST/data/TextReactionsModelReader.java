@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
 import au.com.bytecode.opencsv.CSVReader;
 
 import edu.rutgers.MOST.config.LocalConfig;
-import edu.rutgers.MOST.logic.ReactionParser1;
+import edu.rutgers.MOST.logic.ReactionParser;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
@@ -21,7 +21,7 @@ public class TextReactionsModelReader {
 	boolean addMetaboliteOption = true;
 	
 	public ArrayList<String> columnNamesFromFile(File file, int row) {
-		ArrayList<String> columnNamesFromFile = new ArrayList();
+		ArrayList<String> columnNamesFromFile = new ArrayList<String>();
 		
 		String[] dataArray = null;
 
@@ -88,7 +88,7 @@ public class TextReactionsModelReader {
 		CSVReader reader;
 		try {
 			reader = new CSVReader(new FileReader(file), ',');
-			String [] dataArray;
+			String[] dataArray;
 			try {
 				while ((dataArray = reader.readNext()) != null) {
 					count++; 	
@@ -247,17 +247,16 @@ public class TextReactionsModelReader {
 										}				
 									} 
 								}
-								
 							}
 						}
 						
 						try {
-							ReactionParser1 parser = new ReactionParser1();
+							ReactionParser parser = new ReactionParser();
 							boolean valid = true;
-							ArrayList<ArrayList> reactionList = parser.reactionList(reactionString.trim());
+							ArrayList<ArrayList<ArrayList<String>>> reactionList = parser.reactionList(reactionString.trim());
 							
 							if (parser.isValid(reactionString)) {
-								ArrayList<ArrayList> reactants = reactionList.get(0);
+								ArrayList<ArrayList<String>> reactants = parser.reactionList(reactionString.trim()).get(0);
 								//reactions of the type ==> b will be size 1, assigned the value [0] in parser
 								if (reactants.get(0).size() == 1) {
 								} else {
@@ -328,7 +327,7 @@ public class TextReactionsModelReader {
 									}
 								}
 								//reactions of the type a ==> will be size 1, assigned the value [0] in parser
-								ArrayList<ArrayList> products = reactionList.get(1);
+								ArrayList<ArrayList<String>> products = parser.reactionList(reactionString.trim()).get(1);
 								if (products.get(0).size() == 1) {
 								} else {
 									for (int p = 0; p < products.size(); p++) {
@@ -538,11 +537,19 @@ public class TextReactionsModelReader {
 							}
 						}
 						
+						if (lowerBound < 0.0 && reversible.equals("false")) {
+							lowerBound = 0.0;
+						}
+						
 						String insert = "INSERT INTO reactions(knockout, flux_value, reaction_abbreviation, " 
 							+ " reaction_name, reaction_string, reversible, lower_bound, upper_bound, biological_objective," 
 							+ " meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, "
 							+ " meta_9, meta_10, meta_11, meta_12, meta_13, meta_14, meta_15) values " 
-							+ " (" + "'" + knockout + "', '" + fluxValue + "', '" + reactionAbbreviation + "', '" + reactionName + "', '" + reactionString + "', '" + reversible + "', '" + lowerBound + "', '" + upperBound + "', '" + objective + "', '" + meta1 + "', '" + meta2 + "', '" + meta3 + "', '" + meta4 + "', '" + meta5 + "', '" + meta6 + "', '" + meta7 + "', '" + meta8 + "', '" + meta9 + "', '" + meta10 + "', '" + meta11 + "', '" + meta12 + "', '" + meta13 + "', '" + meta14 + "', '" + meta15 + "');";
+							+ " (" + "'" + knockout + "', '" + fluxValue + "', '" + reactionAbbreviation + "', '" 
+							+ reactionName + "', '" + reactionString + "', '" + reversible + "', '" + lowerBound + "', '" 
+							+ upperBound + "', '" + objective + "', '" + meta1 + "', '" + meta2 + "', '" + meta3 + "', '" 
+							+ meta4 + "', '" + meta5 + "', '" + meta6 + "', '" + meta7 + "', '" + meta8 + "', '" + meta9 + "', '" 
+							+ meta10 + "', '" + meta11 + "', '" + meta12 + "', '" + meta13 + "', '" + meta14 + "', '" + meta15 + "');";
 						stat.executeUpdate(insert);
 					}					
 				}

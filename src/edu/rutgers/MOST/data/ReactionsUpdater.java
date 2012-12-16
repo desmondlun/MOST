@@ -10,7 +10,7 @@ import java.util.Map;
 import javax.swing.JOptionPane;
 
 import edu.rutgers.MOST.config.LocalConfig;
-import edu.rutgers.MOST.logic.ReactionParser1;
+import edu.rutgers.MOST.logic.ReactionParser;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
@@ -21,9 +21,9 @@ public class ReactionsUpdater {
 		//update MetabolitesUsedMap by decrementing count or removing metabolite
 		//based on oldReactions that are being replaced
 		for (int i = 0; i < oldReactionsList.size(); i++) {
-			ReactionParser1 parser1 = new ReactionParser1();
-			if (parser1.isValid(oldReactionsList.get(i)) && !LocalConfig.getInstance().getInvalidReactions().contains(oldReactionsList.get(i))) {
-				ArrayList<ArrayList> oldReactionList = parser1.reactionList(oldReactionsList.get(i));
+			ReactionParser parser = new ReactionParser();
+			if (parser.isValid(oldReactionsList.get(i)) && !LocalConfig.getInstance().getInvalidReactions().contains(oldReactionsList.get(i))) {
+				ArrayList<ArrayList<ArrayList<String>>> oldReactionList = parser.reactionList(oldReactionsList.get(i));
 
 				//remove old species from used map
 				for (int x = 0; x < oldReactionList.size(); x++) {
@@ -70,12 +70,7 @@ public class ReactionsUpdater {
 					}
 					Double fluxValue = GraphicalInterfaceConstants.FLUX_VALUE_DEFAULT;
 					if (GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN) != null) {
-						try {
-							fluxValue = Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN));
-						}
-					    catch ( NumberFormatException nfe ) {
-					       System.out.println( "Number format exception" );
-					    }				
+						fluxValue = Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN));	
 					} 
 					
 					//if strings contain ' (single quote), it will not execute insert statement
@@ -97,14 +92,14 @@ public class ReactionsUpdater {
 						reactionName = " ";
 					}
 					
-					ReactionParser1 parser1 = new ReactionParser1();
+					ReactionParser parser = new ReactionParser();
 					String reactionEquation = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
 					if (reactionEquation != null) {
 						if (reactionEquation.contains("'")) {
 							reactionEquation = reactionEquation.replaceAll("'", "''");
 						}
-						if (parser1.isValid(reactionEquation)) {
-							ArrayList<ArrayList> newReactionList = parser1.reactionList(reactionEquation);
+						if (parser.isValid(reactionEquation)) {
+							ArrayList<ArrayList<ArrayList<String>>> newReactionList = parser.reactionList(reactionEquation);
 
 							//add new species to used map
 							for (int x = 0; x < newReactionList.size(); x++) {
@@ -147,30 +142,16 @@ public class ReactionsUpdater {
 					
 					Double lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
 					if (GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.LOWER_BOUND_COLUMN) != null) {
-						try {
-							lowerBound = Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.LOWER_BOUND_COLUMN));
-						}
-					    catch ( NumberFormatException nfe ) {
-					       System.out.println( "Number format exception" );
-					    }				
+						lowerBound = Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.LOWER_BOUND_COLUMN));				
 					} 
 					Double upperBound = GraphicalInterfaceConstants.UPPER_BOUND_DEFAULT;
 					if (GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.UPPER_BOUND_COLUMN) != null) {
-						try {
-							upperBound = Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.UPPER_BOUND_COLUMN));
-						}
-					    catch ( NumberFormatException nfe ) {
-					       System.out.println( "Number format exception" );
-					    }				
+						upperBound = Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.UPPER_BOUND_COLUMN));
+				
 					} 
 					Double objective = GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_DEFAULT;
 					if (GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN) != null) {
-						try {
-							objective = Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN));
-						}
-					    catch ( NumberFormatException nfe ) {
-					       System.out.println( "Number format exception" );
-					    }				
+						objective = Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN));			
 					} 
 					
 					String meta1 = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_META1_COLUMN);
@@ -319,7 +300,7 @@ public class ReactionsUpdater {
 	//used for updating when a single row is edited
 	public void updateReactionEquations(int id, String oldEquation, String newEquation, String databaseName) {
 
-		ReactionParser1 parser1 = new ReactionParser1();
+		ReactionParser parser = new ReactionParser();
 		DatabaseCreator creator = new DatabaseCreator();
 
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
@@ -330,8 +311,8 @@ public class ReactionsUpdater {
 			Statement stat = conn.createStatement();		
 
 			//update for old reaction
-			if (parser1.isValid(oldEquation)) {
-				ArrayList<ArrayList> oldReactionList = parser1.reactionList(oldEquation);
+			if (parser.isValid(oldEquation)) {
+				ArrayList<ArrayList<ArrayList<String>>> oldReactionList = parser.reactionList(oldEquation);
 
 				//remove old species from used map
 				for (int x = 0; x < oldReactionList.size(); x++) {
@@ -376,17 +357,16 @@ public class ReactionsUpdater {
 			
 			//update for new reaction
 			try {
-				ReactionParser1 parser = new ReactionParser1();
 				boolean valid = true;
 				
 				if (parser.isValid(newEquation)) {
-					ArrayList<ArrayList> reactionList = parser.reactionList(newEquation.trim());					
+					ArrayList<ArrayList<ArrayList<String>>> reactionList = parser.reactionList(newEquation.trim());					
 					// if reaction contains a prefix such as [c]: and a compartment suffix
 					// such as a[c], it is invalid
 					if (parser.invalidSyntax) {
 						valid = false;
 					} else {
-						ArrayList<ArrayList> reactants = reactionList.get(0);
+						ArrayList<ArrayList<String>> reactants = reactionList.get(0);
 						//reactions of the type ==> b will be size 1, assigned the value [0] in parser
 						
 						if (reactants.get(0).size() == 1) {
@@ -463,7 +443,7 @@ public class ReactionsUpdater {
 							}
 						}
 						//reactions of the type a ==> will be size 1, assigned the value [0] in parser
-						ArrayList<ArrayList> products = reactionList.get(1);
+						ArrayList<ArrayList<String>> products = reactionList.get(1);
 						if (products.get(0).size() == 1) {
 						} else {
 							for (int p = 0; p < products.size(); p++) {
@@ -598,11 +578,11 @@ public class ReactionsUpdater {
 
 		}
 		
-		ReactionParser1 parser1 = new ReactionParser1();
+		ReactionParser parser = new ReactionParser();
 		
 		for (int r = 0; r < deletedReactions.size(); r++) {
-			if (parser1.isValid(deletedReactions.get(r))) {
-				ArrayList<ArrayList> oldReactionList = parser1.reactionList(deletedReactions.get(r));
+			if (parser.isValid(deletedReactions.get(r))) {
+				ArrayList<ArrayList<ArrayList<String>>> oldReactionList = parser.reactionList(deletedReactions.get(r));
 				//remove old species from used map
 				for (int x = 0; x < oldReactionList.size(); x++) {
 					for (int y = 0; y < oldReactionList.get(x).size(); y++) {

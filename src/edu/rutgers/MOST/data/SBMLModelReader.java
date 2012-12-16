@@ -622,6 +622,21 @@ public class SBMLModelReader {
 	}
 	
 	public static void main(String[] args) {
+		SBMLReader reader = new SBMLReader();
+		SBMLDocument doc;
+		try {
+			//doc = reader.readSBML("C:\\Users\\dslun\\GitHub\\desmondlun_MOST\\etc\\sbml\\Ec_core_flux1.xml");
+			doc = reader.readSBML("C:\\Users\\dslun\\GitHub\\desmondlun_MOST\\etc\\sbml\\Ec_iAF1260_anaerobic_glc10_acetate.xml");
+			SBMLModelReader modelReader = new SBMLModelReader(doc);
+			modelReader.setDatabaseName("Ec_core_flux1.db");
+			modelReader.load();
+		} catch (XMLStreamException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 }

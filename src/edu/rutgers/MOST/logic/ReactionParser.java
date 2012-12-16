@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ReactionParser1 {
+public class ReactionParser {
 	
 	public static boolean parse = true; //TODO: determine if needed
 	// if reaction starts with [c]: for example, suffix will be appended to all
@@ -16,11 +16,11 @@ public class ReactionParser1 {
 	// if reaction contains prefix and suffix
 	public static boolean invalidSyntax = false;
 
-	public static ArrayList<ArrayList> reactionList(String reactionEquation){
+	public static ArrayList<ArrayList<ArrayList<String>>> reactionList(String reactionEquation) {
 		invalidSyntax = false;
-		ArrayList<ArrayList> reactionList = new ArrayList();
-		ArrayList<String> reactantAndStoicList = new ArrayList();
-		ArrayList<String> productAndStoicList = new ArrayList();
+		ArrayList<ArrayList<ArrayList<String>>> reactionList = new ArrayList<ArrayList<ArrayList<String>>>();
+		ArrayList<String> reactantAndStoicList = new ArrayList<String>();
+		ArrayList<String> productAndStoicList = new ArrayList<String>();
 		if (reactionEquation != null) {
 			reactionEquation = compartmentPrefixRemoved(reactionEquation);
 			
@@ -28,15 +28,15 @@ public class ReactionParser1 {
 			if (reactionEquation.trim().startsWith(splitString(reactionEquation))) {
 				reactantAndStoicList.add("0");
 				
-				ArrayList<ArrayList> reactants = new ArrayList();
+				ArrayList<ArrayList<String>> reactants = new ArrayList();
 				reactants.add(reactantAndStoicList);
 				reactionList.add(reactants);
 				
 				String productHalfEquation = reactionEquation.substring(splitString(reactionEquation).length(), reactionEquation.length());
 				java.util.List<String> productsAndCoeff = Arrays.asList(productHalfEquation.split("\\s+"));
 				
-				ArrayList<ArrayList> rawProducts = rawSpeciesAndCoeffList(productsAndCoeff);
-				ArrayList<ArrayList> products = stoicAndSpeciesList(rawProducts);			
+				ArrayList<ArrayList<String>> rawProducts = rawSpeciesAndCoeffList(productsAndCoeff);
+				ArrayList<ArrayList<String>> products = stoicAndSpeciesList(rawProducts);			
 				reactionList.add(products);
 				
 			} else if (reactionEquation.trim().endsWith(splitString(reactionEquation).trim())) {			
@@ -44,13 +44,13 @@ public class ReactionParser1 {
 				String reactantHalfEquation = reactionEquation.substring(0, reactionEquation.length() - splitString(reactionEquation).length());
 				java.util.List<String> reactantsAndCoeff = Arrays.asList(reactantHalfEquation.split("\\s+"));			
 				
-				ArrayList<ArrayList> rawReactants = rawSpeciesAndCoeffList(reactantsAndCoeff);
-				ArrayList<ArrayList> reactants = stoicAndSpeciesList(rawReactants);			
+				ArrayList<ArrayList<String>> rawReactants = rawSpeciesAndCoeffList(reactantsAndCoeff);
+				ArrayList<ArrayList<String>> reactants = stoicAndSpeciesList(rawReactants);			
 				reactionList.add(reactants);
 				
 				productAndStoicList.add("0");
 				
-				ArrayList<ArrayList> products = new ArrayList();
+				ArrayList<ArrayList<String>> products = new ArrayList<ArrayList<String>>();
 				products.add(productAndStoicList);
 				reactionList.add(products);
 				
@@ -58,15 +58,15 @@ public class ReactionParser1 {
 				String reactantHalfEquation = halfEquations.get(0).trim();
 				java.util.List<String> reactantsAndCoeff = Arrays.asList(halfEquations.get(0).trim().split("\\s+"));
 							
-				ArrayList<ArrayList> rawReactants = rawSpeciesAndCoeffList(reactantsAndCoeff);
-				ArrayList<ArrayList> reactants = stoicAndSpeciesList(rawReactants);
+				ArrayList<ArrayList<String>> rawReactants = rawSpeciesAndCoeffList(reactantsAndCoeff);
+				ArrayList<ArrayList<String>> reactants = stoicAndSpeciesList(rawReactants);
 				reactionList.add(reactants);
 				
 				String productHalfEquation = halfEquations.get(1).trim();
 				java.util.List<String> productsAndCoeff = Arrays.asList(productHalfEquation.split("\\s+"));
 				
-				ArrayList<ArrayList> rawProducts = rawSpeciesAndCoeffList(productsAndCoeff);
-				ArrayList<ArrayList> products = stoicAndSpeciesList(rawProducts);
+				ArrayList<ArrayList<String>> rawProducts = rawSpeciesAndCoeffList(productsAndCoeff);
+				ArrayList<ArrayList<String>> products = stoicAndSpeciesList(rawProducts);
 				reactionList.add(products);
 			}		
 		}
@@ -76,20 +76,20 @@ public class ReactionParser1 {
 	}
 	
 	//creates list of raw lists of coeff and species from half equations
-	public static ArrayList<ArrayList> rawSpeciesAndCoeffList(List<String> halfEquation) {
+	public static ArrayList<ArrayList<String>> rawSpeciesAndCoeffList(List<String> halfEquation) {
 		//need to make an array of speciesAndCoeff lists
-		ArrayList<ArrayList> rawSpeciesAndCoeffList = new ArrayList();
+		ArrayList<ArrayList<String>> rawSpeciesAndCoeffList = new ArrayList<ArrayList<String>>();
 		//list of coeff and species or species only
 		ArrayList<String> speciesAndCoeff[] = new ArrayList[getNumberOfSpecies(halfEquation)];
 		int currentSpecies = 0;
-		speciesAndCoeff[currentSpecies] = new ArrayList();
+		speciesAndCoeff[currentSpecies] = new ArrayList<String>();
 		for (int i = 0; i < halfEquation.size(); i++) {				
 			if (halfEquation.get(i).compareTo("+") != 0) {				
 				speciesAndCoeff[currentSpecies].add(halfEquation.get(i));				
 			} else {
 				rawSpeciesAndCoeffList.add(speciesAndCoeff[currentSpecies]);
 				currentSpecies += 1;
-				speciesAndCoeff[currentSpecies] = new ArrayList();
+				speciesAndCoeff[currentSpecies] = new ArrayList<String>();
 			}			
 		}
 		
@@ -98,8 +98,8 @@ public class ReactionParser1 {
 		return rawSpeciesAndCoeffList;
 	}
 	
-	public static ArrayList<ArrayList> stoicAndSpeciesList(ArrayList<ArrayList> rawSpeciesList) {
-		ArrayList<ArrayList> stoicAndSpeciesList = new ArrayList();
+	public static ArrayList<ArrayList<String>> stoicAndSpeciesList(ArrayList<ArrayList<String>> rawSpeciesList) {
+		ArrayList<ArrayList<String>> stoicAndSpeciesList = new ArrayList();
 		ArrayList<String> stoicAndSpecies[] = new ArrayList[rawSpeciesList.size()];
 		for (int i = 0; i < rawSpeciesList.size(); i++) {
 			stoicAndSpecies[i] = stoicAndSpecies((ArrayList) rawSpeciesList.get(i));

@@ -127,7 +127,7 @@ public class GraphicalInterfaceConstants {
     public static final int METABOLITE_META_DEFAULT_WIDTH = 150;
     
     public static final double FLUX_VALUE_DEFAULT = 0.0;
-    public static final double LOWER_BOUND_DEFAULT = 0.0;
+    public static final double LOWER_BOUND_DEFAULT = -999999.0;
     public static final double UPPER_BOUND_DEFAULT = 999999.0;
     public static final String UPPER_BOUND_DEFAULT_STRING = "999999.0";
     public static final double BIOLOGICAL_OBJECTIVE_DEFAULT = 0.0;
