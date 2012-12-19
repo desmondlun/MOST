@@ -3662,7 +3662,6 @@ public class GraphicalInterface extends JFrame {
 										reactionsTable.setValueAt(rowstring[c], viewRow, startCol + c);
 									} else {
 										validPaste = false;
-										System.out.println(validPaste);
 									}				
 								} else {
 									reactionsTable.setValueAt(" ", viewRow, startCol + c);
@@ -3690,7 +3689,6 @@ public class GraphicalInterface extends JFrame {
 									reactionsTable.setValueAt(rowstring[c], viewRow, startCol + c);
 								} else {
 									validPaste = false;
-									System.out.println(validPaste);
 								}
 							} else {
 								reactionsTable.setValueAt(" ", viewRow, startCol + c);
@@ -3770,7 +3768,6 @@ public class GraphicalInterface extends JFrame {
 						reactionsTable.setValueAt(rowstring[c], viewRow, startCol + c);
 					} else {
 						validPaste = false;
-						System.out.println(validPaste);
 					}				
 				} else {
 					reactionsTable.setValueAt(" ", viewRow, startCol + c);
