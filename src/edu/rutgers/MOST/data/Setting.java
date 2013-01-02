@@ -21,3 +21,4 @@ public class Setting {
 		this.value = curValue;
 	}
 }
+

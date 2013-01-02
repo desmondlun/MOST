@@ -19,6 +19,7 @@ public class OutputPopout extends JFrame {
 		textArea = new JTextArea(30, 60);
 		textArea.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
 		//textArea.setFont(new Font("monospaced", Font.PLAIN, 14));
+		textArea.setEditable(false);
 		JScrollPane scrollingText = new JScrollPane(textArea);
 
 		JPanel content = new JPanel();

@@ -183,6 +183,40 @@ public class MetaboliteFactory {
 		return max;
 	}
 	
+	public ArrayList<String> metabolitesList() {
+		ArrayList<String> metabolitesList = new ArrayList<String>();
+		
+			try {
+				Class.forName("org.sqlite.JDBC");
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Connection conn;
+			try {
+				conn = DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db"); // TODO:
+				// Make
+				// this
+				// configurable
+				PreparedStatement prep = conn
+				.prepareStatement("select metabolite_abbreviation from metabolites where length(metabolite_abbreviation) > 0;");
+				conn.setAutoCommit(true);
+				ResultSet rs = prep.executeQuery();
+				while (rs.next()) {
+					String metaboliteAbbreviation = rs.getString("metabolite_abbreviation");
+
+					metabolitesList.add(metaboliteAbbreviation);
+				}
+				rs.close();
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		return metabolitesList;
+	}
+	
 	public static void main(String[] args) {
 		
 	}

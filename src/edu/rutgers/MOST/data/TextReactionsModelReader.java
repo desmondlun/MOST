@@ -18,7 +18,8 @@ import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 public class TextReactionsModelReader {
 	
-	boolean addMetaboliteOption = true;
+	public boolean noReactants;     // type ==> p
+	public boolean noProducts;      // type r ==>
 	
 	public ArrayList<String> columnNamesFromFile(File file, int row) {
 		ArrayList<String> columnNamesFromFile = new ArrayList<String>();
@@ -105,13 +106,15 @@ public class TextReactionsModelReader {
 		return count;		
 	}
 
-	public void load(File file, String databaseName){		
+	public void load(File file, String databaseName){	
 		//if first row of file in not column names, starts reading after row that contains names
 		int correction = LocalConfig.getInstance().getReactionsNextRowCorrection();
 		int row = 1;
 		int maxMetabId = LocalConfig.getInstance().getMaxMetaboliteId();
 		
 		LocalConfig.getInstance().getMetaboliteUsedMap().clear();
+		
+		LocalConfig.getInstance().addMetaboliteOption = true;
 		
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
 
@@ -143,6 +146,28 @@ public class TextReactionsModelReader {
 			stat.executeUpdate("drop table if exists reaction_products;");
 			stat.executeUpdate("CREATE TABLE reaction_products (reaction_id INTEGER, " 
 					+ " metabolite_id INTEGER, stoic FLOAT);");
+			
+			if (!LocalConfig.getInstance().hasMetabolitesFile) {
+				
+				String metaString = "";
+				for (int i = 0; i < 15; i++) {
+					String meta = ", meta_" + (i + 1)+ " varchar(500)";
+					metaString += meta;
+				}
+				
+				stat.executeUpdate("drop table if exists metabolites;");
+				stat.executeUpdate("create table metabolites (id INTEGER PRIMARY KEY, " 
+						+ " metabolite_abbreviation varchar(255), metabolite_name varchar(255), "
+						+ " charge varchar(5), compartment varchar(255), boundary varchar(5) " 
+						+ metaString + ");");
+				
+				stat.executeUpdate("drop table if exists reactions_meta_info;");		    
+				stat.executeUpdate("CREATE TABLE reactions_meta_info (id INTEGER PRIMARY KEY, meta_column_name varchar(100));");
+
+				stat.executeUpdate("drop table if exists metabolites_meta_info;");		    
+				stat.executeUpdate("CREATE TABLE metabolites_meta_info (id INTEGER PRIMARY KEY, meta_column_name varchar(100));");
+				
+			}
 			
 			CSVReader reader;
 			try {
@@ -253,25 +278,33 @@ public class TextReactionsModelReader {
 						try {
 							ReactionParser parser = new ReactionParser();
 							boolean valid = true;
-							ArrayList<ArrayList<ArrayList<String>>> reactionList = parser.reactionList(reactionString.trim());
 							
+							ArrayList<ArrayList<ArrayList<String>>> reactionList = parser.reactionList(reactionString.trim());
 							if (parser.isValid(reactionString)) {
+								noReactants = false;
+								noProducts = false;
 								ArrayList<ArrayList<String>> reactants = parser.reactionList(reactionString.trim()).get(0);
-								//reactions of the type ==> b will be size 1, assigned the value [0] in parser
+								// if user hits "No", reactant will not be included in equation
+								ArrayList<String> removeReacList = new ArrayList<String>();
+								ArrayList<String> removeProdList = new ArrayList<String>();
+								//reactions of the type ==> b will be size 1, assigned the value [0] in parser			
 								if (reactants.get(0).size() == 1) {
+									noReactants = true;
 								} else {
 									for (int r = 0; r < reactants.size(); r++) {
 										if (reactants.get(r).size() == 2) {
 											String stoicStr = (String) reactants.get(r).get(0);
 											String reactant = (String) reactants.get(r).get(1);
 											String addMetab = "insert into metabolites (metabolite_abbreviation, boundary) values('"  + reactant + "', 'false');";	
-											
+											boolean newMetabolite = false;
 											if (!(LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(reactant.trim()))) {
-												if (GraphicalInterface.showPrompt) {
+												newMetabolite = true;
+												if (GraphicalInterface.showPrompt && reactant.length() > 0) {
 													Object[] options = {"Yes",
 															"Yes to All",
 													"No"};
 
+													
 													int choice = JOptionPane.showOptionDialog(null, 
 															"The metabolite " + reactant + " does not exist. Do you wish to add it?", 
 															"Add Metabolite?", 
@@ -283,6 +316,7 @@ public class TextReactionsModelReader {
 													// interpret the user's choice	  
 													if (choice == JOptionPane.YES_OPTION)
 													{
+														LocalConfig.getInstance().addMetaboliteOption = true;
 														stat.executeUpdate(addMetab);
 														maxMetabId += 1;
 														LocalConfig.getInstance().getMetaboliteIdNameMap().put(reactant, new Integer(maxMetabId));
@@ -290,6 +324,7 @@ public class TextReactionsModelReader {
 													//No option actually corresponds to "Yes to All" button
 													if (choice == JOptionPane.NO_OPTION)
 													{
+														LocalConfig.getInstance().addMetaboliteOption = true;
 														GraphicalInterface.showPrompt = false;
 														stat.executeUpdate(addMetab);
 														maxMetabId += 1;
@@ -297,9 +332,9 @@ public class TextReactionsModelReader {
 													}
 													//Cancel option actually corresponds to "No" button
 													if (choice == JOptionPane.CANCEL_OPTION) {
-														addMetaboliteOption = false;
-														reactionString = "";
-														valid = false;
+														LocalConfig.getInstance().addMetaboliteOption = false;
+														LocalConfig.getInstance().noButtonClicked = true;
+														removeReacList.add(reactant);
 													}	  
 												} else {
 													stat.executeUpdate(addMetab);
@@ -308,17 +343,17 @@ public class TextReactionsModelReader {
 												}											
 											}										
 											
-											Integer id = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(reactant);
-											
-											String insert = "INSERT INTO reaction_reactants(reaction_id, stoic, metabolite_id) values (" + (i - correction) + ", " + stoicStr + ", " + id + ");";
-											stat.executeUpdate(insert);
-											if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(reactant)) {
-												int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(reactant);
-												LocalConfig.getInstance().getMetaboliteUsedMap().put(reactant, new Integer(usedCount + 1));									
-											} else {
-												LocalConfig.getInstance().getMetaboliteUsedMap().put(reactant, new Integer(1));
-											}	
-											
+											Integer id = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(reactant);				
+											if (!newMetabolite || LocalConfig.getInstance().addMetaboliteOption) {
+												String insert = "INSERT INTO reaction_reactants(reaction_id, stoic, metabolite_id) values (" + (i - correction) + ", " + stoicStr + ", " + id + ");";
+												stat.executeUpdate(insert);
+												if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(reactant)) {
+													int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(reactant);
+													LocalConfig.getInstance().getMetaboliteUsedMap().put(reactant, new Integer(usedCount + 1));									
+												} else {
+													LocalConfig.getInstance().getMetaboliteUsedMap().put(reactant, new Integer(1));
+												}	
+											}
 										} else {
 											//Invalid reaction
 											valid = false;
@@ -326,18 +361,21 @@ public class TextReactionsModelReader {
 										}								
 									}
 								}
+										
 								//reactions of the type a ==> will be size 1, assigned the value [0] in parser
 								ArrayList<ArrayList<String>> products = parser.reactionList(reactionString.trim()).get(1);
 								if (products.get(0).size() == 1) {
+									noProducts = true;
 								} else {
 									for (int p = 0; p < products.size(); p++) {
 										if (products.get(p).size() == 2) {
 											String stoicStr = (String) products.get(p).get(0);
 											String product = (String) products.get(p).get(1);
-											String addMetab = "insert into metabolites (metabolite_abbreviation, boundary) values('"  + product + "', 'false');";
-											
+											String addMetab = "insert into metabolites (metabolite_abbreviation, boundary) values('"  + product + "', 'false');";											
+											boolean newMetabolite = false;
 											if (!(LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(product))) {
-												if (GraphicalInterface.showPrompt) {
+												newMetabolite = true;
+												if (GraphicalInterface.showPrompt && product.length() > 0) {
 													Object[] options = {"Yes",
 															"Yes to All",
 													"No"};
@@ -353,6 +391,7 @@ public class TextReactionsModelReader {
 													// interpret the user's choice	  
 													if (choice == JOptionPane.YES_OPTION)
 													{
+														LocalConfig.getInstance().addMetaboliteOption = true;
 														stat.executeUpdate(addMetab);
 														maxMetabId += 1;
 														LocalConfig.getInstance().getMetaboliteIdNameMap().put(product, new Integer(maxMetabId));
@@ -360,6 +399,7 @@ public class TextReactionsModelReader {
 													//No option actually corresponds to "Yes to All" button
 													if (choice == JOptionPane.NO_OPTION)
 													{
+														LocalConfig.getInstance().addMetaboliteOption = true;
 														GraphicalInterface.showPrompt = false;
 														stat.executeUpdate(addMetab);
 														maxMetabId += 1;
@@ -367,9 +407,9 @@ public class TextReactionsModelReader {
 													}
 													//Cancel option actually corresponds to "No" button
 													if (choice == JOptionPane.CANCEL_OPTION) {
-														addMetaboliteOption = false;
-														reactionString = "";
-														valid = false;
+														LocalConfig.getInstance().addMetaboliteOption = false;
+														LocalConfig.getInstance().noButtonClicked = true;
+														removeProdList.add(product);
 													}	  
 												} else {
 													stat.executeUpdate(addMetab);
@@ -378,30 +418,50 @@ public class TextReactionsModelReader {
 												}		
 											}
 											
-											Integer id = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(product);
-											
-											String insert = "INSERT INTO reaction_products(reaction_id, stoic, metabolite_id) values (" + (i - correction) + ", " + stoicStr + ", " + id + ");";
-											stat.executeUpdate(insert);	
-											if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(product)) {
-												int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(product);
-												LocalConfig.getInstance().getMetaboliteUsedMap().put(product, new Integer(usedCount + 1));									
-											} else {
-												LocalConfig.getInstance().getMetaboliteUsedMap().put(product, new Integer(1));
-											}
+											Integer id = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(product);											
+											if (!newMetabolite || LocalConfig.getInstance().addMetaboliteOption) {
+												String insert = "INSERT INTO reaction_products(reaction_id, stoic, metabolite_id) values (" + (i - correction) + ", " + stoicStr + ", " + id + ");";
+												stat.executeUpdate(insert);	
+												if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(product)) {
+													int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(product);
+													LocalConfig.getInstance().getMetaboliteUsedMap().put(product, new Integer(usedCount + 1));									
+												} else {
+													LocalConfig.getInstance().getMetaboliteUsedMap().put(product, new Integer(1));
+												}
+											}										
 											
 										} else {
 											//Invalid reaction
 											valid = false;
-											break;
+											break;											
 										}
 									}							
 								}
+								// revise reaction equation if "No" button clicked
+								if (valid && LocalConfig.getInstance().noButtonClicked) {
+									String revisedReactants = "";
+									String revisedProducts = "";
+									String revisedReaction = "";
+									if (!noReactants) {
+										revisedReactants = revisedReactants(reactants, removeReacList);
+									}									
+									String splitString = parser.splitString(reactionString);
+									if (!noProducts) {
+										revisedProducts = revisedProducts(products, removeProdList);
+									}									
+									revisedReaction = revisedReactants + " " + splitString + revisedProducts;
+									// prevents reaction equation from appearing as only an arrow such as ==>
+									if (revisedReaction.trim().compareTo(splitString.trim()) != 0) {
+										reactionString = revisedReaction.trim();
+									} else {
+										reactionString = "";
+									}									
+								}								
 							} else {
 								//Invalid reaction
 								valid = false;
 							}
-							
-							
+														
 							if (!valid) {
 								String deleteReac = "delete from reaction_reactants where reaction_id=" + (i - correction) + ";";
 								stat.executeUpdate(deleteReac);
@@ -551,7 +611,8 @@ public class TextReactionsModelReader {
 							+ meta4 + "', '" + meta5 + "', '" + meta6 + "', '" + meta7 + "', '" + meta8 + "', '" + meta9 + "', '" 
 							+ meta10 + "', '" + meta11 + "', '" + meta12 + "', '" + meta13 + "', '" + meta14 + "', '" + meta15 + "');";
 						stat.executeUpdate(insert);
-					}					
+					}
+					LocalConfig.getInstance().noButtonClicked = false;
 				}
 				stat.executeUpdate("COMMIT");
 			} catch (Exception e) {
@@ -567,7 +628,67 @@ public class TextReactionsModelReader {
 
 		}
 		GraphicalInterface.showPrompt = true;
-		//System.out.println("Done");
+	}
+	
+	// methods used if "No" button is pressed in order to reconstruct reaction equation with species omitted
+	public String revisedReactants(ArrayList<ArrayList<String>> reactants, ArrayList<String> removeReacList) {
+		String revisedReactants = "";
+		StringBuffer reacBfr = new StringBuffer();
+		for (int r = 0; r < reactants.size(); r++) {
+			String stoicStr = (String) reactants.get(r).get(0);
+			String reactant = (String) reactants.get(r).get(1);
+			if (!removeReacList.contains(reactant)) {
+				if (r == 0) {
+					if (Double.valueOf(stoicStr) == 1) {
+						reacBfr.append(reactant);
+					} else {
+						reacBfr.append(stoicStr + " " + reactant);
+					}		
+				} else {
+					if (Double.valueOf(stoicStr) == 1) {
+						reacBfr.append(" + " + reactant);
+					} else {
+						reacBfr.append(" + " + stoicStr + " " + reactant);
+					}				
+				}
+			}								
+		}
+		revisedReactants = reacBfr.toString();
+		if (revisedReactants.startsWith(" + ")) {
+			revisedReactants = revisedReactants.substring(3);
+		}
+		
+		return revisedReactants;
+	}
+	
+	public String revisedProducts(ArrayList<ArrayList<String>> products, ArrayList<String> removeProdList) {
+		String revisedProducts = "";
+		StringBuffer prodBfr = new StringBuffer();
+		for (int r = 0; r < products.size(); r++) {
+			String stoicStr = (String) products.get(r).get(0);
+			String product = (String) products.get(r).get(1);
+			if (!removeProdList.contains(product)) {
+				if (r == 0) {
+					if (Double.valueOf(stoicStr) == 1) {
+						prodBfr.append(product);
+					} else {
+						prodBfr.append(stoicStr + " " + product);
+					}		
+				} else {
+					if (Double.valueOf(stoicStr) == 1) {
+						prodBfr.append(" + " + product);
+					} else {
+						prodBfr.append(" + " + stoicStr + " " + product);
+					}				
+				}
+			}						
+		}
+		revisedProducts = prodBfr.toString();
+		if (revisedProducts.startsWith(" + ")) {
+			revisedProducts = revisedProducts.substring(3);
+		}
+				
+		return revisedProducts;
 	}
 }
 

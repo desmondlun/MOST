@@ -6,7 +6,6 @@ import java.util.List;
 
 public class ReactionParser {
 	
-	public static boolean parse = true; //TODO: determine if needed
 	// if reaction starts with [c]: for example, suffix will be appended to all
 	// species in the reaction when adding to metabolites table and maps
 	public static boolean hasPrefix = false;
@@ -15,9 +14,11 @@ public class ReactionParser {
 	public static boolean hasSuffix = false;
 	// if reaction contains prefix and suffix
 	public static boolean invalidSyntax = false;
+	public static boolean invalidSpacing = false;
 
 	public static ArrayList<ArrayList<ArrayList<String>>> reactionList(String reactionEquation) {
 		invalidSyntax = false;
+		invalidSpacing = false;
 		ArrayList<ArrayList<ArrayList<String>>> reactionList = new ArrayList<ArrayList<ArrayList<String>>>();
 		ArrayList<String> reactantAndStoicList = new ArrayList<String>();
 		ArrayList<String> productAndStoicList = new ArrayList<String>();
@@ -144,13 +145,12 @@ public class ReactionParser {
 				stoicAndSpecies.add(stoic);
 				stoicAndSpecies.add(reactant);
 			} else {
-				parse = false; //TODO: determine if needed
+				invalidSpacing = true;
 			}
 		} else {
 			stoicAndSpecies.add(stoic);
 			stoicAndSpecies.add(reactant);
-		}
-			
+		}			
 		return stoicAndSpecies;
 	}
 	
@@ -222,7 +222,7 @@ public class ReactionParser {
 			species = reactantsAndCoeff.get(0 + stoicCorrection);
 		}
 		
-		String existingSuffix = existingSuffix(species);
+		//String existingSuffix = existingSuffix(species);
 		if (hasPrefix) {
 			if (hasSuffix) {
 				invalidSyntax = true;
@@ -246,29 +246,37 @@ public class ReactionParser {
 		return numSpecies;		
 	}
 	
-	public boolean isValid(String reactionEquation) {
-		if (reactionEquation != null) {
+	public boolean isValid(String reactionEquation) {		
+		if (reactionEquation == null) {
+			return true;
+		} else if (reactionEquation != null || reactionEquation.trim().length() > 0) {
+			// checks for valid split string (arrow)
 			if (splitString(reactionEquation).length() < 1) {
 				return false;
 			}
+			// checks for valid split string in reactions of ==> p type
 			else if (reactionEquation.trim().startsWith(splitString(reactionEquation))) {
 				if (!reactionEquation.trim().contains(splitString(reactionEquation))) {
 					return false;
 				}
+			// checks for space between species and arrow, ex: a ==> valid but not a==>
 			} else if (reactionEquation.trim().endsWith(splitString(reactionEquation).trim())) {
 				if (!reactionEquation.trim().contains(" " + splitString(reactionEquation).trim())) {
 					return false;
-				}
+				}				
+			} else if (invalidSyntax) {
+				return false;
 			} else {
+				// checks for space between species and arrow, ex: a ==> b valid but not a==>b
 				if (!reactionEquation.trim().contains(" " + splitString(reactionEquation))) {
 					return false;
-				}
+				}				
 			}
 		}
 		return true;
 	}
 
-	
+	/*
 	public static String existingSuffix(String species) {
 		String existingSuffix = "";
 		if (species.indexOf("[") == species.length() - 3 && species.endsWith("]")) {
@@ -277,11 +285,10 @@ public class ReactionParser {
 		}
 		return existingSuffix;		
 	}
+	*/
 	
 	public static void main(String[] args) {
-		//String reactionEquation = "a+2 + 3 h+ + c => c+ + d";
-		//ArrayList reaction = reactionList(reactionEquation);
-		//System.out.println(isNumber(s));
+		
 	}
 	
 }

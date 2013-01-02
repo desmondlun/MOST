@@ -1,6 +1,5 @@
 package edu.rutgers.MOST.presentation;
 
-//test
 public class GraphicalInterfaceConstants {
 	
 	public static final String TITLE = "MOST";
@@ -133,7 +132,8 @@ public class GraphicalInterfaceConstants {
     public static final String UPPER_BOUND_DEFAULT_STRING = "999999.0";
     public static final double BIOLOGICAL_OBJECTIVE_DEFAULT = 0.0;
     public static final String KO_DEFAULT = "false";
-    public static final String REVERSIBLE_DEFAULT = "false";
+    // if lower bound default < 0 then reversible must be true
+    public static final String REVERSIBLE_DEFAULT = "true";
     public static final String BOUNDARY_DEFAULT = "false";
         
     public static final String LOWER_BOUND_ERROR_TITLE = "Lower Bound Error.";
@@ -153,6 +153,12 @@ public class GraphicalInterfaceConstants {
 	
     public static final String PARTICIPATING_METAB_ERROR_TITLE = "Participating Metabolite Deletion Error";
     public static final String PARTICIPATING_METAB_ERROR_MESSAGE = "One or more selected metabolites participate in reactions and cannot be deleted.";
+    
+    public static final String IRREVERSIBLE_REACTION_ERROR_TITLE = "Irreversible Reaction Error";
+    public static final String IRREVERSIBLE_REACTION_ERROR_MESSAGE = "Irreversible reaction requires lower bound to be >= 0";
+    
+    public static final String INVALID_REACTIONS_ERROR_TITLE = "Invalid Reactions Warning";
+    public static final String INVALID_REACTIONS_ERROR_MESSAGE = "Model contains invalid reactions. Are you sure you wish to save?";
     
     public static final String HELP_TOPICS_URL = "https://github.com/dennisegen/MOST/wiki";
     

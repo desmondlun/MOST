@@ -532,6 +532,10 @@ public class ReactionColumnNameInterface  extends JDialog {
 					} 
 				}
 
+				if (LocalConfig.getInstance().hasMetabolitesFile == false) {
+					DatabaseCreator creator = new DatabaseCreator();
+					creator.createDatabase(LocalConfig.getInstance().getDatabaseName());
+				}
 				reactionsMetaColumnManager.addColumnNames(LocalConfig.getInstance().getDatabaseName(), metaColumnNames);
 				LocalConfig.getInstance().setReactionsMetaColumnIndexList(metaColumnIndexList);
 

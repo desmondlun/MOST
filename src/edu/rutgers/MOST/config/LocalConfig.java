@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LocalConfig {
-	
+public class LocalConfig {	
+
 	
 	//Singleton pattern:
     private static final LocalConfig instance = new LocalConfig();
@@ -40,6 +40,9 @@ public class LocalConfig {
 	public void setLoadedDatabase(String loadedDatabase) {
 		this.loadedDatabase = loadedDatabase;
 	}
+	
+	public boolean hasMetabolitesFile;
+	public boolean hasReactionsFile;
 	
 	/**********************************************************************************/
 	//parameters set for metabolites in columnNameInterfaces
@@ -377,5 +380,13 @@ public class LocalConfig {
 	public ArrayList<Integer> getParticipatingReactions() {
 		return participatingReactions;
 	}  
+	
+	// if "No" button pressed in Add Metabolite Prompt, is set to false
+	public boolean addMetaboliteOption;	
+	public boolean noButtonClicked;
+	
+	public boolean pastedReaction;
+	
+	public boolean tablesChanged;
 	
 }
