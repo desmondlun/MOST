@@ -136,58 +136,24 @@ public class GraphicalInterfaceConstants {
     public static final String REVERSIBLE_DEFAULT = "true";
     public static final String BOUNDARY_DEFAULT = "false";
         
-    public static final String LOWER_BOUND_ERROR_TITLE = "Lower Bound Error.";
-    public static final String LOWER_BOUND_ERROR_MESSAGE = "Reaction is irreversible and lower bound is negative. Do you wish to set it to 0?";
-    public static final String LOWER_BOUND_ERROR_MESSAGE2 = "Lower bound must be less than or equal to upper bound. Do you wish to set it to 0?";
-    public static final String UPPER_BOUND_ERROR_TITLE = "Upper Bound Error.";
-    public static final String UPPER_BOUND_ERROR_MESSAGE = "Upper bound must be greater than or equal to lower bound. Do you wish to set it to default value?";
-    
-    public static final String NUMERIC_VALUE_ERROR_TITLE = "Invalid numeric entry.";
-    public static final String NUMERIC_VALUE_ERROR_MESSAGE = "Number Format Error";
-    
-    public static final String[] BOOLEAN_VALUES = {"false", "true"};
-    public static final String[] VALID_FALSE_VALUES = {"f"};
-    public static final String[] VALID_TRUE_VALUES = {"t"};
-    public static final String BOOLEAN_VALUE_ERROR_TITLE = "Invalid entry. Enter \"t\" for \"true\", \"f\" for \"false\"";
-    public static final String BOOLEAN_VALUE_ERROR_MESSAGE = "Boolean Value Error";
-	
-    public static final String PARTICIPATING_METAB_ERROR_TITLE = "Participating Metabolite Deletion Error";
-    public static final String PARTICIPATING_METAB_ERROR_MESSAGE = "One or more selected metabolites participate in reactions and cannot be deleted.";
-    
-    public static final String IRREVERSIBLE_REACTION_ERROR_TITLE = "Irreversible Reaction Error";
-    public static final String IRREVERSIBLE_REACTION_ERROR_MESSAGE = "Irreversible reaction requires lower bound to be >= 0";
-    
-    public static final String INVALID_REACTIONS_ERROR_TITLE = "Invalid Reactions Warning";
-    public static final String INVALID_REACTIONS_ERROR_MESSAGE = "Model contains invalid reactions. Are you sure you wish to save?";
-    
-    public static final String HELP_TOPICS_URL = "https://github.com/dennisegen/MOST/wiki";
-    
+    // prefixes and suffixes
     public static final String DB_COPIER_SUFFIX = "_orig";
     
     public static final String OPTIMIZATION_PREFIX = "OPT_";
     
-    public static final String MIP_SUFFIX = "_MIP";
+    public static final String MIP_SUFFIX = "_MIP"; 
     
-    //metabolite column names
-    public static final String[] METABOLITE_ID_COLUMN_NAMES =
-    {"Metabolite Id", "Metabolite Abbreviation", "Species Id", "Species Abbreviation",
-    	"Id", "Compound Id", "Compound Abbreviation"
-    };
-
-    public static final String[] METABOLITE_NAME_COLUMN_NAMES =
-    {"Metabolite Name", "Metabolite description", "Name", "Species Name", 
-    	"Species description", "Compound Name", "Compound description"
-    };
-    
-    public static final String[] METABOLITE_CHARGE_COLUMN_NAMES =
-    {"Charge", "Metabolite charge", "Species charge", "Compound charge"
-    };
-    
-    public static final String[] METABOLITE_COMPARTMENT_COLUMN_NAMES =
-    {"Compartment"
-    };    
-    
+    /*****************************************************************************/
     //metabolite column filtering names
+    /*****************************************************************************/
+    public static final String[] METAB_ABBREVIATION_FILTER =
+    {"abbreviation", "id"
+    };
+    
+    public static final String[] METAB_NAME_FILTER =
+    {"name"
+    };
+    
     public static final String[] COMPARTMENT_FILTER =
     {"compartment"
     }; 
@@ -203,20 +169,22 @@ public class GraphicalInterfaceConstants {
     public static final String[] BOUNDARY_FILTER =
     {"boundary"
     };
+      
+    /*****************************************************************************/
+    //reaction column filtering names  
+    /*****************************************************************************/
+    public static final String[] ABBREVIATION_COLUMN_FILTER =
+    {"abbreviation", "reaction id"
+    };
     
-    //labels for MetaboliteColumnNameInterface
-    public static final String METABOLITES_DISPLAY_LABEL = "Metabolite Column Display Name";    
-    public static final String METABOLITES_FROM_FILE_LABEL = "Metabolite Column Name From File";
-
-    //labels for ReactionColumnNameInterface
-    public static final String REACTIONS_DISPLAY_LABEL = "Reactions Column Display Name";    
-    public static final String REACTIONS_FROM_FILE_LABEL = "Reactions Column Name From File";
+    public static final String[] NAME_COLUMN_FILTER =
+    {"name"
+    };
     
-    //labels for ExcelSheetInterface
-    public static final String TAB_NAME_LABEL = "Tab Name:";    
-    public static final String SHEET_NAME_FROM_FILE_LABEL = "Sheet Name From File:";    
+    public static final String[] EQUATION_COLUMN_FILTER =
+    {"equation", "reaction"
+    };
     
-    //reaction column filtering names
     public static final String[] REVERSIBLE_COLUMN_FILTER =
     {"reversible"
     };
@@ -233,6 +201,10 @@ public class GraphicalInterfaceConstants {
     {"objective"
     };
     
+    public static final String[] BIOLOGICAL_OBJECTIVE_NOT_FILTER =
+    {"synthetic"
+    };
+    
     public static final String[] KNOCKOUT_COLUMN_FILTER =
     {"knockout", "ko"
     };
@@ -240,64 +212,64 @@ public class GraphicalInterfaceConstants {
     public static final String[] FLUX_VALUE_COLUMN_FILTER =
     {"flux"
     };
+        
+    // messages box titles and messages
+    // general 
+    public static final String NUMERIC_VALUE_ERROR_TITLE = "Invalid numeric entry.";
+    public static final String NUMERIC_VALUE_ERROR_MESSAGE = "Number Format Error";
     
-    //reaction column names
-    public static final String[] REACTION_ID_COLUMN_NAMES =
-    {"Reaction Id", "Reaction Abbreviation"
-    };
+    public static final String[] BOOLEAN_VALUES = {"false", "true"};
+    public static final String[] VALID_FALSE_VALUES = {"f"};
+    public static final String[] VALID_TRUE_VALUES = {"t"};
+    public static final String BOOLEAN_VALUE_ERROR_TITLE = "Invalid entry. Enter \"t\" for \"true\", \"f\" for \"false\"";
+    public static final String BOOLEAN_VALUE_ERROR_MESSAGE = "Boolean Value Error";
+	
+    // lower/upper bound/reversible
+    public static final String LOWER_BOUND_ERROR_TITLE = "Lower Bound Error.";
+    public static final String LOWER_BOUND_ERROR_MESSAGE = "Reaction is irreversible and lower bound is negative. Do you wish to set it to 0?";
+    public static final String LOWER_BOUND_ERROR_MESSAGE2 = "Lower bound must be less than or equal to upper bound. Do you wish to set it to 0?";
+    public static final String UPPER_BOUND_ERROR_TITLE = "Upper Bound Error.";
+    public static final String UPPER_BOUND_ERROR_MESSAGE = "Upper bound must be greater than or equal to lower bound. Do you wish to set it to default value?";
     
-    public static final String[] REACTION_NAME_COLUMN_NAMES =
-    {"Reaction Name", "Reaction description", "Name"
-    };
+    public static final String IRREVERSIBLE_REACTION_ERROR_TITLE = "Irreversible Reaction Error";
+    public static final String IRREVERSIBLE_REACTION_ERROR_MESSAGE = "Irreversible reaction requires lower bound to be >= 0";
+       
+    // participating
+    public static final String PARTICIPATING_METAB_ERROR_TITLE = "Participating Metabolite Deletion Error";
+    public static final String PARTICIPATING_METAB_ERROR_MESSAGE = "One or more selected metabolites participate in reactions and cannot be deleted.";
+     
+    public static final String PARTICIPATING_METAB_PASTE_ERROR_TITLE = "Participating Metabolite Paste Error";
+    public static final String PARTICIPATING_METAB_PASTE_ERROR_MESSAGE = "Invalid Paste. One or more selected metabolites participate in reactions.";
     
-    public static final String[] REACTION_EQUATION_COLUMN_NAMES =
-    {"Reaction Equation", "Equation", "Reaction"
-    };
+    public static final String PARTICIPATING_METAB_RENAME_TITLE = "Rename Participating Metabolite?";
+    public static final String PARTICIPATING_METAB_RENAME_MESSAGE_PREFIX = "Renaming ";
+    public static final String PARTICIPATING_METAB_RENAME_MESSAGE_SUFFIX = " will result in changing one or more reactions. Are you sure you want to do this?";
+        
+    // invalid reactions
+    public static final String INVALID_REACTIONS_ERROR_TITLE = "Invalid Reactions Warning";
+    public static final String INVALID_REACTIONS_ERROR_MESSAGE = "Model contains invalid reactions. Are you sure you wish to save?";    
     
-    public static final String[] KNOCKOUT_COLUMN_NAMES =
-    {"KO", "Knockout"
-    };
+    // interface titles and labels
+    public static final String COLUMN_ADD_INTERFACE_TITLE = "Add Column";   
+    public static final String COLUMN_RENAME_INTERFACE_TITLE = "Rename Column";    
+    public static final String COLUMN_ADD_RENAME_LABEL = "Enter Column Name";
+      
+    public static final String RENAME_METABOLITE_INTERFACE_TITLE = "Rename Metabolite";
+    public static final String RENAME_METABOLITE_LABEL = "Enter New Metabolite Name";
     
-    public static final String[] FLUX_VALUE_COLUMN_NAMES =
-    {"Flux Value"
-    };
+    public static final String CSV_FILE_LOAD_INTERFACE_TITLE = "CSV File Load";    
+    public static final String CSV_FILE_LOAD_METAB_BUTTON = "Load Metabolites File";
+    public static final String CSV_FILE_LOAD_REAC_BUTTON = " Load Reactions File "; 
     
-    public static final String[] REVERSIBLE_COLUMN_NAMES =
-    {"Reversible"
-    };
-    
-    public static final String[] LOWER_BOUND_COLUMN_NAMES =
-    {"Lower Bound", "LB"
-    };
-    
-    public static final String[] UPPER_BOUND_COLUMN_NAMES =
-    {"Upper Bound", "UB"
-    };
-    
-    public static final String[] BIOLOGICAL_OBJECTIVE_COLUMN_NAMES =
-    {"Biological Objective"
-    };
-    
-    public static final String[] STANDARD_SHEET_NAMES =
-    {"metabolites", "reactions"
-    };
-    
-    public static final String[] METABOLITE_TAB_NAMES =
-    {"Metabolites", "Species", "Compounds"
-    };
-    
-    public static final String[] REACTION_TAB_NAMES =
-    {"Reactions"
-    };
-    
-    public static final String EXCEL_SHEET_LABEL = " Sheet Type                                                         Sheet Name";
-    
-    public static final String SHEET_NAMES_LABEL = "Sheet Name";
-    
+    // tab names
     public static final String DEFAULT_METABOLITE_TABLE_TAB_NAME = "Metabolites";
     
     public static final String DEFAULT_REACTION_TABLE_TAB_NAME = " Reactions ";
     
+    // help
+    public static final String HELP_TOPICS_URL = "https://github.com/dennisegen/MOST/wiki";
+       
+    // other
     public static final String[] REVERSIBLE_ARROWS =
     {"<==> ", "<=>", "="
     };
@@ -305,16 +277,5 @@ public class GraphicalInterfaceConstants {
     public static final String[] NOT_REVERSIBLE_ARROWS =
     {"=>", "-->", "->"
     };
-    
-    public static final String COLUMN_ADD_INTERFACE_TITLE = "Add Column";
-    
-    public static final String COLUMN_RENAME_INTERFACE_TITLE = "Rename Column";
-    
-    public static final String COLUMN_ADD_RENAME_LABEL = "Enter Column Name";
-      
-    public static final String CSV_FILE_LOAD_INTERFACE_TITLE = "CSV File Load";    
-    public static final String CSV_FILE_LOAD_METAB_BUTTON = "Load Metabolites File";
-    public static final String CSV_FILE_LOAD_REAC_BUTTON = " Load Reactions File ";
-    
 }
 

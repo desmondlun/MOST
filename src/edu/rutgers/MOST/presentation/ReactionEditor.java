@@ -129,10 +129,10 @@ public class ReactionEditor extends JFrame {
 			e.printStackTrace();
 		}
 		setDatabaseName(LocalConfig.getInstance().getLoadedDatabase());
-		Connection conn = DriverManager.getConnection("jdbc:sqlite:" + getDatabaseName() + ".db");
 
-		//these should be equal, otherwise layout is flawed
-		//100 an arbitrary number, should be large enough to accomodate the large reaction
+		getRootPane().setDefaultButton(okButton);
+
+		//100 an arbitrary number, should be large enough to accommodate the large reaction
 		setNumReactantFields(100);
 		setNumProductFields(100);
 		
@@ -278,7 +278,6 @@ public class ReactionEditor extends JFrame {
 						reactionArea.setText(getReactantString() + " " + getArrowString() + " " + getProductString());
 						okButton.setEnabled(true);
 					}
-
 					ReactionParser parser = new ReactionParser();
 					if (reactionArea.getText() != null && parser.isValid(reactionArea.getText())) {
 						ArrayList<ArrayList<String>> reactants = parser.reactionList(reactionArea.getText().trim()).get(0);
@@ -383,8 +382,7 @@ public class ReactionEditor extends JFrame {
 					} else {
 						reactionArea.setText(getReactantString() + " " + getArrowString() + " " + prodString);
 						okButton.setEnabled(true);
-					}
-					
+					}					
 					ReactionParser parser = new ReactionParser();
 					if (reactionArea.getText() != null && parser.isValid(reactionArea.getText())) {
 						ArrayList<ArrayList<String>> products = parser.reactionList(reactionArea.getText().trim()).get(1);
@@ -613,7 +611,7 @@ public class ReactionEditor extends JFrame {
 			productEditor[0].addKeyListener(new ComboKeyHandler(cbProduct[0]));
 			setNumPopulatedProdBoxes(1);
 		}
-
+		
 		/*****************************************************************************/
 		// end populate text fields of combo boxes
 		/*****************************************************************************/

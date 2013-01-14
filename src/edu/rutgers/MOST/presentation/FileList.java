@@ -20,6 +20,10 @@ class FileList extends JList {
 	}
 
 	public JPopupMenu jPopupMenu = new JPopupMenu();
+	public JMenuItem saveItem = new JMenuItem("Save");         
+	public JMenuItem saveAsCSVItem = new JMenuItem("Save As CSV");    
+	public JMenuItem saveAsSBMLItem = new JMenuItem("Save As SBML");
+	public JMenuItem saveAllItem = new JMenuItem("Save All Optimizations");
 	public JMenuItem deleteItem = new JMenuItem("Delete");
 	public JMenuItem clearItem = new JMenuItem("Clear Optimizations");
 
@@ -64,30 +68,86 @@ class FileList extends JList {
 						if (text.length() > 0) {
 							jPopupMenu.show(fileList, e.getX(), e.getY()); //and show the menu
 							if (index > 0 && index <= model.getSize()) {
+								saveItem.setEnabled(true);
+								saveAsCSVItem.setEnabled(true);
+								//saveAsSBMLItem.setEnabled(true); // will enable when SBML save works
+								saveAllItem.setEnabled(true);
 								deleteItem.setEnabled(true);
-								clearItem.setEnabled(true);
+								clearItem.setEnabled(true);								
 							}
 						}
-
 					} 	          
 				}
 			}
 		});	
-
-
+		
+		jPopupMenu.add(saveItem);
+		saveItem.setEnabled(false);
+		saveItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 
+				if (getRow() > 0) {
+					String item = GraphicalInterface.listModel.getElementAt(getRow());
+					LocalConfig.getInstance().getOptimizationFilesList().remove(item);	
+					System.out.println(LocalConfig.getInstance().getOptimizationFilesList());
+				}				
+			}
+		});	
+		
+		jPopupMenu.add(saveAsCSVItem);
+		saveAsCSVItem.setEnabled(false);
+		saveAsCSVItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 
+				if (getRow() > 0) {
+					String item = GraphicalInterface.listModel.getElementAt(getRow());
+					LocalConfig.getInstance().getOptimizationFilesList().remove(item);	
+					System.out.println(LocalConfig.getInstance().getOptimizationFilesList());				
+				}				
+			}
+		});
+		
+		jPopupMenu.add(saveAsSBMLItem);
+		saveAsSBMLItem.setEnabled(false);
+		saveAsSBMLItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 
+				if (getRow() > 0) {
+					String item = GraphicalInterface.listModel.getElementAt(getRow());
+					LocalConfig.getInstance().getOptimizationFilesList().remove(item);	
+					System.out.println(LocalConfig.getInstance().getOptimizationFilesList());				
+				}				
+			}
+		});	
+		
+		jPopupMenu.add(saveAllItem);
+		saveAllItem.setEnabled(false);
+		saveAllItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 
+				if (getRow() > 0) {
+					LocalConfig.getInstance().getOptimizationFilesList().clear();
+					System.out.println(LocalConfig.getInstance().getOptimizationFilesList());
+				}				
+			}
+		});
+		
+		jPopupMenu.addSeparator();
+		
 		jPopupMenu.add(deleteItem);
 		deleteItem.setEnabled(false);
 		deleteItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 
 				if (getRow() > 0) {
 					LocalConfig.getInstance().setLoadedDatabase(LocalConfig.getInstance().getDatabaseName());
+					String item = GraphicalInterface.listModel.getElementAt(getRow());
+					LocalConfig.getInstance().getOptimizationFilesList().remove(item);
 					GraphicalInterface.listModel.remove(getRow());
 					GraphicalInterface.fileList.setModel(GraphicalInterface.listModel);
-					GraphicalInterface.fileListPane.repaint();					
+					GraphicalInterface.fileListPane.repaint();							
+					System.out.println(LocalConfig.getInstance().getOptimizationFilesList());				
 				}				
 			}
 		});
 
+		jPopupMenu.addSeparator();
+		
 		jPopupMenu.add(clearItem);
 		clearItem.setEnabled(false);
 		clearItem.addActionListener(new ActionListener() {
@@ -98,6 +158,9 @@ class FileList extends JList {
 				GraphicalInterface.fileList.setModel(GraphicalInterface.listModel);
 				GraphicalInterface.fileListPane.repaint();
 				GraphicalInterface.outputTextArea.setText("");
+				LocalConfig.getInstance().getOptimizationFilesList().clear();
+				System.out.println(LocalConfig.getInstance().getOptimizationFilesList());
+				setSelectedIndex(0);
 			}
 		});
 

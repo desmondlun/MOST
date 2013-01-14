@@ -27,8 +27,6 @@ import edu.rutgers.MOST.data.MetabolitesMetaColumnManager;
 
 public class MetaboliteColAddRenameInterface  extends JDialog {
 
-	public JTextField columnNameField = new JTextField();
-
 	public static JButton okButton = new JButton("    OK    ");
 	public static JButton cancelButton = new JButton("  Cancel  ");
 	public static final JTextField textField = new JTextField();
@@ -37,6 +35,8 @@ public class MetaboliteColAddRenameInterface  extends JDialog {
 	throws SQLException {
 
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		
+		getRootPane().setDefaultButton(okButton);
 
 		//box layout
 		Box vb = Box.createVerticalBox();
@@ -108,7 +108,7 @@ public class MetaboliteColAddRenameInterface  extends JDialog {
 		add(vb);	
 
 		ActionListener cancelButtonActionListener = new ActionListener() {
-			public void actionPerformed(ActionEvent prodActionEvent) {
+			public void actionPerformed(ActionEvent ae) {
 				setVisible(false);
 				dispose();				
 			}

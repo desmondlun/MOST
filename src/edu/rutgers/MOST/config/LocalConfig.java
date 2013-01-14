@@ -381,12 +381,25 @@ public class LocalConfig {
 		return participatingReactions;
 	}  
 	
+	// list used when exiting program. If items remain in list at exit, user prompted
+	// to save these files
+	private static ArrayList<String> optimizationFilesList;
+
+	public void setOptimizationFilesList(ArrayList<String> optimizationFilesList) {
+		this.optimizationFilesList = optimizationFilesList;
+	}
+
+	public ArrayList<String> getOptimizationFilesList() {
+		return optimizationFilesList;
+	}  
+	
 	// if "No" button pressed in Add Metabolite Prompt, is set to false
 	public boolean addMetaboliteOption;	
 	public boolean noButtonClicked;
 	
 	public boolean pastedReaction;
 	
-	public boolean tablesChanged;
+	public boolean reactionsTableChanged;
+	public boolean metabolitesTableChanged;
 	
 }

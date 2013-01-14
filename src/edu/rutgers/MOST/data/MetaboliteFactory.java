@@ -33,10 +33,8 @@ public class MetaboliteFactory {
 	public ArrayList<Integer> participatingReactions(String metaboliteAbbreviation) {
 		int reactionId = 0;
 		ArrayList<Integer> participatingReactions = new ArrayList<Integer>();
-		System.out.println("id mf " + LocalConfig.getInstance().getMetaboliteIdNameMap());
 		if (metaboliteAbbreviation != null) {
 			int metabId = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(metaboliteAbbreviation);
-			System.out.println(metabId);
 			
 			String queryString = "jdbc:sqlite:" + databaseName + ".db";
 			try {
@@ -77,10 +75,7 @@ public class MetaboliteFactory {
 				e.printStackTrace();			
 			}	
 		}
-		
-		
-		
-		System.out.println(participatingReactions);
+				
 		return participatingReactions;
 	}
 

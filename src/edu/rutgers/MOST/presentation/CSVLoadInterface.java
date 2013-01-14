@@ -45,6 +45,8 @@ public class CSVLoadInterface  extends JDialog {
 		setTitle(GraphicalInterfaceConstants.CSV_FILE_LOAD_INTERFACE_TITLE);		
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
+		getRootPane().setDefaultButton(okButton);
+		
 		textMetabField.setText("");
 		textReacField.setText("");
 		
@@ -170,6 +172,7 @@ public class CSVLoadInterface  extends JDialog {
 			public void actionPerformed(ActionEvent prodActionEvent) {
 				JTextArea output = null;
 				JFileChooser fileChooser = new JFileChooser(); 
+				fileChooser.setDialogTitle("Browse for CSV Metabolites File");
 				
 				String lastCSV_path = GraphicalInterface.curSettings.get("LastCSV");
 				if (lastCSV_path == null) {
@@ -210,6 +213,7 @@ public class CSVLoadInterface  extends JDialog {
 			public void actionPerformed(ActionEvent prodActionEvent) {
 				JTextArea output = null;
 				JFileChooser fileChooser = new JFileChooser(); 
+				fileChooser.setDialogTitle("Browse for CSV Reactions File");
 				
 				String lastCSV_path = GraphicalInterface.curSettings.get("LastCSV");
 				if (lastCSV_path == null) {

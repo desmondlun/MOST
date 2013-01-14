@@ -240,13 +240,15 @@ public class TextReactionsModelReader {
 						} else {
 							reactionAbbreviation = dataArray[LocalConfig.getInstance().getReactionAbbreviationColumnIndex()];
 						}
-												
-						if (dataArray[LocalConfig.getInstance().getReactionNameColumnIndex()].contains("'")) {
-							reactionName = dataArray[LocalConfig.getInstance().getReactionNameColumnIndex()].replaceAll("'", "''");
-						} else {
-							reactionName = dataArray[LocalConfig.getInstance().getReactionNameColumnIndex()];
-						}	
-						
+								
+						if (LocalConfig.getInstance().getReactionNameColumnIndex() > -1) {
+							if (dataArray[LocalConfig.getInstance().getReactionNameColumnIndex()].contains("'")) {
+								reactionName = dataArray[LocalConfig.getInstance().getReactionNameColumnIndex()].replaceAll("'", "''");
+							} else {
+								reactionName = dataArray[LocalConfig.getInstance().getReactionNameColumnIndex()];
+							}
+						}
+								
 						if (dataArray[LocalConfig.getInstance().getReactionEquationColumnIndex()].contains("'")) {
 							reactionString = dataArray[LocalConfig.getInstance().getReactionEquationColumnIndex()].replaceAll("'", "''");
 						} else {
@@ -467,7 +469,7 @@ public class TextReactionsModelReader {
 								stat.executeUpdate(deleteReac);
 								String deleteProd = "delete from reaction_products where reaction_id=" + (i - correction) + ";";
 								stat.executeUpdate(deleteProd);
-								if (reactionString != null || reactionString.length() > 0) {
+								if (reactionString != null && reactionString.length() > 0) {
 									LocalConfig.getInstance().getInvalidReactions().add(reactionString);
 								}	
 							}										

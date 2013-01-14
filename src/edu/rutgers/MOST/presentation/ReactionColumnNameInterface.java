@@ -18,6 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
@@ -69,6 +70,8 @@ public class ReactionColumnNameInterface  extends JDialog {
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
 		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
 		icons.add(new ImageIcon("etc/most32.jpg").getImage());
+		
+		getRootPane().setDefaultButton(okButton);
 
 		LocalConfig.getInstance().setProgress(0);
 		progressBar.pack();
@@ -82,9 +85,9 @@ public class ReactionColumnNameInterface  extends JDialog {
 		setTitle(ColumnInterfaceConstants.REACTIONS_COLUMN_NAME_INTERFACE_TITLE);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
+		cbReactionAbbreviation.setEditable(true);
 		cbKnockout.setEditable(true);	
-		cbFluxValue.setEditable(true);
-		cbReactionAbbreviation.setEditable(true);	
+		cbFluxValue.setEditable(true);			
 		cbReactionName.setEditable(true);
 		cbReactionEquation.setEditable(true);
 		cbReversible.setEditable(true);
@@ -92,6 +95,10 @@ public class ReactionColumnNameInterface  extends JDialog {
 		cbUpperBound.setEditable(true);
 		cbObjective.setEditable(true);
 
+		cbReactionAbbreviation.setPreferredSize(new Dimension(250, 30));
+		cbReactionAbbreviation.setMaximumSize(new Dimension(250, 30));
+		cbReactionAbbreviation.setMinimumSize(new Dimension(250, 30));
+		
 		cbKnockout.setPreferredSize(new Dimension(250, 30));
 		cbKnockout.setMaximumSize(new Dimension(250, 30));
 		cbKnockout.setMinimumSize(new Dimension(250, 30));
@@ -99,10 +106,6 @@ public class ReactionColumnNameInterface  extends JDialog {
 		cbFluxValue.setPreferredSize(new Dimension(250, 30));
 		cbFluxValue.setMaximumSize(new Dimension(250, 30));
 		cbFluxValue.setMinimumSize(new Dimension(250, 30));
-
-		cbReactionAbbreviation.setPreferredSize(new Dimension(250, 30));
-		cbReactionAbbreviation.setMaximumSize(new Dimension(250, 30));
-		cbReactionAbbreviation.setMinimumSize(new Dimension(250, 30));
 
 		cbReactionName.setPreferredSize(new Dimension(250, 30));
 		cbReactionName.setMaximumSize(new Dimension(250, 30));
@@ -128,14 +131,14 @@ public class ReactionColumnNameInterface  extends JDialog {
 		cbObjective.setMaximumSize(new Dimension(250, 30));
 		cbObjective.setMinimumSize(new Dimension(250, 30));
 
+		JTextField fieldReactionAbbreviation = (JTextField)cbReactionAbbreviation.getEditor().getEditorComponent();
+		fieldReactionAbbreviation.addKeyListener(new ComboKeyHandler(cbReactionAbbreviation));
+		
 		JTextField fieldKnockout = (JTextField)cbKnockout.getEditor().getEditorComponent();
 		fieldKnockout.addKeyListener(new ComboKeyHandler(cbKnockout));
 
 		JTextField fieldFluxValue = (JTextField)cbFluxValue.getEditor().getEditorComponent();
-		fieldFluxValue.addKeyListener(new ComboKeyHandler(cbFluxValue));
-
-		JTextField fieldReactionAbbreviation = (JTextField)cbReactionAbbreviation.getEditor().getEditorComponent();
-		fieldReactionAbbreviation.addKeyListener(new ComboKeyHandler(cbReactionAbbreviation));
+		fieldFluxValue.addKeyListener(new ComboKeyHandler(cbFluxValue));	
 
 		JTextField fieldReactionName = (JTextField)cbReactionName.getEditor().getEditorComponent();
 		fieldReactionName.addKeyListener(new ComboKeyHandler(cbReactionName));
@@ -190,7 +193,7 @@ public class ReactionColumnNameInterface  extends JDialog {
 		Box hbObjectiveLabel = Box.createHorizontalBox();	    
 		Box hbObjective = Box.createHorizontalBox();
 
-
+		Box hbRequiredLabel = Box.createHorizontalBox();
 		Box hbButton = Box.createHorizontalBox();
 
 		//top label
@@ -205,61 +208,6 @@ public class ReactionColumnNameInterface  extends JDialog {
 		hbTop.setAlignmentX(LEFT_ALIGNMENT);
 
 		hbLabels.add(hbTop);
-
-		//knockout Label and combo
-		JLabel knockoutLabel = new JLabel();
-		knockoutLabel.setText(ColumnInterfaceConstants.KO_LABEL);
-		knockoutLabel.setSize(new Dimension(300, 20));
-		knockoutLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,80));
-		knockoutLabel.setAlignmentX(LEFT_ALIGNMENT);
-		//knockoutLabel.setAlignmentY(TOP_ALIGNMENT);	    	    
-
-		JPanel panelKnockoutLabel = new JPanel();
-		panelKnockoutLabel.setLayout(new BoxLayout(panelKnockoutLabel, BoxLayout.X_AXIS));
-		panelKnockoutLabel.add(knockoutLabel);
-		panelKnockoutLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
-
-		hbKnockoutLabel.add(panelKnockoutLabel);
-		hbKnockoutLabel.setAlignmentX(LEFT_ALIGNMENT);
-
-		JPanel panelKnockout = new JPanel();
-		panelKnockout.setLayout(new BoxLayout(panelKnockout, BoxLayout.X_AXIS));
-		panelKnockout.add(cbKnockout);
-		panelKnockout.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
-		panelKnockout.setAlignmentX(RIGHT_ALIGNMENT);
-
-		hbKnockout.add(panelKnockout);
-		hbKnockout.setAlignmentX(RIGHT_ALIGNMENT);
-
-		hb1.add(hbKnockoutLabel);
-		hb1.add(hbKnockout);
-
-		//flux value label and combo
-		JLabel fluxValueLabel = new JLabel();
-		fluxValueLabel.setText(ColumnInterfaceConstants.FLUX_VALUE_LABEL);
-		fluxValueLabel.setSize(new Dimension(300, 20));	    
-		fluxValueLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,80));
-		fluxValueLabel.setAlignmentX(LEFT_ALIGNMENT);
-
-		JPanel panelFluxValueLabel = new JPanel();
-		panelFluxValueLabel.setLayout(new BoxLayout(panelFluxValueLabel, BoxLayout.X_AXIS));
-		panelFluxValueLabel.add(fluxValueLabel);
-		panelFluxValueLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
-
-		hbFluxValueLabel.add(panelFluxValueLabel);
-		hbFluxValueLabel.setAlignmentX(LEFT_ALIGNMENT);
-
-		JPanel panelFluxValue = new JPanel();
-		panelFluxValue.setLayout(new BoxLayout(panelFluxValue, BoxLayout.X_AXIS));
-		panelFluxValue.add(cbFluxValue);
-		panelFluxValue.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
-		panelFluxValue.setAlignmentX(RIGHT_ALIGNMENT);
-
-		hbFluxValue.add(panelFluxValue);
-		hbFluxValue.setAlignmentX(RIGHT_ALIGNMENT);
-
-		hb2.add(hbFluxValueLabel);
-		hb2.add(hbFluxValue);
 
 		//reaction abbreviation label and combo
 		JLabel reactionAbbreviationLabel = new JLabel();
@@ -285,8 +233,63 @@ public class ReactionColumnNameInterface  extends JDialog {
 		hbReactionAbbreviation.add(panelReactionAbbreviation);
 		hbReactionAbbreviation.setAlignmentX(RIGHT_ALIGNMENT);
 
-		hb3.add(hbReactionAbbreviationLabel);
-		hb3.add(hbReactionAbbreviation);
+		hb1.add(hbReactionAbbreviationLabel);
+		hb1.add(hbReactionAbbreviation);
+		
+		//knockout Label and combo
+		JLabel knockoutLabel = new JLabel();
+		knockoutLabel.setText(ColumnInterfaceConstants.KO_LABEL);
+		knockoutLabel.setSize(new Dimension(300, 20));
+		knockoutLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,80));
+		knockoutLabel.setAlignmentX(LEFT_ALIGNMENT);
+		//knockoutLabel.setAlignmentY(TOP_ALIGNMENT);	    	    
+
+		JPanel panelKnockoutLabel = new JPanel();
+		panelKnockoutLabel.setLayout(new BoxLayout(panelKnockoutLabel, BoxLayout.X_AXIS));
+		panelKnockoutLabel.add(knockoutLabel);
+		panelKnockoutLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+
+		hbKnockoutLabel.add(panelKnockoutLabel);
+		hbKnockoutLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+		JPanel panelKnockout = new JPanel();
+		panelKnockout.setLayout(new BoxLayout(panelKnockout, BoxLayout.X_AXIS));
+		panelKnockout.add(cbKnockout);
+		panelKnockout.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		panelKnockout.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbKnockout.add(panelKnockout);
+		hbKnockout.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hb2.add(hbKnockoutLabel);
+		hb2.add(hbKnockout);
+
+		//flux value label and combo
+		JLabel fluxValueLabel = new JLabel();
+		fluxValueLabel.setText(ColumnInterfaceConstants.FLUX_VALUE_LABEL);
+		fluxValueLabel.setSize(new Dimension(300, 20));	    
+		fluxValueLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,80));
+		fluxValueLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+		JPanel panelFluxValueLabel = new JPanel();
+		panelFluxValueLabel.setLayout(new BoxLayout(panelFluxValueLabel, BoxLayout.X_AXIS));
+		panelFluxValueLabel.add(fluxValueLabel);
+		panelFluxValueLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+
+		hbFluxValueLabel.add(panelFluxValueLabel);
+		hbFluxValueLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+		JPanel panelFluxValue = new JPanel();
+		panelFluxValue.setLayout(new BoxLayout(panelFluxValue, BoxLayout.X_AXIS));
+		panelFluxValue.add(cbFluxValue);
+		panelFluxValue.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		panelFluxValue.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbFluxValue.add(panelFluxValue);
+		hbFluxValue.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hb3.add(hbFluxValueLabel);
+		hb3.add(hbFluxValue);
 
 		//reaction name label and combo
 		JLabel reactionNameLabel = new JLabel();
@@ -450,6 +453,9 @@ public class ReactionColumnNameInterface  extends JDialog {
 		hb9.add(hbObjectiveLabel);
 		hb9.add(hbObjective);
 
+		JLabel required = new JLabel(ColumnInterfaceConstants.REQUIRED_LABEL);
+		hbRequiredLabel.add(required);
+		
 		okButton.setMnemonic(KeyEvent.VK_O);
 		JLabel blank = new JLabel("    "); 
 		cancelButton.setMnemonic(KeyEvent.VK_C);
@@ -477,80 +483,88 @@ public class ReactionColumnNameInterface  extends JDialog {
 		vb.add(hb7);
 		vb.add(hb8);
 		vb.add(hb9);
+		vb.add(hbRequiredLabel);
 		vb.add(hbButton);
 
 		add(vb);
 
 		ActionListener okButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
-				//add metacolumn names to db
-				ReactionsMetaColumnManager reactionsMetaColumnManager = new ReactionsMetaColumnManager();
-				ArrayList<String> metaColumnNames = new ArrayList();
-				ArrayList<Integer> usedIndices = new ArrayList();
-				ArrayList<Integer> metaColumnIndexList = new ArrayList();
+				if (cbReactionAbbreviation.getSelectedIndex() == -1 || cbReactionEquation.getSelectedIndex() == -1) {
+					JOptionPane.showMessageDialog(null,                
+							ColumnInterfaceConstants.BLANK_REACTION_FIELDS_ERROR_MESSAGE,
+							ColumnInterfaceConstants.BLANK_REACTION_FIELDS_ERROR_TITLE,                                
+							JOptionPane.ERROR_MESSAGE);
+				} else {
+					//add metacolumn names to db
+					ReactionsMetaColumnManager reactionsMetaColumnManager = new ReactionsMetaColumnManager();
+					ArrayList<String> metaColumnNames = new ArrayList();
+					ArrayList<Integer> usedIndices = new ArrayList();
+					ArrayList<Integer> metaColumnIndexList = new ArrayList();
 
-				if (getColumnNamesFromFile().contains(cbKnockout.getSelectedItem())) {
-					LocalConfig.getInstance().setKnockoutColumnIndex(getColumnNamesFromFile().indexOf(cbKnockout.getSelectedItem()));
-					usedIndices.add(getColumnNamesFromFile().indexOf(cbKnockout.getSelectedItem()));
-				}
-				if (getColumnNamesFromFile().contains(cbFluxValue.getSelectedItem())) {
-					LocalConfig.getInstance().setFluxValueColumnIndex(getColumnNamesFromFile().indexOf(cbFluxValue.getSelectedItem()));
-					usedIndices.add(getColumnNamesFromFile().indexOf(cbFluxValue.getSelectedItem()));
-				}
-				if (getColumnNamesFromFile().contains(cbReactionAbbreviation.getSelectedItem())) {
-					LocalConfig.getInstance().setReactionAbbreviationColumnIndex(getColumnNamesFromFile().indexOf(cbReactionAbbreviation.getSelectedItem()));
-					usedIndices.add(getColumnNamesFromFile().indexOf(cbReactionAbbreviation.getSelectedItem()));
-				}
-				if (getColumnNamesFromFile().contains(cbReactionName.getSelectedItem())) {
-					LocalConfig.getInstance().setReactionNameColumnIndex(getColumnNamesFromFile().indexOf(cbReactionName.getSelectedItem()));
-					usedIndices.add(getColumnNamesFromFile().indexOf(cbReactionName.getSelectedItem()));
-				}
-				if (getColumnNamesFromFile().contains(cbReactionEquation.getSelectedItem())) {
-					LocalConfig.getInstance().setReactionEquationColumnIndex(getColumnNamesFromFile().indexOf(cbReactionEquation.getSelectedItem()));
-					usedIndices.add(getColumnNamesFromFile().indexOf(cbReactionEquation.getSelectedItem()));
-				}
-				if (getColumnNamesFromFile().contains(cbReversible.getSelectedItem())) {
-					LocalConfig.getInstance().setReversibleColumnIndex(getColumnNamesFromFile().indexOf(cbReversible.getSelectedItem()));
-					usedIndices.add(getColumnNamesFromFile().indexOf(cbReversible.getSelectedItem()));
-				}
-				if (getColumnNamesFromFile().contains(cbLowerBound.getSelectedItem())) {
-					LocalConfig.getInstance().setLowerBoundColumnIndex(getColumnNamesFromFile().indexOf(cbLowerBound.getSelectedItem()));
-					usedIndices.add(getColumnNamesFromFile().indexOf(cbLowerBound.getSelectedItem()));
-				}
-				if (getColumnNamesFromFile().contains(cbUpperBound.getSelectedItem())) {
-					LocalConfig.getInstance().setUpperBoundColumnIndex(getColumnNamesFromFile().indexOf(cbUpperBound.getSelectedItem()));
-					usedIndices.add(getColumnNamesFromFile().indexOf(cbUpperBound.getSelectedItem()));
-				}
-				if (getColumnNamesFromFile().contains(cbObjective.getSelectedItem())) {
-					LocalConfig.getInstance().setBiologicalObjectiveColumnIndex(getColumnNamesFromFile().indexOf(cbObjective.getSelectedItem()));
-					usedIndices.add(getColumnNamesFromFile().indexOf(cbObjective.getSelectedItem()));
-				}
-				for (int i = 0; i < getColumnNamesFromFile().size(); i++) {
-					if (!usedIndices.contains(i)) {
-						metaColumnNames.add(getColumnNamesFromFile().get(i));
-						metaColumnIndexList.add(getColumnNamesFromFile().indexOf(getColumnNamesFromFile().get(i)));
+					if (getColumnNamesFromFile().contains(cbReactionAbbreviation.getSelectedItem())) {
+						LocalConfig.getInstance().setReactionAbbreviationColumnIndex(getColumnNamesFromFile().indexOf(cbReactionAbbreviation.getSelectedItem()));
+						usedIndices.add(getColumnNamesFromFile().indexOf(cbReactionAbbreviation.getSelectedItem()));
+					}
+					if (getColumnNamesFromFile().contains(cbKnockout.getSelectedItem())) {
+						LocalConfig.getInstance().setKnockoutColumnIndex(getColumnNamesFromFile().indexOf(cbKnockout.getSelectedItem()));
+						usedIndices.add(getColumnNamesFromFile().indexOf(cbKnockout.getSelectedItem()));
+					}
+					if (getColumnNamesFromFile().contains(cbFluxValue.getSelectedItem())) {
+						LocalConfig.getInstance().setFluxValueColumnIndex(getColumnNamesFromFile().indexOf(cbFluxValue.getSelectedItem()));
+						usedIndices.add(getColumnNamesFromFile().indexOf(cbFluxValue.getSelectedItem()));
+					}					
+					if (getColumnNamesFromFile().contains(cbReactionName.getSelectedItem())) {
+						LocalConfig.getInstance().setReactionNameColumnIndex(getColumnNamesFromFile().indexOf(cbReactionName.getSelectedItem()));
+						usedIndices.add(getColumnNamesFromFile().indexOf(cbReactionName.getSelectedItem()));
 					} 
-				}
+					if (getColumnNamesFromFile().contains(cbReactionEquation.getSelectedItem())) {
+						LocalConfig.getInstance().setReactionEquationColumnIndex(getColumnNamesFromFile().indexOf(cbReactionEquation.getSelectedItem()));
+						usedIndices.add(getColumnNamesFromFile().indexOf(cbReactionEquation.getSelectedItem()));
+					}
+					if (getColumnNamesFromFile().contains(cbReversible.getSelectedItem())) {
+						LocalConfig.getInstance().setReversibleColumnIndex(getColumnNamesFromFile().indexOf(cbReversible.getSelectedItem()));
+						usedIndices.add(getColumnNamesFromFile().indexOf(cbReversible.getSelectedItem()));
+					}
+					if (getColumnNamesFromFile().contains(cbLowerBound.getSelectedItem())) {
+						LocalConfig.getInstance().setLowerBoundColumnIndex(getColumnNamesFromFile().indexOf(cbLowerBound.getSelectedItem()));
+						usedIndices.add(getColumnNamesFromFile().indexOf(cbLowerBound.getSelectedItem()));
+					}
+					if (getColumnNamesFromFile().contains(cbUpperBound.getSelectedItem())) {
+						LocalConfig.getInstance().setUpperBoundColumnIndex(getColumnNamesFromFile().indexOf(cbUpperBound.getSelectedItem()));
+						usedIndices.add(getColumnNamesFromFile().indexOf(cbUpperBound.getSelectedItem()));
+					}
+					if (getColumnNamesFromFile().contains(cbObjective.getSelectedItem())) {
+						LocalConfig.getInstance().setBiologicalObjectiveColumnIndex(getColumnNamesFromFile().indexOf(cbObjective.getSelectedItem()));
+						usedIndices.add(getColumnNamesFromFile().indexOf(cbObjective.getSelectedItem()));
+					}
+					for (int i = 0; i < getColumnNamesFromFile().size(); i++) {
+						if (!usedIndices.contains(i)) {
+							metaColumnNames.add(getColumnNamesFromFile().get(i));
+							metaColumnIndexList.add(getColumnNamesFromFile().indexOf(getColumnNamesFromFile().get(i)));
+						} 
+					}
 
-				if (LocalConfig.getInstance().hasMetabolitesFile == false) {
-					DatabaseCreator creator = new DatabaseCreator();
-					creator.createDatabase(LocalConfig.getInstance().getDatabaseName());
-				}
-				reactionsMetaColumnManager.addColumnNames(LocalConfig.getInstance().getDatabaseName(), metaColumnNames);
-				LocalConfig.getInstance().setReactionsMetaColumnIndexList(metaColumnIndexList);
+					if (LocalConfig.getInstance().hasMetabolitesFile == false) {
+						DatabaseCreator creator = new DatabaseCreator();
+						creator.createDatabase(LocalConfig.getInstance().getDatabaseName());
+					}
+					reactionsMetaColumnManager.addColumnNames(LocalConfig.getInstance().getDatabaseName(), metaColumnNames);
+					LocalConfig.getInstance().setReactionsMetaColumnIndexList(metaColumnIndexList);
+					
+					setVisible(false);
+					dispose();
+					
+					progressBar.setVisible(true);
 
-				setVisible(false);
-				dispose();
+					timer.start();
 
-				progressBar.setVisible(true);
-
-				timer.start();
-
-				task = new Task();
-				task.execute();
+					task = new Task();
+					task.execute();
+				}				
 			}
 		};
-
+				
 		okButton.addActionListener(okButtonActionListener);
 
 		ActionListener cancelButtonActionListener = new ActionListener() {
@@ -597,15 +611,18 @@ public class ReactionColumnNameInterface  extends JDialog {
 
 	public void populateNamesFromFileBoxes(ArrayList<String> columnNamesFromFile) {
 
+		LocalConfig.getInstance().setReactionAbbreviationColumnIndex(-1);
 		LocalConfig.getInstance().setKnockoutColumnIndex(-1);
-		LocalConfig.getInstance().setFluxValueColumnIndex(-1);
+		LocalConfig.getInstance().setFluxValueColumnIndex(-1);		
+		LocalConfig.getInstance().setReactionNameColumnIndex(-1);
+		LocalConfig.getInstance().setReactionEquationColumnIndex(-1);
 		LocalConfig.getInstance().setReversibleColumnIndex(-1);
 		LocalConfig.getInstance().setLowerBoundColumnIndex(-1);
 		LocalConfig.getInstance().setUpperBoundColumnIndex(-1);
 		LocalConfig.getInstance().setBiologicalObjectiveColumnIndex(-1);
-		cbKnockout.removeAllItems();
-		cbFluxValue.removeAllItems();
 		cbReactionAbbreviation.removeAllItems();
+		cbKnockout.removeAllItems();
+		cbFluxValue.removeAllItems();		
 		cbReactionName.removeAllItems();
 		cbReactionEquation.removeAllItems();
 		cbReversible.removeAllItems();
@@ -613,19 +630,22 @@ public class ReactionColumnNameInterface  extends JDialog {
 		cbUpperBound.removeAllItems();
 		cbObjective.removeAllItems();		
 		//add all column names to from file comboboxes
-		for (int c = 0; c < columnNamesFromFile.size(); c++) { 
-			cbKnockout.addItem(columnNamesFromFile.get(c));
-			cbFluxValue.addItem(columnNamesFromFile.get(c));
+		for (int c = 0; c < columnNamesFromFile.size(); c++) {
 			cbReactionAbbreviation.addItem(columnNamesFromFile.get(c));
+			cbKnockout.addItem(columnNamesFromFile.get(c));
+			cbFluxValue.addItem(columnNamesFromFile.get(c));			
 			cbReactionName.addItem(columnNamesFromFile.get(c));
 			cbReactionEquation.addItem(columnNamesFromFile.get(c));
 			cbReversible.addItem(columnNamesFromFile.get(c));
 			cbLowerBound.addItem(columnNamesFromFile.get(c));
 			cbUpperBound.addItem(columnNamesFromFile.get(c));
 			cbObjective.addItem(columnNamesFromFile.get(c));
-		}		
-		cbKnockout.setSelectedIndex(-1);	
-		cbFluxValue.setSelectedIndex(-1);
+		}	
+		cbReactionAbbreviation.setSelectedIndex(-1);
+		cbKnockout.setSelectedIndex(-1);
+		cbFluxValue.setSelectedIndex(-1);		
+		cbReactionName.setSelectedIndex(-1);
+		cbReactionEquation.setSelectedIndex(-1);
 		cbReversible.setSelectedIndex(-1);	
 		cbLowerBound.setSelectedIndex(-1);
 		cbUpperBound.setSelectedIndex(-1);
@@ -634,7 +654,7 @@ public class ReactionColumnNameInterface  extends JDialog {
 			//filters to match column names from file to required column names in table			
 			if((columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.KNOCKOUT_COLUMN_FILTER[0]) == 0 || (columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.KNOCKOUT_COLUMN_FILTER[1]) == 0) {
 				cbKnockout.setSelectedIndex(c);
-				LocalConfig.getInstance().setKnockoutColumnIndex(c);	
+				LocalConfig.getInstance().setKnockoutColumnIndex(c);
 			} else if((columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.FLUX_VALUE_COLUMN_FILTER[0])) {
 				cbFluxValue.setSelectedIndex(c);
 				LocalConfig.getInstance().setFluxValueColumnIndex(c);
@@ -647,12 +667,22 @@ public class ReactionColumnNameInterface  extends JDialog {
 			} else if((columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.UPPER_BOUND_FILTER[0]) == 0 || (columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.UPPER_BOUND_FILTER[1]) == 0 || (columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.UPPER_BOUND_FILTER[2]) == 0) {
 				cbUpperBound.setSelectedIndex(c);
 				LocalConfig.getInstance().setUpperBoundColumnIndex(c); 
-			} else if((columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_FILTER[0])) {
+			} else if((columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_FILTER[0]) && !(columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_NOT_FILTER[0])) {
 				cbObjective.setSelectedIndex(c);
 				LocalConfig.getInstance().setBiologicalObjectiveColumnIndex(c); 	
+			} else if((columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.ABBREVIATION_COLUMN_FILTER[0]) == 0 || (columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.ABBREVIATION_COLUMN_FILTER[1]) == 0) {
+				cbReactionAbbreviation.setSelectedIndex(c);
+				LocalConfig.getInstance().setReactionAbbreviationColumnIndex(c); 
+			} else if((columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.NAME_COLUMN_FILTER[0])) {
+				cbReactionName.setSelectedIndex(c);
+				LocalConfig.getInstance().setReactionNameColumnIndex(c); 
+			} else if((columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.EQUATION_COLUMN_FILTER[0]) || (columnNamesFromFile.get(c).toLowerCase()).equals(GraphicalInterfaceConstants.EQUATION_COLUMN_FILTER[1])) {
+				cbReactionEquation.setSelectedIndex(c);
+				LocalConfig.getInstance().setReactionEquationColumnIndex(c); 
 			}
 		}
 
+		/*
 		//csv files written by TextReactionWriter will have KO and fluxValue as col 1 and 2
 		if((columnNamesFromFile.get(0).toLowerCase()).compareTo(GraphicalInterfaceConstants.KNOCKOUT_COLUMN_FILTER[0]) == 0 || (columnNamesFromFile.get(0).toLowerCase()).compareTo(GraphicalInterfaceConstants.KNOCKOUT_COLUMN_FILTER[1]) == 0) {
 			cbReactionAbbreviation.setSelectedIndex(2);
@@ -669,7 +699,8 @@ public class ReactionColumnNameInterface  extends JDialog {
 			LocalConfig.getInstance().setReactionNameColumnIndex(1);
 			cbReactionEquation.setSelectedIndex(2);	
 			LocalConfig.getInstance().setReactionEquationColumnIndex(2);
-		}		
+		}	
+		*/	
 	}
 
 

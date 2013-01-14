@@ -18,6 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
@@ -61,7 +62,9 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
 		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
-		icons.add(new ImageIcon("etc/most32.jpg").getImage());	    
+		icons.add(new ImageIcon("etc/most32.jpg").getImage());
+		
+		getRootPane().setDefaultButton(okButton);
 
 		LocalConfig.getInstance().setProgress(0);
 		progressBar.pack();
@@ -142,6 +145,7 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		Box hbBoundaryLabel = Box.createHorizontalBox();	    
 		Box hbBoundary = Box.createHorizontalBox();
 
+		Box hbRequiredLabel = Box.createHorizontalBox();
 		Box hbButton = Box.createHorizontalBox();
 
 		//top label
@@ -298,6 +302,9 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		hb5.add(hbBoundaryLabel);
 		hb5.add(hbBoundary);
 
+		JLabel required = new JLabel(ColumnInterfaceConstants.REQUIRED_LABEL);
+		hbRequiredLabel.add(required);
+		
 		okButton.setMnemonic(KeyEvent.VK_O);
 		JLabel blank = new JLabel("    "); 
 		cancelButton.setMnemonic(KeyEvent.VK_C);
@@ -321,58 +328,66 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		vb.add(hb3);
 		vb.add(hb4);
 		vb.add(hb5);
+		vb.add(hbRequiredLabel);
 		vb.add(hbButton);
 
 		add(vb);
 
 		ActionListener okButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
-				//add metacolumn names to db
-				MetabolitesMetaColumnManager metabolitesMetaColumnManager = new MetabolitesMetaColumnManager();
-				ArrayList<String> metaColumnNames = new ArrayList();
-				ArrayList<Integer> usedIndices = new ArrayList();
-				ArrayList<Integer> metaColumnIndexList = new ArrayList();
+				if (cbMetaboliteAbbreviation.getSelectedIndex() == -1) {
+					JOptionPane.showMessageDialog(null,                
+							ColumnInterfaceConstants.BLANK_METABOLITE_FIELDS_ERROR_MESSAGE,
+							ColumnInterfaceConstants.BLANK_METABOLITE_FIELDS_ERROR_TITLE,                                
+							JOptionPane.ERROR_MESSAGE);
+				} else {
+					//add metacolumn names to db
+					MetabolitesMetaColumnManager metabolitesMetaColumnManager = new MetabolitesMetaColumnManager();
+					ArrayList<String> metaColumnNames = new ArrayList();
+					ArrayList<Integer> usedIndices = new ArrayList();
+					ArrayList<Integer> metaColumnIndexList = new ArrayList();
 
-				if (getColumnNamesFromFile().contains(cbMetaboliteAbbreviation.getSelectedItem())) {
-					LocalConfig.getInstance().setMetaboliteAbbreviationColumnIndex(getColumnNamesFromFile().indexOf(cbMetaboliteAbbreviation.getSelectedItem()));
-					usedIndices.add(getColumnNamesFromFile().indexOf(cbMetaboliteAbbreviation.getSelectedItem()));
-				}
-				if (getColumnNamesFromFile().contains(cbMetaboliteName.getSelectedItem())) {
-					LocalConfig.getInstance().setMetaboliteNameColumnIndex(getColumnNamesFromFile().indexOf(cbMetaboliteName.getSelectedItem()));
-					usedIndices.add(getColumnNamesFromFile().indexOf(cbMetaboliteName.getSelectedItem()));
-				}
-				if (getColumnNamesFromFile().contains(cbCharge.getSelectedItem())) {
-					LocalConfig.getInstance().setChargeColumnIndex(getColumnNamesFromFile().indexOf(cbCharge.getSelectedItem()));
-					usedIndices.add(getColumnNamesFromFile().indexOf(cbCharge.getSelectedItem()));
-				}
-				if (getColumnNamesFromFile().contains(cbCompartment.getSelectedItem())) {
-					LocalConfig.getInstance().setCompartmentColumnIndex(getColumnNamesFromFile().indexOf(cbCompartment.getSelectedItem()));
-					usedIndices.add(getColumnNamesFromFile().indexOf(cbCompartment.getSelectedItem()));
-				}
-				if (getColumnNamesFromFile().contains(cbBoundary.getSelectedItem())) {
-					LocalConfig.getInstance().setBoundaryColumnIndex(getColumnNamesFromFile().indexOf(cbBoundary.getSelectedItem()));
-					usedIndices.add(getColumnNamesFromFile().indexOf(cbBoundary.getSelectedItem()));
-				}
-				for (int i = 0; i < getColumnNamesFromFile().size(); i++) {
-					if (!usedIndices.contains(i)) {
-						metaColumnNames.add(getColumnNamesFromFile().get(i));
-						metaColumnIndexList.add(getColumnNamesFromFile().indexOf(getColumnNamesFromFile().get(i)));
-					} 
-				}
-				DatabaseCreator creator = new DatabaseCreator();
-				creator.createDatabase(LocalConfig.getInstance().getDatabaseName());
-				metabolitesMetaColumnManager.addColumnNames(LocalConfig.getInstance().getDatabaseName(), metaColumnNames);
-				LocalConfig.getInstance().setMetabolitesMetaColumnIndexList(metaColumnIndexList);
+					if (getColumnNamesFromFile().contains(cbMetaboliteAbbreviation.getSelectedItem())) {
+						LocalConfig.getInstance().setMetaboliteAbbreviationColumnIndex(getColumnNamesFromFile().indexOf(cbMetaboliteAbbreviation.getSelectedItem()));
+						usedIndices.add(getColumnNamesFromFile().indexOf(cbMetaboliteAbbreviation.getSelectedItem()));
+					}
+					if (getColumnNamesFromFile().contains(cbMetaboliteName.getSelectedItem())) {
+						LocalConfig.getInstance().setMetaboliteNameColumnIndex(getColumnNamesFromFile().indexOf(cbMetaboliteName.getSelectedItem()));
+						usedIndices.add(getColumnNamesFromFile().indexOf(cbMetaboliteName.getSelectedItem()));
+					}
+					if (getColumnNamesFromFile().contains(cbCharge.getSelectedItem())) {
+						LocalConfig.getInstance().setChargeColumnIndex(getColumnNamesFromFile().indexOf(cbCharge.getSelectedItem()));
+						usedIndices.add(getColumnNamesFromFile().indexOf(cbCharge.getSelectedItem()));
+					}
+					if (getColumnNamesFromFile().contains(cbCompartment.getSelectedItem())) {
+						LocalConfig.getInstance().setCompartmentColumnIndex(getColumnNamesFromFile().indexOf(cbCompartment.getSelectedItem()));
+						usedIndices.add(getColumnNamesFromFile().indexOf(cbCompartment.getSelectedItem()));
+					}
+					if (getColumnNamesFromFile().contains(cbBoundary.getSelectedItem())) {
+						LocalConfig.getInstance().setBoundaryColumnIndex(getColumnNamesFromFile().indexOf(cbBoundary.getSelectedItem()));
+						usedIndices.add(getColumnNamesFromFile().indexOf(cbBoundary.getSelectedItem()));
+					}
+					for (int i = 0; i < getColumnNamesFromFile().size(); i++) {
+						if (!usedIndices.contains(i)) {
+							metaColumnNames.add(getColumnNamesFromFile().get(i));
+							metaColumnIndexList.add(getColumnNamesFromFile().indexOf(getColumnNamesFromFile().get(i)));
+						} 
+					}
+					DatabaseCreator creator = new DatabaseCreator();
+					creator.createDatabase(LocalConfig.getInstance().getDatabaseName());
+					metabolitesMetaColumnManager.addColumnNames(LocalConfig.getInstance().getDatabaseName(), metaColumnNames);
+					LocalConfig.getInstance().setMetabolitesMetaColumnIndexList(metaColumnIndexList);
 
-				setVisible(false);
-				dispose();
+					setVisible(false);
+					dispose();
 
-				progressBar.setVisible(true);
+					progressBar.setVisible(true);
 
-				timer.start();
+					timer.start();
 
-				task = new Task();
-				task.execute();
+					task = new Task();
+					task.execute();
+				}				
 			}
 		};
 
@@ -421,6 +436,8 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 
 	public void populateNamesFromFileBoxes(ArrayList<String> columnNamesFromFile) {
 
+		LocalConfig.getInstance().setMetaboliteAbbreviationColumnIndex(-1);
+		LocalConfig.getInstance().setMetaboliteNameColumnIndex(-1);
 		LocalConfig.getInstance().setCompartmentColumnIndex(-1);
 		LocalConfig.getInstance().setChargeColumnIndex(-1);
 		LocalConfig.getInstance().setBoundaryColumnIndex(-1);
@@ -441,7 +458,7 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		cbCharge.setSelectedIndex(-1);
 		cbBoundary.setSelectedIndex(-1);
 		for (int c = 0; c < columnNamesFromFile.size(); c++) { 
-			//filters to match column names from file to required column names in table
+			//filters to match column names from file to required column names in table		
 			if((columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.COMPARTMENT_FILTER[0])) {
 				cbCompartment.setSelectedIndex(c);
 				LocalConfig.getInstance().setCompartmentColumnIndex(c);	

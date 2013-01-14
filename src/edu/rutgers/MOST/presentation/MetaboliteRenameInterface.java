@@ -5,9 +5,6 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -22,22 +19,31 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import edu.rutgers.MOST.config.LocalConfig;
-import edu.rutgers.MOST.data.ReactionsMetaColumnManager;
-
-public class ReactionColAddRenameInterface  extends JDialog {
-
+public class MetaboliteRenameInterface  extends JDialog {
+	
 	public static JButton okButton = new JButton("    OK    ");
 	public static JButton cancelButton = new JButton("  Cancel  ");
 	public static final JTextField textField = new JTextField();
+	
+	private String newName;
 
-	public ReactionColAddRenameInterface(final Connection con)
-	throws SQLException {
+	public void setNewName(String newName) {
+		this.newName = newName;
+	}
 
+	public String getNewName() {
+		return newName;
+	}
+	
+	public boolean duplicate;
+	
+	public MetaboliteRenameInterface()
+			{
+		
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		
 		getRootPane().setDefaultButton(okButton);
-
+		
 		//box layout
 		Box vb = Box.createVerticalBox();
 
@@ -46,7 +52,7 @@ public class ReactionColAddRenameInterface  extends JDialog {
 		Box hbButton = Box.createHorizontalBox();
 
 		JLabel topLabel = new JLabel();
-		topLabel.setText(GraphicalInterfaceConstants.COLUMN_ADD_RENAME_LABEL);
+		topLabel.setText(GraphicalInterfaceConstants.RENAME_METABOLITE_LABEL);
 		topLabel.setSize(new Dimension(150, 10));
 		//top, left, bottom. right
 		topLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
@@ -109,6 +115,7 @@ public class ReactionColAddRenameInterface  extends JDialog {
 
 		ActionListener cancelButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
+				textField.setText("");
 				setVisible(false);
 				dispose();				
 			}
@@ -116,23 +123,15 @@ public class ReactionColAddRenameInterface  extends JDialog {
 
 		cancelButton.addActionListener(cancelButtonActionListener);
 	} 	 
-
-	public void addColumnToMeta(String databaseName){
-		String columnName = textField.getText();
-		ReactionsMetaColumnManager manager = new ReactionsMetaColumnManager();
-		manager.addColumnName(databaseName, columnName); 
-	}
-
+	
+	/*
 	public static void main(String[] args) throws Exception {
-		Class.forName("org.sqlite.JDBC");       
-		Connection con = DriverManager.getConnection("jdbc:sqlite:" + "untitled" + ".db");
-
 		//based on code from http://stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
 		icons.add(new ImageIcon("images/most16.jpg").getImage()); 
 		icons.add(new ImageIcon("images/most32.jpg").getImage());
 
-		ReactionColAddRenameInterface frame = new ReactionColAddRenameInterface(con);
+		MetaboliteRenameInterface frame = new MetaboliteRenameInterface();
 
 		frame.setIconImages(icons);
 		frame.setSize(350, 170);
@@ -140,7 +139,9 @@ public class ReactionColAddRenameInterface  extends JDialog {
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
+	*/
 }
+
 
 
 

@@ -9,14 +9,16 @@ import java.util.Vector;
 //Based on code from:
 //http://www.javaspecialists.eu/archive/Issue118.html
 public class MetabolitesDatabaseTableModel extends DefaultTableModel {	
-	@Override 
+	//@Override 
+	/*
 	public boolean isCellEditable(int row, int col) {
 		if (col == GraphicalInterfaceConstants.DB_METABOLITE_ID_COLUMN) {
 			return false; 
 		} else {
 			return true; 
 		} 		
-	} 	
+	}
+	*/ 	
 	private final QueryRunner queryRunner = new QueryRunner();
 	public MetabolitesDatabaseTableModel(Connection con, String query)
 	throws SQLException {

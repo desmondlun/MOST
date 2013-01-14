@@ -2,6 +2,8 @@ package edu.rutgers.MOST.data;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -130,7 +132,8 @@ public class ReactionsUpdater {
 										}
 									}							
 								}
-							}							
+							}
+							
 						}
 					} else {
 						reactionEquation = " ";						
@@ -613,6 +616,8 @@ public class ReactionsUpdater {
 				stat.executeUpdate("ROLLBACK"); // throw away all updates since BEGIN TRANSACTION
 			}
 
+			conn.close();
+			
 		}catch(SQLException e){
 
 			e.printStackTrace();
@@ -702,5 +707,123 @@ public class ReactionsUpdater {
 		}
 				
 		return revisedProducts;
+	}
+	
+	// method used when renaming metabolites
+	public void rewriteReactions(ArrayList<Integer> reactionIdList, String databaseName) {		
+		String queryString = "jdbc:sqlite:" + databaseName + ".db";
+
+		try {
+			Class.forName("org.sqlite.JDBC");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try{
+			Connection conn =
+				DriverManager.getConnection(queryString);
+			Statement stat = conn.createStatement();
+			ResultSet rsReac = null;
+			ResultSet rsEqun = null;
+			ResultSet rsProd = null;
+			
+			ReactionParser parser = new ReactionParser();
+				
+			try {
+				stat.executeUpdate("BEGIN TRANSACTION");
+
+				for (int i = 0; i < reactionIdList.size(); i++) {
+					StringBuffer reacBfr = new StringBuffer();
+					StringBuffer prodBfr = new StringBuffer();
+					StringBuffer rxnBfr = new StringBuffer();
+					PreparedStatement rPrep = conn.prepareStatement("select metabolite_id, stoic from reaction_reactants where reaction_id=?");
+					rPrep.setInt(1, reactionIdList.get(i));
+					conn.setAutoCommit(true);
+					rsReac = rPrep.executeQuery();
+					int r = 0;
+					while(rsReac.next()) {						
+						int stoicStr = rsReac.getInt("stoic");
+						int reactantId = rsReac.getInt("metabolite_id");
+						Object key = getKeyFromValue(LocalConfig.getInstance().getMetaboliteIdNameMap(), reactantId);
+						String reactant = key.toString();
+						if (r == 0) {
+							if (Double.valueOf(stoicStr) == 1) {
+								reacBfr.append(reactant);
+							} else {
+								reacBfr.append(stoicStr + " " + reactant);
+							}		
+						} else {
+							if (Double.valueOf(stoicStr) == 1) {
+								reacBfr.append(" + " + reactant);
+							} else {
+								reacBfr.append(" + " + stoicStr + " " + reactant);
+							}				
+						}
+						r += 1;
+					}
+					
+					PreparedStatement eqPrep = conn.prepareStatement("select reaction_string from reactions where id=?");
+					eqPrep.setInt(1, reactionIdList.get(i));
+					conn.setAutoCommit(true);
+					rsEqun = eqPrep.executeQuery();
+					String equation = rsEqun.getString("reaction_string");
+					String splitString = parser.splitString(equation);
+					
+					PreparedStatement pPrep = conn.prepareStatement("select metabolite_id, stoic from reaction_products where reaction_id=?");
+					pPrep.setInt(1, reactionIdList.get(i));
+					conn.setAutoCommit(true);
+					rsProd = pPrep.executeQuery();
+					r = 0;
+					while(rsProd.next()) {
+						int stoicStr = rsProd.getInt("stoic");
+						int productId = rsProd.getInt("metabolite_id");
+						Object key = getKeyFromValue(LocalConfig.getInstance().getMetaboliteIdNameMap(), productId);
+						String product = key.toString();
+						if (r == 0) {
+							if (Double.valueOf(stoicStr) == 1) {
+								prodBfr.append(product);
+							} else {
+								prodBfr.append(stoicStr + " " + product);
+							}		
+						} else {
+							if (Double.valueOf(stoicStr) == 1) {
+								prodBfr.append(" + " + product);
+							} else {
+								prodBfr.append(" + " + stoicStr + " " + product);
+							}				
+						}
+						r += 1;
+					}
+					rxnBfr.append(reacBfr).append(" " + splitString).append(prodBfr);
+					PreparedStatement eqUpdatePrep = conn.prepareStatement("update reactions set reaction_string=? where id=?");
+					eqUpdatePrep.setString(1, rxnBfr.toString());
+					eqUpdatePrep.setInt(2, reactionIdList.get(i));
+					conn.setAutoCommit(true);
+					eqUpdatePrep.executeUpdate();
+				}
+				
+				stat.executeUpdate("COMMIT");
+			} catch (Exception e) {
+				e.printStackTrace();
+				stat.executeUpdate("ROLLBACK"); // throw away all updates since BEGIN TRANSACTION
+			}
+
+			
+			conn.close();	
+
+		}catch(SQLException e){
+
+			e.printStackTrace();
+
+		}
+	}
+	
+	public static Object getKeyFromValue(Map hm, Object value) {
+		for (Object o : hm.keySet()) {
+			if (hm.get(o).equals(value)) {
+				return o;
+			}
+		}
+		return null;
 	}
 }
