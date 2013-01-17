@@ -268,7 +268,14 @@ public class GraphicalInterfaceConstants {
     
     // help
     public static final String HELP_TOPICS_URL = "https://github.com/dennisegen/MOST/wiki";
-       
+    public static final String HELP_URL_NOT_FOUND_TITLE = "URL Not Found";
+    public static final String HELP_URL_NOT_FOUND_MESSAGE = "This URL may not exist. Check internet connection.";
+    
+    // about
+    public static final String ABOUT_BOX_TITLE = "About MOST";
+    public static final String ABOUT_BOX_TEXT = "MOST - Metabolic Optimization and Simulation Tool." +
+	" Version 1.0.0";
+    
     // other
     public static final String[] REVERSIBLE_ARROWS =
     {"<==> ", "<=>", "="

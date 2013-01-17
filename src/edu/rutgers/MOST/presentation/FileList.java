@@ -140,6 +140,7 @@ class FileList extends JList {
 					LocalConfig.getInstance().getOptimizationFilesList().remove(item);
 					GraphicalInterface.listModel.remove(getRow());
 					GraphicalInterface.fileList.setModel(GraphicalInterface.listModel);
+					GraphicalInterface.fileList.setSelectedIndex(0);
 					GraphicalInterface.fileListPane.repaint();							
 					System.out.println(LocalConfig.getInstance().getOptimizationFilesList());				
 				}				

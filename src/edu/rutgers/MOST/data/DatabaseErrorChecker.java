@@ -61,8 +61,10 @@ public class DatabaseErrorChecker {
 			for (int i = 0; i < invalidReactionIds.size(); i++) {
 				prep.setInt(1, invalidReactionIds.get(i));	
 				ResultSet rs = prep.executeQuery();
-				String reaction = rs.getString("reaction_string");					
-				invalidReactions.add(reaction);
+				String reaction = rs.getString("reaction_string");	
+				if (reaction != null) {
+					invalidReactions.add(reaction);
+				}				
 			}	
 					
 			conn.close();

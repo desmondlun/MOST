@@ -148,7 +148,7 @@ public class TextReactionsModelReader {
 					+ " metabolite_id INTEGER, stoic FLOAT);");
 			
 			if (!LocalConfig.getInstance().hasMetabolitesFile) {
-				
+								
 				String metaString = "";
 				for (int i = 0; i < 15; i++) {
 					String meta = ", meta_" + (i + 1)+ " varchar(500)";
