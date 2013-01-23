@@ -1420,7 +1420,7 @@ public class GraphicalInterface extends JFrame {
 
 				columnNameInterface.setSize(600, 360);
 				columnNameInterface.setResizable(false);
-				columnNameInterface.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+				//columnNameInterface.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 				columnNameInterface.setLocationRelativeTo(null);
 				columnNameInterface.setVisible(true);
 				columnNameInterface.setAlwaysOnTop(true);
@@ -2579,8 +2579,8 @@ public class GraphicalInterface extends JFrame {
 			} else {
 				statusBar.setText(reactionRow);
 			}
-    		if (reactionsTable.getSelectedRow() > -1) {
-    			int viewRow = GraphicalInterface.reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
+    		if (reactionsTable.getRowCount() > 0 && reactionsTable.getSelectedRow() > -1) {
+    			int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
 				formulaBar.setText((String) reactionsTable.getModel().getValueAt(viewRow, reactionsTable.getSelectedColumn()));    			
     		}
     		if (event.getValueIsAdjusting()) {
@@ -2906,8 +2906,8 @@ public class GraphicalInterface extends JFrame {
 		public void valueChanged(ListSelectionEvent event) {
 			String metaboliteRow = Integer.toString((metabolitesTable.getSelectedRow() + 1));
 			statusBar.setText(metaboliteRow);
-			if (metabolitesTable.getSelectedRow() > -1) {
-				int viewRow = GraphicalInterface.metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
+			if (metabolitesTable.getRowCount() > 0 && metabolitesTable.getSelectedRow() > -1) {
+				int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
 				formulaBar.setText((String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()));    			
 			}
 			if (event.getValueIsAdjusting()) {
@@ -5500,7 +5500,7 @@ public class GraphicalInterface extends JFrame {
 
 						columnNameInterface.setSize(600, 510);
 						columnNameInterface.setResizable(false);
-						columnNameInterface.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+						//columnNameInterface.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 						columnNameInterface.setLocationRelativeTo(null);
 						columnNameInterface.setVisible(true);	
 						columnNameInterface.setAlwaysOnTop(true);

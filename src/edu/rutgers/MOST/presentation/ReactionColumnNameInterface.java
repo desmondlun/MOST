@@ -44,9 +44,11 @@ public class ReactionColumnNameInterface  extends JDialog {
 	public JComboBox<String> cbUpperBound = new JComboBox();
 	public JComboBox<String> cbObjective = new JComboBox();
 
-	JButton okButton = new JButton("     OK     ");
-	JButton cancelButton = new JButton("  Cancel  ");
-	JButton nextRowButton = new JButton(" Next Row ");
+	public JButton okButton = new JButton("     OK     ");
+	public JButton cancelButton = new JButton("  Cancel  ");
+	public JButton prevRowButton = new JButton("Previous Row");
+	public JButton nextRowButton = new JButton(" Next Row ");
+	public JLabel rowLabel = new JLabel();
 
 	public static ArrayList<String> columnNamesFromFile;
 
@@ -67,6 +69,10 @@ public class ReactionColumnNameInterface  extends JDialog {
 	public ReactionColumnNameInterface(final Connection con, ArrayList<String> columnNamesFromFile)
 	throws SQLException {
 
+		prevRowButton.setEnabled(false);
+		LocalConfig.getInstance().setReactionsNextRowCorrection(0);
+		rowLabel.setText("   row " + (LocalConfig.getInstance().getReactionsNextRowCorrection() + 1));
+		
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
 		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
 		icons.add(new ImageIcon("etc/most32.jpg").getImage());
@@ -83,7 +89,8 @@ public class ReactionColumnNameInterface  extends JDialog {
 		setColumnNamesFromFile(columnNamesFromFile);
 
 		setTitle(ColumnInterfaceConstants.REACTIONS_COLUMN_NAME_INTERFACE_TITLE);
-		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		//setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
 		cbReactionAbbreviation.setEditable(true);
 		cbKnockout.setEditable(true);	
@@ -459,6 +466,8 @@ public class ReactionColumnNameInterface  extends JDialog {
 		okButton.setMnemonic(KeyEvent.VK_O);
 		JLabel blank = new JLabel("    "); 
 		cancelButton.setMnemonic(KeyEvent.VK_C);
+		JLabel blank1 = new JLabel("    ");
+		prevRowButton.setMnemonic(KeyEvent.VK_P);
 		JLabel blank2 = new JLabel("    ");
 		nextRowButton.setMnemonic(KeyEvent.VK_N);
 
@@ -467,8 +476,11 @@ public class ReactionColumnNameInterface  extends JDialog {
 		buttonPanel.add(okButton);
 		buttonPanel.add(blank);
 		buttonPanel.add(cancelButton);
+		buttonPanel.add(blank1);
+		buttonPanel.add(prevRowButton);
 		buttonPanel.add(blank2);
 		buttonPanel.add(nextRowButton);
+		buttonPanel.add(rowLabel);
 		buttonPanel.setBorder(BorderFactory.createEmptyBorder(10,20,20,20));
 
 		hbButton.add(buttonPanel);
@@ -591,17 +603,39 @@ public class ReactionColumnNameInterface  extends JDialog {
 
 		cancelButton.addActionListener(cancelButtonActionListener);
 
+		ActionListener prevRowButtonActionListener = new ActionListener() {
+			public void actionPerformed(ActionEvent prodActionEvent) {				
+				TextReactionsModelReader reader = new TextReactionsModelReader();
+				int correction = LocalConfig.getInstance().getReactionsNextRowCorrection();
+				if (correction > 0) {
+					LocalConfig.getInstance().setReactionsNextRowCorrection(correction - 1);	
+					rowLabel.setText("   row " + (LocalConfig.getInstance().getReactionsNextRowCorrection() + 1));
+					ArrayList<String> newColumnNamesFromFile = reader.columnNamesFromFile(LocalConfig.getInstance().getReactionsCSVFile(), LocalConfig.getInstance().getReactionsNextRowCorrection());
+					setColumnNamesFromFile(newColumnNamesFromFile);
+					populateNamesFromFileBoxes(newColumnNamesFromFile);
+				} else {
+					prevRowButton.setEnabled(false);
+				}
+				nextRowButton.setEnabled(true);
+			}
+		};
+		
+		prevRowButton.addActionListener(prevRowButtonActionListener);
+		
 		ActionListener nextRowButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
 				TextReactionsModelReader reader = new TextReactionsModelReader();
 				int correction = LocalConfig.getInstance().getReactionsNextRowCorrection();
 				if ((correction + 1) < reader.numberOfLines(LocalConfig.getInstance().getReactionsCSVFile())) {
 					LocalConfig.getInstance().setReactionsNextRowCorrection(correction + 1);	
-					System.out.println("corr " + LocalConfig.getInstance().getReactionsNextRowCorrection());
+					rowLabel.setText("   row " + (LocalConfig.getInstance().getReactionsNextRowCorrection() + 1));
 					ArrayList<String> newColumnNamesFromFile = reader.columnNamesFromFile(LocalConfig.getInstance().getReactionsCSVFile(), LocalConfig.getInstance().getReactionsNextRowCorrection());
 					setColumnNamesFromFile(newColumnNamesFromFile);
 					populateNamesFromFileBoxes(newColumnNamesFromFile);
+				} else {
+					nextRowButton.setEnabled(false);
 				}
+				prevRowButton.setEnabled(true);
 			}
 		};
 

@@ -37,10 +37,12 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 	public JComboBox<String> cbCompartment = new JComboBox();
 	public JComboBox<String> cbBoundary = new JComboBox();
 
-	JButton okButton = new JButton("     OK     ");
-	JButton cancelButton = new JButton("  Cancel  ");
-	JButton nextRowButton = new JButton(" Next Row ");
-
+	public JButton okButton = new JButton("     OK     ");
+	public JButton cancelButton = new JButton("  Cancel  ");
+	public JButton prevRowButton = new JButton("Previous Row");
+	public JButton nextRowButton = new JButton(" Next Row ");
+	public JLabel rowLabel = new JLabel();
+	
 	public static ArrayList<String> columnNamesFromFile;
 
 	public static ArrayList<String> getColumnNamesFromFile() {
@@ -60,6 +62,10 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 	public MetaboliteColumnNameInterface(final Connection con, ArrayList<String> columnNamesFromFile)
 	throws SQLException {
 
+		prevRowButton.setEnabled(false);
+		LocalConfig.getInstance().setMetabolitesNextRowCorrection(0);
+		rowLabel.setText("   row " + (LocalConfig.getInstance().getMetabolitesNextRowCorrection() + 1));
+		
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
 		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
 		icons.add(new ImageIcon("etc/most32.jpg").getImage());
@@ -76,7 +82,8 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		setColumnNamesFromFile(columnNamesFromFile);
 
 		setTitle(ColumnInterfaceConstants.METABOLITES_COLUMN_NAME_INTERFACE_TITLE);
-		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		//setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
 		LocalConfig.getInstance().setMetabolitesNextRowCorrection(0);
 
@@ -308,6 +315,8 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		okButton.setMnemonic(KeyEvent.VK_O);
 		JLabel blank = new JLabel("    "); 
 		cancelButton.setMnemonic(KeyEvent.VK_C);
+		JLabel blank1 = new JLabel("    ");
+		prevRowButton.setMnemonic(KeyEvent.VK_P);
 		JLabel blank2 = new JLabel("    ");
 		nextRowButton.setMnemonic(KeyEvent.VK_N);
 
@@ -316,8 +325,11 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		buttonPanel.add(okButton);
 		buttonPanel.add(blank);
 		buttonPanel.add(cancelButton);
+		buttonPanel.add(blank1);
+		buttonPanel.add(prevRowButton);
 		buttonPanel.add(blank2);
 		buttonPanel.add(nextRowButton);
+		buttonPanel.add(rowLabel);
 		buttonPanel.setBorder(BorderFactory.createEmptyBorder(10,20,20,20));
 
 		hbButton.add(buttonPanel);
@@ -417,16 +429,39 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 
 		cancelButton.addActionListener(cancelButtonActionListener);
 
+		ActionListener prevRowButtonActionListener = new ActionListener() {
+			public void actionPerformed(ActionEvent prodActionEvent) {				
+				TextMetabolitesModelReader reader = new TextMetabolitesModelReader();
+				int correction = LocalConfig.getInstance().getMetabolitesNextRowCorrection();
+				if (correction > 0) {
+					LocalConfig.getInstance().setMetabolitesNextRowCorrection(correction - 1);	
+					rowLabel.setText("   row " + (LocalConfig.getInstance().getMetabolitesNextRowCorrection() + 1));
+					ArrayList<String> newColumnNamesFromFile = reader.columnNamesFromFile(LocalConfig.getInstance().getMetabolitesCSVFile(), LocalConfig.getInstance().getMetabolitesNextRowCorrection());
+					setColumnNamesFromFile(newColumnNamesFromFile);
+					populateNamesFromFileBoxes(newColumnNamesFromFile);
+				} else {
+					prevRowButton.setEnabled(false);
+				}
+				nextRowButton.setEnabled(true);
+			}
+		};
+		
+		prevRowButton.addActionListener(prevRowButtonActionListener);
+		
 		ActionListener nextRowButtonActionListener = new ActionListener() {
-			public void actionPerformed(ActionEvent prodActionEvent) {
+			public void actionPerformed(ActionEvent prodActionEvent) {				
 				TextMetabolitesModelReader reader = new TextMetabolitesModelReader();
 				int correction = LocalConfig.getInstance().getMetabolitesNextRowCorrection();
 				if ((correction + 1) < reader.numberOfLines(LocalConfig.getInstance().getMetabolitesCSVFile())) {
 					LocalConfig.getInstance().setMetabolitesNextRowCorrection(correction + 1);	
+					rowLabel.setText("   row " + (LocalConfig.getInstance().getMetabolitesNextRowCorrection() + 1));
 					ArrayList<String> newColumnNamesFromFile = reader.columnNamesFromFile(LocalConfig.getInstance().getMetabolitesCSVFile(), LocalConfig.getInstance().getMetabolitesNextRowCorrection());
 					setColumnNamesFromFile(newColumnNamesFromFile);
 					populateNamesFromFileBoxes(newColumnNamesFromFile);
+				} else {
+					nextRowButton.setEnabled(false);
 				}
+				prevRowButton.setEnabled(true);
 			}
 		};
 
