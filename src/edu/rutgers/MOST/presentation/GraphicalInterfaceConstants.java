@@ -28,7 +28,7 @@ public class GraphicalInterfaceConstants {
 		"ID",
 		"KO",
 		"Flux Value",
-		"Reaction ID",
+		"Reaction Abbreviation",
 		"Reaction Name",
 		"Reaction Equation",
 		"Reversible",		
@@ -52,7 +52,7 @@ public class GraphicalInterfaceConstants {
 	public static final String[] METABOLITES_COLUMN_NAMES = 
 	{ 
 		"ID",
-		"Metabolite ID",
+		"Metabolite Abbreviation",
 		"Metabolite Name",		
 		"Charge",
 		"Compartment",
@@ -66,7 +66,7 @@ public class GraphicalInterfaceConstants {
     public static final int KO_WIDTH = 60;
     public static final int KO_COLUMN = 1;
     public static final int FLUX_VALUE_COLUMN = 2;
-    public static final int REACTION_ABBREVIATION_WIDTH = 100;
+    public static final int REACTION_ABBREVIATION_WIDTH = 150;
     public static final int REACTION_ABBREVIATION_COLUMN = 3;
     public static final int REACTION_NAME_WIDTH = 200; 
     public static final int REACTION_NAME_COLUMN = 4;

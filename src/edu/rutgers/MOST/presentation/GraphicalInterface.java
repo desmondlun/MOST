@@ -289,16 +289,6 @@ public class GraphicalInterface extends JFrame {
 		return extension;
 	}
 	
-	public static String loadErrorMessage;
-
-	public void setLoadErrorMessage(String loadErrorMessage) {
-		this.loadErrorMessage = loadErrorMessage;
-	}
-
-	public static String getLoadErrorMessage() {
-		return loadErrorMessage;
-	}
-	
 	// menu items
 	public final JMenuItem saveSBMLItem = new JMenuItem("Save As SBML");
 	public final JMenuItem saveCSVMetabolitesItem = new JMenuItem("Save As CSV Metabolites");
@@ -1247,18 +1237,13 @@ public class GraphicalInterface extends JFrame {
 				String reactionRow = Integer.toString((reactionsTable.getSelectedRow() + 1));
 				String metaboliteRow = Integer.toString((metabolitesTable.getSelectedRow() + 1));
 				if (tabIndex == 0 && reactionsTable.getSelectedRow() > 0) {
-					if (LocalConfig.getInstance().getInvalidReactions().size() > 0) {
-						setLoadErrorMessage("Model contains invalid reactions.");
-						statusBar.setText(reactionRow + "                   " + getLoadErrorMessage());
-					} else {
-						statusBar.setText(reactionRow);
-					}
+					statusBar.setText("Row " + reactionRow);
 					if (reactionsTable.getSelectedRow() > -1 && reactionsTable.getSelectedColumn() > -1) {
 						int viewRow = GraphicalInterface.reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
 						formulaBar.setText((String) reactionsTable.getModel().getValueAt(viewRow, reactionsTable.getSelectedColumn()));    			
 					} 
 				} else if (tabIndex == 1 && metabolitesTable.getSelectedRow() > 0) {
-					statusBar.setText(metaboliteRow);					
+					statusBar.setText("Row " + metaboliteRow);					
 					if (metabolitesTable.getSelectedRow() > -1 && metabolitesTable.getSelectedColumn() > -1) {
 						int viewRow = GraphicalInterface.metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
 						formulaBar.setText((String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()));    			
@@ -1266,12 +1251,7 @@ public class GraphicalInterface extends JFrame {
 						formulaBar.setText("");
 					}
 				} else {
-					if (LocalConfig.getInstance().getInvalidReactions().size() > 0) {
-						setLoadErrorMessage("Model contains invalid reactions.");
-						statusBar.setText("1" + "                   " + getLoadErrorMessage());
-					} else {
-						statusBar.setText("1");
-					}
+					statusBar.setText("Row 1");
 					formulaBar.setText("");
 				}
 			}
@@ -1478,14 +1458,9 @@ public class GraphicalInterface extends JFrame {
 					// check for invalid reactions and add to invalid list
 					DatabaseErrorChecker errorChecker = new DatabaseErrorChecker();
 					ArrayList<String> invalidReactions = errorChecker.invalidReactions(path);
-					LocalConfig.getInstance().setInvalidReactions(invalidReactions);
-					if (LocalConfig.getInstance().getInvalidReactions().size() > 0) {
-						setLoadErrorMessage("Model contains invalid reactions.");
-						// selected row default at row 1 (index 0)
-						statusBar.setText("1" + "                   " + getLoadErrorMessage());
-					} else {
-						statusBar.setText("1");
-					}
+					LocalConfig.getInstance().setInvalidReactions(invalidReactions);				
+					statusBar.setText("Row 1");
+
 				}
 			}
 		}
@@ -2087,12 +2062,7 @@ public class GraphicalInterface extends JFrame {
 				} 
 				if (LocalConfig.getInstance().getInvalidReactions().contains(oldValue) && LocalConfig.getInstance().addMetaboliteOption == true) {
 					LocalConfig.getInstance().getInvalidReactions().remove(oldValue);
-					if (LocalConfig.getInstance().getInvalidReactions().size() > 0) {
-						setLoadErrorMessage("Model contains invalid reactions.");
-						statusBar.setText((rowIndex + 1) + "                   " + getLoadErrorMessage());
-					} else {
-						statusBar.setText((rowIndex + 1) + "");
-					}
+					statusBar.setText("Row " + (rowIndex + 1));
 				}
 			}
 		} else if (colIndex == GraphicalInterfaceConstants.KO_COLUMN) {
@@ -2291,15 +2261,8 @@ public class GraphicalInterface extends JFrame {
 			} else {
 				setMetabolitesSortColumnIndex(0);
 				setMetabolitesSortOrder(SortOrder.ASCENDING);
-			}
-			
-			if (LocalConfig.getInstance().getInvalidReactions().size() > 0) {
-				setLoadErrorMessage("Model contains invalid reactions.");
-				// selected row default at row 1 (index 0)
-				statusBar.setText("1" + "                   " + getLoadErrorMessage());
-			} else {
-				statusBar.setText("1");
-			}
+			}			
+			statusBar.setText("Row 1");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -2342,14 +2305,7 @@ public class GraphicalInterface extends JFrame {
 				setReactionsSortColumnIndex(0);
 				setReactionsSortOrder(SortOrder.ASCENDING);
 			}
-			
-			if (LocalConfig.getInstance().getInvalidReactions().size() > 0) {
-				setLoadErrorMessage("Model contains invalid reactions.");
-				// selected row default at row 1 (index 0)
-				statusBar.setText("1" + "                   " + getLoadErrorMessage());
-			} else {
-				statusBar.setText("1");
-			}
+			statusBar.setText("Row 1");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -2390,14 +2346,7 @@ public class GraphicalInterface extends JFrame {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		if (LocalConfig.getInstance().getInvalidReactions().size() > 0) {
-			setLoadErrorMessage("Model contains invalid reactions.");
-			// selected row default at row 1 (index 0)
-			statusBar.setText("1" + "                   " + getLoadErrorMessage());
-		} else {
-			statusBar.setText("1");
-		}		
+		statusBar.setText("Row 1");	
 		formulaBar.setText("");
 	}
 
@@ -2572,13 +2521,8 @@ public class GraphicalInterface extends JFrame {
     private class ReactionsRowListener implements ListSelectionListener {
     	public void valueChanged(ListSelectionEvent event) {
     		String reactionRow = Integer.toString((reactionsTable.getSelectedRow() + 1));
-    		if (LocalConfig.getInstance().getInvalidReactions().size() > 0) {
-				setLoadErrorMessage("Model contains invalid reactions.");
-				// selected row default at row 1 (index 0)
-				statusBar.setText(reactionRow + "                   " + getLoadErrorMessage());
-			} else {
-				statusBar.setText(reactionRow);
-			}
+			// selected row default at row 1 (index 0)
+			statusBar.setText("Row " + reactionRow);
     		if (reactionsTable.getRowCount() > 0 && reactionsTable.getSelectedRow() > -1) {
     			int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
 				formulaBar.setText((String) reactionsTable.getModel().getValueAt(viewRow, reactionsTable.getSelectedColumn()));    			
@@ -2905,7 +2849,7 @@ public class GraphicalInterface extends JFrame {
 	private class MetabolitesRowListener implements ListSelectionListener {
 		public void valueChanged(ListSelectionEvent event) {
 			String metaboliteRow = Integer.toString((metabolitesTable.getSelectedRow() + 1));
-			statusBar.setText(metaboliteRow);
+			statusBar.setText("Row " + metaboliteRow);
 			if (metabolitesTable.getRowCount() > 0 && metabolitesTable.getSelectedRow() > -1) {
 				int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
 				formulaBar.setText((String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()));    			
@@ -3481,32 +3425,6 @@ public class GraphicalInterface extends JFrame {
 			pasteMenu.setEnabled(false);
 		}
 		reactionsContextMenu.add(pasteMenu);
-		
-		JMenuItem fillUpMenu = new JMenuItem("Fill Up");
-		//if fill is done in the sorted row it will sort after fill  
-		if (getReactionsSortColumnIndex() == reactionsTable.getSelectedColumn()) {
-			fillUpMenu.setEnabled(false);
-		}
-		fillUpMenu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int row=reactionsTable.getSelectedRow();
-				reactionsFill(0, row);
-			}
-		});
-		reactionsContextMenu.add(fillUpMenu);
-		
-		JMenuItem fillDownMenu = new JMenuItem("Fill Down");
-		//if fill is done in the sorted row it will sort after fill  
-		if (getReactionsSortColumnIndex() == reactionsTable.getSelectedColumn()) {
-			fillDownMenu.setEnabled(false);
-		}
-		fillDownMenu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int row=reactionsTable.getSelectedRow();
-				reactionsFill(row + 1, reactionsTable.getRowCount());
-			}
-		});
-		reactionsContextMenu.add(fillDownMenu);
 
 		JMenuItem clearMenu = new JMenuItem("Clear Contents");
 		clearMenu.setAccelerator(KeyStroke.getKeyStroke(
@@ -3741,32 +3659,6 @@ public class GraphicalInterface extends JFrame {
 			pasteMenu.setEnabled(false);
 		}
 		contextMenu.add(pasteMenu);
-
-		JMenuItem fillUpMenu = new JMenuItem("Fill Up");
-		//if fill is done in the sorted row it will sort after fill  
-		if (getReactionsSortColumnIndex() == reactionsTable.getSelectedColumn()) {
-			fillUpMenu.setEnabled(false);
-		}
-		fillUpMenu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int row=reactionsTable.getSelectedRow();
-				reactionsFill(0, row);
-			}
-		});
-		contextMenu.add(fillUpMenu);
-		
-		JMenuItem fillDownMenu = new JMenuItem("Fill Down");
-		//if fill is done in the sorted row it will sort after fill  
-		if (getReactionsSortColumnIndex() == reactionsTable.getSelectedColumn()) {
-			fillDownMenu.setEnabled(false);
-		}
-		fillDownMenu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int row=reactionsTable.getSelectedRow();
-				reactionsFill(row + 1, reactionsTable.getRowCount());
-			}
-		});
-		contextMenu.add(fillDownMenu);
 		
 		JMenuItem clearMenu = new JMenuItem("Clear Contents");
 		clearMenu.setAccelerator(KeyStroke.getKeyStroke(
@@ -4261,31 +4153,6 @@ public class GraphicalInterface extends JFrame {
 		}
 		contextMenu.add(pasteMenu);
 
-		JMenuItem fillUpMenu = new JMenuItem("Fill Up");
-		//if fill is done in the sorted row it will sort after fill  
-		if (getMetabolitesSortColumnIndex() == metabolitesTable.getSelectedColumn()) {
-			fillUpMenu.setEnabled(false);
-		}
-		fillUpMenu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int row=metabolitesTable.getSelectedRow();
-				metabolitesFill(0, row);
-			}
-		});
-		contextMenu.add(fillUpMenu);
-		
-		JMenuItem fillDownMenu = new JMenuItem("Fill Down");
-		if (getMetabolitesSortColumnIndex() == metabolitesTable.getSelectedColumn()) {
-			fillDownMenu.setEnabled(false);
-		}
-		fillDownMenu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int row=metabolitesTable.getSelectedRow();
-				metabolitesFill(row + 1, metabolitesTable.getRowCount());
-			}
-		});
-		contextMenu.add(fillDownMenu);
-		
 		JMenuItem clearMenu = new JMenuItem("Clear Contents");
 		clearMenu.setAccelerator(KeyStroke.getKeyStroke(
 		        KeyEvent.VK_E, ActionEvent.CTRL_MASK));
@@ -4830,38 +4697,6 @@ public class GraphicalInterface extends JFrame {
 		updater.updateReactionRows(rowList, reacIdList, oldReactionsList, LocalConfig.getInstance().getLoadedDatabase());	
 	}
 
-	//only works for one row, if multiple rows, would need to deal with
-	//remainders (see paste - quotient). usually fill is used to fill one
-	//value or row of values, not alternating rows
-	public void reactionsFill(int start, int end) {
-		//TODO: add if column is reactionEquations add to oldReactionsList
-		reactionsCopy();
-       
-		String copiedString = getClipboardContents(GraphicalInterface.this);
-		//String[] s1 = copiedString.split("\n");
-		ReactionsUpdater updater = new ReactionsUpdater();
-		ArrayList<Integer> rowList = new ArrayList<Integer>();
-		ArrayList<Integer> reacIdList = new ArrayList<Integer>();
-		ArrayList<String> oldReactionsList = new ArrayList<String>();
-		int startCol=(reactionsTable.getSelectedColumns())[0];	
-		for (int r = start; r < end; r++) {
-			int row = reactionsTable.convertRowIndexToModel(r);
-			rowList.add(row);
-			int reacId = Integer.valueOf((String) reactionsTable.getModel().getValueAt(row, 0));
-			reacIdList.add(reacId);
-			String oldReaction = (String) reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
-			oldReactionsList.add(oldReaction);
-		}
-		for (int m = 0; m < rowList.size(); m++) {			
-			int viewRow = GraphicalInterface.reactionsTable.convertRowIndexToView(rowList.get(m));
-			String[] rowstring = copiedString.split("\t");
-			for (int c = 0; c < rowstring.length; c++) {
-				reactionsTable.setValueAt(rowstring[c], viewRow, startCol + c);
-			}
-		}
-		updater.updateReactionRows(rowList, reacIdList, oldReactionsList, LocalConfig.getInstance().getLoadedDatabase());			
-	}
-
 	public void reactionsDeleteRows() {
 		int rowIndexStart = reactionsTable.getSelectedRow();
 		int rowIndexEnd = reactionsTable.getSelectionModel().getMaxSelectionIndex();
@@ -5297,36 +5132,6 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 
-	//only works for one row, if multiple rows, would need to deal with
-	//remainders (see paste - quotient). usually fill is used to fill one
-	//value or row of values, not alternating rows
-	public void metabolitesFill(int start, int end) {
-		//TODO: Fill must throw an error if user attempts to fill over
-		//a used metabolite	- see delete
-		metabolitesCopy();
-       
-		String copiedString = getClipboardContents(GraphicalInterface.this);
-		//String[] s1 = copiedString.split("\n");
-		MetabolitesUpdater updater = new MetabolitesUpdater();
-		ArrayList<Integer> rowList = new ArrayList<Integer>();
-		ArrayList<Integer> metabIdList = new ArrayList<Integer>();
-		int startCol=(metabolitesTable.getSelectedColumns())[0];	
-		for (int r = start; r < end; r++) {
-			int row = metabolitesTable.convertRowIndexToModel(r);
-			rowList.add(row);
-			int metabId = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(row, 0));
-			metabIdList.add(metabId);
-		}
-		for (int m = 0; m < rowList.size(); m++) {			
-			int viewRow = GraphicalInterface.metabolitesTable.convertRowIndexToView(rowList.get(m));
-			String[] rowstring = copiedString.split("\t");
-			for (int c = 0; c < rowstring.length; c++) {
-				metabolitesTable.setValueAt(rowstring[c], viewRow, startCol + c);
-			}
-		}
-		updater.updateMetaboliteRows(rowList, metabIdList, LocalConfig.getInstance().getLoadedDatabase());			
-	}
-
 	public void metaboliteDeleteRows() {
 		int rowIndexStart = metabolitesTable.getSelectedRow();
 		int rowIndexEnd = metabolitesTable.getSelectionModel().getMaxSelectionIndex();
@@ -5552,7 +5357,7 @@ public class GraphicalInterface extends JFrame {
 		showPrompt = true;
 		
 		// selected row default at first
-		statusBar.setText("1");
+		statusBar.setText("Row 1");
 
 	}
 }
