@@ -402,4 +402,38 @@ public class LocalConfig {
 	public boolean reactionsTableChanged;
 	public boolean metabolitesTableChanged;
 	
+	public boolean findFieldChanged;
+	public boolean replaceFieldChanged;
+	
+	public static Integer reactionsLocationsListCount;
+
+	public void setReactionsLocationsListCount(Integer reactionsLocationsListCount) {
+		this.reactionsLocationsListCount = reactionsLocationsListCount;
+	}
+	
+	public Integer getReactionsLocationsListCount() {
+		return reactionsLocationsListCount;
+	}
+	
+	public static Integer metabolitesLocationsListCount;
+
+	public static Integer getMetabolitesLocationsListCount() {
+		return metabolitesLocationsListCount;
+	}
+
+	public static void setMetabolitesLocationsListCount(
+			Integer metabolitesLocationsListCount) {
+		LocalConfig.metabolitesLocationsListCount = metabolitesLocationsListCount;
+	}
+	
+	private static ArrayList<Integer> suspiciousMetabolites = new ArrayList<Integer>();
+	
+	public ArrayList<Integer> getSuspiciousMetabolites() {
+		return suspiciousMetabolites;
+	}
+	
+	public void setSuspiciousMetabolites(ArrayList<Integer> suspiciousMetabolites) {
+		this.suspiciousMetabolites = suspiciousMetabolites;
+	}
+	
 }

@@ -27,7 +27,7 @@ public class GraphicalInterfaceConstants {
 	{ 
 		"ID",
 		"KO",
-		"Flux Value",
+		"Flux Value",		
 		"Reaction Abbreviation",
 		"Reaction Name",
 		"Reaction Equation",
@@ -221,8 +221,8 @@ public class GraphicalInterfaceConstants {
     public static final String[] BOOLEAN_VALUES = {"false", "true"};
     public static final String[] VALID_FALSE_VALUES = {"f"};
     public static final String[] VALID_TRUE_VALUES = {"t"};
-    public static final String BOOLEAN_VALUE_ERROR_TITLE = "Invalid entry. Enter \"t\" for \"true\", \"f\" for \"false\"";
-    public static final String BOOLEAN_VALUE_ERROR_MESSAGE = "Boolean Value Error";
+    public static final String BOOLEAN_VALUE_ERROR_TITLE = "Boolean Value Error";
+    public static final String BOOLEAN_VALUE_ERROR_MESSAGE = "Invalid entry. Enter \"t\" for \"true\", \"f\" for \"false\"";
 	
     // lower/upper bound/reversible
     public static final String LOWER_BOUND_ERROR_TITLE = "Lower Bound Error.";
@@ -234,6 +234,9 @@ public class GraphicalInterfaceConstants {
     public static final String IRREVERSIBLE_REACTION_ERROR_TITLE = "Irreversible Reaction Error";
     public static final String IRREVERSIBLE_REACTION_ERROR_MESSAGE = "Irreversible reaction requires lower bound to be >= 0";
        
+    public static final String REVERSIBLE_ERROR_TITLE = "Non-Editable Column";
+    public static final String REVERSIBLE_ERROR_MESSAGE = "Reversible Column cannot only edited or changed by editing reaction equation.";
+    
     // participating
     public static final String PARTICIPATING_METAB_ERROR_TITLE = "Participating Metabolite Deletion Error";
     public static final String PARTICIPATING_METAB_ERROR_MESSAGE = "One or more selected metabolites participate in reactions and cannot be deleted.";

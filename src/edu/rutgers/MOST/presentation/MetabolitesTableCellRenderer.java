@@ -16,8 +16,11 @@ public class MetabolitesTableCellRenderer extends DefaultTableCellRenderer{
 				table, obj, isSelected, hasFocus, row, column);
 		String tooltip = "";
 		int viewRow = table.convertRowIndexToModel(row);
-		int id = Integer.valueOf(table.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.DB_METABOLITE_ID_COLUMN).toString());
-		if (LocalConfig.getInstance().getDuplicateIds().contains(id)) {
+		int id = Integer.valueOf(table.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.DB_METABOLITE_ID_COLUMN).toString());	
+		// TODO need nameid map, reverse look up too slow
+		if (LocalConfig.getInstance().getSuspiciousMetabolites().contains(id)) {
+			tooltip = "Suspicious metabolite";
+		} else if (LocalConfig.getInstance().getDuplicateIds().contains(id)) {
 			tooltip = "Duplicate metabolite";
 		}
 		if (isSelected) {

@@ -29,7 +29,7 @@ public class ReactionsUpdater {
 		//based on oldReactions that are being replaced
 		for (int i = 0; i < oldReactionsList.size(); i++) {
 			ReactionParser parser = new ReactionParser();
-			if (parser.isValid(oldReactionsList.get(i)) && !LocalConfig.getInstance().getInvalidReactions().contains(oldReactionsList.get(i))) {
+			if (parser.isValid(oldReactionsList.get(i))) {
 				ArrayList<ArrayList<ArrayList<String>>> oldReactionList = parser.reactionList(oldReactionsList.get(i));
 
 				//remove old species from used map
@@ -305,7 +305,7 @@ public class ReactionsUpdater {
 	
 	//used for updating when a single row is edited, and when pasting reaction equations
 	public void updateReactionEquations(int id, String oldEquation, String newEquation, String databaseName) {
-
+		
 		LocalConfig.getInstance().addMetaboliteOption = true;
 		
 		ReactionParser parser = new ReactionParser();
@@ -321,7 +321,6 @@ public class ReactionsUpdater {
 			//update for old reaction
 			if (oldEquation != null && parser.isValid(oldEquation)) {
 				ArrayList<ArrayList<ArrayList<String>>> oldReactionList = parser.reactionList(oldEquation);
-
 				//remove old species from used map
 				for (int x = 0; x < oldReactionList.size(); x++) {
 					for (int y = 0; y < oldReactionList.get(x).size(); y++) {
@@ -371,7 +370,8 @@ public class ReactionsUpdater {
 					ArrayList<ArrayList<ArrayList<String>>> reactionList = parser.reactionList(newEquation.trim());					
 					// if reaction contains a prefix such as [c]: and a compartment suffix
 					// such as a[c], it is invalid
-					if (parser.invalidSyntax || parser.invalidSpacing) {
+					if (parser.invalidSyntax) {
+					//if (parser.invalidSyntax || parser.invalidSpacing) {
 						valid = false;
 					} else {
 						noReactants = false;
@@ -442,6 +442,11 @@ public class ReactionsUpdater {
 									if (!newMetabolite || LocalConfig.getInstance().addMetaboliteOption) {
 										String insert = "INSERT INTO reaction_reactants(reaction_id, stoic, metabolite_id) values (" + id + ", " + stoicStr + ", " + metabId + ");";
 										stat.executeUpdate(insert);
+										if (parser.isSuspicious(reactant)) {	
+											if (!LocalConfig.getInstance().getSuspiciousMetabolites().contains(metabId)) {
+												LocalConfig.getInstance().getSuspiciousMetabolites().add(metabId);
+											}
+										}
 										if (LocalConfig.getInstance().pastedReaction == false) {
 											if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(reactant)) {
 												int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(reactant);
@@ -524,6 +529,11 @@ public class ReactionsUpdater {
 									if (!newMetabolite || LocalConfig.getInstance().addMetaboliteOption) {
 										String insert = "INSERT INTO reaction_products(reaction_id, stoic, metabolite_id) values (" + id + ", " + stoicStr + ", " + metabId + ");";
 										stat.executeUpdate(insert);	
+										if (parser.isSuspicious(product)) {
+											if (!LocalConfig.getInstance().getSuspiciousMetabolites().contains(metabId)) {
+												LocalConfig.getInstance().getSuspiciousMetabolites().add(metabId);
+											}							
+										}
 										if (LocalConfig.getInstance().pastedReaction == false) {
 											if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(product)) {
 												int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(product);

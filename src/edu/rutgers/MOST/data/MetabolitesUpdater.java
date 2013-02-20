@@ -199,7 +199,7 @@ public class MetabolitesUpdater {
 	}
 	
 	public void deleteRows(ArrayList<Integer> idList, String databaseName) {
-		//TODO: need to check if unused
+		
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
 		
 		try{
@@ -211,6 +211,10 @@ public class MetabolitesUpdater {
 				stat.executeUpdate("BEGIN TRANSACTION");
 
 				for (int i = 0; i < idList.size(); i++) {
+					if (LocalConfig.getInstance().getSuspiciousMetabolites().contains(idList.get(i))) {
+						LocalConfig.getInstance().getSuspiciousMetabolites().remove(idList.get(i));
+						System.out.println(LocalConfig.getInstance().getSuspiciousMetabolites());
+					}
 					String delete = "delete from metabolites where id = " + idList.get(i) + ";";
 					stat.executeUpdate(delete);
 				}

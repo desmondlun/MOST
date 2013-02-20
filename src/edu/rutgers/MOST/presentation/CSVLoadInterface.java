@@ -27,6 +27,7 @@ import javax.swing.event.DocumentListener;
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.SettingsFactory;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
+import edu.rutgers.MOST.presentation.GraphicalInterface.XMLFileFilter;
 
 public class CSVLoadInterface  extends JDialog {
 
@@ -99,9 +100,11 @@ public class CSVLoadInterface  extends JDialog {
 			}
 
 			public void enableOKButton() {
-				if (textMetabField.getText() != null) {
+				if (textMetabField.getText() != null && textMetabField.getText().length() > 0) {
 					okButton.setEnabled(true);
 					LocalConfig.getInstance().hasMetabolitesFile = true;
+				} else {
+					LocalConfig.getInstance().hasMetabolitesFile = false;
 				}
 			}
 		});
@@ -118,10 +121,16 @@ public class CSVLoadInterface  extends JDialog {
 			}
 
 			public void enableOKButton() {
-				if (textReacField.getText() != null) {
+				if (textReacField.getText() != null && textReacField.getText().length() > 0) {
 					okButton.setEnabled(true);
 					LocalConfig.getInstance().hasReactionsFile = true;
 				}
+				if (textMetabField.getText() != null && textMetabField.getText().length() > 0) {
+					LocalConfig.getInstance().hasMetabolitesFile = true;
+				} else {
+					LocalConfig.getInstance().hasMetabolitesFile = false;
+				}
+				System.out.println("csv load " + LocalConfig.getInstance().hasMetabolitesFile);
 			}
 		});
 		
@@ -172,7 +181,9 @@ public class CSVLoadInterface  extends JDialog {
 			public void actionPerformed(ActionEvent prodActionEvent) {
 				JTextArea output = null;
 				JFileChooser fileChooser = new JFileChooser(); 
-				fileChooser.setDialogTitle("Browse for CSV Metabolites File");
+				fileChooser.setDialogTitle("Load CSV Metabolite File");
+				fileChooser.setFileFilter(new CSVFileFilter());
+				fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 				
 				String lastCSV_path = GraphicalInterface.curSettings.get("LastCSV");
 				if (lastCSV_path == null) {
@@ -213,7 +224,9 @@ public class CSVLoadInterface  extends JDialog {
 			public void actionPerformed(ActionEvent prodActionEvent) {
 				JTextArea output = null;
 				JFileChooser fileChooser = new JFileChooser(); 
-				fileChooser.setDialogTitle("Browse for CSV Reactions File");
+				fileChooser.setDialogTitle("Load CSV Reaction File");
+				fileChooser.setFileFilter(new CSVFileFilter());
+				fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 				
 				String lastCSV_path = GraphicalInterface.curSettings.get("LastCSV");
 				if (lastCSV_path == null) {
@@ -297,7 +310,15 @@ public class CSVLoadInterface  extends JDialog {
 	}
 }
 
-
+class CSVFileFilter extends javax.swing.filechooser.FileFilter {
+    public boolean accept(File f) {
+        return f.isDirectory() || f.getName().toLowerCase().endsWith(".csv");
+    }
+    
+    public String getDescription() {
+        return ".csv files";
+    }
+}
 
 
 

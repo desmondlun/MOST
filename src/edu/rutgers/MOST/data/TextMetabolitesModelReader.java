@@ -103,7 +103,13 @@ public class TextMetabolitesModelReader {
 		return count;		
 	}
 
-	public void load(File file, String databaseName){		
+	public void load(File file, String databaseName){
+		
+		LocalConfig.getInstance().getMetaboliteUsedMap().clear();
+		LocalConfig.getInstance().getDuplicateIds().clear();
+		LocalConfig.getInstance().getSuspiciousMetabolites().clear();
+		LocalConfig.getInstance().getMetaboliteIdNameMap().clear();
+		
 		DatabaseCreator creator = new DatabaseCreator();		
 		creator.createBlankReactionsTable(databaseName, GraphicalInterfaceConstants.BLANK_DB_REACTION_ROW_COUNT);
 
@@ -350,7 +356,7 @@ public class TextMetabolitesModelReader {
 			e.printStackTrace();
 
 		}
-
+		LocalConfig.getInstance().hasMetabolitesFile = true;
 		//System.out.println("Done");
 	}
 }

@@ -704,7 +704,7 @@ public class ReactionColumnNameInterface  extends JDialog {
 			} else if((columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_FILTER[0]) && !(columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_NOT_FILTER[0])) {
 				cbObjective.setSelectedIndex(c);
 				LocalConfig.getInstance().setBiologicalObjectiveColumnIndex(c); 	
-			} else if((columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.ABBREVIATION_COLUMN_FILTER[0]) == 0 || (columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.ABBREVIATION_COLUMN_FILTER[1]) == 0) {
+			} else if((columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.ABBREVIATION_COLUMN_FILTER[0]) || (columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.ABBREVIATION_COLUMN_FILTER[1]) == 0) {
 				cbReactionAbbreviation.setSelectedIndex(c);
 				LocalConfig.getInstance().setReactionAbbreviationColumnIndex(c); 
 			} else if((columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.NAME_COLUMN_FILTER[0])) {

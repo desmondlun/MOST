@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import edu.rutgers.MOST.config.LocalConfig;
+
 public class ReactionParser {
 	
 	// if reaction starts with [c]: for example, suffix will be appended to all
@@ -14,11 +16,10 @@ public class ReactionParser {
 	public static boolean hasSuffix = false;
 	// if reaction contains prefix and suffix
 	public static boolean invalidSyntax = false;
-	public static boolean invalidSpacing = false;
+	public static ArrayList<String> suspiciousMetabolites = new ArrayList<String>();
 
 	public static ArrayList<ArrayList<ArrayList<String>>> reactionList(String reactionEquation) {
 		invalidSyntax = false;
-		invalidSpacing = false;
 		ArrayList<ArrayList<ArrayList<String>>> reactionList = new ArrayList<ArrayList<ArrayList<String>>>();
 		ArrayList<String> reactantAndStoicList = new ArrayList<String>();
 		ArrayList<String> productAndStoicList = new ArrayList<String>();
@@ -56,7 +57,6 @@ public class ReactionParser {
 				reactionList.add(products);
 				
 			} else {	
-				String reactantHalfEquation = halfEquations.get(0).trim();
 				java.util.List<String> reactantsAndCoeff = Arrays.asList(halfEquations.get(0).trim().split("\\s+"));
 							
 				ArrayList<ArrayList<String>> rawReactants = rawSpeciesAndCoeffList(reactantsAndCoeff);
@@ -138,19 +138,8 @@ public class ReactionParser {
 		} else {
 			reactant = species(rawSpeciesAndCoeff, 0);				
 		}	
-		
-		// checks if reactant contains a charge - ex H+2
-		if (reactant.contains("+")) {
-			if ((isNumber(reactant.substring(reactant.lastIndexOf("+") + 1, reactant.length()))) || reactant.endsWith("+")) {
-				stoicAndSpecies.add(stoic);
-				stoicAndSpecies.add(reactant);
-			} else {
-				invalidSpacing = true;
-			}
-		} else {
-			stoicAndSpecies.add(stoic);
-			stoicAndSpecies.add(reactant);
-		}			
+		stoicAndSpecies.add(stoic);
+		stoicAndSpecies.add(reactant);
 		return stoicAndSpecies;
 	}
 	
@@ -308,6 +297,19 @@ public class ReactionParser {
 			hasSuffix = true;
 		}
 		return existingSuffix;		
+	}
+		
+	public boolean isSuspicious(String reactant) {
+		// checks if reactant contains a charge - ex H+ or Mg+2 
+		if (reactant.contains("+")) {
+			if ((isNumber(reactant.substring(reactant.lastIndexOf("+") + 1, reactant.length()))) || reactant.endsWith("+")) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+		return false;
+		
 	}
 	
 	public static void main(String[] args) {

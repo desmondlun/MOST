@@ -181,6 +181,8 @@ public class ReactionEditor extends JFrame {
 		JLabel productLabel[] = new JLabel[numReactantFields];
 
 		//comboboxes
+		//final SizedComboBox cbReactant[] = new SizedComboBox[numReactantFields];    
+		//final SizedComboBox cbProduct[] = new SizedComboBox[numProductFields];
 		final JComboBox cbReactant[] = new JComboBox[numReactantFields];    
 		final JComboBox cbProduct[] = new JComboBox[numProductFields];
 
@@ -204,6 +206,7 @@ public class ReactionEditor extends JFrame {
 
 		//create reactant combo boxes
 		for (int i = 0; i < numReactantFields; i++) {
+			//cbReactant[i] = new SizedComboBox();
 			cbReactant[i] = new JComboBox<String>();
 			cbReactant[i].setEditable(true);
 			cbReactant[i].setEnabled(false);
@@ -306,6 +309,7 @@ public class ReactionEditor extends JFrame {
 
 		//create product combo boxes
 		for (int j = 0; j < numProductFields; j++) {
+			//cbProduct[j] = new SizedComboBox();
 			cbProduct[j] = new JComboBox<String>();
 			cbProduct[j].setEditable(true); 
 			cbProduct[j].setEnabled(false);
