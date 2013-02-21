@@ -139,10 +139,7 @@ public class TextReactionsModelReader {
 					+ " meta_6 varchar(500), meta_7 varchar(500), meta_8 varchar(500), meta_9 varchar(500), "
 					+ " meta_10 varchar(500), meta_11 varchar(500), meta_12 varchar(500), "
 					+ " meta_13 varchar(500), meta_14 varchar(500), meta_15 varchar(500));");
-			
-			stat.executeUpdate("drop table if exists reactions_meta_info;");		    
-			stat.executeUpdate("CREATE TABLE reactions_meta_info (id INTEGER PRIMARY KEY, meta_column_name varchar(100));");
-			
+					
 			stat.executeUpdate("drop table if exists reaction_reactants;");
 			stat.executeUpdate("CREATE TABLE reaction_reactants (reaction_id INTEGER, " 
 					+ " metabolite_id INTEGER, stoic FLOAT);");
