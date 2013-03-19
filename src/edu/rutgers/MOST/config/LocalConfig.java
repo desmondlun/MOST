@@ -45,7 +45,7 @@ public class LocalConfig {
 	public boolean hasReactionsFile;
 	
 	/**********************************************************************************/
-	//parameters set for metabolites in columnNameInterfaces
+	//parameters for metabolites in columnNameInterfaces
 	/**********************************************************************************/
     	
 	//column indices
@@ -120,7 +120,7 @@ public class LocalConfig {
 	}
 	
 	/**********************************************************************************/
-	//parameters set for reactions in columnNameInterfaces
+	//parameters for reactions in columnNameInterfaces
 	/**********************************************************************************/
 	//reaction column indices
     private static Integer reactionAbbreviationColumnIndex;
@@ -233,16 +233,9 @@ public class LocalConfig {
 		return reactionsNextRowCorrection;
 	}
 	
-	//sheet names list for ExcelSheetInterface and Excel97Reader
-    private static ArrayList<String> sheetNamesList;
-	
-	public ArrayList<String> getSheetNamesList() {
-		return sheetNamesList;
-	}
-	
-	public void setSheetNamesList(ArrayList<String> sheetNamesList) {
-		this.sheetNamesList = sheetNamesList;
-	}
+	/**********************************************************************************/
+	//end parameters for columnNameInterfaces
+	/**********************************************************************************/
 	
 	private static Integer progress;
 	
@@ -396,16 +389,24 @@ public class LocalConfig {
 	// if "No" button pressed in Add Metabolite Prompt, is set to false
 	public boolean addMetaboliteOption;	
 	public boolean noButtonClicked;
-	
+	public boolean yesToAllButtonClicked;
 	public boolean pastedReaction;
+	
+	public boolean editMode;
 	
 	public boolean reactionsTableChanged;
 	public boolean metabolitesTableChanged;
 	
+	public boolean findMode;
 	public boolean findFieldChanged;
 	public boolean replaceFieldChanged;
+	public boolean findReplaceFocusLost;
+	public boolean findReplaceFocusGained;
+	
+	public boolean addReactantPromptShown;
 	
 	public static Integer reactionsLocationsListCount;
+	
 
 	public void setReactionsLocationsListCount(Integer reactionsLocationsListCount) {
 		this.reactionsLocationsListCount = reactionsLocationsListCount;

@@ -283,6 +283,7 @@ public class SBMLModelReader {
 				}
 				LocalConfig.getInstance().setMaxMetaboliteId(metabolites.size());
 				LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
+				System.out.println("id name map " + LocalConfig.getInstance().getMetaboliteIdNameMap());
 				
 //				long endTime = System.currentTimeMillis();
 //				System.out.println("Metabolite read time: " + (endTime - startTime));
@@ -611,6 +612,7 @@ public class SBMLModelReader {
 
 			conn.close();
 			LocalConfig.getInstance().setProgress(100);	
+			System.out.println("used map " + LocalConfig.getInstance().getMetaboliteUsedMap());
 			
 		}catch(SQLException e){
 

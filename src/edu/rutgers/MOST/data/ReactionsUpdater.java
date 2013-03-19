@@ -30,6 +30,7 @@ public class ReactionsUpdater {
 		for (int i = 0; i < oldReactionsList.size(); i++) {
 			ReactionParser parser = new ReactionParser();
 			if (parser.isValid(oldReactionsList.get(i))) {
+			//if (parser.isValid(oldReactionsList.get(i)) && !LocalConfig.getInstance().getInvalidReactions().contains(oldReactionsList.get(i))) {
 				ArrayList<ArrayList<ArrayList<String>>> oldReactionList = parser.reactionList(oldReactionsList.get(i));
 
 				//remove old species from used map
@@ -56,6 +57,10 @@ public class ReactionsUpdater {
 			Connection conn =
 				DriverManager.getConnection(queryString);
 			Statement stat = conn.createStatement();
+			PreparedStatement reacInsertPrep = conn.prepareStatement("update reactions set knockout=?, flux_value=?, " 
+					+ " reaction_abbreviation=?, reaction_name=?, reaction_string=?, reversible=?, lower_bound=?, " 
+					+ " upper_bound=?, biological_objective=?, meta_1=?, meta_2=?, meta_3=?, meta_4=?, meta_5=?, meta_6=?, "
+					+ " meta_7=?, meta_8=?, meta_9=?, meta_10=?, meta_11=?, meta_12=?, meta_13=?, meta_14=?, meta_15=? where id=?"); 
 
 			try {
 				stat.executeUpdate("BEGIN TRANSACTION");
@@ -82,28 +87,18 @@ public class ReactionsUpdater {
 					//if strings contain ' (single quote), it will not execute insert statement
 					//this code escapes ' as '' - sqlite syntax for escaping '
 					String reactionAbbreviation = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
-					if (reactionAbbreviation != null) {
-						if (reactionAbbreviation.contains("'")) {
-							reactionAbbreviation = reactionAbbreviation.replaceAll("'", "''");
-						}
-					} else {
+					if (reactionAbbreviation == null) {
 						reactionAbbreviation = " ";
 					}
 					String reactionName = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_NAME_COLUMN);
-					if (reactionName != null) {
-						if (reactionName.contains("'")) {
-							reactionName = reactionName.replaceAll("'", "''");
-						}
-					} else {
+					if (reactionName == null) {
 						reactionName = " ";
 					}
 					
+					//TODO; only run this code if a reaction has been changed
 					ReactionParser parser = new ReactionParser();
 					String reactionEquation = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
-					if (reactionEquation != null) {
-						if (reactionEquation.contains("'")) {
-							reactionEquation = reactionEquation.replaceAll("'", "''");
-						}
+					if (reactionEquation != null && reactionEquation.length() > 0) {
 						if (parser.isValid(reactionEquation)) {
 							ArrayList<ArrayList<ArrayList<String>>> newReactionList = parser.reactionList(reactionEquation);
 							
@@ -135,16 +130,17 @@ public class ReactionsUpdater {
 							}
 							
 						}
-					} else {
 						reactionEquation = " ";						
 					}
 					
 					String reversible = "false";
-					if (reactionEquation.contains("<") || (reactionEquation.contains("=") && !reactionEquation.contains(">"))) {
-						reversible = "true";
-					} else if (reactionEquation.contains("-->") || reactionEquation.contains("->") || reactionEquation.contains("=>")) {
-						reversible = "false";		    		
-					}
+					if (reactionEquation != null) {
+						if (reactionEquation.contains("<") || (reactionEquation.contains("=") && !reactionEquation.contains(">"))) {
+							reversible = "true";
+						} else if (reactionEquation.contains("-->") || reactionEquation.contains("->") || reactionEquation.contains("=>")) {
+							reversible = "false";		    		
+						}
+					}					
 					
 					Double lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
 					if (GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.LOWER_BOUND_COLUMN) != null) {
@@ -161,132 +157,102 @@ public class ReactionsUpdater {
 					} 
 					
 					String meta1 = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_META1_COLUMN);
-					if (meta1 != null) {
-						if (meta1.contains("'")) {
-							meta1 = meta1.replaceAll("'", "''");
-						}
-					} else {
+					if (meta1 == null) {
 						meta1 = " ";
 					}
 					String meta2 = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_META2_COLUMN);
-					if (meta2 != null) {
-						if (meta2.contains("'")) {
-							meta2 = meta2.replaceAll("'", "''");
-						}
-					} else {
+					if (meta2 == null) {
 						meta2 = " ";
 					}
 					String meta3 = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_META3_COLUMN);
-					if (meta3 != null) {
-						if (meta3.contains("'")) {
-							meta3 = meta3.replaceAll("'", "''");
-						}
-					} else {
+					if (meta3 == null) {
 						meta3 = " ";
 					}
 					String meta4 = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_META4_COLUMN);
-					if (meta4 != null) {
-						if (meta4.contains("'")) {
-							meta4 = meta4.replaceAll("'", "''");
-						}
-					} else {
+					if (meta4 == null) {
 						meta4 = " ";
 					}
 					String meta5 = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_META5_COLUMN);
-					if (meta5 != null) {
-						if (meta5.contains("'")) {
-							meta5 = meta5.replaceAll("'", "''");
-						}
-					} else {
+					if (meta5 == null) {
 						meta5 = " ";
 					}
 					String meta6 = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_META6_COLUMN);
-					if (meta6 != null) {
-						if (meta6.contains("'")) {
-							meta6 = meta6.replaceAll("'", "''");
-						}
-					} else {
+					if (meta6 == null) {
 						meta6 = " ";
 					}
 					String meta7 = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_META7_COLUMN);
-					if (meta7 != null) {
-						if (meta7.contains("'")) {
-							meta7 = meta7.replaceAll("'", "''");
-						}
-					} else {
+					if (meta7 == null) {
 						meta7 = " ";
 					}
 					String meta8 = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_META8_COLUMN);
-					if (meta8 != null) {
-						if (meta8.contains("'")) {
-							meta8 = meta8.replaceAll("'", "''");
-						}
-					} else {
+					if (meta8 == null) {
 						meta8 = " ";
 					}
 					String meta9 = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_META9_COLUMN);
-					if (meta9 != null) {
-						if (meta9.contains("'")) {
-							meta9 = meta9.replaceAll("'", "''");
-						}
-					} else {
+					if (meta9 == null) {
 						meta9 = " ";
 					}
 					String meta10 = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_META10_COLUMN);
-					if (meta10 != null) {
-						if (meta10.contains("'")) {
-							meta10 = meta10.replaceAll("'", "''");
-						}
-					} else {
+					if (meta10 == null) {
 						meta10 = " ";
 					}
 					String meta11 = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_META11_COLUMN);
-					if (meta11 != null) {
-						if (meta11.contains("'")) {
-							meta11 = meta11.replaceAll("'", "''");
-						}
-					} else {
+					if (meta11 == null) {
 						meta11 = " ";
 					}
 					String meta12 = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_META12_COLUMN);
-					if (meta12 != null) {
-						if (meta12.contains("'")) {
-							meta12 = meta12.replaceAll("'", "''");
-						}
-					} else {
+					if (meta12 == null) {
 						meta12 = " ";
 					}
 					String meta13 = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_META13_COLUMN);
-					if (meta13 != null) {
-						if (meta13.contains("'")) {
-							meta13 = meta13.replaceAll("'", "''");
-						}
-					} else {
+					if (meta13 == null) {
 						meta13 = " ";
 					}
 					String meta14 = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_META14_COLUMN);
-					if (meta14 != null) {
-						if (meta14.contains("'")) {
-							meta14 = meta14.replaceAll("'", "''");
-						}
-					} else {
+					if (meta14 == null) {
 						meta14 = " ";
 					}
 					String meta15 = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_META15_COLUMN);
-					if (meta15 != null) {
-						if (meta15.contains("'")) {
-							meta15 = meta15.replaceAll("'", "''");
-						}
-					} else {
+					if (meta15 == null) {
 						meta15 = " ";
 					}
 	
+					reacInsertPrep.setString(1, knockout);
+					reacInsertPrep.setDouble(2, fluxValue);
+					reacInsertPrep.setString(3, reactionAbbreviation);
+					reacInsertPrep.setString(4, reactionName);
+					reacInsertPrep.setString(5, reactionEquation);
+					reacInsertPrep.setString(6, reversible);
+					reacInsertPrep.setDouble(7, lowerBound);
+					reacInsertPrep.setDouble(8, upperBound);
+					reacInsertPrep.setDouble(9, objective);
+					reacInsertPrep.setString(10, meta1);
+					reacInsertPrep.setString(11, meta2);
+					reacInsertPrep.setString(12, meta3);
+					reacInsertPrep.setString(13, meta4);
+					reacInsertPrep.setString(14, meta5);
+					reacInsertPrep.setString(15, meta6);
+					reacInsertPrep.setString(16, meta7);
+					reacInsertPrep.setString(17, meta8);
+					reacInsertPrep.setString(18, meta9);
+					reacInsertPrep.setString(19, meta10);
+					reacInsertPrep.setString(20, meta11);
+					reacInsertPrep.setString(21, meta12);
+					reacInsertPrep.setString(22, meta13);
+					reacInsertPrep.setString(23, meta14);
+					reacInsertPrep.setString(24, meta15);
+					reacInsertPrep.setInt(25, reacIdList.get(i));
+					
+					reacInsertPrep.executeUpdate();
+					
+					/*
 					String update = "update reactions set knockout='" + knockout + "', flux_value=" + fluxValue + ", reaction_abbreviation='" + reactionAbbreviation + "', reaction_name='" + reactionName + "', "
 					 	+ " reaction_string='" + reactionEquation + "', reversible='" + reversible + "', lower_bound=" + lowerBound + ", upper_bound=" + upperBound + ", biological_objective=" + objective + ", "
 						+ " meta_1='" + meta1 + "', meta_2='" + meta2 + "', meta_3='" + meta3 + "', meta_4='" + meta4 + "', meta_5='" + meta5 + "', "
 						+ " meta_6='" + meta6 + "', meta_7='" + meta7 + "', meta_8='" + meta8 + "', meta_9='" + meta9 + "', meta_10='" + meta10 + "', "
 						+ " meta_11='" + meta11 + "', meta_12='" + meta12 + "', meta_13='" + meta13 + "', meta_14='" + meta14 + "', meta_15='" + meta15 + "' where id=" + reacIdList.get(i) + ";";
 					stat.executeUpdate(update);
+					*/
 				}
 				
 				stat.executeUpdate("COMMIT");
@@ -321,6 +287,7 @@ public class ReactionsUpdater {
 			//update for old reaction
 			if (oldEquation != null && parser.isValid(oldEquation)) {
 				ArrayList<ArrayList<ArrayList<String>>> oldReactionList = parser.reactionList(oldEquation);
+				
 				//remove old species from used map
 				for (int x = 0; x < oldReactionList.size(); x++) {
 					for (int y = 0; y < oldReactionList.get(x).size(); y++) {
@@ -392,11 +359,11 @@ public class ReactionsUpdater {
 									boolean newMetabolite = false;
 									if (!(LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(reactant.trim()))) {
 										newMetabolite = true;
-										if (GraphicalInterface.showPrompt) {
+										if (GraphicalInterface.showPrompt && !(GraphicalInterface.replaceAllMode && LocalConfig.getInstance().yesToAllButtonClicked)) {
 											Object[] options = {"Yes",
 													"Yes to All",
 											"No"};
-
+											LocalConfig.getInstance().addReactantPromptShown = true;
 											int choice = JOptionPane.showOptionDialog(null, 
 													"The metabolite " + reactant + " does not exist. Do you wish to add it?", 
 													"Add Metabolite?", 
@@ -423,12 +390,13 @@ public class ReactionsUpdater {
 												stat.executeUpdate(update);
 												LocalConfig.getInstance().getMetaboliteIdNameMap().put(reactant, (maxMetabId + 1));
 												maxMetabId += 1;
+												LocalConfig.getInstance().yesToAllButtonClicked = true;
 											}
 											//Cancel option actually corresponds to "No" button
 											if (choice == JOptionPane.CANCEL_OPTION) {
 												LocalConfig.getInstance().addMetaboliteOption = false;
 												LocalConfig.getInstance().noButtonClicked = true;
-												removeReacList.add(reactant);
+												removeReacList.add(reactant);						
 											}	  
 										} else {
 											creator.addMetaboliteRow(databaseName);
@@ -479,11 +447,13 @@ public class ReactionsUpdater {
 									boolean newMetabolite = false;
 									if (!(LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(product))) {
 										newMetabolite = true;
-										if (GraphicalInterface.showPrompt) {
+										// prompt only shown once in replace all mode if yes to all clicked
+										// TODO should also only shown once per reaction in find mode
+										if (GraphicalInterface.showPrompt && !(GraphicalInterface.replaceAllMode && LocalConfig.getInstance().yesToAllButtonClicked)) {
 											Object[] options = {"Yes",
 													"Yes to All",
 											"No"};
-
+											LocalConfig.getInstance().addReactantPromptShown = true;
 											int choice = JOptionPane.showOptionDialog(null, 
 													"The metabolite " + product + " does not exist. Do you wish to add it?", 
 													"Add Metabolite?", 
@@ -510,11 +480,12 @@ public class ReactionsUpdater {
 												stat.executeUpdate(update);
 												LocalConfig.getInstance().getMetaboliteIdNameMap().put(product, (maxMetabId + 1));
 												maxMetabId += 1;
+												LocalConfig.getInstance().yesToAllButtonClicked = true;
 											}
 											//Cancel option actually corresponds to "No" button
 											if (choice == JOptionPane.CANCEL_OPTION) {
 												LocalConfig.getInstance().addMetaboliteOption = false;
-												LocalConfig.getInstance().noButtonClicked = true;
+												LocalConfig.getInstance().noButtonClicked = true;						
 												removeProdList.add(product);
 											}	  
 										} else {

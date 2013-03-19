@@ -15,6 +15,7 @@ public class GurobiSolver extends Solver {
 	private GRBEnv env;
 	private GRBModel model;
 	private ArrayList<GRBVar> vars = new ArrayList<GRBVar>();
+	private Callback callback;
 
 	public GurobiSolver(String logName) {
 		try {
@@ -25,6 +26,9 @@ public class GurobiSolver extends Solver {
 			env.set(GRB.IntParam.Presolve, 0);
 			env.set(GRB.DoubleParam.FeasibilityTol, 1.0E-9);
 			env.set(GRB.DoubleParam.IntFeasTol, 1.0E-9);
+			env.set(GRB.IntParam.Threads, 1);
+			env.set(GRB.IntParam.OutputFlag, 0);
+			
 			log.debug("creating Gurobi Model");
 			model = new GRBModel(env);
 			this.objType = ObjType.Minimize;
@@ -64,15 +68,16 @@ public class GurobiSolver extends Solver {
 	
 	public ArrayList<Double> getSoln() {
 		ArrayList<Double> soln = new ArrayList<Double>(vars.size());
-		for (int i = 0; i < this.vars.size(); i++) {
-			try {
-				soln.add(this.vars.get(i).get(GRB.DoubleAttr.X));
-			} catch (GRBException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();				
+		if (this.vars.size() != 0) {
+			for (int i = 0; i < this.vars.size(); i++) {
+				try {
+					soln.add(this.vars.get(i).get(GRB.DoubleAttr.X));
+				} catch (GRBException e) {
+					// TODO Auto-generated catch block
+//					e.printStackTrace();				
+				}
 			}
 		}
-		
 		return soln;
 	}
 	
@@ -128,7 +133,7 @@ public class GurobiSolver extends Solver {
 		}
 
 		try {
-
+			System.out.println(expr);
 			model.setObjective(expr, getGRBObjType(this.objType));
 			//DEGEN: Debugging to see model
 			
@@ -220,6 +225,12 @@ public class GurobiSolver extends Solver {
 	@Override
 	public double optimize() {
 		try {
+			
+//			Callback logic
+			GRBVar[] vars   = model.getVars();
+			callback = new Callback(vars); 
+			model.setCallback(callback);
+			
 			model.optimize();
 //			model.write("model.lp");
 //			model.write("model.mps");
@@ -238,4 +249,26 @@ public class GurobiSolver extends Solver {
 		return 0;
 	}
 
+	public void setEnv(double timeLimit, int threadNum) {
+		try {
+			log.debug("setting Gurobi parameters");
+			model.getEnv().set(GRB.DoubleParam.Heuristics, 1.0);
+			model.getEnv().set(GRB.IntParam.MIPFocus, 1);
+			model.getEnv().set(GRB.DoubleParam.ImproveStartGap, Double.POSITIVE_INFINITY);
+			model.getEnv().set(GRB.DoubleParam.TimeLimit, timeLimit);
+			model.getEnv().set(GRB.IntParam.Threads, threadNum);
+		} catch (Exception e) {
+			log.error("Error code: " + e.getMessage() + ". "
+					+ e.getMessage());
+		}
+	}
+	
+	public void abort() {
+		Callback.setAbort(true);
+	}
+
+	@Override
+	public void enable() {
+		Callback.setAbort(false);
+	}
 }

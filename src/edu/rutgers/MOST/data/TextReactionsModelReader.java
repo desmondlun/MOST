@@ -139,7 +139,7 @@ public class TextReactionsModelReader {
 					+ " meta_6 varchar(500), meta_7 varchar(500), meta_8 varchar(500), meta_9 varchar(500), "
 					+ " meta_10 varchar(500), meta_11 varchar(500), meta_12 varchar(500), "
 					+ " meta_13 varchar(500), meta_14 varchar(500), meta_15 varchar(500));");
-					
+		
 			stat.executeUpdate("drop table if exists reaction_reactants;");
 			stat.executeUpdate("CREATE TABLE reaction_reactants (reaction_id INTEGER, " 
 					+ " metabolite_id INTEGER, stoic FLOAT);");
@@ -168,7 +168,7 @@ public class TextReactionsModelReader {
 						+ " metabolite_abbreviation varchar(255), metabolite_name varchar(255), "
 						+ " charge varchar(5), compartment varchar(255), boundary varchar(5) " 
 						+ metaString + ");");
-
+				
 				stat.executeUpdate("drop table if exists metabolites_meta_info;");		    
 				stat.executeUpdate("CREATE TABLE metabolites_meta_info (id INTEGER PRIMARY KEY, meta_column_name varchar(100));");
 				
@@ -283,6 +283,7 @@ public class TextReactionsModelReader {
 						}
 						
 						try {
+							//ReactionParser parser = new ReactionParser();
 							boolean valid = true;
 							
 							ArrayList<ArrayList<ArrayList<String>>> reactionList = parser.reactionList(reactionString.trim());

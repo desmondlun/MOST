@@ -18,4 +18,7 @@ public abstract class Solver {
 	public abstract void setObj(Map<Integer, Double>map);
 	public abstract void addConstraint(Map<Integer, Double>map,ConType con,double value);
 	public abstract double optimize();
+	public abstract void setEnv(double timeLimit, int threadNum);
+	public abstract void abort();
+	public abstract void enable();
 }

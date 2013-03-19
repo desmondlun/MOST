@@ -57,6 +57,7 @@ public class ReactionParser {
 				reactionList.add(products);
 				
 			} else {	
+				//String reactantHalfEquation = halfEquations.get(0).trim();
 				java.util.List<String> reactantsAndCoeff = Arrays.asList(halfEquations.get(0).trim().split("\\s+"));
 							
 				ArrayList<ArrayList<String>> rawReactants = rawSpeciesAndCoeffList(reactantsAndCoeff);

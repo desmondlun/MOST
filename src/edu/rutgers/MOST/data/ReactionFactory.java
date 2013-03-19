@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 public class ReactionFactory {
@@ -91,10 +92,8 @@ public class ReactionFactory {
 			}
 			Connection conn;
 			try {
+				System.out.println(databaseName);
 				conn = DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db"); // TODO:
-				// Make
-				// this
-				// configurable
 				PreparedStatement prep = conn
 				.prepareStatement("select id, knockout, reaction_abbreviation, reaction_name, reaction_string, reversible, "
 						+ " biological_objective, lower_bound, upper_bound, flux_value "
@@ -190,6 +189,135 @@ public class ReactionFactory {
 		}		
 	}
 
+	public ArrayList<String> setKnockouts(List<Double> knockouts) {
+		ArrayList<String> knockoutGenes = new ArrayList<String>();
+		
+		try {
+			Class.forName("org.sqlite.JDBC");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return knockoutGenes;
+		}
+		Connection conn;
+		try {
+			ArrayList<Double> kVector = new ArrayList<Double>();
+			
+			Vector<String> uniqueGeneAssociations = getUniqueGeneAssociations();
+			Vector<String> geneAssocaitons = getGeneAssociations();
+			
+			for (int i = 0; i < geneAssocaitons.size(); i++) {
+				for (int j = 0; j < uniqueGeneAssociations.size(); j++) {
+					if (geneAssocaitons.elementAt(i).equals(uniqueGeneAssociations.elementAt(j))) {
+							kVector.add(knockouts.get(j).doubleValue());
+					}
+				}
+			}
+			
+			for (int i = 0; i < uniqueGeneAssociations.size(); i++) {
+				if (knockouts.get(i).doubleValue() != 0) {
+					knockoutGenes.add(uniqueGeneAssociations.elementAt(i));
+//					System.out.println(uniqueGeneAssociations.elementAt(i));
+				}
+			}
+			
+			conn = DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db"); 
+
+			String queryKVector = "";
+			for (int i = 0; i < geneAssocaitons.size(); i++) {
+				if(kVector.get(i).doubleValue() != 0) {
+					queryKVector += " when " + (i + 1) + " then " + kVector.get(i);
+				}
+			}
+			
+			if (queryKVector.length() != 0) {
+				Statement stat = conn.createStatement();
+				String query = "update reactions set knockout = case id" + queryKVector + " end";
+				stat.executeUpdate(query);
+			}
+			
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return knockoutGenes;
+		}		
+		
+		return knockoutGenes;
+	}
+
+	/**
+	 * @param args
+	 */
+
+	public Vector<String> getGeneAssociations() {
+		Vector<String> geneAssociations = new Vector<String>();
+
+		if("SBML".equals(sourceType)){
+			try {
+				Class.forName("org.sqlite.JDBC");
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return geneAssociations;
+			}
+			Connection conn;
+			try {
+				conn = DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db"); 
+
+				Statement stat = conn.createStatement();
+				ResultSet rs = stat.executeQuery("select meta_1 from reactions where length(reaction_abbreviation) > 0;");
+
+				while (rs.next()) {
+					geneAssociations.add(rs.getString("meta_1")); 
+				}
+				rs.close();
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return geneAssociations;
+			}
+		}
+
+		return geneAssociations;
+	}
+	
+	public Vector<String> getUniqueGeneAssociations() {
+		Vector<String> geneAssociations = new Vector<String>();
+
+		if("SBML".equals(sourceType)){
+			try {
+				Class.forName("org.sqlite.JDBC");
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return geneAssociations;
+			}
+			Connection conn;
+			try {
+				conn = DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db"); 
+
+				Statement stat = conn.createStatement();
+				ResultSet rs = stat.executeQuery("select distinct meta_1 from reactions where length(reaction_abbreviation) > 0;");
+
+				System.out.println(rs.getRow());
+				
+				while (rs.next()) {
+					geneAssociations.add(rs.getString("meta_1")); 
+				}
+				rs.close();
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return geneAssociations;
+			}
+		}
+
+		return geneAssociations;
+	}
+	
 	public static void main(String[] args) {
 
 	}

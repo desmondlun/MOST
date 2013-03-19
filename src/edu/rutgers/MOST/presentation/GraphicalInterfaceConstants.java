@@ -252,6 +252,11 @@ public class GraphicalInterfaceConstants {
     public static final String INVALID_REACTIONS_ERROR_TITLE = "Invalid Reactions Warning";
     public static final String INVALID_REACTIONS_ERROR_MESSAGE = "Model contains invalid reactions. Are you sure you wish to save?";    
     
+    // replace errors
+    public static final String REPLACE_ALL_ERROR_TITLE = "Replace All Error";
+    public static final String REPLACE_ALL_BOOLEAN_VALUE_ERROR = "Replace value is not a valid boolean value";
+    public static final String REPLACE_ALL_PARTICIPATING_ERROR_MESSAGE = "Invalid Replace. One or more selected metabolites participate in reactions and cannot be changed.";
+    
     // interface titles and labels
     public static final String COLUMN_ADD_INTERFACE_TITLE = "Add Column";   
     public static final String COLUMN_RENAME_INTERFACE_TITLE = "Rename Column";    

@@ -341,7 +341,7 @@ public class TextMetabolitesModelReader {
 					}					
 				}
 				LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
-				LocalConfig.getInstance().setBlankMetabIds(blankMetabIds);				
+				LocalConfig.getInstance().setBlankMetabIds(blankMetabIds);			
 				LocalConfig.getInstance().setDuplicateIds(duplicateIds);
 				stat.executeUpdate("COMMIT");
 			} catch (Exception e) {

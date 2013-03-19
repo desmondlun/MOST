@@ -75,7 +75,7 @@ public class MetaboliteFactory {
 				e.printStackTrace();			
 			}	
 		}
-				
+
 		return participatingReactions;
 	}
 
