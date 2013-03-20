@@ -91,7 +91,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
-//import org.apache.commons.lang3.time.StopWatch;
+import org.apache.commons.lang3.time.StopWatch;
 
 import layout.TableLayout;
 
@@ -3329,10 +3329,10 @@ public class GraphicalInterface extends JFrame {
 			TableColumn column = reactionsTable.getColumnModel().getColumn(i);
 			if (i==GraphicalInterfaceConstants.DB_REACTIONS_ID_COLUMN) {
 				//sets column not visible
-				//column.setMaxWidth(0);
-				//column.setMinWidth(0); 
-				//column.setWidth(0); 
-				//column.setPreferredWidth(0);
+				column.setMaxWidth(0);
+				column.setMinWidth(0); 
+				column.setWidth(0); 
+				column.setPreferredWidth(0);
 				ChangeName(reactionsTable, GraphicalInterfaceConstants.DB_REACTIONS_ID_COLUMN, 
 						GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.DB_REACTIONS_ID_COLUMN]); 
 				column.setCellRenderer(reacGreyRenderer);
@@ -3756,9 +3756,7 @@ public class GraphicalInterface extends JFrame {
 		
 		MetabolitesMetaColumnManager metabolitesMetaColumnManager = new MetabolitesMetaColumnManager();
 		int metabMetaColumnCount = metabolitesMetaColumnManager.getMetaColumnCount(LocalConfig.getInstance().getDatabaseName());	
-		
-		
-		
+				
 		int m = metabolitesTable.getModel().getColumnCount();
 		for (int w = 0; w < m; w++) {
 			ColorTableCellRenderer metabGreyRenderer = new ColorTableCellRenderer();
@@ -3766,10 +3764,10 @@ public class GraphicalInterface extends JFrame {
 			TableColumn column = metabolitesTable.getColumnModel().getColumn(w);
 			if (w==GraphicalInterfaceConstants.DB_METABOLITE_ID_COLUMN) {
 				//sets column not visible
-				//column.setMaxWidth(0);
-				//column.setMinWidth(0); 
-				//column.setWidth(0); 
-				//column.setPreferredWidth(0);
+				column.setMaxWidth(0);
+				column.setMinWidth(0); 
+				column.setWidth(0); 
+				column.setPreferredWidth(0);
 				ChangeName(metabolitesTable, GraphicalInterfaceConstants.DB_METABOLITE_ID_COLUMN, 
 						GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES[GraphicalInterfaceConstants.DB_METABOLITE_ID_COLUMN]);     
 				column.setCellRenderer(metabGreyRenderer);
