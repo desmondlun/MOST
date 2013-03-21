@@ -127,10 +127,10 @@ public class ReactionsUpdater {
 										}
 									}							
 								}
-							}
-							
-						}
-						reactionEquation = " ";						
+							}							
+						}												
+					} else {
+						reactionEquation = " ";
 					}
 					
 					String reversible = "false";
