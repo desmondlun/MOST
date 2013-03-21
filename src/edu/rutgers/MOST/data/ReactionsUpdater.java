@@ -25,31 +25,34 @@ public class ReactionsUpdater {
 	
 	public void updateReactionRows(ArrayList<Integer> rowList, ArrayList<Integer> reacIdList, ArrayList<String> oldReactionsList, String databaseName) {
 			
-		//update MetabolitesUsedMap by decrementing count or removing metabolite
-		//based on oldReactions that are being replaced
-		for (int i = 0; i < oldReactionsList.size(); i++) {
-			ReactionParser parser = new ReactionParser();
-			if (parser.isValid(oldReactionsList.get(i))) {
-			//if (parser.isValid(oldReactionsList.get(i)) && !LocalConfig.getInstance().getInvalidReactions().contains(oldReactionsList.get(i))) {
-				ArrayList<ArrayList<ArrayList<String>>> oldReactionList = parser.reactionList(oldReactionsList.get(i));
+		if (LocalConfig.getInstance().includesReactions) {
+			//update MetabolitesUsedMap by decrementing count or removing metabolite
+			//based on oldReactions that are being replaced
+			for (int i = 0; i < oldReactionsList.size(); i++) {
+				ReactionParser parser = new ReactionParser();
+				if (parser.isValid(oldReactionsList.get(i))) {
+				//if (parser.isValid(oldReactionsList.get(i)) && !LocalConfig.getInstance().getInvalidReactions().contains(oldReactionsList.get(i))) {
+					ArrayList<ArrayList<ArrayList<String>>> oldReactionList = parser.reactionList(oldReactionsList.get(i));
 
-				//remove old species from used map
-				for (int x = 0; x < oldReactionList.size(); x++) {
-					for (int y = 0; y < oldReactionList.get(x).size(); y++) {
-						if (((ArrayList) oldReactionList.get(x).get(y)).size() > 1) {
-							if (LocalConfig.getInstance().getMetaboliteUsedMap().get((String) ((ArrayList) oldReactionList.get(x).get(y)).get(1)) != null) {
-								int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get((String) ((ArrayList) oldReactionList.get(x).get(y)).get(1));
-								if (usedCount > 1) {
-									LocalConfig.getInstance().getMetaboliteUsedMap().put((String) ((ArrayList) oldReactionList.get(x).get(y)).get(1), new Integer(usedCount - 1));
-								} else {
-									LocalConfig.getInstance().getMetaboliteUsedMap().remove((String) ((ArrayList) oldReactionList.get(x).get(y)).get(1));
-								}
-							}			
-						}					
+					//remove old species from used map
+					for (int x = 0; x < oldReactionList.size(); x++) {
+						for (int y = 0; y < oldReactionList.get(x).size(); y++) {
+							if (((ArrayList) oldReactionList.get(x).get(y)).size() > 1) {
+								if (LocalConfig.getInstance().getMetaboliteUsedMap().get((String) ((ArrayList) oldReactionList.get(x).get(y)).get(1)) != null) {
+									int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get((String) ((ArrayList) oldReactionList.get(x).get(y)).get(1));
+									if (usedCount > 1) {
+										LocalConfig.getInstance().getMetaboliteUsedMap().put((String) ((ArrayList) oldReactionList.get(x).get(y)).get(1), new Integer(usedCount - 1));
+									} else {
+										LocalConfig.getInstance().getMetaboliteUsedMap().remove((String) ((ArrayList) oldReactionList.get(x).get(y)).get(1));
+									}
+								}			
+							}					
+						}
 					}
 				}
 			}
-		}
+			System.out.println("ru upd rxn old " + LocalConfig.getInstance().getMetaboliteUsedMap());
+		}		
 		
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
 		
@@ -67,11 +70,13 @@ public class ReactionsUpdater {
 
 				for (int i = 0; i < rowList.size(); i++) {
 					
-					//remove old reactions from db
-					String rrUpdate = "delete from reaction_reactants where reaction_id=" + reacIdList.get(i) + ";";				
-					stat.executeUpdate(rrUpdate);
-					String rpUpdate = "delete from reaction_products where reaction_id=" + reacIdList.get(i) + ";";				
-					stat.executeUpdate(rpUpdate);	
+					if (LocalConfig.getInstance().includesReactions) {
+						//remove old reactions from db
+						String rrUpdate = "delete from reaction_reactants where reaction_id=" + reacIdList.get(i) + ";";				
+						stat.executeUpdate(rrUpdate);
+						String rpUpdate = "delete from reaction_products where reaction_id=" + reacIdList.get(i) + ";";				
+						stat.executeUpdate(rpUpdate);	
+					}					
 					
 					String knockout = "false";
 					if (GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.KO_COLUMN) != null) {
@@ -94,53 +99,57 @@ public class ReactionsUpdater {
 					if (reactionName == null) {
 						reactionName = " ";
 					}
-					
-					//TODO; only run this code if a reaction has been changed
-					ReactionParser parser = new ReactionParser();
 					String reactionEquation = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
-					if (reactionEquation != null && reactionEquation.length() > 0) {
-						if (parser.isValid(reactionEquation)) {
-							ArrayList<ArrayList<ArrayList<String>>> newReactionList = parser.reactionList(reactionEquation);
-							
-							//add new species to used map
-							for (int x = 0; x < newReactionList.size(); x++) {
-								for (int y = 0; y < newReactionList.get(x).size(); y++) {
-									if (((ArrayList) newReactionList.get(x).get(y)).size() > 1) {
-
-										if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey((String) ((ArrayList) newReactionList.get(x).get(y)).get(1))) {
-											if (LocalConfig.getInstance().getMetaboliteUsedMap().get((String) ((ArrayList) newReactionList.get(x).get(y)).get(1)) != null) {
-												int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get((String) ((ArrayList) newReactionList.get(x).get(y)).get(1));
-												LocalConfig.getInstance().getMetaboliteUsedMap().put((String) ((ArrayList) newReactionList.get(x).get(y)).get(1), new Integer(usedCount + 1));
-											}									
-										} else {
-											LocalConfig.getInstance().getMetaboliteUsedMap().put((String) ((ArrayList) newReactionList.get(x).get(y)).get(1), new Integer(1));
-										}
-										Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get((String) ((ArrayList) newReactionList.get(x).get(y)).get(1));
-										String stoic = ((String) ((ArrayList) newReactionList.get(x).get(y)).get(0));
-										if (x == 0) {//reactants
-											String rrUpdate2 = "insert into reaction_reactants (reaction_id, metabolite_id, stoic) values (" + reacIdList.get(i) + ", " + metabId + ", " + stoic + ");";				
-											stat.executeUpdate(rrUpdate2);				
-										}
-										if (x == 1) {//products
-											String rpUpdate2 = "insert into reaction_products (reaction_id, metabolite_id, stoic) values (" + reacIdList.get(i) + ", " + metabId + ", " + stoic + ");";	
-											stat.executeUpdate(rpUpdate2);
-										}
-									}							
-								}
-							}							
-						}												
-					} else {
-						reactionEquation = " ";
-					}
+					String reversible = GraphicalInterfaceConstants.REVERSIBLE_DEFAULT;
 					
-					String reversible = "false";
-					if (reactionEquation != null) {
-						if (reactionEquation.contains("<") || (reactionEquation.contains("=") && !reactionEquation.contains(">"))) {
-							reversible = "true";
-						} else if (reactionEquation.contains("-->") || reactionEquation.contains("->") || reactionEquation.contains("=>")) {
-							reversible = "false";		    		
+					if (LocalConfig.getInstance().includesReactions) {
+						ReactionParser parser = new ReactionParser();
+						//if (reactionEquation != null) {
+						if (reactionEquation != null && reactionEquation.length() > 0) {
+							if (parser.isValid(reactionEquation)) {
+								ArrayList<ArrayList<ArrayList<String>>> newReactionList = parser.reactionList(reactionEquation);
+								
+								//add new species to used map
+								for (int x = 0; x < newReactionList.size(); x++) {
+									for (int y = 0; y < newReactionList.get(x).size(); y++) {
+										if (((ArrayList) newReactionList.get(x).get(y)).size() > 1) {
+
+											if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey((String) ((ArrayList) newReactionList.get(x).get(y)).get(1))) {
+												if (LocalConfig.getInstance().getMetaboliteUsedMap().get((String) ((ArrayList) newReactionList.get(x).get(y)).get(1)) != null) {
+													int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get((String) ((ArrayList) newReactionList.get(x).get(y)).get(1));
+													LocalConfig.getInstance().getMetaboliteUsedMap().put((String) ((ArrayList) newReactionList.get(x).get(y)).get(1), new Integer(usedCount + 1));
+												}									
+											} else {
+												LocalConfig.getInstance().getMetaboliteUsedMap().put((String) ((ArrayList) newReactionList.get(x).get(y)).get(1), new Integer(1));
+											}
+											Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get((String) ((ArrayList) newReactionList.get(x).get(y)).get(1));
+											String stoic = ((String) ((ArrayList) newReactionList.get(x).get(y)).get(0));
+											if (x == 0) {//reactants
+												String rrUpdate2 = "insert into reaction_reactants (reaction_id, metabolite_id, stoic) values (" + reacIdList.get(i) + ", " + metabId + ", " + stoic + ");";				
+												stat.executeUpdate(rrUpdate2);				
+											}
+											if (x == 1) {//products
+												String rpUpdate2 = "insert into reaction_products (reaction_id, metabolite_id, stoic) values (" + reacIdList.get(i) + ", " + metabId + ", " + stoic + ");";	
+												stat.executeUpdate(rpUpdate2);
+											}
+										}							
+									}
+								}
+								
+							}
+							System.out.println("ru upd rxn new " + LocalConfig.getInstance().getMetaboliteUsedMap());													
+						} else {
+							reactionEquation = " ";
 						}
-					}					
+						
+						if (reactionEquation != null) {
+							if (reactionEquation.contains("<") || (reactionEquation.contains("=") && !reactionEquation.contains(">"))) {
+								reversible = "true";
+							} else if (reactionEquation.contains("-->") || reactionEquation.contains("->") || reactionEquation.contains("=>")) {
+								reversible = "false";		    		
+							}
+						}			
+					}							
 					
 					Double lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
 					if (GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.LOWER_BOUND_COLUMN) != null) {
@@ -244,15 +253,6 @@ public class ReactionsUpdater {
 					reacInsertPrep.setInt(25, reacIdList.get(i));
 					
 					reacInsertPrep.executeUpdate();
-					
-					/*
-					String update = "update reactions set knockout='" + knockout + "', flux_value=" + fluxValue + ", reaction_abbreviation='" + reactionAbbreviation + "', reaction_name='" + reactionName + "', "
-					 	+ " reaction_string='" + reactionEquation + "', reversible='" + reversible + "', lower_bound=" + lowerBound + ", upper_bound=" + upperBound + ", biological_objective=" + objective + ", "
-						+ " meta_1='" + meta1 + "', meta_2='" + meta2 + "', meta_3='" + meta3 + "', meta_4='" + meta4 + "', meta_5='" + meta5 + "', "
-						+ " meta_6='" + meta6 + "', meta_7='" + meta7 + "', meta_8='" + meta8 + "', meta_9='" + meta9 + "', meta_10='" + meta10 + "', "
-						+ " meta_11='" + meta11 + "', meta_12='" + meta12 + "', meta_13='" + meta13 + "', meta_14='" + meta14 + "', meta_15='" + meta15 + "' where id=" + reacIdList.get(i) + ";";
-					stat.executeUpdate(update);
-					*/
 				}
 				
 				stat.executeUpdate("COMMIT");
@@ -287,6 +287,8 @@ public class ReactionsUpdater {
 			//update for old reaction
 			if (oldEquation != null && parser.isValid(oldEquation)) {
 				ArrayList<ArrayList<ArrayList<String>>> oldReactionList = parser.reactionList(oldEquation);
+				System.out.println(oldEquation);
+				System.out.println("old " + oldReactionList);
 				
 				//remove old species from used map
 				for (int x = 0; x < oldReactionList.size(); x++) {
@@ -303,6 +305,7 @@ public class ReactionsUpdater {
 						}					
 					}
 				}
+				System.out.println("ru ure old used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 			}
 
 			try {
@@ -547,6 +550,7 @@ public class ReactionsUpdater {
 					//Invalid reaction
 					valid = false;
 				}
+				System.out.println("ru ure new used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 				
 				if (!valid) {
 					String deleteReac = "delete from reaction_reactants where reaction_id=" + id + ";";
@@ -555,6 +559,7 @@ public class ReactionsUpdater {
 					stat.executeUpdate(deleteProd);
 					if (newEquation != null && newEquation.trim().length() > 0) {
 						LocalConfig.getInstance().getInvalidReactions().add(newEquation);
+						System.out.println("invalid " + LocalConfig.getInstance().getInvalidReactions());
 					}	
 				}
 				parser.invalidSyntax = false;
@@ -627,6 +632,7 @@ public class ReactionsUpdater {
 				}
 			}			
 		}
+		System.out.println("del used map" + LocalConfig.getInstance().getMetaboliteUsedMap());		
 	}
 	
 	// methods used if "No" button is pressed in order to reconstruct reaction equation with species omitted

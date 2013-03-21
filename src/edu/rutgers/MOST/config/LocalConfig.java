@@ -391,6 +391,7 @@ public class LocalConfig {
 	public boolean noButtonClicked;
 	public boolean yesToAllButtonClicked;
 	public boolean pastedReaction;
+	public boolean includesReactions;
 	
 	public boolean editMode;
 	
