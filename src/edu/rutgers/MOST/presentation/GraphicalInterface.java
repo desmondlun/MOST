@@ -1611,7 +1611,7 @@ public class GraphicalInterface extends JFrame {
 				currentCoordinates.add(reactionsTable.getSelectedColumn());
 				if (getCellCoordinates().get(getCellCoordinates().size() - 1).get(0) != currentCoordinates.get(0) && getCellCoordinates().get(getCellCoordinates().size() - 1).get(1) != currentCoordinates.get(1)) {
 					getCellCoordinates().add(currentCoordinates);
-				}		
+				}	
 			}
 		});
 			
@@ -2592,6 +2592,7 @@ public class GraphicalInterface extends JFrame {
 					LocalConfig.getInstance().getInvalidReactions().remove(oldValue);
 					statusBar.setText("Row " + (rowIndex + 1));
 				}
+			//}
 		} else if (colIndex == GraphicalInterfaceConstants.KO_COLUMN) {
 			if (newValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_TRUE_VALUES[0])) {
 				reactionsTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[1], rowIndex, GraphicalInterfaceConstants.KO_COLUMN);
@@ -3172,7 +3173,6 @@ public class GraphicalInterface extends JFrame {
 							setCellText();
 						}
 						public void setCellText() {
-							//Temporarily disable due to error when table sorted
 							//formulaBar.setText(cell.getText());
 						}
 					});
@@ -5680,6 +5680,7 @@ JMenu selectMenu = new JMenu("Select");
 			}
 		    catch ( NumberFormatException nfe ) {
 		    	setPasteError("Number format exception");
+		    	setReplaceAllError("Number format exception");
 		    	isNumber = false;
 		        return false;
 		    }
@@ -5688,17 +5689,20 @@ JMenu selectMenu = new JMenu("Select");
 					Double lowerBound = Double.valueOf(value);
 					Double upperBound = Double.valueOf((String) (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));
 					if (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN).toString().compareTo("false") == 0 && lowerBound < 0) {					
-						setPasteError("Lower Bound Paste Error");
+						setPasteError(GraphicalInterfaceConstants.IRREVERSIBLE_REACTION_ERROR_MESSAGE);
+						setReplaceAllError(GraphicalInterfaceConstants.IRREVERSIBLE_REACTION_ERROR_MESSAGE);
 				        return false;					
 					} else if (lowerBound > upperBound) {
-						setPasteError("Lower Bound Paste Error");
+						setPasteError(GraphicalInterfaceConstants.LOWER_BOUND_PASTE_ERROR);
+						setReplaceAllError(GraphicalInterfaceConstants.LOWER_BOUND_REPLACE_ALL_ERROR);
 				        return false;						
 					}
 				} else if (columnIndex == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN && getSelectionMode() != 2) {				
 					Double lowerBound = Double.valueOf((String) (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));
 					Double upperBound = Double.valueOf(value);
 					if (upperBound < lowerBound) {
-						setPasteError("Upper Bound Paste Error");
+						setPasteError(GraphicalInterfaceConstants.UPPER_BOUND_PASTE_ERROR);
+						setReplaceAllError(GraphicalInterfaceConstants.UPPER_BOUND_REPLACE_ALL_ERROR);
 				        return false;						
 					}
 				}
@@ -5707,7 +5711,8 @@ JMenu selectMenu = new JMenu("Select");
 			if (value.compareTo("true") == 0 || value.compareTo("false") == 0) {
 				return true;
 			} else {
-				setPasteError("           Invalid Entry");
+				setPasteError(GraphicalInterfaceConstants.INVALID_PASTE_BOOLEAN_VALUE);
+				setReplaceAllError(GraphicalInterfaceConstants.INVALID_REPLACE_ALL_BOOLEAN_VALUE);
 				return false;
 			}
 		} else if (columnIndex == GraphicalInterfaceConstants.REACTION_STRING_COLUMN && LocalConfig.getInstance().includesReactions) {
@@ -5716,6 +5721,7 @@ JMenu selectMenu = new JMenu("Select");
 					ReactionParser parser = new ReactionParser();
 					if (!parser.isValid(value)) {
 						setPasteError("Invalid Reaction Format");
+						setReplaceAllError("Invalid Reaction Format");
 						return false;
 					} else {
 						LocalConfig.getInstance().pastedReaction = true;
@@ -5726,6 +5732,7 @@ JMenu selectMenu = new JMenu("Select");
 					}				
 				} else {
 					setPasteError("Invalid Reaction Format");
+					setReplaceAllError("Invalid Reaction Format");
 					return false;
 				}
 			}
@@ -5953,7 +5960,7 @@ JMenu selectMenu = new JMenu("Select");
 								if (c < rowstring.length) {
 									if (c == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN && LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev) && !LocalConfig.getInstance().getDuplicateIds().contains(id)) {
 										setPasteError(GraphicalInterfaceConstants.PARTICIPATING_METAB_PASTE_ERROR_MESSAGE);
-										//updater.updateMetaboliteRows(rowList, metabIdList, LocalConfig.getInstance().getLoadedDatabase());
+										updater.updateMetaboliteRows(rowList, metabIdList, LocalConfig.getInstance().getLoadedDatabase());
 										validPaste = false;
 									} else if (isMetabolitesEntryValid(startCol + c, rowstring[c])) {
 										metabolitesTable.setValueAt(rowstring[c], viewRow, startCol + c);
@@ -5973,7 +5980,7 @@ JMenu selectMenu = new JMenu("Select");
 								for (int c = 0; c < LocalConfig.getInstance().getNumberCopiedColumns(); c++) {
 									if (c == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN && LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev) && !LocalConfig.getInstance().getDuplicateIds().contains(id)) {
 										setPasteError(GraphicalInterfaceConstants.PARTICIPATING_METAB_PASTE_ERROR_MESSAGE);
-										//updater.updateMetaboliteRows(rowList, metabIdList, LocalConfig.getInstance().getLoadedDatabase());
+										updater.updateMetaboliteRows(rowList, metabIdList, LocalConfig.getInstance().getLoadedDatabase());
 										validPaste = false;
 									// check if "" is a valid entry
 									} else if (isMetabolitesEntryValid(startCol + c, "")) {
@@ -6015,7 +6022,7 @@ JMenu selectMenu = new JMenu("Select");
 							if (c < rowstring.length) {		
 								if (c == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN && LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev) && !LocalConfig.getInstance().getDuplicateIds().contains(id)) {
 									setPasteError(GraphicalInterfaceConstants.PARTICIPATING_METAB_PASTE_ERROR_MESSAGE);
-									//updater.updateMetaboliteRows(rowList, metabIdList, LocalConfig.getInstance().getLoadedDatabase());
+									updater.updateMetaboliteRows(rowList, metabIdList, LocalConfig.getInstance().getLoadedDatabase());
 									validPaste = false;
 								} else if (isMetabolitesEntryValid(startCol + c, rowstring[c])) {
 									metabolitesTable.setValueAt(rowstring[c], viewRow, startCol + c);
@@ -6047,7 +6054,7 @@ JMenu selectMenu = new JMenu("Select");
 						}
 					}
 					if (validPaste) {						
-						//updater.updateMetaboliteRows(rowList, metabIdList, LocalConfig.getInstance().getLoadedDatabase());
+						updater.updateMetaboliteRows(rowList, metabIdList, LocalConfig.getInstance().getLoadedDatabase());
 					} else {
 						if (showErrorMessage = true) {
 							JOptionPane.showMessageDialog(null,                
@@ -6069,7 +6076,7 @@ JMenu selectMenu = new JMenu("Select");
 				}
 				pasteMetaboliteRows(rowList, metabIdList, s1, startCol);
 				if (validPaste) {						
-					//updater.updateMetaboliteRows(rowList, metabIdList, LocalConfig.getInstance().getLoadedDatabase());
+					updater.updateMetaboliteRows(rowList, metabIdList, LocalConfig.getInstance().getLoadedDatabase());
 				} else {
 					if (showErrorMessage = true) {
 						JOptionPane.showMessageDialog(null,                
@@ -6137,6 +6144,7 @@ JMenu selectMenu = new JMenu("Select");
 				}
 			    catch ( NumberFormatException nfe ) {
 			    	setPasteError("Number format exception");
+			    	setReplaceAllError("Number format exception");
 			        return false;
 			    }	           
 			}			
@@ -6144,12 +6152,14 @@ JMenu selectMenu = new JMenu("Select");
 			if (value.compareTo("true") == 0 || value.compareTo("false") == 0) {
 				return true;
 			} else {
-				setPasteError("           Invalid Entry");
+				setPasteError(GraphicalInterfaceConstants.INVALID_PASTE_BOOLEAN_VALUE);
+				setReplaceAllError(GraphicalInterfaceConstants.INVALID_REPLACE_ALL_BOOLEAN_VALUE);
 				return false;
 			}
 		} else if (columnIndex == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
 			if (LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(value)) {			               
 				setPasteError("        Duplicate Metabolite");
+				setReplaceAllError("        Duplicate Metabolite");
 				return false;
 			}
 		}
@@ -6907,18 +6917,11 @@ JMenu selectMenu = new JMenu("Select");
 							//replaceAllValue = oldValue.replaceAll(findReplaceFrame.getFindText(), findReplaceFrame.getReplaceText());
 						}						
 					}
-					if (getReactionsFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.KO_COLUMN || getReactionsFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
-						if (replaceAllValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_TRUE_VALUES[0])) {
-							reactionsTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[1], viewRow, getReactionsFindLocationsList().get(i).get(1));
-						} else if (replaceAllValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_FALSE_VALUES[0])) {
-							reactionsTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[0], viewRow, getReactionsFindLocationsList().get(i).get(1));
-						} else {
-							validPaste = false;
-							setReplaceAllError(GraphicalInterfaceConstants.REPLACE_ALL_BOOLEAN_VALUE_ERROR);
-						}
+					if (isReactionsEntryValid(getReactionsFindLocationsList().get(i).get(1), viewRow, replaceAllValue)) {
+						reactionsTable.setValueAt(replaceAllValue, viewRow, getReactionsFindLocationsList().get(i).get(1));			
 					} else {
-						reactionsTable.getModel().setValueAt(replaceAllValue, viewRow, getReactionsFindLocationsList().get(i).get(1));
-					}			
+						validPaste = false;
+					}		
 				}
 				if (validPaste) {
 					updater.updateReactionRows(rowList, reacIdList, oldReactionsList, LocalConfig.getInstance().getLoadedDatabase());
@@ -7279,7 +7282,6 @@ JMenu selectMenu = new JMenu("Select");
 					}
 					if (getMetabolitesFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
 						if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(oldValue) && !LocalConfig.getInstance().getDuplicateIds().contains(oldValue)) {
-							System.out.println(replaceAllValue);
 							setReplaceAllError(GraphicalInterfaceConstants.REPLACE_ALL_PARTICIPATING_ERROR_MESSAGE);
 							//updater.updateMetaboliteRows(rowList, metabIdList, LocalConfig.getInstance().getLoadedDatabase());
 							metabolitesTable.getModel().setValueAt(oldValue, viewRow, getMetabolitesFindLocationsList().get(i).get(1));
@@ -7288,18 +7290,30 @@ JMenu selectMenu = new JMenu("Select");
 						    metabolitesTable.getModel().setValueAt(replaceAllValue, viewRow, getMetabolitesFindLocationsList().get(i).get(1));							
 							//validPaste = false;
 						}
-					} else if (getMetabolitesFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.BOUNDARY_COLUMN) {
-						if (replaceAllValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_TRUE_VALUES[0])) {
-							metabolitesTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[1], viewRow, GraphicalInterfaceConstants.BOUNDARY_COLUMN);
-						} else if (replaceAllValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_FALSE_VALUES[0])) {
-							metabolitesTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[0], viewRow, GraphicalInterfaceConstants.BOUNDARY_COLUMN);
+					} else if (getMetabolitesFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.CHARGE_COLUMN) {
+						replaceAllValue = oldValue.replaceAll(findReplaceFrame.getFindText(), findReplaceFrame.getReplaceText());
+						if (replaceAllValue != null && replaceAllValue.trim().length() > 0) {
+							validPaste = true;
+							try {
+								Double.valueOf(replaceAllValue);
+							}
+						    catch ( NumberFormatException nfe ) {
+						    	setReplaceAllError("Number format exception");
+						    	validPaste = false;
+						    	metabolitesTable.getModel().setValueAt(oldValue, viewRow, getMetabolitesFindLocationsList().get(i).get(1));
+						    }	           
+						} else {
+							metabolitesTable.getModel().setValueAt("", viewRow, getMetabolitesFindLocationsList().get(i).get(1));
+						}
+						if (validPaste) {
+							metabolitesTable.getModel().setValueAt(replaceAllValue, viewRow, getMetabolitesFindLocationsList().get(i).get(1));
+						}						
+					} else {
+						if (isMetabolitesEntryValid(getMetabolitesFindLocationsList().get(i).get(1), replaceAllValue)) {
+							metabolitesTable.setValueAt(replaceAllValue, viewRow, getMetabolitesFindLocationsList().get(i).get(1));			
 						} else {
 							validPaste = false;
-							setReplaceAllError(GraphicalInterfaceConstants.REPLACE_ALL_BOOLEAN_VALUE_ERROR);
-						}
-					} else {
-						metabolitesTable.getModel().setValueAt(replaceAllValue, viewRow, getMetabolitesFindLocationsList().get(i).get(1));
-						//updateMetabolitesCellIfValid(oldValue, replaceAllValue, viewRow, getMetabolitesFindLocationsList().get(i).get(1));
+						}	
 					}			
 				}
 				if (validPaste) {						
@@ -7391,7 +7405,7 @@ JMenu selectMenu = new JMenu("Select");
 	ActionListener searchBackwardsActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent actionEvent) {
 			AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
-			searchBackwards = abstractButton.getModel().isSelected(); 
+			searchBackwards = abstractButton.getModel().isSelected();
 			if (tabbedPane.getSelectedIndex() == 0) {
 				int count = LocalConfig.getInstance().getReactionsLocationsListCount();
 				if (!searchBackwards && count > 0 && count < getReactionsFindLocationsList().size() - 1) {

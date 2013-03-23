@@ -256,9 +256,15 @@ public class GraphicalInterfaceConstants {
     public static final String REPLACE_ALL_ERROR_TITLE = "Replace All Error";
     public static final String REPLACE_ALL_BOOLEAN_VALUE_ERROR = "Replace value is not a valid boolean value";
     public static final String REPLACE_ALL_PARTICIPATING_ERROR_MESSAGE = "Invalid Replace. One or more selected metabolites participate in reactions and cannot be changed.";
+    public static final String LOWER_BOUND_REPLACE_ALL_ERROR = "Lower bound must be less than or equal to upper bound.";
+    public static final String UPPER_BOUND_REPLACE_ALL_ERROR = "Upper bound must be greater than or equal to lower bound.";
+    public static final String INVALID_REPLACE_ALL_BOOLEAN_VALUE = "Boolean Value Error. Must be \"True\" or \"False\"";
     
     // paste errors
     public static final String PASTE_AREA_ERROR = "Copy Area and Paste Area are different sizes.";
+    public static final String LOWER_BOUND_PASTE_ERROR = "Lower bound must be less than or equal to upper bound.";
+    public static final String UPPER_BOUND_PASTE_ERROR = "Upper bound must be greater than or equal to lower bound.";
+    public static final String INVALID_PASTE_BOOLEAN_VALUE = "Boolean Value Error";
     
     // interface titles and labels
     public static final String COLUMN_ADD_INTERFACE_TITLE = "Add Column";   

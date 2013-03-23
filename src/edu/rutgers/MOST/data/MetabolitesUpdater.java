@@ -21,7 +21,7 @@ public class MetabolitesUpdater {
 				DriverManager.getConnection(queryString);
 			Statement stat = conn.createStatement();
 			
-			PreparedStatement metabUpdatePrep = conn.prepareStatement("update metabolites set metabolite_abbreviation=?, metabolite_name=?, charge=? + " 
+			PreparedStatement metabUpdatePrep = conn.prepareStatement("update metabolites set metabolite_abbreviation=?, metabolite_name=?, charge=?, " 
 			+ " compartment=?, boundary=?, meta_1=?, meta_2=?, meta_3=?, meta_4=?, meta_5=?, meta_6=?, meta_7=?, meta_8=?, "
 			+ " meta_9=?, meta_10=?, meta_11=?, meta_12=?, meta_13=?, meta_14=?, meta_15=? where id=?"); 
 			try {
@@ -164,6 +164,7 @@ public class MetabolitesUpdater {
 				for (int i = 0; i < idList.size(); i++) {
 					if (LocalConfig.getInstance().getSuspiciousMetabolites().contains(idList.get(i))) {
 						LocalConfig.getInstance().getSuspiciousMetabolites().remove(idList.get(i));
+						System.out.println(LocalConfig.getInstance().getSuspiciousMetabolites());
 					}
 					String delete = "delete from metabolites where id = " + idList.get(i) + ";";
 					stat.executeUpdate(delete);
