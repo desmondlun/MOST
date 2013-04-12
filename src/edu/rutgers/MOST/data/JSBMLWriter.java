@@ -124,7 +124,18 @@ public class JSBMLWriter implements TreeModelListener{
 			}
 		}
 		
+		/*
+		if (LocalConfig.getInstance().getCurrentConnection() != null) {
+        	try {
+				LocalConfig.getInstance().getCurrentConnection().close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+        }
+        */
 		//Connection con = DriverManager.getConnection("jdbc:sqlite:" + config.getDatabaseName() + ".db");
+		//LocalConfig.getInstance().setCurrentConnection(con);
 		//System.out.print(con.getSchema());
 	}
 	

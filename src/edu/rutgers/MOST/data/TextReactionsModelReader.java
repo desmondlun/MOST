@@ -128,6 +128,7 @@ public class TextReactionsModelReader {
 		try{
 			Connection conn =
 				DriverManager.getConnection(queryString);
+
 			Statement stat = conn.createStatement();
 
 			stat.executeUpdate("drop table if exists reactions;");
@@ -233,7 +234,7 @@ public class TextReactionsModelReader {
 							} 
 						} 
 						if (LocalConfig.getInstance().getFluxValueColumnIndex() > -1) {
-							if (dataArray[LocalConfig.getInstance().getFluxValueColumnIndex()].compareTo("") != 0) {
+							if (isNumber(dataArray[LocalConfig.getInstance().getFluxValueColumnIndex()])) {
 								fluxValue = Double.valueOf(dataArray[LocalConfig.getInstance().getFluxValueColumnIndex()]);
 							} 
 						} 
@@ -493,17 +494,17 @@ public class TextReactionsModelReader {
 						}
 						
 						if (LocalConfig.getInstance().getLowerBoundColumnIndex() > -1) {
-							if (dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()].compareTo("") != 0) {
+							if (isNumber(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()])) {
 								lowerBound = Double.valueOf(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()]);							
 							} 
 						} 
 						if (LocalConfig.getInstance().getUpperBoundColumnIndex() > -1) {
-							if (dataArray[LocalConfig.getInstance().getUpperBoundColumnIndex()].compareTo("") != 0) {
+							if (isNumber(dataArray[LocalConfig.getInstance().getUpperBoundColumnIndex()])) {
 								upperBound = Double.valueOf(dataArray[LocalConfig.getInstance().getUpperBoundColumnIndex()]);							
 							}
 						} 
 						if (LocalConfig.getInstance().getBiologicalObjectiveColumnIndex() > -1) {
-							if (dataArray[LocalConfig.getInstance().getBiologicalObjectiveColumnIndex()].compareTo("") != 0) {
+							if (isNumber(dataArray[LocalConfig.getInstance().getBiologicalObjectiveColumnIndex()])) {
 								objective = Double.valueOf(dataArray[LocalConfig.getInstance().getBiologicalObjectiveColumnIndex()]);							
 							} 							
 						} 
@@ -614,6 +615,7 @@ public class TextReactionsModelReader {
 							}
 						}
 						
+						// TODO : add error message here?
 						if (lowerBound < 0.0 && reversible.equals("false")) {
 							lowerBound = 0.0;
 						}
@@ -708,6 +710,17 @@ public class TextReactionsModelReader {
 				
 		return revisedProducts;
 	}
+	
+	public boolean isNumber(String s) {
+		try {
+			Double.parseDouble(s);
+		}
+		catch (NumberFormatException nfe) {
+			return false;
+		}
+		return true;
+	}
+	
 }
 
 

@@ -2,6 +2,7 @@ package edu.rutgers.MOST.presentation;
 
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -79,11 +80,17 @@ public class ReactionColumnNameInterface  extends JDialog {
 		
 		getRootPane().setDefaultButton(okButton);
 
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		
+		int x = (screenSize.width - progressBar.getSize().width)/2;
+		int y = (screenSize.height - progressBar.getSize().height)/2;
+		
 		LocalConfig.getInstance().setProgress(0);
 		progressBar.pack();
 		progressBar.setIconImages(icons);
 		progressBar.setSize(200, 70);
 		progressBar.setTitle("Loading...");
+		progressBar.setLocation(x  - progressBar.getSize().width/2, y - 180);
 		progressBar.setVisible(false);
 
 		setColumnNamesFromFile(columnNamesFromFile);
@@ -499,7 +506,7 @@ public class ReactionColumnNameInterface  extends JDialog {
 		vb.add(hbButton);
 
 		add(vb);
-
+		
 		ActionListener okButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
 				if (cbReactionAbbreviation.getSelectedIndex() == -1 || cbReactionEquation.getSelectedIndex() == -1) {
@@ -525,16 +532,21 @@ public class ReactionColumnNameInterface  extends JDialog {
 					if (getColumnNamesFromFile().contains(cbFluxValue.getSelectedItem())) {
 						LocalConfig.getInstance().setFluxValueColumnIndex(getColumnNamesFromFile().indexOf(cbFluxValue.getSelectedItem()));
 						usedIndices.add(getColumnNamesFromFile().indexOf(cbFluxValue.getSelectedItem()));
-					}					
-					if (getColumnNamesFromFile().contains(cbReactionName.getSelectedItem())) {
+					}	
+					if (cbReactionName.getSelectedIndex() == -1) {
+						LocalConfig.getInstance().getHiddenReactionsColumns().add(GraphicalInterfaceConstants.REACTION_NAME_COLUMN);
+					} else if (getColumnNamesFromFile().contains(cbReactionName.getSelectedItem())) {
 						LocalConfig.getInstance().setReactionNameColumnIndex(getColumnNamesFromFile().indexOf(cbReactionName.getSelectedItem()));
 						usedIndices.add(getColumnNamesFromFile().indexOf(cbReactionName.getSelectedItem()));
-					} 
+					}
+					System.out.println("index" + cbReactionAbbreviation.getSelectedIndex());
 					if (getColumnNamesFromFile().contains(cbReactionEquation.getSelectedItem())) {
 						LocalConfig.getInstance().setReactionEquationColumnIndex(getColumnNamesFromFile().indexOf(cbReactionEquation.getSelectedItem()));
 						usedIndices.add(getColumnNamesFromFile().indexOf(cbReactionEquation.getSelectedItem()));
 					}
-					if (getColumnNamesFromFile().contains(cbReversible.getSelectedItem())) {
+					if (cbReversible.getSelectedIndex() == -1) {
+						LocalConfig.getInstance().getHiddenReactionsColumns().add(GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
+					} else if (getColumnNamesFromFile().contains(cbReversible.getSelectedItem())) {
 						LocalConfig.getInstance().setReversibleColumnIndex(getColumnNamesFromFile().indexOf(cbReversible.getSelectedItem()));
 						usedIndices.add(getColumnNamesFromFile().indexOf(cbReversible.getSelectedItem()));
 					}
@@ -583,12 +595,21 @@ public class ReactionColumnNameInterface  extends JDialog {
 			public void actionPerformed(ActionEvent prodActionEvent) {
 				setVisible(false);
 				dispose();
+				if (LocalConfig.getInstance().getCurrentConnection() != null) {
+		        	try {
+						LocalConfig.getInstance().getCurrentConnection().close();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+		        }
 				//this is a hack, same as clear method in gui
 				try {
 					Class.forName("org.sqlite.JDBC");       
 					DatabaseCreator databaseCreator = new DatabaseCreator();
 					LocalConfig.getInstance().setDatabaseName(ConfigConstants.DEFAULT_DATABASE_NAME);
 					Connection con = DriverManager.getConnection("jdbc:sqlite:" + ConfigConstants.DEFAULT_DATABASE_NAME + ".db");
+					LocalConfig.getInstance().setCurrentConnection(con);
 					databaseCreator.createDatabase(LocalConfig.getInstance().getDatabaseName());
 					databaseCreator.addRows(LocalConfig.getInstance().getDatabaseName(), GraphicalInterfaceConstants.BLANK_DB_METABOLITE_ROW_COUNT, GraphicalInterfaceConstants.BLANK_DB_REACTION_ROW_COUNT);
 				} catch (ClassNotFoundException e) {
@@ -695,10 +716,10 @@ public class ReactionColumnNameInterface  extends JDialog {
 			} else if((columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.REVERSIBLE_COLUMN_FILTER[0])) {
 				cbReversible.setSelectedIndex(c);
 				LocalConfig.getInstance().setReversibleColumnIndex(c); 
-			} else if((columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.LOWER_BOUND_FILTER[0]) == 0 || (columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.LOWER_BOUND_FILTER[1]) == 0 || (columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.LOWER_BOUND_FILTER[2]) == 0) {
+			} else if((columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.LOWER_BOUND_FILTER[0]) == 0 || (columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.LOWER_BOUND_FILTER[1])) {
 				cbLowerBound.setSelectedIndex(c);
 				LocalConfig.getInstance().setLowerBoundColumnIndex(c); 
-			} else if((columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.UPPER_BOUND_FILTER[0]) == 0 || (columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.UPPER_BOUND_FILTER[1]) == 0 || (columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.UPPER_BOUND_FILTER[2]) == 0) {
+			} else if((columnNamesFromFile.get(c).toLowerCase()).compareTo(GraphicalInterfaceConstants.UPPER_BOUND_FILTER[0]) == 0 || (columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.UPPER_BOUND_FILTER[1])) {
 				cbUpperBound.setSelectedIndex(c);
 				LocalConfig.getInstance().setUpperBoundColumnIndex(c); 
 			} else if((columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_FILTER[0]) && !(columnNamesFromFile.get(c).toLowerCase()).contains(GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_NOT_FILTER[0])) {

@@ -180,6 +180,10 @@ public class ReactionParser {
 				splitString = "<==> ";
 			} else if (reactionEquation.contains("<=>")) {
 				splitString = "<=> ";
+			} else if (reactionEquation.contains("<-->")) {
+				splitString = "<--> ";		
+			} else if (reactionEquation.contains("<->")) {
+				splitString = "<-> ";	
 			} else if (reactionEquation.contains("=") && !reactionEquation.contains(">")) {
 				splitString = "= ";
 				//not reversible options

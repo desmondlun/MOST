@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.rutgers.MOST.config.LocalConfig;
+import edu.rutgers.MOST.logic.ReactionParser;
 
 // creates invalid reaction list, metabolite id name map, and metabolite used map 
 // when loading database for use in highlighting and deleting unused metabolites
@@ -188,6 +189,43 @@ public class SQLiteLoader {
 		}	
 		
 		return metaboliteUsedMap;
+		
+	}
+	
+	public ArrayList<Integer> suspiciousMetabolites(String databaseName) {
+		ArrayList<Integer> suspiciousMetabolites = new ArrayList<Integer>();
+		ReactionParser parser = new ReactionParser();
+		
+		String queryString = "jdbc:sqlite:" + databaseName + ".db";
+		try {
+			Class.forName("org.sqlite.JDBC");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Connection conn;
+		try {
+			conn = DriverManager.getConnection(queryString);
+			Statement stat = conn.createStatement();
+			ResultSet rs = stat.executeQuery("select metabolite_abbreviation from metabolites;");
+			while (rs.next()) {		
+				String abbrev = rs.getString("metabolite_abbreviation");
+				System.out.println(abbrev);
+				Integer id = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(abbrev);	
+				System.out.println(id);
+				if (parser.isSuspicious(abbrev)) {
+					System.out.println("susp " + abbrev);
+					if (!suspiciousMetabolites.contains(id)) {
+						suspiciousMetabolites.add(id);
+					}							
+				}
+			}					
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();			
+		}	
+		return suspiciousMetabolites;
 	}
 	
 }

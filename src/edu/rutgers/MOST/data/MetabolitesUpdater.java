@@ -141,6 +141,8 @@ public class MetabolitesUpdater {
 				stat.executeUpdate("ROLLBACK"); // throw away all updates since BEGIN TRANSACTION
 			}
 
+			conn.close();
+			
 		}catch(SQLException e){
 
 			e.printStackTrace();
@@ -164,7 +166,6 @@ public class MetabolitesUpdater {
 				for (int i = 0; i < idList.size(); i++) {
 					if (LocalConfig.getInstance().getSuspiciousMetabolites().contains(idList.get(i))) {
 						LocalConfig.getInstance().getSuspiciousMetabolites().remove(idList.get(i));
-						System.out.println(LocalConfig.getInstance().getSuspiciousMetabolites());
 					}
 					String delete = "delete from metabolites where id = " + idList.get(i) + ";";
 					stat.executeUpdate(delete);
@@ -175,6 +176,8 @@ public class MetabolitesUpdater {
 				e.printStackTrace();
 				stat.executeUpdate("ROLLBACK"); // throw away all updates since BEGIN TRANSACTION
 			}
+			
+			conn.close();
 
 		}catch(SQLException e){
 
@@ -216,6 +219,8 @@ public class MetabolitesUpdater {
 				stat.executeUpdate("ROLLBACK"); // throw away all updates since BEGIN TRANSACTION
 			}
 
+			conn.close();
+			
 		}catch(SQLException e){
 
 			e.printStackTrace();

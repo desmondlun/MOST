@@ -20,12 +20,12 @@ class FileList extends JList {
 	}
 
 	public JPopupMenu jPopupMenu = new JPopupMenu();
-	public JMenuItem saveItem = new JMenuItem("Save");         
-	public JMenuItem saveAsCSVItem = new JMenuItem("Save As CSV");    
+	public JMenuItem saveItem = new JMenuItem("Save As SQLite");         
+	public JMenuItem saveAsCSVItem = new JMenuItem("Save As CSV Reactions");    
 	public JMenuItem saveAsSBMLItem = new JMenuItem("Save As SBML");
-	public JMenuItem saveAllItem = new JMenuItem("Save All Optimizations");
+	//public JMenuItem saveAllItem = new JMenuItem("Save All Optimizations");
 	public JMenuItem deleteItem = new JMenuItem("Delete");
-	public JMenuItem clearItem = new JMenuItem("Clear Optimizations");
+	public JMenuItem clearItem = new JMenuItem("Delete All Optimizations");
 
 	public FileList() {
 		super();
@@ -71,7 +71,7 @@ class FileList extends JList {
 								saveItem.setEnabled(true);
 								saveAsCSVItem.setEnabled(true);
 								//saveAsSBMLItem.setEnabled(true); // will enable when SBML save works
-								saveAllItem.setEnabled(true);
+								//saveAllItem.setEnabled(true);
 								deleteItem.setEnabled(true);
 								clearItem.setEnabled(true);								
 							}
@@ -117,6 +117,7 @@ class FileList extends JList {
 			}
 		});	
 		
+		/*
 		jPopupMenu.add(saveAllItem);
 		saveAllItem.setEnabled(false);
 		saveAllItem.addActionListener(new ActionListener() {
@@ -127,6 +128,7 @@ class FileList extends JList {
 				}				
 			}
 		});
+		*/
 		
 		jPopupMenu.addSeparator();
 		
@@ -146,8 +148,6 @@ class FileList extends JList {
 				}				
 			}
 		});
-
-		jPopupMenu.addSeparator();
 		
 		jPopupMenu.add(clearItem);
 		clearItem.setEnabled(false);

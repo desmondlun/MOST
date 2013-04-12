@@ -190,11 +190,11 @@ public class GraphicalInterfaceConstants {
     };
     
     public static final String[] LOWER_BOUND_FILTER =
-    {"lower bound", "lb", "lower_bound"
+    {"lb", "lower"
     };
     
     public static final String[] UPPER_BOUND_FILTER =
-    {"upper bound", "ub", "upper_bound"
+    {"ub", "upper"
     };
     
     public static final String[] BIOLOGICAL_OBJECTIVE_FILTER =
@@ -277,6 +277,10 @@ public class GraphicalInterfaceConstants {
     public static final String CSV_FILE_LOAD_INTERFACE_TITLE = "CSV File Load";    
     public static final String CSV_FILE_LOAD_METAB_BUTTON = "Load Metabolites File";
     public static final String CSV_FILE_LOAD_REAC_BUTTON = " Load Reactions File "; 
+    
+    // delete optimize database and log files
+    public static final String DELETE_ASSOCIATED_FILES_TITLE = "Delete Associated Files?";
+    public static final String DELETE_ASSOCIATED_FILES = "Delete Associated database and log Files?";
     
     // tab names
     public static final String DEFAULT_METABOLITE_TABLE_TAB_NAME = "Metabolites";

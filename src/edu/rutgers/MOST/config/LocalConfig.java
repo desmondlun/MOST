@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.sql.Connection;;
+
 public class LocalConfig {	
 
 	
@@ -39,6 +41,16 @@ public class LocalConfig {
 
 	public void setLoadedDatabase(String loadedDatabase) {
 		this.loadedDatabase = loadedDatabase;
+	}
+	
+	private Connection currentConnection;
+	
+	public Connection getCurrentConnection() {
+		return currentConnection;
+	}
+
+	public void setCurrentConnection(Connection currentConnection) {
+		this.currentConnection = currentConnection;
 	}
 	
 	public boolean hasMetabolitesFile;
@@ -436,6 +448,26 @@ public class LocalConfig {
 	
 	public void setSuspiciousMetabolites(ArrayList<Integer> suspiciousMetabolites) {
 		this.suspiciousMetabolites = suspiciousMetabolites;
+	}
+	
+    private static ArrayList<Integer> hiddenReactionsColumns = new ArrayList<Integer>();
+	
+	public ArrayList<Integer> getHiddenReactionsColumns() {
+		return hiddenReactionsColumns;
+	}
+	
+	public void setHiddenReactionsColumns(ArrayList<Integer> hiddenReactionsColumns) {
+		this.hiddenReactionsColumns = hiddenReactionsColumns;
+	}
+	
+    private static ArrayList<Integer> hiddenMetabolitesColumns = new ArrayList<Integer>();
+	
+	public ArrayList<Integer> getHiddenMetabolitesColumns() {
+		return hiddenMetabolitesColumns;
+	}
+	
+	public void setHiddenMetabolitesColumns(ArrayList<Integer> hiddenMetabolitesColumns) {
+		this.hiddenMetabolitesColumns = hiddenMetabolitesColumns;
 	}
 	
 }

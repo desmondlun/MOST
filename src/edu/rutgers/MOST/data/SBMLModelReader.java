@@ -81,6 +81,7 @@ public class SBMLModelReader {
 		}
 		try{
 			Connection conn = DriverManager.getConnection(queryString);
+			
 			Statement stat = conn.createStatement();
 			PreparedStatement metabInsertPrep = conn.prepareStatement("INSERT INTO metabolites(metabolite_abbreviation, metabolite_name, "
 					+ " charge, compartment, boundary, meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, "
@@ -182,6 +183,10 @@ public class SBMLModelReader {
 											}
 										}
 
+										if (metabMetaColumnNames.contains(columnName)) {
+											System.out.println("Duplicate column");
+										}
+										
 										if (!contains) {
 											metabMetaColumnNames.add(columnName);
 											String insert = "insert into metabolites_meta_info (meta_column_name) values ('" + columnName + "');";
@@ -298,6 +303,7 @@ public class SBMLModelReader {
 				PreparedStatement rpInsertPrep = conn.prepareStatement("INSERT INTO reaction_products(reaction_id, stoic, metabolite_id) values (?, ?, ?)");
 								
 				ListOf<Reaction> reactions = doc.getModel().getListOfReactions();
+				boolean locusColumnName = false;
 				for (int j = 0; j < reactions.size(); j++) {
 					if (j%10 == 0) {
 						LocalConfig.getInstance().setProgress((j * ProgressConstants.REACTION_LOAD_PERCENT) / reactions.size() 
@@ -493,12 +499,27 @@ public class SBMLModelReader {
 						if (j == 0) {
 							//set list of notes names to meta columns
 							ArrayList<String> reactionsMetaColumnNames = new ArrayList<String>();				
-							for (int n = 0; n < noteItemList.size(); n++) {
+							boolean genes = false;
+							for (int n = 0; n < noteItemList.size(); n++) {								
 								if (noteItemList.get(n).contains(":")) {
 									//accounts for condition of multiple ":"
 									String columnName = noteItemList.get(n).substring(0, noteItemList.get(n).indexOf(":"));
 									boolean contains = false;
-
+							        
+									if (columnName.compareTo("genes") == 0) {
+										genes = true;
+										System.out.println("genes");
+									}
+									if (genes) {
+										if (columnName.compareTo("LOCUS") == 0) {
+											System.out.println("LOCUS");
+											locusColumnName = true;
+										}
+									}
+									if (reactionsMetaColumnNames.contains(columnName)) {
+										System.out.println("Duplicate column");
+									}
+									
 									for (int s = 0; s < SBMLConstants.REACTIONS_IGNORE_LIST.length; s++) {
 										if ((SBMLConstants.REACTIONS_IGNORE_LIST[s].compareTo(columnName.trim()) == 0)) {
 											contains = true;
@@ -574,6 +595,21 @@ public class SBMLModelReader {
 						}	
 					}
                  	
+					if (locusColumnName) {
+						for (int z = 0; z < getReactionsMetaColumnNames().size(); z++) {
+							if (getReactionsMetaColumnNames().get(z).compareTo("LOCUS") == 0) {
+								String rmUpdate = "update reactions_meta_info set meta_column_name='Genes' where id=" + (z + 1) + ";";
+								stat.executeUpdate(rmUpdate);	
+							}
+						}
+					}
+					
+					
+					// TODO : add error message here?
+					if (lowerBound < 0.0 && reversible.equals("false")) {
+						lowerBound = 0.0;
+					}
+					
 					reacInsertPrep.setString(1, knockout);
 					reacInsertPrep.setDouble(2, fluxValue);
 					reacInsertPrep.setString(3, reactionAbbreviation);

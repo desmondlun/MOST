@@ -77,6 +77,7 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		progressBar.setIconImages(icons);
 		progressBar.setSize(200, 70);
 		progressBar.setTitle("Loading...");
+		progressBar.setLocationRelativeTo(null);
 		progressBar.setVisible(false);
 
 		setColumnNamesFromFile(columnNamesFromFile);
@@ -363,15 +364,21 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 						LocalConfig.getInstance().setMetaboliteAbbreviationColumnIndex(getColumnNamesFromFile().indexOf(cbMetaboliteAbbreviation.getSelectedItem()));
 						usedIndices.add(getColumnNamesFromFile().indexOf(cbMetaboliteAbbreviation.getSelectedItem()));
 					}
-					if (getColumnNamesFromFile().contains(cbMetaboliteName.getSelectedItem())) {
+					if (cbMetaboliteName.getSelectedIndex() == -1) {
+						LocalConfig.getInstance().getHiddenMetabolitesColumns().add(GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN);
+					} else if (getColumnNamesFromFile().contains(cbMetaboliteName.getSelectedItem())) {
 						LocalConfig.getInstance().setMetaboliteNameColumnIndex(getColumnNamesFromFile().indexOf(cbMetaboliteName.getSelectedItem()));
 						usedIndices.add(getColumnNamesFromFile().indexOf(cbMetaboliteName.getSelectedItem()));
 					}
-					if (getColumnNamesFromFile().contains(cbCharge.getSelectedItem())) {
+					if (cbCharge.getSelectedIndex() == -1) {
+						LocalConfig.getInstance().getHiddenMetabolitesColumns().add(GraphicalInterfaceConstants.CHARGE_COLUMN);
+					} else if (getColumnNamesFromFile().contains(cbCharge.getSelectedItem())) {
 						LocalConfig.getInstance().setChargeColumnIndex(getColumnNamesFromFile().indexOf(cbCharge.getSelectedItem()));
 						usedIndices.add(getColumnNamesFromFile().indexOf(cbCharge.getSelectedItem()));
 					}
-					if (getColumnNamesFromFile().contains(cbCompartment.getSelectedItem())) {
+					if (cbCompartment.getSelectedIndex() == -1) {
+						LocalConfig.getInstance().getHiddenMetabolitesColumns().add(GraphicalInterfaceConstants.COMPARTMENT_COLUMN);
+					} else if (getColumnNamesFromFile().contains(cbCompartment.getSelectedItem())) {
 						LocalConfig.getInstance().setCompartmentColumnIndex(getColumnNamesFromFile().indexOf(cbCompartment.getSelectedItem()));
 						usedIndices.add(getColumnNamesFromFile().indexOf(cbCompartment.getSelectedItem()));
 					}
@@ -410,11 +417,20 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 				setVisible(false);
 				dispose();
 				//this is a hack, same as clear method in gui
+				if (LocalConfig.getInstance().getCurrentConnection() != null) {
+					try {
+						LocalConfig.getInstance().getCurrentConnection().close();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
 				try {
 					Class.forName("org.sqlite.JDBC");       
 					DatabaseCreator databaseCreator = new DatabaseCreator();
 					LocalConfig.getInstance().setDatabaseName(ConfigConstants.DEFAULT_DATABASE_NAME);
 					Connection con = DriverManager.getConnection("jdbc:sqlite:" + ConfigConstants.DEFAULT_DATABASE_NAME + ".db");
+					LocalConfig.getInstance().setCurrentConnection(con);
 					databaseCreator.createDatabase(LocalConfig.getInstance().getDatabaseName());
 					databaseCreator.addRows(LocalConfig.getInstance().getDatabaseName(), GraphicalInterfaceConstants.BLANK_DB_METABOLITE_ROW_COUNT, GraphicalInterfaceConstants.BLANK_DB_REACTION_ROW_COUNT);
 				} catch (ClassNotFoundException e) {

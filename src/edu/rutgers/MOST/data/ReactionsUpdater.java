@@ -88,8 +88,6 @@ public class ReactionsUpdater {
 					if (GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN) != null) {
 						fluxValue = Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN));	
 					} 
-					//if strings contain ' (single quote), it will not execute insert statement
-					//this code escapes ' as '' - sqlite syntax for escaping '
 					String reactionAbbreviation = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
 					if (reactionAbbreviation == null) {
 						reactionAbbreviation = " ";
@@ -133,8 +131,7 @@ public class ReactionsUpdater {
 											}
 										}							
 									}
-								}
-								
+								}								
 							}
 						} else {
 							reactionEquation = " ";
@@ -259,6 +256,8 @@ public class ReactionsUpdater {
 				stat.executeUpdate("ROLLBACK"); // throw away all updates since BEGIN TRANSACTION
 			}
 
+			conn.close();
+			
 		}catch(SQLException e){
 
 			e.printStackTrace();
@@ -559,6 +558,8 @@ public class ReactionsUpdater {
 			} catch (Throwable t) {
 				
 			}
+			
+			conn.close();
 			
 		}catch(SQLException e){
 

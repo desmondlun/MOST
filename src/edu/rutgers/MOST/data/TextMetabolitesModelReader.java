@@ -128,6 +128,7 @@ public class TextMetabolitesModelReader {
 		try{
 			Connection conn =
 				DriverManager.getConnection(queryString);
+
 			Statement stat = conn.createStatement();
 			
 			CSVReader reader;

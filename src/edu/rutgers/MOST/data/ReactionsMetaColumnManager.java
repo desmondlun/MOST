@@ -105,7 +105,7 @@ public class ReactionsMetaColumnManager {
 		return columnName;
 
 	}
-	
+
 	public void addColumnName(String databaseName, String columnName) {
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
 		try {
@@ -117,15 +117,15 @@ public class ReactionsMetaColumnManager {
 		Connection conn;
 		try {
 			conn = DriverManager.getConnection(queryString);
-				PreparedStatement prep1 = conn.prepareStatement("insert into reactions_meta_info (id, meta_column_name) values (?, ?);");
-				prep1.setInt(1, (getMetaColumnCount(databaseName) + 1));
-				prep1.setString(2, columnName);
+			PreparedStatement prep1 = conn.prepareStatement("insert into reactions_meta_info (id, meta_column_name) values (?, ?);");
+			prep1.setInt(1, (getMetaColumnCount(databaseName) + 1));
+			prep1.setString(2, columnName);
 
-				prep1.addBatch();
+			prep1.addBatch();
 
-				conn.setAutoCommit(false);
-				prep1.executeBatch();
-				conn.setAutoCommit(true);
+			conn.setAutoCommit(false);
+			prep1.executeBatch();
+			conn.setAutoCommit(true);
 
 			conn.close();
 
@@ -134,7 +134,7 @@ public class ReactionsMetaColumnManager {
 			e.printStackTrace();			
 		}
 	}
-	
+
 	public void changeColumnName(String databaseName, String columnName, int id) {
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
 		System.out.println("name " + columnName + "id " + id);
@@ -147,15 +147,15 @@ public class ReactionsMetaColumnManager {
 		Connection conn;
 		try {
 			conn = DriverManager.getConnection(queryString);
-				PreparedStatement prep1 = conn.prepareStatement("update reactions_meta_info set meta_column_name=? where id=?;");
-				prep1.setString(1, columnName);
-				prep1.setInt(2, id);
+			PreparedStatement prep1 = conn.prepareStatement("update reactions_meta_info set meta_column_name=? where id=?;");
+			prep1.setString(1, columnName);
+			prep1.setInt(2, id);
 
-				prep1.addBatch();
+			prep1.addBatch();
 
-				conn.setAutoCommit(false);
-				prep1.executeBatch();
-				conn.setAutoCommit(true);
+			conn.setAutoCommit(false);
+			prep1.executeBatch();
+			conn.setAutoCommit(true);
 
 			conn.close();
 
