@@ -1716,10 +1716,16 @@ public class GraphicalInterface extends JFrame {
 		});
 			
 		JScrollPane scrollPaneReac = new JScrollPane(reactionsTable);
+		LineNumberTableRowHeader tableLineNumber = new LineNumberTableRowHeader(scrollPaneReac, reactionsTable);
+		tableLineNumber.setBackground(new Color(240, 240, 240));
+		scrollPaneReac.setRowHeaderView(tableLineNumber);
 		tabbedPane.addTab(GraphicalInterfaceConstants.DEFAULT_REACTION_TABLE_TAB_NAME, scrollPaneReac);
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_R);
 
 		JScrollPane scrollPaneMetab = new JScrollPane(metabolitesTable);
+		LineNumberTableRowHeader tableMetabLineNumber = new LineNumberTableRowHeader(scrollPaneMetab, metabolitesTable);
+		tableMetabLineNumber.setBackground(new Color(240, 240, 240));
+		scrollPaneMetab.setRowHeaderView(tableMetabLineNumber);
 		tabbedPane.addTab(GraphicalInterfaceConstants.DEFAULT_METABOLITE_TABLE_TAB_NAME, scrollPaneMetab);
 		tabbedPane.setMnemonicAt(1, KeyEvent.VK_B);  	  
 		

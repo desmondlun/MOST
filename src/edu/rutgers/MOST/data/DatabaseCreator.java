@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 public class DatabaseCreator {
@@ -27,11 +26,9 @@ public class DatabaseCreator {
 			e.printStackTrace();
 		}
 
-		//closeConnection();
 		try {
 			Connection conn =
 				DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db");
-			LocalConfig.getInstance().setCurrentConnection(conn);
 			Statement stat = conn.createStatement();
 
 			stat.executeUpdate("drop table if exists metabolites;");
@@ -76,11 +73,9 @@ public class DatabaseCreator {
 			e.printStackTrace();
 		}
 
-		closeConnection();
 		try {
 			Connection conn =
 				DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db");
-			LocalConfig.getInstance().setCurrentConnection(conn);
 			Statement stat = conn.createStatement();
 			
 			try {			
@@ -117,12 +112,10 @@ public class DatabaseCreator {
 			e.printStackTrace();
 		}
 
-		closeConnection();
 		try {
 			Connection conn =
 				DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db");
-			LocalConfig.getInstance().setCurrentConnection(conn);
-			
+
 			PreparedStatement prep = conn.prepareStatement(
 			"insert into metabolites (id, boundary) values (?, ?);");
 
@@ -153,12 +146,10 @@ public class DatabaseCreator {
 			e.printStackTrace();
 		}
 
-		closeConnection();
 		try {
 			Connection conn =
 				DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db");
-			LocalConfig.getInstance().setCurrentConnection(conn);
-			
+
 			PreparedStatement prep = conn.prepareStatement(
 			"insert into reactions (id, knockout, flux_value, reversible, lower_bound, upper_bound, biological_objective) values (?, ?, ?, ?, ?, ?, ?);");
 
@@ -194,12 +185,10 @@ public class DatabaseCreator {
 			e.printStackTrace();
 		}
 
-		closeConnection();
 		try {
 			Connection conn =
 				DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db");
-			LocalConfig.getInstance().setCurrentConnection(conn);
-			
+
 			PreparedStatement prep = conn.prepareStatement(
 			"delete from reactions where id = ?;");
 
@@ -210,17 +199,17 @@ public class DatabaseCreator {
 			conn.setAutoCommit(false);
 			prep.executeBatch();
 			conn.setAutoCommit(true);
+			
+			conn.close();
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		closeConnection();
 		try {
 			Connection conn =
 				DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db");
-			LocalConfig.getInstance().setCurrentConnection(conn);
 
 			PreparedStatement prep = conn.prepareStatement(
 			"delete from reaction_reactants where reaction_id = ?;");
@@ -233,16 +222,16 @@ public class DatabaseCreator {
 			prep.executeBatch();
 			conn.setAutoCommit(true);
 
+			conn.close();
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		closeConnection();
 		try {
 			Connection conn =
 				DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db");
-			LocalConfig.getInstance().setCurrentConnection(conn);
 
 			PreparedStatement prep = conn.prepareStatement(
 			"delete from reaction_products where reaction_id = ?;");
@@ -254,6 +243,8 @@ public class DatabaseCreator {
 			conn.setAutoCommit(false);
 			prep.executeBatch();
 			conn.setAutoCommit(true);
+			
+			conn.close();
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -271,11 +262,9 @@ public class DatabaseCreator {
 			e.printStackTrace();
 		}
 
-		closeConnection();
 		try {
 			Connection conn =
 				DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db");
-			LocalConfig.getInstance().setCurrentConnection(conn);
 
 			PreparedStatement prep = conn.prepareStatement(
 			"delete from metabolites where id = ?;");
@@ -288,6 +277,8 @@ public class DatabaseCreator {
 			prep.executeBatch();
 			conn.setAutoCommit(true);
 
+			conn.close();
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -310,11 +301,9 @@ public class DatabaseCreator {
 			e.printStackTrace();
 		}
 
-		closeConnection();
 		try {
 			Connection conn =
 				DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db");
-			LocalConfig.getInstance().setCurrentConnection(conn);
 
 			Statement stat = conn.createStatement();
 			stat.executeUpdate("drop table if exists reactions;");	
@@ -349,7 +338,6 @@ public class DatabaseCreator {
 	
 	public int maxMetaboliteId(String databaseName) {
 		int maxMetaboliteId = 0;
-		closeConnection();
 		String queryString = "jdbc:sqlite:" + databaseName + ".db"; 
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -357,9 +345,9 @@ public class DatabaseCreator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		Connection conn;
 		try {
-			Connection conn = DriverManager.getConnection(queryString);
-			LocalConfig.getInstance().setCurrentConnection(conn);
+			conn = DriverManager.getConnection(queryString);
 			PreparedStatement prep = conn
 			.prepareStatement("SELECT MAX(id) FROM metabolites;");
 			conn.setAutoCommit(true);
@@ -383,10 +371,9 @@ public class DatabaseCreator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		closeConnection();
+		Connection conn;
 		try {
-			Connection conn = DriverManager.getConnection(queryString);
-			LocalConfig.getInstance().setCurrentConnection(conn);
+			conn = DriverManager.getConnection(queryString);
 			PreparedStatement prep = conn
 			.prepareStatement("SELECT MAX(id) FROM reactions;");
 			conn.setAutoCommit(true);
@@ -399,17 +386,6 @@ public class DatabaseCreator {
 		}    
 		return maxReactionId;
 		
-	}
-	
-	public void closeConnection() {
-		if (LocalConfig.getInstance().getCurrentConnection() != null) {
-        	try {
-				LocalConfig.getInstance().getCurrentConnection().close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-        }
 	}
 
 }
