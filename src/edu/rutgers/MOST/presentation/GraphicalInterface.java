@@ -154,6 +154,7 @@ public class GraphicalInterface extends JFrame {
 	public static boolean includeMtbColumnNames;
 	// load values
 	public static boolean isCSVFile;
+	public static boolean validFile;
 	// highlighting
 	public static boolean highlightUnusedMetabolites;	
 	public static boolean highlightParticipatingRxns;
@@ -946,7 +947,7 @@ public class GraphicalInterface extends JFrame {
 				Format formatter;
 				formatter = new SimpleDateFormat("_yyMMdd_HHmmss");
 				String dateTimeStamp = formatter.format(date);
-
+				
 				DatabaseCopier copier = new DatabaseCopier();
 				String optimizePath = "";
 				if (getDatabaseName().contains("\\")) {
@@ -1417,7 +1418,8 @@ public class GraphicalInterface extends JFrame {
 				copier.copyDatabase(getDatabaseName(), optimizePath);
 				listModel.addElement(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
 						+ (getDatabaseName().substring(getDatabaseName().lastIndexOf("\\") + 1) + dateTimeStamp));
-				
+				LocalConfig.getInstance().getOptimizationFilesList().add(optimizePath);
+				System.out.println(LocalConfig.getInstance().getOptimizationFilesList());
 //				listModel.addElement((getDatabaseName().substring(getDatabaseName().lastIndexOf("\\") + 1)));
 				
 //				DynamicTreeDemo.treePanel.setCurrentParent(new DefaultMutableTreeNode(listModel.get(listModel.getSize() - 1)));
@@ -1871,6 +1873,7 @@ public class GraphicalInterface extends JFrame {
 							"Not a Valid SBML File.",                
 							"Invalid SBML File",                                
 							JOptionPane.ERROR_MESSAGE);
+					validFile = false;
 				} else {
 					fileList.setSelectedIndex(-1);
 					listModel.clear();
@@ -2560,6 +2563,15 @@ public class GraphicalInterface extends JFrame {
 				exit = false;
 			}
 			*/	  
+		}
+		
+		if (LocalConfig.getInstance().getLoadedDatabase().compareTo(GraphicalInterfaceConstants.DEFAULT_DATABASE_NAME) != 0) {
+			closeConnection();
+			File f = new File(LocalConfig.getInstance().getLoadedDatabase() + ".db");
+			System.out.println();
+			if (f.exists()) {
+				delete(LocalConfig.getInstance().getLoadedDatabase() + ".db");						
+			}
 		}	
 	}
 	
@@ -3072,6 +3084,7 @@ public class GraphicalInterface extends JFrame {
 		includeMtbColumnNames = true;	
 		// load values
 		isCSVFile = false;
+		validFile = true;
 		// highlighting
 		highlightParticipatingRxns = false;
 		// listener values
@@ -6346,6 +6359,7 @@ JMenu selectMenu = new JMenu("Select");
 						JOptionPane.ERROR_MESSAGE);
 				// TODO Auto-generated catch block
 				//e.printStackTrace();
+				progressBar.setVisible(false);
 			}	
 			while (progress < 100) {
 				try {
