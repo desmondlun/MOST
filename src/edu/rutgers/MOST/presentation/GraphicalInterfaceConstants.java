@@ -305,5 +305,7 @@ public class GraphicalInterfaceConstants {
     public static final String[] NOT_REVERSIBLE_ARROWS =
     {"=>", "-->", "->"
     };
+    
+    public static final String LOAD_FROM_MODEL_COLLECTION_TABLE_TITLE = "Load";
 }
 

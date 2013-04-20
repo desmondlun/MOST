@@ -879,6 +879,11 @@ public class GraphicalInterface extends JFrame {
 		loadSQLItem.setMnemonic(KeyEvent.VK_Q);
 		loadSQLItem.addActionListener(new LoadSQLiteItemAction());
 		
+		JMenuItem loadExistingItem = new JMenuItem(GraphicalInterfaceConstants.LOAD_FROM_MODEL_COLLECTION_TABLE_TITLE);
+		modelMenu.add(loadExistingItem);
+		loadExistingItem.setMnemonic(KeyEvent.VK_Q);
+		loadExistingItem.addActionListener(new LoadExistingItemAction());
+		
 		modelMenu.addSeparator();
 
 		modelMenu.add(saveSBMLItem);
@@ -2026,6 +2031,18 @@ public class GraphicalInterface extends JFrame {
 					}					
 				}
 			}
+		}
+	} 
+	
+	class LoadExistingItemAction implements ActionListener {
+		public void actionPerformed(ActionEvent ae) {
+			File f = new File("ModelCollection.csv");
+			ModelCollectionTable mcTable = new ModelCollectionTable(f);
+			mcTable.setIconImages(icons);
+			mcTable.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+			mcTable.setAlwaysOnTop(true);
+			mcTable.setVisible(true);
+			mcTable.setLocationRelativeTo(null);
 		}
 	} 
 	
