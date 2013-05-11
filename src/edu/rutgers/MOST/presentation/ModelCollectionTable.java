@@ -1,6 +1,8 @@
 package edu.rutgers.MOST.presentation;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -8,6 +10,8 @@ import java.io.IOException;
 import java.util.Vector;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
@@ -28,6 +32,11 @@ class ModelCollectionTable
 		}	
 	};
 	private DefaultTableModel model = new DefaultTableModel();
+	private	JPanel		bottomLeftPanel;
+	private	JPanel		bottomRightPanel;
+	private	JPanel		bottomPanel;
+	public static JButton okButton = new JButton("  OK  ");
+	public static JButton cancelButton = new JButton("Cancel");
 
 	// Constructor of main frame
 	public ModelCollectionTable(File file)
@@ -37,7 +46,12 @@ class ModelCollectionTable
 		setSize( 700, 500 );
 		setBackground( Color.gray );
 		
+		okButton.setEnabled(false);
+		
 		table.setRowHeight(20);
+		table.setColumnSelectionAllowed(false);
+		table.setRowSelectionAllowed(true); 
+		table.getSelectionModel().addListSelectionListener(new RowListener());
 
 		// Create a panel to hold all other components
 		topPanel = new JPanel();
@@ -79,6 +93,16 @@ class ModelCollectionTable
 		// Add the table to a scrolling pane
 		scrollPane = new JScrollPane( table );
 		topPanel.add( scrollPane, BorderLayout.CENTER );
+		bottomLeftPanel = new JPanel();
+		bottomLeftPanel.setLayout( new BorderLayout() );
+		bottomRightPanel = new JPanel();
+		bottomPanel = new JPanel();
+		bottomRightPanel.setLayout( new BorderLayout() );
+		bottomLeftPanel.add( okButton, BorderLayout.WEST );
+		bottomRightPanel.add( cancelButton, BorderLayout.EAST );
+		bottomPanel.add(bottomLeftPanel, BorderLayout.WEST);	
+		bottomPanel.add(bottomRightPanel, BorderLayout.EAST);
+		topPanel.add( bottomPanel, BorderLayout.SOUTH );
 		
 		int r = table.getModel().getColumnCount();	
 		for (int i = 0; i < r; i++) {
@@ -94,7 +118,36 @@ class ModelCollectionTable
             	column.setPreferredWidth(150);
             }
 		}	
+		
+		ActionListener okButtonActionListener = new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				System.out.println(table.getSelectedRow());				
+				setVisible(false);
+				dispose();				
+			}
+		};
+
+		okButton.addActionListener(okButtonActionListener);
+		
+		ActionListener cancelButtonActionListener = new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				setVisible(false);
+				dispose();				
+			}
+		};
+
+		cancelButton.addActionListener(cancelButtonActionListener);
+		
 	}
+	
+	private class RowListener implements ListSelectionListener {
+    	public void valueChanged(ListSelectionEvent event) {
+    		if (table.getSelectedRow() > -1) {
+    			okButton.setEnabled(true);
+				//System.out.println(table.getSelectedRow());
+			}
+    	}
+    }
 	
 	public static void main( String args[] )
 	{

@@ -266,6 +266,9 @@ public class GraphicalInterfaceConstants {
     public static final String UPPER_BOUND_PASTE_ERROR = "Upper bound must be greater than or equal to lower bound.";
     public static final String INVALID_PASTE_BOOLEAN_VALUE = "Boolean Value Error";
     
+    // clear error
+    public static final String CLEAR_ERROR_MESSAGE = "One or more cells selected require a value and cannot be cleared.";
+    
     // interface titles and labels
     public static final String COLUMN_ADD_INTERFACE_TITLE = "Add Column";   
     public static final String COLUMN_RENAME_INTERFACE_TITLE = "Rename Column";    
@@ -306,6 +309,12 @@ public class GraphicalInterfaceConstants {
     {"=>", "-->", "->"
     };
     
-    public static final String LOAD_FROM_MODEL_COLLECTION_TABLE_TITLE = "Load";
+    public static final String GUROBI_KEY_ERROR_TITLE = "Gurobi Key Error";
+    public static final String GUROBI_KEY_ERROR = "Gurobi Key Error";
+        
+    public static final String LOAD_FROM_MODEL_COLLECTION_TABLE_TITLE = "Load from Model Collection Database";
+    
+    // spaces for alignment
+    public static final String ROW_HEADER_TITLE = "   Row";
 }
 

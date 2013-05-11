@@ -189,7 +189,16 @@ public class TextReactionsModelReader {
 				
 				int numLines = numberOfLines(file);
 				
-				stat.executeUpdate("BEGIN TRANSACTION");	
+				stat.executeUpdate("BEGIN TRANSACTION");
+				PreparedStatement reacInsertPrep = conn.prepareStatement("INSERT INTO reactions(knockout, flux_value, reaction_abbreviation, " 
+						+ " reaction_name, reaction_string, reversible, lower_bound, upper_bound, biological_objective," 
+						+ " meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, meta_11, "
+						+ "meta_12, meta_13, meta_14, meta_15) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); 
+				PreparedStatement addMetabPrep = conn.prepareStatement("insert into metabolites (metabolite_abbreviation, boundary) values(?, 'false')");											
+				PreparedStatement rrInsertPrep = conn.prepareStatement("INSERT INTO reaction_reactants(reaction_id, stoic, metabolite_id) values (?, ?, ?)");
+				PreparedStatement rpInsertPrep = conn.prepareStatement("INSERT INTO reaction_products(reaction_id, stoic, metabolite_id) values (?, ?, ?)");
+				PreparedStatement deleteReacPrep = conn.prepareStatement("delete from reaction_reactants where reaction_id=?;");
+				PreparedStatement deleteProdPrep = conn.prepareStatement("delete from reaction_products where reaction_id=?;");
 				for (int i = 0; i < numLines; i++) {
 					LocalConfig.getInstance().setProgress(i*100/numLines);
 					
@@ -239,27 +248,13 @@ public class TextReactionsModelReader {
 							} 
 						} 
 						
-						//if strings contain ' (single quote), it will not execute insert statement
-						//this code escapes ' as '' - sqlite syntax for escaping '
-						if (dataArray[LocalConfig.getInstance().getReactionAbbreviationColumnIndex()].contains("'")) {
-							reactionAbbreviation = dataArray[LocalConfig.getInstance().getReactionAbbreviationColumnIndex()].replaceAll("'", "''");
-						} else {
-							reactionAbbreviation = dataArray[LocalConfig.getInstance().getReactionAbbreviationColumnIndex()];
-						}
-								
+						reactionAbbreviation = dataArray[LocalConfig.getInstance().getReactionAbbreviationColumnIndex()];
+						
 						if (LocalConfig.getInstance().getReactionNameColumnIndex() > -1) {
-							if (dataArray[LocalConfig.getInstance().getReactionNameColumnIndex()].contains("'")) {
-								reactionName = dataArray[LocalConfig.getInstance().getReactionNameColumnIndex()].replaceAll("'", "''");
-							} else {
-								reactionName = dataArray[LocalConfig.getInstance().getReactionNameColumnIndex()];
-							}
+							reactionName = dataArray[LocalConfig.getInstance().getReactionNameColumnIndex()];
 						}
 								
-						if (dataArray[LocalConfig.getInstance().getReactionEquationColumnIndex()].contains("'")) {
-							reactionString = dataArray[LocalConfig.getInstance().getReactionEquationColumnIndex()].replaceAll("'", "''");
-						} else {
-							reactionString = dataArray[LocalConfig.getInstance().getReactionEquationColumnIndex()];
-						}
+						reactionString = dataArray[LocalConfig.getInstance().getReactionEquationColumnIndex()];
 						reactionString = reactionString.trim();
 						
 						if (LocalConfig.getInstance().getReversibleColumnIndex() > -1) {
@@ -300,10 +295,9 @@ public class TextReactionsModelReader {
 									noReactants = true;
 								} else {
 									for (int r = 0; r < reactants.size(); r++) {
-										if (reactants.get(r).size() == 2) {
+										if (reactants.get(r).size() == 2) {											
 											String stoicStr = (String) reactants.get(r).get(0);
 											String reactant = (String) reactants.get(r).get(1);
-											String addMetab = "insert into metabolites (metabolite_abbreviation, boundary) values('"  + reactant + "', 'false');";	
 											boolean newMetabolite = false;
 											if (!(LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(reactant.trim()))) {
 												newMetabolite = true;
@@ -325,7 +319,8 @@ public class TextReactionsModelReader {
 													if (choice == JOptionPane.YES_OPTION)
 													{
 														LocalConfig.getInstance().addMetaboliteOption = true;
-														stat.executeUpdate(addMetab);
+														addMetabPrep.setString(1, reactant);
+														addMetabPrep.executeUpdate();
 														maxMetabId += 1;
 														LocalConfig.getInstance().getMetaboliteIdNameMap().put(reactant, new Integer(maxMetabId));
 													}
@@ -334,7 +329,8 @@ public class TextReactionsModelReader {
 													{
 														LocalConfig.getInstance().addMetaboliteOption = true;
 														GraphicalInterface.showPrompt = false;
-														stat.executeUpdate(addMetab);
+														addMetabPrep.setString(1, reactant);
+														addMetabPrep.executeUpdate();
 														maxMetabId += 1;
 														LocalConfig.getInstance().getMetaboliteIdNameMap().put(reactant, new Integer(maxMetabId));
 													}
@@ -345,7 +341,8 @@ public class TextReactionsModelReader {
 														removeReacList.add(reactant);
 													}	  
 												} else {
-													stat.executeUpdate(addMetab);
+													addMetabPrep.setString(1, reactant);
+													addMetabPrep.executeUpdate();
 													maxMetabId += 1;
 													LocalConfig.getInstance().getMetaboliteIdNameMap().put(reactant, new Integer(maxMetabId));
 												}											
@@ -353,8 +350,10 @@ public class TextReactionsModelReader {
 											
 											Integer id = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(reactant);				
 											if (!newMetabolite || LocalConfig.getInstance().addMetaboliteOption) {
-												String insert = "INSERT INTO reaction_reactants(reaction_id, stoic, metabolite_id) values (" + (i - correction) + ", " + stoicStr + ", " + id + ");";
-												stat.executeUpdate(insert);
+												rrInsertPrep.setInt(1, i - correction);
+												rrInsertPrep.setDouble(2, Double.valueOf(stoicStr));
+												rrInsertPrep.setInt(3, id);
+												rrInsertPrep.executeUpdate();
 												if (parser.isSuspicious(reactant)) {
 													if (!LocalConfig.getInstance().getSuspiciousMetabolites().contains(id)) {
 														LocalConfig.getInstance().getSuspiciousMetabolites().add(id);
@@ -383,8 +382,7 @@ public class TextReactionsModelReader {
 									for (int p = 0; p < products.size(); p++) {
 										if (products.get(p).size() == 2) {
 											String stoicStr = (String) products.get(p).get(0);
-											String product = (String) products.get(p).get(1);
-											String addMetab = "insert into metabolites (metabolite_abbreviation, boundary) values('"  + product + "', 'false');";											
+											String product = (String) products.get(p).get(1);	
 											boolean newMetabolite = false;
 											if (!(LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(product))) {
 												newMetabolite = true;
@@ -405,7 +403,8 @@ public class TextReactionsModelReader {
 													if (choice == JOptionPane.YES_OPTION)
 													{
 														LocalConfig.getInstance().addMetaboliteOption = true;
-														stat.executeUpdate(addMetab);
+														addMetabPrep.setString(1, product);
+														addMetabPrep.executeUpdate();
 														maxMetabId += 1;
 														LocalConfig.getInstance().getMetaboliteIdNameMap().put(product, new Integer(maxMetabId));
 													}
@@ -414,7 +413,8 @@ public class TextReactionsModelReader {
 													{
 														LocalConfig.getInstance().addMetaboliteOption = true;
 														GraphicalInterface.showPrompt = false;
-														stat.executeUpdate(addMetab);
+														addMetabPrep.setString(1, product);
+														addMetabPrep.executeUpdate();
 														maxMetabId += 1;
 														LocalConfig.getInstance().getMetaboliteIdNameMap().put(product, new Integer(maxMetabId));
 													}
@@ -425,7 +425,8 @@ public class TextReactionsModelReader {
 														removeProdList.add(product);
 													}	  
 												} else {
-													stat.executeUpdate(addMetab);
+													addMetabPrep.setString(1, product);
+													addMetabPrep.executeUpdate();
 													maxMetabId += 1;
 													LocalConfig.getInstance().getMetaboliteIdNameMap().put(product, new Integer(maxMetabId));
 												}		
@@ -433,8 +434,10 @@ public class TextReactionsModelReader {
 											
 											Integer id = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(product);											
 											if (!newMetabolite || LocalConfig.getInstance().addMetaboliteOption) {
-												String insert = "INSERT INTO reaction_products(reaction_id, stoic, metabolite_id) values (" + (i - correction) + ", " + stoicStr + ", " + id + ");";
-												stat.executeUpdate(insert);	
+												rpInsertPrep.setInt(1, i - correction);
+												rpInsertPrep.setDouble(2, Double.valueOf(stoicStr));
+												rpInsertPrep.setInt(3, id);
+												rpInsertPrep.executeUpdate();	
 												if (parser.isSuspicious(product)) {
 													if (!LocalConfig.getInstance().getSuspiciousMetabolites().contains(id)) {
 														LocalConfig.getInstance().getSuspiciousMetabolites().add(id);
@@ -481,10 +484,10 @@ public class TextReactionsModelReader {
 							}
 														
 							if (!valid) {
-								String deleteReac = "delete from reaction_reactants where reaction_id=" + (i - correction) + ";";
-								stat.executeUpdate(deleteReac);
-								String deleteProd = "delete from reaction_products where reaction_id=" + (i - correction) + ";";
-								stat.executeUpdate(deleteProd);
+								deleteReacPrep.setInt(1, i - correction);
+								deleteReacPrep.executeUpdate();
+								deleteProdPrep.setInt(1, i - correction);
+								deleteProdPrep.executeUpdate();
 								if (reactionString != null && reactionString.length() > 0) {
 									LocalConfig.getInstance().getInvalidReactions().add(reactionString);
 								}
@@ -510,126 +513,82 @@ public class TextReactionsModelReader {
 						} 
 						
 						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 0) {
-							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
-								meta1 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].replaceAll("'", "''");
-							} else {
-								meta1 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)];
-							}							
+							meta1 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)];						
 						}
 						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 1) {
-							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
-								meta2 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(1)].replaceAll("'", "''");
-							} else {
-								meta2 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(1)];
-							}
+							meta2 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(1)];
 						}
 						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 2) {
-							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
-								meta3 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(2)].replaceAll("'", "''");
-							} else {
-								meta3 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(2)];
-							}
+							meta3 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(2)];
 						}
 						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 3) {
-							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
-								meta4 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(3)].replaceAll("'", "''");
-							} else {
-								meta4 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(3)];
-							}
+							meta4 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(3)];
 						}
 						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 4) {
-							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
-								meta5 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(4)].replaceAll("'", "''");
-							} else {
-								meta5 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(4)];
-							}
+							meta5 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(4)];
 						}
 						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 5) {
-							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
-								meta6 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(5)].replaceAll("'", "''");
-							} else {
-								meta6 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(5)];
-							}
+							meta6 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(5)];
 						}
 						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 6) {
-							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
-								meta7 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(6)].replaceAll("'", "''");
-							} else {
-								meta7 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(6)];
-							}
+							meta7 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(6)];
 						}
 						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 7) {
-							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
-								meta8 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(7)].replaceAll("'", "''");
-							} else {
-								meta8 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(7)];
-							}
+							meta8 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(7)];
 						}
 						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 8) {
-							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
-								meta9 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(8)].replaceAll("'", "''");
-							} else {
-								meta9 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(8)];
-							}
+							meta9 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(8)];
 						}
 						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 9) {
-							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
-								meta10 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(9)].replaceAll("'", "''");
-							} else {
-								meta10 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(9)];
-							}
+							meta10 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(9)];
 						}
 						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 10) {
-							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
-								meta11 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(10)].replaceAll("'", "''");
-							} else {
-								meta11 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(10)];
-							}
+							meta11 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(10)];
 						}
 						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 11) {
-							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
-								meta12 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(11)].replaceAll("'", "''");
-							} else {
-								meta12 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(11)];
-							}
+							meta12 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(11)];
 						}
 						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 12) {
-							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
-								meta13 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(12)].replaceAll("'", "''");
-							} else {
-								meta13 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(12)];
-							}
+							meta13 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(12)];
 						}
 						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 13) {
-							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
-								meta14 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(13)].replaceAll("'", "''");
-							} else {
-								meta14 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(13)];
-							}
+							meta14 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(13)];
 						}
 						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 14) {
-							if (dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)].contains("'")) {
-								meta15 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(14)].replaceAll("'", "''");
-							} else {
-								meta15 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(14)];
-							}
+							meta15 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(14)];
 						}
-						
+
 						// TODO : add error message here?
 						if (lowerBound < 0.0 && reversible.equals("false")) {
 							lowerBound = 0.0;
 						}
 						
-						String insert = "INSERT INTO reactions(knockout, flux_value, reaction_abbreviation, " 
-							+ " reaction_name, reaction_string, reversible, lower_bound, upper_bound, biological_objective," 
-							+ " meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, "
-							+ " meta_9, meta_10, meta_11, meta_12, meta_13, meta_14, meta_15) values " 
-							+ " (" + "'" + knockout + "', '" + fluxValue + "', '" + reactionAbbreviation + "', '" 
-							+ reactionName + "', '" + reactionString + "', '" + reversible + "', '" + lowerBound + "', '" 
-							+ upperBound + "', '" + objective + "', '" + meta1 + "', '" + meta2 + "', '" + meta3 + "', '" 
-							+ meta4 + "', '" + meta5 + "', '" + meta6 + "', '" + meta7 + "', '" + meta8 + "', '" + meta9 + "', '" 
-							+ meta10 + "', '" + meta11 + "', '" + meta12 + "', '" + meta13 + "', '" + meta14 + "', '" + meta15 + "');";
-						stat.executeUpdate(insert);
+						reacInsertPrep.setString(1, knockout);
+						reacInsertPrep.setDouble(2, fluxValue);
+						reacInsertPrep.setString(3, reactionAbbreviation);
+						reacInsertPrep.setString(4, reactionName);
+						reacInsertPrep.setString(5, reactionString);
+						reacInsertPrep.setString(6, reversible);
+						reacInsertPrep.setDouble(7, lowerBound);
+						reacInsertPrep.setDouble(8, upperBound);
+						reacInsertPrep.setDouble(9, objective);
+						reacInsertPrep.setString(10, meta1);
+						reacInsertPrep.setString(11, meta2);
+						reacInsertPrep.setString(12, meta3);
+						reacInsertPrep.setString(13, meta4);
+						reacInsertPrep.setString(14, meta5);
+						reacInsertPrep.setString(15, meta6);
+						reacInsertPrep.setString(16, meta7);
+						reacInsertPrep.setString(17, meta8);
+						reacInsertPrep.setString(18, meta9);
+						reacInsertPrep.setString(19, meta10);
+						reacInsertPrep.setString(20, meta11);
+						reacInsertPrep.setString(21, meta12);
+						reacInsertPrep.setString(22, meta13);
+						reacInsertPrep.setString(23, meta14);
+						reacInsertPrep.setString(24, meta15);
+						
+						reacInsertPrep.executeUpdate();
 					}
 					LocalConfig.getInstance().noButtonClicked = false;
 				}

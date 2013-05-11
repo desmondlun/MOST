@@ -70,6 +70,8 @@ public class OutputPopout extends JFrame {
 		}
 	}
 
+	// TODO: add if filename does not end with ".txt" add it to filename
+	// also add copy to console
 	class SaveAction implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			int retval = fileChooser.showSaveDialog(OutputPopout.this);

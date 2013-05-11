@@ -1,18 +1,24 @@
 package edu.rutgers.MOST.data;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
+import javax.swing.WindowConstants;
 import javax.xml.stream.XMLStreamException;
 
 import org.sbml.jsbml.*;
 
 import edu.rutgers.MOST.config.LocalConfig;
+import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 import edu.rutgers.MOST.presentation.ProgressConstants;
+import edu.rutgers.MOST.presentation.ReactionColAddRenameInterface;
 
 public class SBMLModelReader {
 	private String databaseName;
@@ -53,7 +59,7 @@ public class SBMLModelReader {
 	}
 
 	public static Map<String, Object> metaboliteIdNameMap = new HashMap<String, Object>();
-	
+
 	public static Map<String, Object> getMetaboliteIdNameMap() {
 		return metaboliteIdNameMap;
 	}
@@ -62,12 +68,42 @@ public class SBMLModelReader {
 		SBMLModelReader.metaboliteIdNameMap = metaboliteIdNameMap;
 	}
 
+	public static Map<Object, String> duplicateReacColumnMap = new HashMap<Object, String>();
+
+	public static Map<Object, String> getDuplicateReacColumnMap() {
+		return duplicateReacColumnMap;
+	}
+
+	public static void setDuplicateReacColumnMap(Map<Object, String> duplicateReacColumnMap) {
+		SBMLModelReader.duplicateReacColumnMap = duplicateReacColumnMap;
+	}
+
+	public static Map<Object, String> duplicateMetabColumnMap = new HashMap<Object, String>();
+
+	public static Map<Object, String> getDuplicateMetabColumnMap() {
+		return duplicateMetabColumnMap;
+	}
+
+	public static void setDuplicateMetabColumnMap(Map<Object, String> duplicateMetabColumnMap) {
+		SBMLModelReader.duplicateMetabColumnMap = duplicateMetabColumnMap;
+	}
+
+	public static String columnNewName; 
+
+	public static String getColumnNewName() {
+		return columnNewName;
+	}
+
+	public static void setColumnNewName(String columnNewName) {
+		SBMLModelReader.columnNewName = columnNewName;
+	}
+
 	@SuppressWarnings("unchecked")
 	public void load(){
 		readNotes = true;
-		
+
 		LocalConfig.getInstance().getMetaboliteUsedMap().clear();
-		
+
 		DatabaseCreator databaseCreator = new DatabaseCreator();
 		databaseCreator.createDatabase(getDatabaseName());
 
@@ -81,7 +117,7 @@ public class SBMLModelReader {
 		}
 		try{
 			Connection conn = DriverManager.getConnection(queryString);
-			
+
 			Statement stat = conn.createStatement();
 			PreparedStatement metabInsertPrep = conn.prepareStatement("INSERT INTO metabolites(metabolite_abbreviation, metabolite_name, "
 					+ " charge, compartment, boundary, meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, "
@@ -92,16 +128,16 @@ public class SBMLModelReader {
 			ArrayList<String> metabMetaColumnNames = new ArrayList<String>();
 
 			try {
-//				long startTime = System.currentTimeMillis();
+				//				long startTime = System.currentTimeMillis();
 				stat.executeUpdate("BEGIN TRANSACTION");
-				
+
 				ListOf<Species> metabolites = doc.getModel().getListOfSpecies();
 				for (int i = 0; i < metabolites.size(); i++) {
 					if (i%10 == 0) {
 						LocalConfig.getInstance().setProgress((i * ProgressConstants.METABOLITE_LOAD_PERCENT) / metabolites.size()
 								+ ProgressConstants.SBML_LOAD_PERCENT);		
 					}
-					
+
 					//if strings contain ' (single quote), it will not execute insert statement
 					//this code escapes ' as '' - sqlite syntax for escaping '
 					String metaboliteAbbreviation = "";
@@ -110,9 +146,9 @@ public class SBMLModelReader {
 					} else {
 						metaboliteAbbreviation = metabolites.get(i).getId();
 					}
-					
+
 					metaboliteIdNameMap.put(metaboliteAbbreviation, new Integer(i + 1));
-					
+
 					String metaboliteName = "";
 					if (metabolites.get(i).getName().contains("'")) {
 						metaboliteName = metabolites.get(i).getName().replaceAll("'", "''");
@@ -167,100 +203,139 @@ public class SBMLModelReader {
 									metabNoteItemList.add(noteItem);
 								}
 							}
-                            
-							if (i == 0) {
-								//set list of notes names to meta columns			
-								for (int n = 0; n < metabNoteItemList.size(); n++) {
-									if (metabNoteItemList.get(n).contains(":")) {
-										//accounts for condition of multiple ":"
-										String columnName = metabNoteItemList.get(n).substring(0, metabNoteItemList.get(n).indexOf(":"));
-										boolean contains = false;
+						}
 
-										for (int s = 0; s < SBMLConstants.METABOLITES_IGNORE_LIST.length; s++) {
-											if ((SBMLConstants.METABOLITES_IGNORE_LIST[s].compareTo(columnName.trim()) == 0)) {
-												contains = true;
-												break;						
-											}
-										}
-
-										if (metabMetaColumnNames.contains(columnName)) {
-											System.out.println("Duplicate column");
-										}
-										
-										if (!contains) {
-											metabMetaColumnNames.add(columnName);
-											String insert = "insert into metabolites_meta_info (meta_column_name) values ('" + columnName + "');";
-											stat.executeUpdate(insert);	
-										}	
-									}
-								}
-								setMetabolitesMetaColumnNames(metabMetaColumnNames);
-
-							}
+						if (i == 0) {
+							int metaColCount = 0;
+							//set list of notes names to meta columns			
 							for (int n = 0; n < metabNoteItemList.size(); n++) {
 								if (metabNoteItemList.get(n).contains(":")) {
 									//accounts for condition of multiple ":"
 									String columnName = metabNoteItemList.get(n).substring(0, metabNoteItemList.get(n).indexOf(":"));
-									String value = "";
-									if (metabNoteItemList.get(n).substring(metabNoteItemList.get(n).indexOf(":") + 1).contains("'")) {
-										value = metabNoteItemList.get(n).substring(metabNoteItemList.get(n).indexOf(":") + 1).replaceAll("'", "''");
-									} else {
-										value = metabNoteItemList.get(n).substring(metabNoteItemList.get(n).indexOf(":") + 1);
-									}
-									if (!(columnName.trim().equals("CHARGE"))) {
-										if (getMetabolitesMetaColumnNames().size() > 0 && columnName.compareTo(getMetabolitesMetaColumnNames().get(0)) == 0) {
-											metabMeta1 = value.trim();											
+									boolean contains = false;
+
+									if (metabMetaColumnNames.contains(columnName)) {
+										Object[] options = {"    Yes    ", "    No    ",};
+										int choice = JOptionPane.showOptionDialog(null, "Duplicate " + columnName + " columns. " +
+												SBMLConstants.DUPLICATE_COLUMN_ERROR_MESSAGE,
+												SBMLConstants.DUPLICATE_METAB_COLUMN_ERROR_TITLE, 
+												JOptionPane.YES_NO_OPTION, 
+												JOptionPane.QUESTION_MESSAGE, 
+												null, options, options[0]);
+										// set lower bound to 0 and set new equation
+										if (choice == JOptionPane.YES_OPTION) {
+											String displayName = columnName;
+											Object[] options2 = {"    Yes    ", "    No    ",};
+											int choice2 = JOptionPane.showOptionDialog(null, 
+													SBMLConstants.RENAME_COLUMN_MESSAGE + displayName + " and " 
+													+ displayName + SBMLConstants.DUPLICATE_COLUMN_SUFFIX + ".", 
+													SBMLConstants.DUPLICATE_METAB_COLUMN_ERROR_TITLE, 
+													JOptionPane.YES_NO_OPTION, 
+													JOptionPane.QUESTION_MESSAGE, 
+													null, options2, options2[0]);
+											// set lower bound to 0 and set new equation
+											if (choice2 == JOptionPane.YES_OPTION) {
+												displayName = JOptionPane.showInputDialog(null, "Enter Column Name", GraphicalInterfaceConstants.COLUMN_RENAME_INTERFACE_TITLE, JOptionPane.WARNING_MESSAGE);
+												if (displayName != null && displayName.length() > 0) {
+													duplicateMetabColumnMap.put(new Integer(metaColCount + 1), displayName);
+												} else {
+													// If user hits cancel or doesn't enter anything default name assigned
+													displayName = columnName + SBMLConstants.DUPLICATE_COLUMN_SUFFIX;
+													duplicateMetabColumnMap.put(new Integer(metaColCount + 1), displayName);
+												}		
+											}
+											if (choice2 == JOptionPane.NO_OPTION) {													
+												displayName = columnName + SBMLConstants.DUPLICATE_COLUMN_SUFFIX;
+												duplicateMetabColumnMap.put(new Integer(metaColCount + 1), displayName);
+
+											}
 										}
-										if (getMetabolitesMetaColumnNames().size() > 1 && columnName.compareTo(getMetabolitesMetaColumnNames().get(1)) == 0) {
-											metabMeta2 = value.trim();
+										if (choice == JOptionPane.NO_OPTION) {
+											LocalConfig.getInstance().getHiddenMetabolitesColumns().add(GraphicalInterfaceConstants.METABOLITES_DB_COLUMN_NAMES.length + metaColCount);
 										}
-										if (getMetabolitesMetaColumnNames().size() > 2 && columnName.compareTo(getMetabolitesMetaColumnNames().get(2)) == 0) {
-											metabMeta3 = value.trim();
-										}
-										if (getMetabolitesMetaColumnNames().size() > 3 && columnName.compareTo(getMetabolitesMetaColumnNames().get(3)) == 0) {
-											metabMeta4 = value.trim();
-										}
-										if (getMetabolitesMetaColumnNames().size() > 4 && columnName.compareTo(getMetabolitesMetaColumnNames().get(4)) == 0) {
-											metabMeta5 = value.trim();
-										}
-										if (getMetabolitesMetaColumnNames().size() > 5 && columnName.compareTo(getMetabolitesMetaColumnNames().get(5)) == 0) {
-											metabMeta6 = value.trim();
-										}
-										if (getMetabolitesMetaColumnNames().size() > 6 && columnName.compareTo(getMetabolitesMetaColumnNames().get(6)) == 0) {
-											metabMeta7 = value.trim();
-										}
-										if (getMetabolitesMetaColumnNames().size() > 7 && columnName.compareTo(getMetabolitesMetaColumnNames().get(7)) == 0) {
-											metabMeta8 = value.trim();
-										}
-										if (getMetabolitesMetaColumnNames().size() > 8 && columnName.compareTo(getMetabolitesMetaColumnNames().get(8)) == 0) {
-											metabMeta9 = value.trim();
-										}
-										if (getMetabolitesMetaColumnNames().size() > 9 && columnName.compareTo(getMetabolitesMetaColumnNames().get(9)) == 0) {
-											metabMeta10 = value.trim();
-										}
-										if (getMetabolitesMetaColumnNames().size() > 10 && columnName.compareTo(getMetabolitesMetaColumnNames().get(10)) == 0) {
-											metabMeta11 = value.trim();
-										}
-										if (getMetabolitesMetaColumnNames().size() > 11 && columnName.compareTo(getMetabolitesMetaColumnNames().get(11)) == 0) {
-											metabMeta12 = value.trim();
-										}
-										if (getMetabolitesMetaColumnNames().size() > 12 && columnName.compareTo(getMetabolitesMetaColumnNames().get(12)) == 0) {
-											metabMeta13 = value.trim();
-										}
-										if (getMetabolitesMetaColumnNames().size() > 13 && columnName.compareTo(getMetabolitesMetaColumnNames().get(13)) == 0) {
-											metabMeta14 = value.trim();
-										}
-										if (getMetabolitesMetaColumnNames().size() > 14 && columnName.compareTo(getMetabolitesMetaColumnNames().get(14)) == 0) {
-											metabMeta15 = value.trim();
-										}
-									} else {
-										chargeString = value;
 									}
 
-
+									for (int s = 0; s < SBMLConstants.METABOLITES_IGNORE_LIST.length; s++) {
+										if ((SBMLConstants.METABOLITES_IGNORE_LIST[s].compareTo(columnName.trim()) == 0)) {
+											contains = true;
+											break;						
+										}
+									}
+									if (!contains) {
+										metabMetaColumnNames.add(columnName);
+										String insert = "insert into metabolites_meta_info (meta_column_name) values ('" + columnName + "');";
+										stat.executeUpdate(insert);	
+										metaColCount += 1;
+									}	
 								}
 							}
+							setMetabolitesMetaColumnNames(metabMetaColumnNames);
+
 						}
+						for (int n = 0; n < metabNoteItemList.size(); n++) {
+							if (metabNoteItemList.get(n).contains(":")) {
+								//accounts for condition of multiple ":"
+								String columnName = metabNoteItemList.get(n).substring(0, metabNoteItemList.get(n).indexOf(":"));
+								String value = "";
+								if (metabNoteItemList.get(n).substring(metabNoteItemList.get(n).indexOf(":") + 1).contains("'")) {
+									value = metabNoteItemList.get(n).substring(metabNoteItemList.get(n).indexOf(":") + 1).replaceAll("'", "''");
+								} else {
+									value = metabNoteItemList.get(n).substring(metabNoteItemList.get(n).indexOf(":") + 1);
+								}
+								if (!(columnName.trim().equals("CHARGE"))) {
+									if (getMetabolitesMetaColumnNames().size() > 0 && columnName.compareTo(getMetabolitesMetaColumnNames().get(0)) == 0) {
+										metabMeta1 = value.trim();											
+									}
+									if (getMetabolitesMetaColumnNames().size() > 1 && columnName.compareTo(getMetabolitesMetaColumnNames().get(1)) == 0) {
+										metabMeta2 = value.trim();
+									}
+									if (getMetabolitesMetaColumnNames().size() > 2 && columnName.compareTo(getMetabolitesMetaColumnNames().get(2)) == 0) {
+										metabMeta3 = value.trim();
+									}
+									if (getMetabolitesMetaColumnNames().size() > 3 && columnName.compareTo(getMetabolitesMetaColumnNames().get(3)) == 0) {
+										metabMeta4 = value.trim();
+									}
+									if (getMetabolitesMetaColumnNames().size() > 4 && columnName.compareTo(getMetabolitesMetaColumnNames().get(4)) == 0) {
+										metabMeta5 = value.trim();
+									}
+									if (getMetabolitesMetaColumnNames().size() > 5 && columnName.compareTo(getMetabolitesMetaColumnNames().get(5)) == 0) {
+										metabMeta6 = value.trim();
+									}
+									if (getMetabolitesMetaColumnNames().size() > 6 && columnName.compareTo(getMetabolitesMetaColumnNames().get(6)) == 0) {
+										metabMeta7 = value.trim();
+									}
+									if (getMetabolitesMetaColumnNames().size() > 7 && columnName.compareTo(getMetabolitesMetaColumnNames().get(7)) == 0) {
+										metabMeta8 = value.trim();
+									}
+									if (getMetabolitesMetaColumnNames().size() > 8 && columnName.compareTo(getMetabolitesMetaColumnNames().get(8)) == 0) {
+										metabMeta9 = value.trim();
+									}
+									if (getMetabolitesMetaColumnNames().size() > 9 && columnName.compareTo(getMetabolitesMetaColumnNames().get(9)) == 0) {
+										metabMeta10 = value.trim();
+									}
+									if (getMetabolitesMetaColumnNames().size() > 10 && columnName.compareTo(getMetabolitesMetaColumnNames().get(10)) == 0) {
+										metabMeta11 = value.trim();
+									}
+									if (getMetabolitesMetaColumnNames().size() > 11 && columnName.compareTo(getMetabolitesMetaColumnNames().get(11)) == 0) {
+										metabMeta12 = value.trim();
+									}
+									if (getMetabolitesMetaColumnNames().size() > 12 && columnName.compareTo(getMetabolitesMetaColumnNames().get(12)) == 0) {
+										metabMeta13 = value.trim();
+									}
+									if (getMetabolitesMetaColumnNames().size() > 13 && columnName.compareTo(getMetabolitesMetaColumnNames().get(13)) == 0) {
+										metabMeta14 = value.trim();
+									}
+									if (getMetabolitesMetaColumnNames().size() > 14 && columnName.compareTo(getMetabolitesMetaColumnNames().get(14)) == 0) {
+										metabMeta15 = value.trim();
+									}
+								} else {
+									chargeString = value;
+								}
+
+
+							}
+						}
+
 					}
 
 					metabInsertPrep.setString(1, metaboliteAbbreviation);
@@ -283,25 +358,25 @@ public class SBMLModelReader {
 					metabInsertPrep.setString(18, metabMeta13);
 					metabInsertPrep.setString(19, metabMeta14);
 					metabInsertPrep.setString(20, metabMeta15);
-					
+
 					metabInsertPrep.executeUpdate();	
 				}
 				LocalConfig.getInstance().setMaxMetaboliteId(metabolites.size());
 				LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
-				System.out.println("id name map " + LocalConfig.getInstance().getMetaboliteIdNameMap());
-				
-//				long endTime = System.currentTimeMillis();
-//				System.out.println("Metabolite read time: " + (endTime - startTime));
-//								
-//				startTime = System.currentTimeMillis();
-				
+				//System.out.println("id name map " + LocalConfig.getInstance().getMetaboliteIdNameMap());
+
+				//				long endTime = System.currentTimeMillis();
+				//				System.out.println("Metabolite read time: " + (endTime - startTime));
+				//								
+				//				startTime = System.currentTimeMillis();
+
 				PreparedStatement reacInsertPrep = conn.prepareStatement("INSERT INTO reactions(knockout, flux_value, reaction_abbreviation, " 
 						+ " reaction_name, reaction_string, reversible, lower_bound, upper_bound, biological_objective," 
 						+ " meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, meta_11, "
 						+ "meta_12, meta_13, meta_14, meta_15) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); 
 				PreparedStatement rrInsertPrep = conn.prepareStatement("INSERT INTO reaction_reactants(reaction_id, stoic, metabolite_id) values (?, ?, ?)");
 				PreparedStatement rpInsertPrep = conn.prepareStatement("INSERT INTO reaction_products(reaction_id, stoic, metabolite_id) values (?, ?, ?)");
-								
+
 				ListOf<Reaction> reactions = doc.getModel().getListOfReactions();
 				boolean locusColumnName = false;
 				for (int j = 0; j < reactions.size(); j++) {
@@ -309,18 +384,18 @@ public class SBMLModelReader {
 						LocalConfig.getInstance().setProgress((j * ProgressConstants.REACTION_LOAD_PERCENT) / reactions.size() 
 								+ ProgressConstants.METABOLITE_LOAD_PERCENT + ProgressConstants.SBML_LOAD_PERCENT);		
 					}
-					
+
 					StringBuffer reacBfr = new StringBuffer();
 					StringBuffer prodBfr = new StringBuffer();
 					StringBuffer rxnBfr = new StringBuffer();
 					String reversible = "";
-					
+
 					if (!reactions.get(j).getReversible()) {
 						reversible = "false";
 					} else {
 						reversible = "true";
 					}
-					
+
 					if (reactions.get(j).isSetListOfReactants()) {
 						ListOf<SpeciesReference> reactants = reactions.get(j).getListOfReactants();
 						for (int r = 0; r < reactants.size(); r++) {
@@ -337,7 +412,7 @@ public class SBMLModelReader {
 									LocalConfig.getInstance().getMetaboliteUsedMap().put(reactants.get(r).getSpecies(), new Integer(1));
 								}					
 							}
-							
+
 							String stoicStr = "";
 							if (reactants.get(r).getStoichiometry() == 1) {
 								stoicStr = "";
@@ -353,7 +428,7 @@ public class SBMLModelReader {
 								} else {
 									reacBfr.append(stoicStr + " " + reactants.get(r).getSpecies());
 								}
-								
+
 							} else {
 								if (stoicStr.length() == 0) {
 									reacBfr.append(" + " + reactants.get(r).getSpecies());
@@ -364,7 +439,7 @@ public class SBMLModelReader {
 						}			  
 
 					}
-					
+
 					if (reactions.get(j).isSetListOfProducts()) {
 						ListOf<SpeciesReference> products = reactions.get(j).getListOfProducts();
 						for (int p = 0; p < products.size(); p++) {	
@@ -381,7 +456,7 @@ public class SBMLModelReader {
 									LocalConfig.getInstance().getMetaboliteUsedMap().put(products.get(p).getSpecies(), new Integer(1));
 								}		
 							}
-													
+
 							String stoicStr = "";
 							if (products.get(p).getStoichiometry() == 1) {
 								stoicStr = "";
@@ -406,7 +481,6 @@ public class SBMLModelReader {
 							}
 						}		
 					}	
-						    
 
 					if (reversible == "false") {
 						rxnBfr.append(reacBfr).append(" --> ").append(prodBfr);
@@ -415,13 +489,13 @@ public class SBMLModelReader {
 					}
 
 					String reactionString = rxnBfr.toString().trim();
-					
+
 					String knockout = GraphicalInterfaceConstants.KO_DEFAULT;	
 					Double lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
 					Double upperBound =	GraphicalInterfaceConstants.UPPER_BOUND_DEFAULT;
 					Double objective = GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_DEFAULT;
 					Double fluxValue = GraphicalInterfaceConstants.FLUX_VALUE_DEFAULT;
-					
+
 					//if strings contain ' (single quote), it will not execute insert statement
 					//this code escapes ' as '' - sqlite syntax for escaping '
 					String reactionAbbreviation = "";
@@ -472,7 +546,7 @@ public class SBMLModelReader {
 
 					if (reactions.get(j).isSetNotes() && readNotes == true) {
 						ArrayList<String> noteItemList = new ArrayList<String>();	
-						
+
 						for (int u = 0; u < reactions.get(j).getNotes().getChildCount(); u++) {
 							if (!reactions.get(j).getNotes().getChildAt(u).getName().isEmpty()) {
 								String noteString = reactions.get(j).getNotes().getChildAt(u).toXMLString();
@@ -496,30 +570,71 @@ public class SBMLModelReader {
 							}
 						}
 
+						ArrayList<String> reactionsMetaColumnNames = new ArrayList<String>();
+						StringBuffer locusBfr = new StringBuffer();
 						if (j == 0) {
-							//set list of notes names to meta columns
-							ArrayList<String> reactionsMetaColumnNames = new ArrayList<String>();				
+							//set list of notes names to meta columns							
 							boolean genes = false;
+							int metaColCount = 0;
 							for (int n = 0; n < noteItemList.size(); n++) {								
 								if (noteItemList.get(n).contains(":")) {
 									//accounts for condition of multiple ":"
 									String columnName = noteItemList.get(n).substring(0, noteItemList.get(n).indexOf(":"));
 									boolean contains = false;
-							        
+
 									if (columnName.compareTo("genes") == 0) {
 										genes = true;
-										System.out.println("genes");
 									}
 									if (genes) {
 										if (columnName.compareTo("LOCUS") == 0) {
-											System.out.println("LOCUS");
 											locusColumnName = true;
 										}
 									}
 									if (reactionsMetaColumnNames.contains(columnName)) {
-										System.out.println("Duplicate column");
+										String displayName = columnName;
+										if (locusColumnName) {
+											displayName = "Genes";
+											LocalConfig.getInstance().getHiddenReactionsColumns().add(GraphicalInterfaceConstants.REACTIONS_DB_COLUMN_NAMES.length + metaColCount);
+										} else {
+											Object[] options = {"    Yes    ", "    No    ",};
+											int choice = JOptionPane.showOptionDialog(null, "Duplicate " + displayName + " columns. " +
+													SBMLConstants.DUPLICATE_COLUMN_ERROR_MESSAGE,
+													SBMLConstants.DUPLICATE_REAC_COLUMN_ERROR_TITLE, 
+													JOptionPane.YES_NO_OPTION, 
+													JOptionPane.QUESTION_MESSAGE, 
+													null, options, options[0]);
+											// set lower bound to 0 and set new equation
+											if (choice == JOptionPane.YES_OPTION) {					
+												Object[] options2 = {"    Yes    ", "    No    ",};
+												int choice2 = JOptionPane.showOptionDialog(null, 
+														SBMLConstants.RENAME_COLUMN_MESSAGE + displayName + " and " 
+														+ displayName + SBMLConstants.DUPLICATE_COLUMN_SUFFIX + ".", 
+														SBMLConstants.DUPLICATE_REAC_COLUMN_ERROR_TITLE, 
+														JOptionPane.YES_NO_OPTION, 
+														JOptionPane.QUESTION_MESSAGE, 
+														null, options2, options2[0]);
+												// set lower bound to 0 and set new equation
+												if (choice2 == JOptionPane.YES_OPTION) {
+													displayName = JOptionPane.showInputDialog(null, "Enter Column Name", GraphicalInterfaceConstants.COLUMN_RENAME_INTERFACE_TITLE, JOptionPane.WARNING_MESSAGE);
+													if (displayName != null && displayName.length() > 0) {
+														duplicateReacColumnMap.put(new Integer(metaColCount + 1), displayName);
+													} else {
+														// If user hits cancel or doesn't enter anything default name assigned
+														displayName = columnName + SBMLConstants.DUPLICATE_COLUMN_SUFFIX;
+														duplicateReacColumnMap.put(new Integer(metaColCount + 1), displayName);
+													}
+												}
+												if (choice2 == JOptionPane.NO_OPTION) {								
+													displayName = columnName + SBMLConstants.DUPLICATE_COLUMN_SUFFIX;
+													duplicateReacColumnMap.put(new Integer(metaColCount + 1), displayName);											
+												}
+											}
+											if (choice == JOptionPane.NO_OPTION) {
+												LocalConfig.getInstance().getHiddenReactionsColumns().add(GraphicalInterfaceConstants.REACTIONS_DB_COLUMN_NAMES.length + metaColCount);
+											}
+										}										
 									}
-									
+
 									for (int s = 0; s < SBMLConstants.REACTIONS_IGNORE_LIST.length; s++) {
 										if ((SBMLConstants.REACTIONS_IGNORE_LIST[s].compareTo(columnName.trim()) == 0)) {
 											contains = true;
@@ -529,7 +644,8 @@ public class SBMLModelReader {
 									if (!contains) {													
 										reactionsMetaColumnNames.add(columnName);
 										String rmInsert = "insert into reactions_meta_info (meta_column_name) values ('" + columnName + "');";
-										stat.executeUpdate(rmInsert);	
+										stat.executeUpdate(rmInsert);
+										metaColCount += 1;
 									}
 								}
 							}
@@ -541,60 +657,136 @@ public class SBMLModelReader {
 								//accounts for condition of multiple ":"
 								String columnName = noteItemList.get(n).substring(0, noteItemList.get(n).indexOf(":"));
 								String value = "";
+								if (locusColumnName && getReactionsMetaColumnNames().size() > 0 && columnName.compareTo("LOCUS") == 0) {
+									value = noteItemList.get(n).substring(noteItemList.get(n).indexOf(":") + 1);
+									locusBfr.append("LOCUS:" + value + ", ");
+								}
+							}
+						}
+						String locusBfrStr = locusBfr.toString();
+						if (locusBfrStr.length() > 1) {
+							locusBfrStr = locusBfrStr.substring(0, locusBfrStr.length() - 2);
+						}
+						
+						for (int n = 0; n < noteItemList.size(); n++) {
+							if (noteItemList.get(n).contains(":")) {
+								//accounts for condition of multiple ":"
+								String columnName = noteItemList.get(n).substring(0, noteItemList.get(n).indexOf(":"));
+								String value = "";
 								if (noteItemList.get(n).substring(noteItemList.get(n).indexOf(":") + 1).contains("'")) {
 									value = noteItemList.get(n).substring(noteItemList.get(n).indexOf(":") + 1).replaceAll("'", "''");
 								} else {
 									value = noteItemList.get(n).substring(noteItemList.get(n).indexOf(":") + 1);
 								}
 								if (getReactionsMetaColumnNames().size() > 0 && columnName.compareTo(getReactionsMetaColumnNames().get(0)) == 0) {
-									meta1 = value.trim();
+									if (columnName.compareTo("LOCUS") == 0) {
+										meta1 = locusBfrStr;
+									} else {
+										meta1 = value.trim();
+									}					
 								}
 								if (getReactionsMetaColumnNames().size() > 1 && columnName.compareTo(getReactionsMetaColumnNames().get(1)) == 0) {
-									meta2 = value.trim();
+									if (columnName.compareTo("LOCUS") == 0) {
+										meta2 = locusBfrStr;
+									} else {
+										meta2 = value.trim();
+									}									
 								}
 								if (getReactionsMetaColumnNames().size() > 2 && columnName.compareTo(getReactionsMetaColumnNames().get(2)) == 0) {
-									meta3 = value.trim();
+									if (columnName.compareTo("LOCUS") == 0) {
+										meta3 = locusBfrStr;
+									} else {
+										meta3 = value.trim();
+									}
 								}
 								if (getReactionsMetaColumnNames().size() > 3 && columnName.compareTo(getReactionsMetaColumnNames().get(3)) == 0) {
-									meta4 = value.trim();
+									if (columnName.compareTo("LOCUS") == 0) {
+										meta4 = locusBfrStr;
+									} else {
+										meta4 = value.trim();
+									}
 								}
 								if (getReactionsMetaColumnNames().size() > 4 && columnName.compareTo(getReactionsMetaColumnNames().get(4)) == 0) {
-									meta5 = value.trim();
+									if (columnName.compareTo("LOCUS") == 0) {
+										meta5 = locusBfrStr;
+									} else {
+										meta5 = value.trim();
+									}
 								}
 								if (getReactionsMetaColumnNames().size() > 5 && columnName.compareTo(getReactionsMetaColumnNames().get(5)) == 0) {
-									meta6 = value.trim();
+									if (columnName.compareTo("LOCUS") == 0) {
+										meta6 = locusBfrStr;
+									} else {
+										meta6 = value.trim();
+									}
 								}
 								if (getReactionsMetaColumnNames().size() > 6 && columnName.compareTo(getReactionsMetaColumnNames().get(6)) == 0) {
-									meta7 = value.trim();
+									if (columnName.compareTo("LOCUS") == 0) {
+										meta7 = locusBfrStr;
+									} else {
+										meta7 = value.trim();
+									}
 								}
 								if (getReactionsMetaColumnNames().size() > 7 && columnName.compareTo(getReactionsMetaColumnNames().get(7)) == 0) {
-									meta8 = value.trim();
+									if (columnName.compareTo("LOCUS") == 0) {
+										meta8 = locusBfrStr;
+									} else {
+										meta8 = value.trim();
+									}
 								}
 								if (getReactionsMetaColumnNames().size() > 8 && columnName.compareTo(getReactionsMetaColumnNames().get(8)) == 0) {
-									meta9 = value.trim();
+									if (columnName.compareTo("LOCUS") == 0) {
+										meta9 = locusBfrStr;
+									} else {
+										meta9 = value.trim();
+									}
 								}
 								if (getReactionsMetaColumnNames().size() > 9 && columnName.compareTo(getReactionsMetaColumnNames().get(9)) == 0) {
-									meta10 = value.trim();
+									if (columnName.compareTo("LOCUS") == 0) {
+										meta10 = locusBfrStr;
+									} else {
+										meta10 = value.trim();
+									}
 								}
 								if (getReactionsMetaColumnNames().size() > 10 && columnName.compareTo(getReactionsMetaColumnNames().get(10)) == 0) {
-									meta11 = value.trim();
+									if (columnName.compareTo("LOCUS") == 0) {
+										meta11 = locusBfrStr;
+									} else {
+										meta11 = value.trim();
+									}
 								}
 								if (getReactionsMetaColumnNames().size() > 11 && columnName.compareTo(getReactionsMetaColumnNames().get(11)) == 0) {
-									meta12 = value.trim();
+									if (columnName.compareTo("LOCUS") == 0) {
+										meta12 = locusBfrStr;
+									} else {
+										meta12 = value.trim();
+									}
 								}
 								if (getReactionsMetaColumnNames().size() > 12 && columnName.compareTo(getReactionsMetaColumnNames().get(12)) == 0) {
-									meta13 = value.trim();
+									if (columnName.compareTo("LOCUS") == 0) {
+										meta13 = locusBfrStr;
+									} else {
+										meta13 = value.trim();
+									}
 								}
 								if (getReactionsMetaColumnNames().size() > 13 && columnName.compareTo(getReactionsMetaColumnNames().get(13)) == 0) {
-									meta14 = value.trim();
+									if (columnName.compareTo("LOCUS") == 0) {
+										meta14 = locusBfrStr;
+									} else {
+										meta14 = value.trim();
+									}
 								}
 								if (getReactionsMetaColumnNames().size() > 14 && columnName.compareTo(getReactionsMetaColumnNames().get(14)) == 0) {
-									meta15 = value.trim();
+									if (columnName.compareTo("LOCUS") == 0) {
+										meta15 = locusBfrStr;
+									} else {
+										meta15 = value.trim();
+									}
 								}					
 							}
-						}	
+						}
 					}
-                 	
+
 					if (locusColumnName) {
 						for (int z = 0; z < getReactionsMetaColumnNames().size(); z++) {
 							if (getReactionsMetaColumnNames().get(z).compareTo("LOCUS") == 0) {
@@ -603,13 +795,13 @@ public class SBMLModelReader {
 							}
 						}
 					}
-					
-					
+
+
 					// TODO : add error message here?
 					if (lowerBound < 0.0 && reversible.equals("false")) {
 						lowerBound = 0.0;
 					}
-					
+
 					reacInsertPrep.setString(1, knockout);
 					reacInsertPrep.setDouble(2, fluxValue);
 					reacInsertPrep.setString(3, reactionAbbreviation);
@@ -634,13 +826,22 @@ public class SBMLModelReader {
 					reacInsertPrep.setString(22, meta13);
 					reacInsertPrep.setString(23, meta14);
 					reacInsertPrep.setString(24, meta15);
-					
+
 					reacInsertPrep.executeUpdate();
+
+					for (Object key : duplicateMetabColumnMap.keySet()) {
+						String dupMUpdate = "update metabolites_meta_info set meta_column_name='" + duplicateMetabColumnMap.get(key) + "' where id=" + key + ";"; 
+						stat.executeUpdate(dupMUpdate);
+					}
+					for (Object key : duplicateReacColumnMap.keySet()) {
+						String dupRUpdate = "update reactions_meta_info set meta_column_name='" + duplicateReacColumnMap.get(key) + "' where id=" + key + ";"; 
+						stat.executeUpdate(dupRUpdate);
+					}
 				}
 				stat.executeUpdate("COMMIT");
-				
-//				endTime = System.currentTimeMillis();
-//				System.out.println("Reaction read time: " + (endTime - startTime));				
+
+				//				endTime = System.currentTimeMillis();
+				//				System.out.println("Reaction read time: " + (endTime - startTime));				
 			} catch (Exception e) {
 				e.printStackTrace();
 				stat.executeUpdate("ROLLBACK"); // throw away all updates since BEGIN TRANSACTION
@@ -648,8 +849,8 @@ public class SBMLModelReader {
 
 			conn.close();
 			LocalConfig.getInstance().setProgress(100);	
-			System.out.println("used map " + LocalConfig.getInstance().getMetaboliteUsedMap());
-			
+			//System.out.println("used map " + LocalConfig.getInstance().getMetaboliteUsedMap());
+
 		}catch(SQLException e){
 
 			e.printStackTrace();
@@ -658,7 +859,7 @@ public class SBMLModelReader {
 
 		//System.out.println("Done");
 	}
-	
+
 	public static void main(String[] args) {
 		SBMLReader reader = new SBMLReader();
 		SBMLDocument doc;
@@ -675,6 +876,7 @@ public class SBMLModelReader {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 }
+

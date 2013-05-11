@@ -18,7 +18,7 @@ public class LineNumberTableRowHeader extends JComponent {
 
     public LineNumberTableRowHeader(JScrollPane jScrollPane, JTable table) {
         this.scrollPane = jScrollPane;
-        this.table = table;
+        this.table = table;        
         this.table.getModel().addTableModelListener(new TableModelListener() {
             @Override
             public void tableChanged(TableModelEvent tme) {
