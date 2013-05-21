@@ -95,24 +95,26 @@ public class ReactionFactory {
 				System.out.println(databaseName);
 				conn = DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db"); // TODO:
 				PreparedStatement prep = conn
-				.prepareStatement("select id, knockout, reaction_abbreviation, reaction_name, reaction_string, reversible, "
-						+ " biological_objective, lower_bound, upper_bound, flux_value "
-						+ " from reactions;");
+				.prepareStatement("select id, knockout, reaction_abbreviation, reaction_name, "
+						+ " reaction_equn_abbr, reaction_equn_names, reversible, biological_objective, "
+						+ " lower_bound, upper_bound, flux_value, gene_association from reactions;");
 				conn.setAutoCommit(true);
 				ResultSet rs = prep.executeQuery();
 				while (rs.next()) {
 					SBMLReaction reaction = new SBMLReaction();
 					reaction.setId(rs.getInt("id"));
 					reaction.setKnockout(rs.getString("knockout"));
+					reaction.setFluxValue(rs.getDouble("flux_value"));
 					reaction.setReactionAbbreviation(rs.getString("reaction_abbreviation"));
 					reaction.setReactionName(rs.getString("reaction_name"));
-					reaction.setReactionString(rs.getString("reaction_string"));
+					reaction.setReactionEqunAbbr(rs.getString("reaction_equn_abbr"));
+					reaction.setReactionEqunNames(rs.getString("reaction_equn_names"));
 					reaction.setReversible(rs.getString("reversible"));
 					reaction.setBiologicalObjective(rs.getDouble("biological_objective"));
 					reaction.setLowerBound(rs.getDouble("lower_bound"));
 					reaction.setUpperBound(rs.getDouble("upper_bound"));
-					reaction.setFluxValue(rs.getDouble("flux_value"));
-
+					reaction.setGeneAssociations(rs.getString("gene_associations"));
+					
 					reactions.add(reaction);
 				}
 				rs.close();
@@ -266,10 +268,10 @@ public class ReactionFactory {
 				conn = DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db"); 
 
 				Statement stat = conn.createStatement();
-				ResultSet rs = stat.executeQuery("select meta_1 from reactions where length(reaction_abbreviation) > 0;");
+				ResultSet rs = stat.executeQuery("select gene_associations from reactions where length(reaction_abbreviation) > 0;");
 
 				while (rs.next()) {
-					geneAssociations.add(rs.getString("meta_1")); 
+					geneAssociations.add(rs.getString("gene_associations")); 
 				}
 				rs.close();
 				conn.close();
@@ -299,12 +301,12 @@ public class ReactionFactory {
 				conn = DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db"); 
 
 				Statement stat = conn.createStatement();
-				ResultSet rs = stat.executeQuery("select distinct meta_1 from reactions where length(reaction_abbreviation) > 0;");
+				ResultSet rs = stat.executeQuery("select distinct gene_associations from reactions where length(reaction_abbreviation) > 0;");
 
 				System.out.println(rs.getRow());
 				
 				while (rs.next()) {
-					geneAssociations.add(rs.getString("meta_1")); 
+					geneAssociations.add(rs.getString("gene_associations")); 
 				}
 				rs.close();
 				conn.close();

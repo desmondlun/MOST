@@ -2115,7 +2115,7 @@ public class GraphicalInterface extends JFrame {
 	
 	ActionListener modelCollectionOKButtonActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent prodActionEvent) {				
-			//System.out.println("test");
+			System.out.println("test");
 		}
 	};
 	
@@ -2711,7 +2711,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().editMode = true;
 		int id = Integer.parseInt((String) (reactionsTable.getModel().getValueAt(rowIndex, 0)));
 		boolean isNumber = true;		
-		if (colIndex == GraphicalInterfaceConstants.REACTION_STRING_COLUMN && LocalConfig.getInstance().includesReactions) {
+		if (colIndex == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN && LocalConfig.getInstance().includesReactions) {
 			//if (oldValue != newValue) {				
 			ReactionsUpdater updater = new ReactionsUpdater();
 			//  if reaction is changed unhighlight unused metabolites since
@@ -2722,7 +2722,7 @@ public class GraphicalInterface extends JFrame {
 			// if reaction is reversible, no need to check lower bound
 			if (newValue.contains("<") || (newValue.contains("=") && !newValue.contains(">"))) {					
 				updater.updateReactionEquations(id, oldValue, newValue, LocalConfig.getInstance().getLoadedDatabase());
-				reactionsTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
+				reactionsTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 				updateReactionsDatabaseRow(rowIndex, Integer.parseInt((String) (reactionsTable.getModel().getValueAt(rowIndex, 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase());					
 				//updater.updateReactionEquations(id, oldValue, newValue, LocalConfig.getInstance().getLoadedDatabase());
 				// check if lower bound is >= 0 if reversible = false
@@ -2741,33 +2741,33 @@ public class GraphicalInterface extends JFrame {
 						if (choice == JOptionPane.YES_OPTION) {
 							reactionsTable.getModel().setValueAt("0.0", rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
 							reactionsTable.getModel().setValueAt("false", rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
-							reactionsTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
+							reactionsTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 							updateReactionsDatabaseRow(rowIndex, Integer.parseInt((String) (reactionsTable.getModel().getValueAt(rowIndex, 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase());	
 							updater.updateReactionEquations(id, oldValue, newValue, LocalConfig.getInstance().getLoadedDatabase());
 						}
 						// set old equation
 						if (choice == JOptionPane.NO_OPTION) {
-							reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
+							reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 							updateReactionsDatabaseRow(rowIndex, Integer.parseInt((String) (reactionsTable.getModel().getValueAt(rowIndex, 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase());					
 						}
 						// if in replace all mode, just set lower bound to 0 and set new equation
 					} else {
 						reactionsTable.getModel().setValueAt("0.0", rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
 						reactionsTable.getModel().setValueAt("false", rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
-						reactionsTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
+						reactionsTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 						updateReactionsDatabaseRow(rowIndex, Integer.parseInt((String) (reactionsTable.getModel().getValueAt(rowIndex, 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase());	
 						updater.updateReactionEquations(id, oldValue, newValue, LocalConfig.getInstance().getLoadedDatabase());
 					}
 				} else {
 					// lower bound >= 0, set new equation
-					reactionsTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
+					reactionsTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 					updateReactionsDatabaseRow(rowIndex, Integer.parseInt((String) (reactionsTable.getModel().getValueAt(rowIndex, 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase());
 					updater.updateReactionEquations(id, oldValue, newValue, LocalConfig.getInstance().getLoadedDatabase());
 				}					
 			} 
 			// if "No" button clicked   
 			if (LocalConfig.getInstance().noButtonClicked == true) {
-				reactionsTable.getModel().setValueAt(updater.reactionEquation, rowIndex, GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
+				reactionsTable.getModel().setValueAt(updater.reactionEqunAbbr, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 				updateReactionsDatabaseRow(rowIndex, Integer.parseInt((String) (reactionsTable.getModel().getValueAt(rowIndex, 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase());
 			}
 			LocalConfig.getInstance().noButtonClicked = false;
@@ -2790,7 +2790,7 @@ public class GraphicalInterface extends JFrame {
 					if (participatingReactions.size() > 0) {
 						//int viewRow = GraphicalInterface.reactionsTable.convertRowIndexToView(participatingReactions.get(0) - 1);
 						int viewRow = GraphicalInterface.reactionsTable.convertRowIndexToView(participatingReactions.get(0) - 1);
-						reactionsTable.changeSelection(viewRow, GraphicalInterfaceConstants.REACTION_STRING_COLUMN, false, false);
+						reactionsTable.changeSelection(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN, false, false);
 						reactionsTable.requestFocus();
 					}	
 				}
@@ -3224,20 +3224,22 @@ public class GraphicalInterface extends JFrame {
 			aReaction.setFluxValue(Double.valueOf((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN)));
 			aReaction.setReactionAbbreviation((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN));
 			aReaction.setReactionName((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_NAME_COLUMN));
-			aReaction.setReactionString((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_STRING_COLUMN));		    
-
-			if (aReaction.getReactionString() != null) {
-				if (aReaction.getReactionString().contains("<") || (aReaction.getReactionString().contains("=") && !aReaction.getReactionString().contains(">"))) {
+			aReaction.setReactionEqunAbbr((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN));		    
+			aReaction.setReactionEqunNames((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN));		    
+			
+			if (aReaction.getReactionEqunAbbr() != null) {
+				if (aReaction.getReactionEqunAbbr().contains("<") || (aReaction.getReactionEqunAbbr().contains("=") && !aReaction.getReactionEqunAbbr().contains(">"))) {
 					aReaction.setReversible("true");
-				} else if (aReaction.getReactionString().contains("-->") || aReaction.getReactionString().contains("->") || aReaction.getReactionString().contains("=>")) {
+				} else if (aReaction.getReactionEqunAbbr().contains("-->") || aReaction.getReactionEqunAbbr().contains("->") || aReaction.getReactionEqunAbbr().contains("=>")) {
 					aReaction.setReversible("false");		    		
 				}				
 			} 
-
+			
 			//string cannot be cast to double but valueOf works, from http://www.java-examples.com/convert-java-string-double-example		    
 			aReaction.setLowerBound(Double.valueOf((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));
 			aReaction.setUpperBound(Double.valueOf((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));
 			aReaction.setBiologicalObjective(Double.valueOf((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN)));
+			aReaction.setGeneAssociations((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.GENE_ASSOCIATIONS_COLUMN));		    
 			
 			aReaction.setMeta1((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META1_COLUMN));			
 			aReaction.setMeta2((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_META2_COLUMN));
@@ -3556,6 +3558,9 @@ public class GraphicalInterface extends JFrame {
 			if (c == GraphicalInterfaceConstants.KO_COLUMN) {
 				tips.setToolTip(col, GraphicalInterfaceConstants.KNOCKOUT_TOOLTIP);
 			}
+			if (c == GraphicalInterfaceConstants.GENE_ASSOCIATIONS_COLUMN) {
+				tips.setToolTip(col, GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.GENE_ASSOCIATIONS_COLUMN]);
+			}
 			/*
 			if (c == GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN) {
 				tips.setToolTip(col, GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN]);
@@ -3613,13 +3618,18 @@ public class GraphicalInterface extends JFrame {
 				ChangeName(reactionsTable, GraphicalInterfaceConstants.REACTION_NAME_COLUMN, 
 						GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.REACTION_NAME_COLUMN]);     
 			}
-			if (i==GraphicalInterfaceConstants.REACTION_STRING_COLUMN) {
-				column.setPreferredWidth(GraphicalInterfaceConstants.REACTION_STRING_WIDTH);//3  
-				ChangeName(reactionsTable, GraphicalInterfaceConstants.REACTION_STRING_COLUMN, 
-						GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.REACTION_STRING_COLUMN]); 
+			if (i==GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+				column.setPreferredWidth(GraphicalInterfaceConstants.REACTION_EQUN_ABBR_WIDTH);//3  
+				ChangeName(reactionsTable, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN, 
+						GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN]); 
+			}
+			if (i==GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
+				column.setPreferredWidth(GraphicalInterfaceConstants.REACTION_EQUN_NAMES_WIDTH);//4  
+				ChangeName(reactionsTable, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN, 
+						GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN]); 
 			}
 			if (i==GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
-				column.setPreferredWidth(GraphicalInterfaceConstants.REVERSIBLE_WIDTH);        //4
+				column.setPreferredWidth(GraphicalInterfaceConstants.REVERSIBLE_WIDTH);        //5
 				ChangeName(reactionsTable, GraphicalInterfaceConstants.REVERSIBLE_COLUMN, 
 						GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.REVERSIBLE_COLUMN]); 
 			}
@@ -3641,6 +3651,12 @@ public class GraphicalInterface extends JFrame {
 				reacRenderer.setHorizontalAlignment(JLabel.RIGHT); 
 				column.setPreferredWidth(GraphicalInterfaceConstants.DEFAULT_WIDTH);
 			} 
+			
+			if (i==GraphicalInterfaceConstants.GENE_ASSOCIATIONS_COLUMN) {
+				column.setPreferredWidth(GraphicalInterfaceConstants.REACTION_META_DEFAULT_WIDTH);        
+				ChangeName(reactionsTable, GraphicalInterfaceConstants.GENE_ASSOCIATIONS_COLUMN, 
+						GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.GENE_ASSOCIATIONS_COLUMN]); 
+			}
 			
 			if (i==GraphicalInterfaceConstants.REACTION_META1_COLUMN) {
 				column.setPreferredWidth(GraphicalInterfaceConstants.REACTION_META_DEFAULT_WIDTH);
@@ -4407,7 +4423,7 @@ public class GraphicalInterface extends JFrame {
 				if (row >= 0 && row < reactionsTable.getRowCount()) {
 					cancelCellEditing();            
 					// create reaction equation column popup menu
-					if (col == GraphicalInterfaceConstants.REACTION_STRING_COLUMN) {
+					if (col == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
 						JPopupMenu reactionsContextMenu = createReactionsContextMenu(row, col);
 						if (reactionsContextMenu != null
 								&& reactionsContextMenu.getComponentCount() > 0) {
@@ -4647,7 +4663,7 @@ public class GraphicalInterface extends JFrame {
 		    int id = (Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.DB_REACTIONS_ID_COLUMN)));	
 		    reactionEditor.setReactionEquation(reactionEditor.reactionArea.getText());
 			if (reactionEditor.getReactionEquation().contains("<") || (reactionEditor.getReactionEquation().contains("=") && !reactionEditor.getReactionEquation().contains(">"))) {
-				reactionsTable.getModel().setValueAt(reactionEditor.getReactionEquation(), viewRow, GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
+				reactionsTable.getModel().setValueAt(reactionEditor.getReactionEquation(), viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 				reactionsTable.getModel().setValueAt("true", viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
 			} else if (reactionEditor.getReactionEquation().contains("-->") || reactionEditor.getReactionEquation().contains("->") || reactionEditor.getReactionEquation().contains("=>")) {
 				if (Double.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)) < 0)  {
@@ -4657,7 +4673,7 @@ public class GraphicalInterface extends JFrame {
 							JOptionPane.ERROR_MESSAGE);
 					okToClose = false;
 				} else {
-					reactionsTable.getModel().setValueAt(reactionEditor.getReactionEquation(), viewRow, GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
+					reactionsTable.getModel().setValueAt(reactionEditor.getReactionEquation(), viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 					reactionsTable.getModel().setValueAt("false", viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);		    		
 				}				
 			}
@@ -4666,7 +4682,7 @@ public class GraphicalInterface extends JFrame {
 			ReactionsUpdater updater = new ReactionsUpdater();
 			updater.updateReactionEquations(id, reactionEditor.getOldReaction(), reactionEditor.getReactionEquation(), LocalConfig.getInstance().getLoadedDatabase());
 			if (LocalConfig.getInstance().noButtonClicked) {
-				reactionsTable.getModel().setValueAt(updater.reactionEquation, viewRow, GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
+				reactionsTable.getModel().setValueAt(updater.reactionEqunAbbr, viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 				updateReactionsDatabaseRow(viewRow, Integer.parseInt((String) (reactionsTable.getModel().getValueAt(viewRow, 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase());				
 			}
 			
@@ -4688,7 +4704,7 @@ public class GraphicalInterface extends JFrame {
 					Collections.sort(participatingReactions);
 					// scroll first participating reaction into view
 					if (participatingReactions.size() > 0) {
-						reactionsTable.changeSelection(participatingReactions.get(0) - 1, GraphicalInterfaceConstants.REACTION_STRING_COLUMN, false, false);
+						reactionsTable.changeSelection(participatingReactions.get(0) - 1, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN, false, false);
 						reactionsTable.requestFocus();
 					}	
 				}
@@ -5223,7 +5239,7 @@ public class GraphicalInterface extends JFrame {
 						int viewRow = reactionsTable.convertRowIndexToModel(r);
 						Integer cellValue = Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.DB_REACTIONS_ID_COLUMN));
 						if (cellValue == firstId) {
-							reactionsTable.changeSelection(r, GraphicalInterfaceConstants.REACTION_STRING_COLUMN, false, false);
+							reactionsTable.changeSelection(r, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN, false, false);
 							reactionsTable.requestFocus();
 						}	
 					}
@@ -5695,7 +5711,7 @@ public class GraphicalInterface extends JFrame {
 							rowList.add(row);
 							int reacId = Integer.valueOf((String) reactionsTable.getModel().getValueAt(row, 0));
 							reacIdList.add(reacId);
-							String oldReaction = (String) reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
+							String oldReaction = (String) reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 							setOldReaction(oldReaction);
 							oldReactionsList.add(oldReaction);
 						}
@@ -5707,7 +5723,7 @@ public class GraphicalInterface extends JFrame {
 						rowList.add(row);
 						int reacId = Integer.valueOf((String) reactionsTable.getModel().getValueAt(row, 0));
 						reacIdList.add(reacId);
-						String oldReaction = (String) reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
+						String oldReaction = (String) reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 						setOldReaction(oldReaction);
 						oldReactionsList.add(oldReaction);
 					}
@@ -5757,7 +5773,7 @@ public class GraphicalInterface extends JFrame {
 					rowList.add(row);
 					int reacId = Integer.valueOf((String) reactionsTable.getModel().getValueAt(row, 0));
 					reacIdList.add(reacId);
-					String oldReaction = (String) reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
+					String oldReaction = (String) reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 					setOldReaction(oldReaction);
 					oldReactionsList.add(oldReaction);
 				}
@@ -5817,7 +5833,7 @@ public class GraphicalInterface extends JFrame {
 			}
 		}
 		// TODO: error if paste range exceeds visible columns?
-		if (pasteColumns.contains(GraphicalInterfaceConstants.REACTION_STRING_COLUMN)) {
+		if (pasteColumns.contains(GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN)) {
 			LocalConfig.getInstance().includesReactions = true;
 		} else {
 			LocalConfig.getInstance().includesReactions = false;
@@ -5898,7 +5914,7 @@ public class GraphicalInterface extends JFrame {
 				setReplaceAllError(GraphicalInterfaceConstants.INVALID_REPLACE_ALL_BOOLEAN_VALUE);
 				return false;
 			}
-		} else if (columnIndex == GraphicalInterfaceConstants.REACTION_STRING_COLUMN && LocalConfig.getInstance().includesReactions) {
+		} else if (columnIndex == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN && LocalConfig.getInstance().includesReactions) {
 			if (value != null && value.trim().length() > 0) {
 				if (value.contains("=") || value.contains(">")) {
 					ReactionParser parser = new ReactionParser();
@@ -5926,7 +5942,7 @@ public class GraphicalInterface extends JFrame {
 		
 	public void reactionsClear() {
 		boolean valid = true;
-		//TODO: add if column is reactionEquations add to oldReactionsList
+		//TODO: add if column is reactionEqunAbbrs add to oldReactionsList
 		ReactionsUpdater updater = new ReactionsUpdater();
 		ArrayList<Integer> rowList = new ArrayList<Integer>();
 		ArrayList<Integer> reacIdList = new ArrayList<Integer>();
@@ -5939,7 +5955,7 @@ public class GraphicalInterface extends JFrame {
 			rowList.add(row);
 			int reacId = Integer.valueOf((String) reactionsTable.getModel().getValueAt(row, 0));
 			reacIdList.add(reacId);
-			String oldReaction = (String) reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
+			String oldReaction = (String) reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 			oldReactionsList.add(oldReaction);
 		}
 		// check if columns that require values will be cleared
@@ -5976,7 +5992,7 @@ public class GraphicalInterface extends JFrame {
 			int viewRow = reactionsTable.convertRowIndexToModel(r);
 			int id = (Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.DB_REACTIONS_ID_COLUMN)));
 			deleteIds.add(id);
-			String reactionString = (String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
+			String reactionString = (String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 			deletedReactions.add(reactionString);			
 		}
 		
@@ -7080,7 +7096,7 @@ public class GraphicalInterface extends JFrame {
 					rowList.add(viewRow);
 					int reacId = Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, 0));
 					reacIdList.add(reacId);
-					String oldEquation = (String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
+					String oldEquation = (String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 					oldReactionsList.add(oldEquation);
 				}
 				for (int i = 0; i < getReactionsFindLocationsList().size(); i++) {
@@ -7774,7 +7790,7 @@ public class GraphicalInterface extends JFrame {
 		if (LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {
 			for (int i = 0; i < LocalConfig.getInstance().getOptimizationFilesList().size(); i++) {
 				// TODO: determine where and how to display these messages, and actually delete these files
-				System.out.println(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".db will be deleted.");
+				//System.out.println(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".db will be deleted.");
 				delete(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".db");
 				File f = new File(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".log");
 				if (f.exists()) {

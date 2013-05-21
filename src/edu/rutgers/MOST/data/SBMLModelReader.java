@@ -371,11 +371,12 @@ public class SBMLModelReader {
 				//				startTime = System.currentTimeMillis();
 
 				PreparedStatement reacInsertPrep = conn.prepareStatement("INSERT INTO reactions(knockout, flux_value, reaction_abbreviation, " 
-						+ " reaction_name, reaction_string, reversible, lower_bound, upper_bound, biological_objective," 
-						+ " meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, meta_11, "
-						+ "meta_12, meta_13, meta_14, meta_15) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); 
+						+ " reaction_name, reaction_equn_abbr, reaction_equn_names, reversible, lower_bound, upper_bound, biological_objective," 
+						+ " gene_associations, meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, meta_11, "
+						+ " meta_12, meta_13, meta_14, meta_15) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); 
 				PreparedStatement rrInsertPrep = conn.prepareStatement("INSERT INTO reaction_reactants(reaction_id, stoic, metabolite_id) values (?, ?, ?)");
 				PreparedStatement rpInsertPrep = conn.prepareStatement("INSERT INTO reaction_products(reaction_id, stoic, metabolite_id) values (?, ?, ?)");
+				PreparedStatement reacNamePrep = conn.prepareStatement("SELECT metabolite_name from metabolites where id=?;");
 
 				ListOf<Reaction> reactions = doc.getModel().getListOfReactions();
 				boolean locusColumnName = false;
@@ -386,8 +387,11 @@ public class SBMLModelReader {
 					}
 
 					StringBuffer reacBfr = new StringBuffer();
+					StringBuffer reacNamesBfr = new StringBuffer();
 					StringBuffer prodBfr = new StringBuffer();
+					StringBuffer prodNamesBfr = new StringBuffer();
 					StringBuffer rxnBfr = new StringBuffer();
+					StringBuffer rxnNamesBfr = new StringBuffer();
 					String reversible = "";
 
 					if (!reactions.get(j).getReversible()) {
@@ -398,9 +402,10 @@ public class SBMLModelReader {
 
 					if (reactions.get(j).isSetListOfReactants()) {
 						ListOf<SpeciesReference> reactants = reactions.get(j).getListOfReactants();
+						int id = 0;
 						for (int r = 0; r < reactants.size(); r++) {
 							if (reactants.get(r).isSetSpecies()) {
-								Integer id = (Integer) metaboliteIdNameMap.get(reactants.get(r).getSpecies());
+								id = (Integer) metaboliteIdNameMap.get(reactants.get(r).getSpecies());
 								rrInsertPrep.setInt(1, j + 1);
 								rrInsertPrep.setDouble(2, reactants.get(r).getStoichiometry());
 								rrInsertPrep.setInt(3, id);
@@ -422,18 +427,46 @@ public class SBMLModelReader {
 									stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
 								}
 							}
+							String metabName = "";
+							reacNamePrep.setInt(1, id);
+							ResultSet rs = reacNamePrep.executeQuery();
+							while (rs.next()) {
+								metabName = rs.getString("metabolite_name");
+							}
+							rs.close();
 							if (r == 0) {
 								if (stoicStr.length() == 0) {
 									reacBfr.append(reactants.get(r).getSpecies());
+									if (metabName.length() > 0) {
+										reacNamesBfr.append(metabName);
+									} else {
+										reacNamesBfr.append(reactants.get(r).getSpecies());
+									}									
 								} else {
 									reacBfr.append(stoicStr + " " + reactants.get(r).getSpecies());
+									if (metabName.length() > 0) {
+										reacNamesBfr.append(stoicStr + " " + metabName);
+									} else {
+										reacNamesBfr.append(stoicStr + " " + reactants.get(r).getSpecies());
+									}									
 								}
 
 							} else {
 								if (stoicStr.length() == 0) {
 									reacBfr.append(" + " + reactants.get(r).getSpecies());
+									if (metabName.length() > 0) {
+										reacNamesBfr.append(" + " + metabName);
+									} else {
+										reacNamesBfr.append(" + " + reactants.get(r).getSpecies());
+									}
+									
 								} else {
 									reacBfr.append(" + " + stoicStr + " " + reactants.get(r).getSpecies());
+									if (metabName.length() > 0) {
+										reacNamesBfr.append(" + " + stoicStr + " " + metabName);
+									} else {
+										reacNamesBfr.append(" + " + stoicStr + " " + reactants.get(r).getSpecies());
+									}
 								}				
 							}				    	
 						}			  
@@ -442,9 +475,10 @@ public class SBMLModelReader {
 
 					if (reactions.get(j).isSetListOfProducts()) {
 						ListOf<SpeciesReference> products = reactions.get(j).getListOfProducts();
+						int id = 0;
 						for (int p = 0; p < products.size(); p++) {	
 							if (products.get(p).isSetSpecies()) {
-								Integer id = (Integer) metaboliteIdNameMap.get(products.get(p).getSpecies());
+								id = (Integer) metaboliteIdNameMap.get(products.get(p).getSpecies());
 								rpInsertPrep.setInt(1, j + 1);
 								rpInsertPrep.setDouble(2, products.get(p).getStoichiometry());
 								rpInsertPrep.setInt(3, id);
@@ -466,17 +500,44 @@ public class SBMLModelReader {
 									stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
 								}
 							}
+							String metabName = "";
+							reacNamePrep.setInt(1, id);
+							ResultSet rs = reacNamePrep.executeQuery();
+							while (rs.next()) {
+								metabName = rs.getString("metabolite_name");
+							}
+							rs.close();
 							if (p == 0) {
 								if (stoicStr.length() == 0) {
 									prodBfr.append(products.get(p).getSpecies());
+									if (metabName.length() > 0) {
+										prodNamesBfr.append(metabName);
+									} else {
+										prodNamesBfr.append(products.get(p).getSpecies());
+									}				
 								} else {
 									prodBfr.append(stoicStr + " " + products.get(p).getSpecies());
+									if (metabName.length() > 0) {
+										prodNamesBfr.append(stoicStr + " " + metabName);
+									} else {
+										prodNamesBfr.append(stoicStr + " " + products.get(p).getSpecies());
+									}									
 								}				
 							} else {
 								if (stoicStr.length() == 0) {
 									prodBfr.append(" + " + products.get(p).getSpecies());
+									if (metabName.length() > 0) {
+										prodNamesBfr.append(" + " + metabName);
+									} else {
+										prodNamesBfr.append(" + " + products.get(p).getSpecies());
+									}									
 								} else {
 									prodBfr.append(" + " + stoicStr + " " + products.get(p).getSpecies());
+									if (metabName.length() > 0) {
+										prodNamesBfr.append(" + " + stoicStr + " " + metabName);
+									} else {
+										prodNamesBfr.append(" + " + stoicStr + " " + products.get(p).getSpecies());
+									}									
 								}	
 							}
 						}		
@@ -484,11 +545,14 @@ public class SBMLModelReader {
 
 					if (reversible == "false") {
 						rxnBfr.append(reacBfr).append(" --> ").append(prodBfr);
+						rxnNamesBfr.append(reacNamesBfr).append(" --> ").append(prodNamesBfr);
 					} else {
 						rxnBfr.append(reacBfr).append(" <==> ").append(prodBfr);
+						rxnNamesBfr.append(reacNamesBfr).append(" <==> ").append(prodNamesBfr);
 					}
 
-					String reactionString = rxnBfr.toString().trim();
+					String reactionEqunAbbr = rxnBfr.toString().trim();
+					String reactionEqunNames = rxnNamesBfr.toString().trim();
 
 					String knockout = GraphicalInterfaceConstants.KO_DEFAULT;	
 					Double lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
@@ -528,6 +592,7 @@ public class SBMLModelReader {
 						}	    	
 					} 
 
+					String geneAssociations = "";
 					String meta1 = " ";
 					String meta2 = " ";
 					String meta3 = " ";
@@ -559,13 +624,13 @@ public class SBMLModelReader {
 										String[] nameSpaces = noteString.split(endtag);
 										for (int n = 0; n < nameSpaces.length; n++) {
 											noteItem = nameSpaces[n].substring(nameSpaces[n].indexOf(">") + 1); 
-											noteItemList.add(noteItem);
+											noteItemList.add(noteItem);										
 										}
 									}
 								} else {
 									//for "<>", "</>" types of nodes, tags are removed
 									noteItem = noteString.substring(noteString.indexOf(">") + 1, noteString.lastIndexOf("<"));
-									noteItemList.add(noteItem);
+									noteItemList.add(noteItem);	
 								}	
 							}
 						}
@@ -576,10 +641,11 @@ public class SBMLModelReader {
 							//set list of notes names to meta columns							
 							boolean genes = false;
 							int metaColCount = 0;
-							for (int n = 0; n < noteItemList.size(); n++) {								
+							for (int n = 0; n < noteItemList.size(); n++) {
 								if (noteItemList.get(n).contains(":")) {
 									//accounts for condition of multiple ":"
 									String columnName = noteItemList.get(n).substring(0, noteItemList.get(n).indexOf(":"));
+							
 									boolean contains = false;
 
 									if (columnName.compareTo("genes") == 0) {
@@ -678,111 +744,115 @@ public class SBMLModelReader {
 								} else {
 									value = noteItemList.get(n).substring(noteItemList.get(n).indexOf(":") + 1);
 								}
-								if (getReactionsMetaColumnNames().size() > 0 && columnName.compareTo(getReactionsMetaColumnNames().get(0)) == 0) {
-									if (columnName.compareTo("LOCUS") == 0) {
-										meta1 = locusBfrStr;
-									} else {
-										meta1 = value.trim();
-									}					
-								}
-								if (getReactionsMetaColumnNames().size() > 1 && columnName.compareTo(getReactionsMetaColumnNames().get(1)) == 0) {
-									if (columnName.compareTo("LOCUS") == 0) {
-										meta2 = locusBfrStr;
-									} else {
-										meta2 = value.trim();
-									}									
-								}
-								if (getReactionsMetaColumnNames().size() > 2 && columnName.compareTo(getReactionsMetaColumnNames().get(2)) == 0) {
-									if (columnName.compareTo("LOCUS") == 0) {
-										meta3 = locusBfrStr;
-									} else {
-										meta3 = value.trim();
+								if (columnName.compareTo("GENE ASSOCIATION") == 0 || columnName.compareTo("GENE_ASSOCIATION") == 0) {
+									geneAssociations = value.trim();
+								} else {
+									if (getReactionsMetaColumnNames().size() > 0 && columnName.compareTo(getReactionsMetaColumnNames().get(0)) == 0) {
+										if (columnName.compareTo("LOCUS") == 0) {
+											meta1 = locusBfrStr;
+										} else {
+											meta1 = value.trim();
+										}					
 									}
-								}
-								if (getReactionsMetaColumnNames().size() > 3 && columnName.compareTo(getReactionsMetaColumnNames().get(3)) == 0) {
-									if (columnName.compareTo("LOCUS") == 0) {
-										meta4 = locusBfrStr;
-									} else {
-										meta4 = value.trim();
+									if (getReactionsMetaColumnNames().size() > 1 && columnName.compareTo(getReactionsMetaColumnNames().get(1)) == 0) {
+										if (columnName.compareTo("LOCUS") == 0) {
+											meta2 = locusBfrStr;
+										} else {
+											meta2 = value.trim();
+										}									
 									}
-								}
-								if (getReactionsMetaColumnNames().size() > 4 && columnName.compareTo(getReactionsMetaColumnNames().get(4)) == 0) {
-									if (columnName.compareTo("LOCUS") == 0) {
-										meta5 = locusBfrStr;
-									} else {
-										meta5 = value.trim();
+									if (getReactionsMetaColumnNames().size() > 2 && columnName.compareTo(getReactionsMetaColumnNames().get(2)) == 0) {
+										if (columnName.compareTo("LOCUS") == 0) {
+											meta3 = locusBfrStr;
+										} else {
+											meta3 = value.trim();
+										}
 									}
-								}
-								if (getReactionsMetaColumnNames().size() > 5 && columnName.compareTo(getReactionsMetaColumnNames().get(5)) == 0) {
-									if (columnName.compareTo("LOCUS") == 0) {
-										meta6 = locusBfrStr;
-									} else {
-										meta6 = value.trim();
+									if (getReactionsMetaColumnNames().size() > 3 && columnName.compareTo(getReactionsMetaColumnNames().get(3)) == 0) {
+										if (columnName.compareTo("LOCUS") == 0) {
+											meta4 = locusBfrStr;
+										} else {
+											meta4 = value.trim();
+										}
 									}
-								}
-								if (getReactionsMetaColumnNames().size() > 6 && columnName.compareTo(getReactionsMetaColumnNames().get(6)) == 0) {
-									if (columnName.compareTo("LOCUS") == 0) {
-										meta7 = locusBfrStr;
-									} else {
-										meta7 = value.trim();
+									if (getReactionsMetaColumnNames().size() > 4 && columnName.compareTo(getReactionsMetaColumnNames().get(4)) == 0) {
+										if (columnName.compareTo("LOCUS") == 0) {
+											meta5 = locusBfrStr;
+										} else {
+											meta5 = value.trim();
+										}
 									}
-								}
-								if (getReactionsMetaColumnNames().size() > 7 && columnName.compareTo(getReactionsMetaColumnNames().get(7)) == 0) {
-									if (columnName.compareTo("LOCUS") == 0) {
-										meta8 = locusBfrStr;
-									} else {
-										meta8 = value.trim();
+									if (getReactionsMetaColumnNames().size() > 5 && columnName.compareTo(getReactionsMetaColumnNames().get(5)) == 0) {
+										if (columnName.compareTo("LOCUS") == 0) {
+											meta6 = locusBfrStr;
+										} else {
+											meta6 = value.trim();
+										}
 									}
-								}
-								if (getReactionsMetaColumnNames().size() > 8 && columnName.compareTo(getReactionsMetaColumnNames().get(8)) == 0) {
-									if (columnName.compareTo("LOCUS") == 0) {
-										meta9 = locusBfrStr;
-									} else {
-										meta9 = value.trim();
+									if (getReactionsMetaColumnNames().size() > 6 && columnName.compareTo(getReactionsMetaColumnNames().get(6)) == 0) {
+										if (columnName.compareTo("LOCUS") == 0) {
+											meta7 = locusBfrStr;
+										} else {
+											meta7 = value.trim();
+										}
 									}
-								}
-								if (getReactionsMetaColumnNames().size() > 9 && columnName.compareTo(getReactionsMetaColumnNames().get(9)) == 0) {
-									if (columnName.compareTo("LOCUS") == 0) {
-										meta10 = locusBfrStr;
-									} else {
-										meta10 = value.trim();
+									if (getReactionsMetaColumnNames().size() > 7 && columnName.compareTo(getReactionsMetaColumnNames().get(7)) == 0) {
+										if (columnName.compareTo("LOCUS") == 0) {
+											meta8 = locusBfrStr;
+										} else {
+											meta8 = value.trim();
+										}
 									}
-								}
-								if (getReactionsMetaColumnNames().size() > 10 && columnName.compareTo(getReactionsMetaColumnNames().get(10)) == 0) {
-									if (columnName.compareTo("LOCUS") == 0) {
-										meta11 = locusBfrStr;
-									} else {
-										meta11 = value.trim();
+									if (getReactionsMetaColumnNames().size() > 8 && columnName.compareTo(getReactionsMetaColumnNames().get(8)) == 0) {
+										if (columnName.compareTo("LOCUS") == 0) {
+											meta9 = locusBfrStr;
+										} else {
+											meta9 = value.trim();
+										}
 									}
-								}
-								if (getReactionsMetaColumnNames().size() > 11 && columnName.compareTo(getReactionsMetaColumnNames().get(11)) == 0) {
-									if (columnName.compareTo("LOCUS") == 0) {
-										meta12 = locusBfrStr;
-									} else {
-										meta12 = value.trim();
+									if (getReactionsMetaColumnNames().size() > 9 && columnName.compareTo(getReactionsMetaColumnNames().get(9)) == 0) {
+										if (columnName.compareTo("LOCUS") == 0) {
+											meta10 = locusBfrStr;
+										} else {
+											meta10 = value.trim();
+										}
 									}
-								}
-								if (getReactionsMetaColumnNames().size() > 12 && columnName.compareTo(getReactionsMetaColumnNames().get(12)) == 0) {
-									if (columnName.compareTo("LOCUS") == 0) {
-										meta13 = locusBfrStr;
-									} else {
-										meta13 = value.trim();
+									if (getReactionsMetaColumnNames().size() > 10 && columnName.compareTo(getReactionsMetaColumnNames().get(10)) == 0) {
+										if (columnName.compareTo("LOCUS") == 0) {
+											meta11 = locusBfrStr;
+										} else {
+											meta11 = value.trim();
+										}
 									}
-								}
-								if (getReactionsMetaColumnNames().size() > 13 && columnName.compareTo(getReactionsMetaColumnNames().get(13)) == 0) {
-									if (columnName.compareTo("LOCUS") == 0) {
-										meta14 = locusBfrStr;
-									} else {
-										meta14 = value.trim();
+									if (getReactionsMetaColumnNames().size() > 11 && columnName.compareTo(getReactionsMetaColumnNames().get(11)) == 0) {
+										if (columnName.compareTo("LOCUS") == 0) {
+											meta12 = locusBfrStr;
+										} else {
+											meta12 = value.trim();
+										}
 									}
-								}
-								if (getReactionsMetaColumnNames().size() > 14 && columnName.compareTo(getReactionsMetaColumnNames().get(14)) == 0) {
-									if (columnName.compareTo("LOCUS") == 0) {
-										meta15 = locusBfrStr;
-									} else {
-										meta15 = value.trim();
+									if (getReactionsMetaColumnNames().size() > 12 && columnName.compareTo(getReactionsMetaColumnNames().get(12)) == 0) {
+										if (columnName.compareTo("LOCUS") == 0) {
+											meta13 = locusBfrStr;
+										} else {
+											meta13 = value.trim();
+										}
 									}
-								}					
+									if (getReactionsMetaColumnNames().size() > 13 && columnName.compareTo(getReactionsMetaColumnNames().get(13)) == 0) {
+										if (columnName.compareTo("LOCUS") == 0) {
+											meta14 = locusBfrStr;
+										} else {
+											meta14 = value.trim();
+										}
+									}
+									if (getReactionsMetaColumnNames().size() > 14 && columnName.compareTo(getReactionsMetaColumnNames().get(14)) == 0) {
+										if (columnName.compareTo("LOCUS") == 0) {
+											meta15 = locusBfrStr;
+										} else {
+											meta15 = value.trim();
+										}
+									}	
+								}												
 							}
 						}
 					}
@@ -806,26 +876,28 @@ public class SBMLModelReader {
 					reacInsertPrep.setDouble(2, fluxValue);
 					reacInsertPrep.setString(3, reactionAbbreviation);
 					reacInsertPrep.setString(4, reactionName);
-					reacInsertPrep.setString(5, reactionString);
-					reacInsertPrep.setString(6, reversible);
-					reacInsertPrep.setDouble(7, lowerBound);
-					reacInsertPrep.setDouble(8, upperBound);
-					reacInsertPrep.setDouble(9, objective);
-					reacInsertPrep.setString(10, meta1);
-					reacInsertPrep.setString(11, meta2);
-					reacInsertPrep.setString(12, meta3);
-					reacInsertPrep.setString(13, meta4);
-					reacInsertPrep.setString(14, meta5);
-					reacInsertPrep.setString(15, meta6);
-					reacInsertPrep.setString(16, meta7);
-					reacInsertPrep.setString(17, meta8);
-					reacInsertPrep.setString(18, meta9);
-					reacInsertPrep.setString(19, meta10);
-					reacInsertPrep.setString(20, meta11);
-					reacInsertPrep.setString(21, meta12);
-					reacInsertPrep.setString(22, meta13);
-					reacInsertPrep.setString(23, meta14);
-					reacInsertPrep.setString(24, meta15);
+					reacInsertPrep.setString(5, reactionEqunAbbr);
+					reacInsertPrep.setString(6, reactionEqunNames);
+					reacInsertPrep.setString(7, reversible);
+					reacInsertPrep.setDouble(8, lowerBound);
+					reacInsertPrep.setDouble(9, upperBound);
+					reacInsertPrep.setDouble(10, objective);
+					reacInsertPrep.setString(11, geneAssociations);
+					reacInsertPrep.setString(12, meta1);
+					reacInsertPrep.setString(13, meta2);
+					reacInsertPrep.setString(14, meta3);
+					reacInsertPrep.setString(15, meta4);
+					reacInsertPrep.setString(16, meta5);
+					reacInsertPrep.setString(17, meta6);
+					reacInsertPrep.setString(18, meta7);
+					reacInsertPrep.setString(19, meta8);
+					reacInsertPrep.setString(20, meta9);
+					reacInsertPrep.setString(21, meta10);
+					reacInsertPrep.setString(22, meta11);
+					reacInsertPrep.setString(23, meta12);
+					reacInsertPrep.setString(24, meta13);
+					reacInsertPrep.setString(25, meta14);
+					reacInsertPrep.setString(26, meta15);
 
 					reacInsertPrep.executeUpdate();
 

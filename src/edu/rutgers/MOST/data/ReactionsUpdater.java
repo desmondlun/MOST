@@ -21,7 +21,7 @@ public class ReactionsUpdater {
 	public boolean noReactants;     // type ==> p
 	public boolean noProducts;      // type r ==>
 	// used if no button is hit, for building new equation with species not included
-	public String reactionEquation = "";
+	public String reactionEqunAbbr = "";
 	
 	public void updateReactionRows(ArrayList<Integer> rowList, ArrayList<Integer> reacIdList, ArrayList<String> oldReactionsList, String databaseName) {
 			
@@ -60,8 +60,8 @@ public class ReactionsUpdater {
 				DriverManager.getConnection(queryString);
 			Statement stat = conn.createStatement();
 			PreparedStatement reacInsertPrep = conn.prepareStatement("update reactions set knockout=?, flux_value=?, " 
-					+ " reaction_abbreviation=?, reaction_name=?, reaction_string=?, reversible=?, lower_bound=?, " 
-					+ " upper_bound=?, biological_objective=?, meta_1=?, meta_2=?, meta_3=?, meta_4=?, meta_5=?, meta_6=?, "
+					+ " reaction_abbreviation=?, reaction_name=?, reaction_equn_abbr=?, reaction_equn_names=?, reversible=?, lower_bound=?, " 
+					+ " upper_bound=?, biological_objective=?, gene_associations=?, meta_1=?, meta_2=?, meta_3=?, meta_4=?, meta_5=?, meta_6=?, "
 					+ " meta_7=?, meta_8=?, meta_9=?, meta_10=?, meta_11=?, meta_12=?, meta_13=?, meta_14=?, meta_15=? where id=?"); 
 
 			try {
@@ -96,15 +96,16 @@ public class ReactionsUpdater {
 					if (reactionName == null) {
 						reactionName = " ";
 					}
-					String reactionEquation = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_STRING_COLUMN);
+					String reactionEqunAbbr = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
+					String reactionEqunNames = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 					String reversible = GraphicalInterfaceConstants.REVERSIBLE_DEFAULT;
 					
 					if (LocalConfig.getInstance().includesReactions) {
 						ReactionParser parser = new ReactionParser();
-						//if (reactionEquation != null) {
-						if (reactionEquation != null && reactionEquation.length() > 0) {
-							if (parser.isValid(reactionEquation)) {
-								ArrayList<ArrayList<ArrayList<String>>> newReactionList = parser.reactionList(reactionEquation);
+						//if (reactionEqunAbbr != null) {
+						if (reactionEqunAbbr != null && reactionEqunAbbr.length() > 0) {
+							if (parser.isValid(reactionEqunAbbr)) {
+								ArrayList<ArrayList<ArrayList<String>>> newReactionList = parser.reactionList(reactionEqunAbbr);
 								
 								//add new species to used map
 								for (int x = 0; x < newReactionList.size(); x++) {
@@ -131,16 +132,17 @@ public class ReactionsUpdater {
 											}
 										}							
 									}
-								}								
+								}
+								
 							}
 						} else {
-							reactionEquation = " ";
+							reactionEqunAbbr = " ";
 						}
 						
-						if (reactionEquation != null) {
-							if (reactionEquation.contains("<") || (reactionEquation.contains("=") && !reactionEquation.contains(">"))) {
+						if (reactionEqunAbbr != null) {
+							if (reactionEqunAbbr.contains("<") || (reactionEqunAbbr.contains("=") && !reactionEqunAbbr.contains(">"))) {
 								reversible = "true";
-							} else if (reactionEquation.contains("-->") || reactionEquation.contains("->") || reactionEquation.contains("=>")) {
+							} else if (reactionEqunAbbr.contains("-->") || reactionEqunAbbr.contains("->") || reactionEqunAbbr.contains("=>")) {
 								reversible = "false";		    		
 							}
 						}			
@@ -159,6 +161,8 @@ public class ReactionsUpdater {
 					if (GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN) != null) {
 						objective = Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN));			
 					} 
+					
+					String geneAssociations = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.GENE_ASSOCIATIONS_COLUMN);
 					
 					String meta1 = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_META1_COLUMN);
 					if (meta1 == null) {
@@ -225,27 +229,29 @@ public class ReactionsUpdater {
 					reacInsertPrep.setDouble(2, fluxValue);
 					reacInsertPrep.setString(3, reactionAbbreviation);
 					reacInsertPrep.setString(4, reactionName);
-					reacInsertPrep.setString(5, reactionEquation);
-					reacInsertPrep.setString(6, reversible);
-					reacInsertPrep.setDouble(7, lowerBound);
-					reacInsertPrep.setDouble(8, upperBound);
-					reacInsertPrep.setDouble(9, objective);
-					reacInsertPrep.setString(10, meta1);
-					reacInsertPrep.setString(11, meta2);
-					reacInsertPrep.setString(12, meta3);
-					reacInsertPrep.setString(13, meta4);
-					reacInsertPrep.setString(14, meta5);
-					reacInsertPrep.setString(15, meta6);
-					reacInsertPrep.setString(16, meta7);
-					reacInsertPrep.setString(17, meta8);
-					reacInsertPrep.setString(18, meta9);
-					reacInsertPrep.setString(19, meta10);
-					reacInsertPrep.setString(20, meta11);
-					reacInsertPrep.setString(21, meta12);
-					reacInsertPrep.setString(22, meta13);
-					reacInsertPrep.setString(23, meta14);
-					reacInsertPrep.setString(24, meta15);
-					reacInsertPrep.setInt(25, reacIdList.get(i));
+					reacInsertPrep.setString(5, reactionEqunAbbr);
+					reacInsertPrep.setString(6, reactionEqunNames);
+					reacInsertPrep.setString(7, reversible);
+					reacInsertPrep.setDouble(8, lowerBound);
+					reacInsertPrep.setDouble(9, upperBound);
+					reacInsertPrep.setDouble(10, objective);
+					reacInsertPrep.setString(11, geneAssociations);
+					reacInsertPrep.setString(12, meta1);
+					reacInsertPrep.setString(13, meta2);
+					reacInsertPrep.setString(14, meta3);
+					reacInsertPrep.setString(15, meta4);
+					reacInsertPrep.setString(16, meta5);
+					reacInsertPrep.setString(17, meta6);
+					reacInsertPrep.setString(18, meta7);
+					reacInsertPrep.setString(19, meta8);
+					reacInsertPrep.setString(20, meta9);
+					reacInsertPrep.setString(21, meta10);
+					reacInsertPrep.setString(22, meta11);
+					reacInsertPrep.setString(23, meta12);
+					reacInsertPrep.setString(24, meta13);
+					reacInsertPrep.setString(25, meta14);
+					reacInsertPrep.setString(26, meta15);
+					reacInsertPrep.setInt(27, reacIdList.get(i));
 					
 					reacInsertPrep.executeUpdate();
 				}
@@ -534,9 +540,9 @@ public class ReactionsUpdater {
 							revisedReaction = revisedReactants + " " + splitString + revisedProducts;
 							// prevents reaction equation from appearing as only an arrow such as ==>
 							if (revisedReaction.trim().compareTo(splitString.trim()) != 0) {
-								reactionEquation = revisedReaction.trim();
+								reactionEqunAbbr = revisedReaction.trim();
 							} else {
-								reactionEquation = "";
+								reactionEqunAbbr = "";
 							}									
 						}	
 					}					

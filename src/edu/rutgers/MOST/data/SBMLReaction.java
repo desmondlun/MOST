@@ -19,14 +19,16 @@ public class SBMLReaction implements ModelReaction {
 	private String databaseName;	
 	private Integer id; 
 	private String knockout;
+	private double fluxValue;
 	private String reactionAbbreviation;
 	private String reactionName;
-	private String reactionString;
+	private String reactionEqunAbbr;
+	private String reactionEqunNames;
 	private String reversible;
 	private double lowerBound;
 	private double upperBound;	
 	private double biologicalObjective;
-	private double fluxValue;
+	private String geneAssociations;
 	private String meta1;
 	private String meta2;
 	private String meta3;
@@ -71,6 +73,14 @@ public class SBMLReaction implements ModelReaction {
 		return knockout;
 	}
 
+	public double getFluxValue() {
+		return fluxValue;
+	}
+
+	public void setFluxValue(double fluxValue) {
+		this.fluxValue = fluxValue;
+	}
+	
 	public String getReactionAbbreviation() {
 		return reactionAbbreviation;
 	}
@@ -87,14 +97,22 @@ public class SBMLReaction implements ModelReaction {
 		this.reactionName = reactionName;
 	}
 
-	public void setReactionString(String reactionString) {
-		this.reactionString = reactionString;
+	public void setReactionEqunAbbr(String reactionEqunAbbr) {
+		this.reactionEqunAbbr = reactionEqunAbbr;
 	}
 
-	public String getReactionString() {
-		return reactionString;
+	public String getReactionEqunAbbr() {
+		return reactionEqunAbbr;
 	}
 
+	public void setReactionEqunNames(String reactionEqunNames) {
+		this.reactionEqunNames = reactionEqunNames;
+	}
+
+	public String getReactionEqunNames() {
+		return reactionEqunNames;
+	}
+	
 	public String getReversible() {
 		return reversible;
 	}
@@ -127,12 +145,12 @@ public class SBMLReaction implements ModelReaction {
 		this.biologicalObjective = biologicalObjective;
 	}
 
-	public double getFluxValue() {
-		return fluxValue;
+	public String getGeneAssociations() {
+		return geneAssociations;
 	}
 
-	public void setFluxValue(double fluxValue) {
-		this.fluxValue = fluxValue;
+	public void setGeneAssociations(String geneAssociations) {
+		this.geneAssociations = geneAssociations;
 	}
 
 	public void setReactantsList(ArrayList reactantsList) {
@@ -168,34 +186,36 @@ public class SBMLReaction implements ModelReaction {
 
 			PreparedStatement prep = conn
 			.prepareStatement("update reactions set knockout=?, flux_value=?, reaction_abbreviation=?, reaction_name=?, " 
-					+ " reaction_string=?, reversible=?, lower_bound=?, upper_bound=?, biological_objective=?, " 
-					+ " meta_1=?, meta_2=?, meta_3=?, meta_4=?, meta_5=?, meta_6=?, meta_7=?, meta_8=?, "
+					+ " reaction_equn_abbr=?, reaction_equn_names=?, reversible=?, lower_bound=?, upper_bound=?, biological_objective=?, " 
+					+ " gene_associations=?, meta_1=?, meta_2=?, meta_3=?, meta_4=?, meta_5=?, meta_6=?, meta_7=?, meta_8=?, "
 					+ " meta_9=?, meta_10=?, meta_11=?, meta_12=?, meta_13=?, meta_14=?, meta_15=? where id=?;");
 			prep.setString(1, this.getKnockout());
 			prep.setDouble(2, this.getFluxValue());	
 			prep.setString(3, this.getReactionAbbreviation());
 			prep.setString(4, this.getReactionName());
-			prep.setString(5, this.getReactionString());
-			prep.setString(6, this.getReversible());			
-			prep.setDouble(7, this.getLowerBound());
-			prep.setDouble(8, this.getUpperBound());
-			prep.setDouble(9, this.getBiologicalObjective());			
-			prep.setString(10, this.getMeta1());
-			prep.setString(11, this.getMeta2());
-			prep.setString(12, this.getMeta3());
-			prep.setString(13, this.getMeta4());
-			prep.setString(14, this.getMeta5());
-			prep.setString(15, this.getMeta6());
-			prep.setString(16, this.getMeta7());
-			prep.setString(17, this.getMeta8());
-			prep.setString(18, this.getMeta9());
-			prep.setString(19, this.getMeta10());
-			prep.setString(20, this.getMeta11());
-			prep.setString(21, this.getMeta12());
-			prep.setString(22, this.getMeta13());
-			prep.setString(23, this.getMeta14());
-			prep.setString(24, this.getMeta15());	
-			prep.setInt(25, this.getId());
+			prep.setString(5, this.getReactionEqunAbbr());
+			prep.setString(6, this.getReactionEqunNames());
+			prep.setString(7, this.getReversible());			
+			prep.setDouble(8, this.getLowerBound());
+			prep.setDouble(9, this.getUpperBound());
+			prep.setDouble(10, this.getBiologicalObjective());			
+			prep.setString(11, this.getGeneAssociations());
+			prep.setString(12, this.getMeta1());
+			prep.setString(13, this.getMeta2());
+			prep.setString(14, this.getMeta3());
+			prep.setString(15, this.getMeta4());
+			prep.setString(16, this.getMeta5());
+			prep.setString(17, this.getMeta6());
+			prep.setString(18, this.getMeta7());
+			prep.setString(19, this.getMeta8());
+			prep.setString(20, this.getMeta9());
+			prep.setString(21, this.getMeta10());
+			prep.setString(22, this.getMeta11());
+			prep.setString(23, this.getMeta12());
+			prep.setString(24, this.getMeta13());
+			prep.setString(25, this.getMeta14());
+			prep.setString(26, this.getMeta15());
+			prep.setInt(27, this.getId());
 			conn.setAutoCommit(true);
 			prep.executeUpdate();
 
@@ -224,34 +244,36 @@ public class SBMLReaction implements ModelReaction {
 
 			PreparedStatement prep = conn
 			.prepareStatement("update reactions set knockout=?, flux_value=?, reaction_abbreviation=?, reaction_name=?, " 
-					+ " reaction_string=?, reversible=?, lower_bound=?, upper_bound=?, biological_objective=?, " 
-					+ " meta_1=?, meta_2=?, meta_3=?, meta_4=?, meta_5=?, meta_6=?, meta_7=?, meta_8=?, "
+					+ " reaction_equn_abbr=?, reaction_equn_names=?, reversible=?, lower_bound=?, upper_bound=?, biological_objective=?, " 
+					+ " gene_associations=?, meta_1=?, meta_2=?, meta_3=?, meta_4=?, meta_5=?, meta_6=?, meta_7=?, meta_8=?, "
 					+ " meta_9=?, meta_10=?, meta_11=?, meta_12=?, meta_13=?, meta_14=?, meta_15=? where id=?;");
 			prep.setString(1, this.getKnockout());
 			prep.setDouble(2, this.getFluxValue());	
 			prep.setString(3, this.getReactionAbbreviation());
 			prep.setString(4, this.getReactionName());
-			prep.setString(5, this.getReactionString());
-			prep.setString(6, this.getReversible());			
-			prep.setDouble(7, this.getLowerBound());
-			prep.setDouble(8, this.getUpperBound());
-			prep.setDouble(9, this.getBiologicalObjective());			
-			prep.setString(10, this.getMeta1());
-			prep.setString(11, this.getMeta2());
-			prep.setString(12, this.getMeta3());
-			prep.setString(13, this.getMeta4());
-			prep.setString(14, this.getMeta5());
-			prep.setString(15, this.getMeta6());
-			prep.setString(16, this.getMeta7());
-			prep.setString(17, this.getMeta8());
-			prep.setString(18, this.getMeta9());
-			prep.setString(19, this.getMeta10());
-			prep.setString(20, this.getMeta11());
-			prep.setString(21, this.getMeta12());
-			prep.setString(22, this.getMeta13());
-			prep.setString(23, this.getMeta14());
-			prep.setString(24, this.getMeta15());	
-			prep.setInt(25, this.getId());
+			prep.setString(5, this.getReactionEqunAbbr());
+			prep.setString(6, this.getReactionEqunNames());
+			prep.setString(7, this.getReversible());			
+			prep.setDouble(8, this.getLowerBound());
+			prep.setDouble(9, this.getUpperBound());
+			prep.setDouble(10, this.getBiologicalObjective());			
+			prep.setString(11, this.getGeneAssociations());
+			prep.setString(12, this.getMeta1());
+			prep.setString(13, this.getMeta2());
+			prep.setString(14, this.getMeta3());
+			prep.setString(15, this.getMeta4());
+			prep.setString(16, this.getMeta5());
+			prep.setString(17, this.getMeta6());
+			prep.setString(18, this.getMeta7());
+			prep.setString(19, this.getMeta8());
+			prep.setString(20, this.getMeta9());
+			prep.setString(21, this.getMeta10());
+			prep.setString(22, this.getMeta11());
+			prep.setString(23, this.getMeta12());
+			prep.setString(24, this.getMeta13());
+			prep.setString(25, this.getMeta14());
+			prep.setString(26, this.getMeta15());
+			prep.setInt(27, this.getId());
 			conn.setAutoCommit(true);
 			prep.executeUpdate();
 
@@ -281,9 +303,9 @@ public class SBMLReaction implements ModelReaction {
 			// this
 			// configurable
 			PreparedStatement prep = conn
-			.prepareStatement("select id, knockout, flux_value, reaction_abbreviation, reaction_name, reaction_string, "
-					+ " reversible, lower_bound, upper_bound, biological_objective, "
-					+ " meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, "
+			.prepareStatement("select id, knockout, flux_value, reaction_abbreviation, reaction_name,  "
+					+ " reaction_equn_abbr, reaction_equn_names, reversible, lower_bound, upper_bound, biological_objective, "
+					+ " gene_associations, meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, "
 					+ " meta_9, meta_10, meta_11, meta_12, meta_13, meta_14, meta_15 "
 					+ " from reactions where id = ?;");
 			prep.setInt(1, id);
@@ -295,11 +317,13 @@ public class SBMLReaction implements ModelReaction {
 				this.setFluxValue(rs.getDouble("flux_value"));
 				this.setReactionAbbreviation(rs.getString("reaction_abbreviation"));
 				this.setReactionName(rs.getString("reaction_name"));
-				this.setReactionString(rs.getString("reaction_string"));
+				this.setReactionEqunAbbr(rs.getString("reaction_equn_abbr"));
+				this.setReactionEqunNames(rs.getString("reaction_equn_names"));
 				this.setReversible(rs.getString("reversible"));				
 				this.setLowerBound(rs.getDouble("lower_bound"));
 				this.setUpperBound(rs.getDouble("upper_bound"));
-				this.setBiologicalObjective(rs.getDouble("biological_objective"));			
+				this.setBiologicalObjective(rs.getDouble("biological_objective"));
+				this.setGeneAssociations(rs.getString("gene_associations"));	
 				this.setMeta1(rs.getString("meta_1"));
 				this.setMeta2(rs.getString("meta_2"));
 				this.setMeta3(rs.getString("meta_3"));

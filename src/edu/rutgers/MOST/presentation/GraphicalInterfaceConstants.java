@@ -15,12 +15,14 @@ public class GraphicalInterfaceConstants {
 	"ko",  
 	"flux_value", 
 	"reaction_id",           
-	"reaction_name",         
-	"reaction_string",       
+	"reaction_name", 
+	"reaction_equn_abbr",
+	"reaction_equn_names",       
 	"reversible",            	
 	"lower_bound",           
 	"upper_bound",           	
-	"biological_objective"
+	"biological_objective", 
+	"gene_associations"
 	};
 	
 	public static final String[] REACTIONS_COLUMN_NAMES = 
@@ -30,11 +32,13 @@ public class GraphicalInterfaceConstants {
 		"Flux Value",		
 		"Reaction Abbreviation",
 		"Reaction Name",
-		"Reaction Equation",
+		"Reaction Equation (Metabolite Abbreviation)",
+		"Reaction Equation (Metabolite Name)",
 		"Reversible",		
 		"Lower Bound",
 		"Upper Bound",	
-		"Biological Objective"		
+		"Biological Objective",
+		"Gene Associations"
 	};
 	
 	public static final String KNOCKOUT_TOOLTIP = "Knockout";
@@ -70,28 +74,31 @@ public class GraphicalInterfaceConstants {
     public static final int REACTION_ABBREVIATION_COLUMN = 3;
     public static final int REACTION_NAME_WIDTH = 200; 
     public static final int REACTION_NAME_COLUMN = 4;
-    public static final int REACTION_STRING_WIDTH = 300;
-    public static final int REACTION_STRING_COLUMN = 5;
+    public static final int REACTION_EQUN_ABBR_WIDTH = 300;
+    public static final int REACTION_EQUN_ABBR_COLUMN = 5;
+    public static final int REACTION_EQUN_NAMES_WIDTH = 300;
+    public static final int REACTION_EQUN_NAMES_COLUMN = 6;
     public static final int REVERSIBLE_WIDTH = 60;
-    public static final int REVERSIBLE_COLUMN = 6;         
-    public static final int LOWER_BOUND_COLUMN = 7;
-    public static final int UPPER_BOUND_COLUMN = 8;
-    public static final int BIOLOGICAL_OBJECTIVE_COLUMN = 9;    
-    public static final int REACTION_META1_COLUMN = 10;
-    public static final int REACTION_META2_COLUMN = 11;
-    public static final int REACTION_META3_COLUMN = 12;
-    public static final int REACTION_META4_COLUMN = 13;
-    public static final int REACTION_META5_COLUMN = 14;
-    public static final int REACTION_META6_COLUMN = 15;
-    public static final int REACTION_META7_COLUMN = 16;
-    public static final int REACTION_META8_COLUMN = 17;
-    public static final int REACTION_META9_COLUMN = 18;
-    public static final int REACTION_META10_COLUMN = 19;
-    public static final int REACTION_META11_COLUMN = 20;
-    public static final int REACTION_META12_COLUMN = 21;
-    public static final int REACTION_META13_COLUMN = 22;
-    public static final int REACTION_META14_COLUMN = 23;
-    public static final int REACTION_META15_COLUMN = 24;
+    public static final int REVERSIBLE_COLUMN = 7;         
+    public static final int LOWER_BOUND_COLUMN = 8;
+    public static final int UPPER_BOUND_COLUMN = 9;
+    public static final int BIOLOGICAL_OBJECTIVE_COLUMN = 10;
+    public static final int GENE_ASSOCIATIONS_COLUMN = 11;
+    public static final int REACTION_META1_COLUMN = 12;
+    public static final int REACTION_META2_COLUMN = 13;
+    public static final int REACTION_META3_COLUMN = 14;
+    public static final int REACTION_META4_COLUMN = 15;
+    public static final int REACTION_META5_COLUMN = 16;
+    public static final int REACTION_META6_COLUMN = 17;
+    public static final int REACTION_META7_COLUMN = 18;
+    public static final int REACTION_META8_COLUMN = 19;
+    public static final int REACTION_META9_COLUMN = 20;
+    public static final int REACTION_META10_COLUMN = 21;
+    public static final int REACTION_META11_COLUMN = 22;
+    public static final int REACTION_META12_COLUMN = 23;
+    public static final int REACTION_META13_COLUMN = 24;
+    public static final int REACTION_META14_COLUMN = 25;
+    public static final int REACTION_META15_COLUMN = 26;
     public static final int REACTION_META_DEFAULT_WIDTH = 150;
     
     //metabolites table column numbers and associated widths

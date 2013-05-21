@@ -117,6 +117,12 @@ public class TextReactionsModelReader {
 		
 		LocalConfig.getInstance().addMetaboliteOption = true;
 		
+		String metaString = "";
+		for (int i = 0; i < 15; i++) {
+			String meta = ", meta_" + (i + 1)+ " varchar(500)";
+			metaString += meta;
+		}
+		
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
 
 		try {
@@ -134,12 +140,8 @@ public class TextReactionsModelReader {
 			stat.executeUpdate("drop table if exists reactions;");
 			stat.executeUpdate("create table reactions (id INTEGER PRIMARY KEY, " 
 					+ " knockout varchar(6), flux_value double, reaction_abbreviation varchar(40), reaction_name varchar(500), "
-					+ " reaction_string varchar(500), reversible varchar(6), lower_bound double, " 
-					+ " upper_bound double, biological_objective double, meta_1 varchar(500), " 
-					+ " meta_2 varchar(500), meta_3 varchar(500), meta_4 varchar(500), meta_5 varchar(500), "
-					+ " meta_6 varchar(500), meta_7 varchar(500), meta_8 varchar(500), meta_9 varchar(500), "
-					+ " meta_10 varchar(500), meta_11 varchar(500), meta_12 varchar(500), "
-					+ " meta_13 varchar(500), meta_14 varchar(500), meta_15 varchar(500));");
+					+ " reaction_equn_abbr varchar(500), reaction_equn_names varchar(500), reversible varchar(6), lower_bound double, " 
+					+ " upper_bound double, biological_objective double, gene_associations varchar(255)" + metaString + ");");
 		
 			stat.executeUpdate("drop table if exists reaction_reactants;");
 			stat.executeUpdate("CREATE TABLE reaction_reactants (reaction_id INTEGER, " 
@@ -149,6 +151,7 @@ public class TextReactionsModelReader {
 			stat.executeUpdate("CREATE TABLE reaction_products (reaction_id INTEGER, " 
 					+ " metabolite_id INTEGER, stoic FLOAT);");
 			
+			//System.out.println("load " + LocalConfig.getInstance().hasMetabolitesFile);
 			if (!LocalConfig.getInstance().hasMetabolitesFile) {
 						
 				LocalConfig.getInstance().getMetaboliteUsedMap().clear();
@@ -157,12 +160,6 @@ public class TextReactionsModelReader {
 				LocalConfig.getInstance().getMetaboliteIdNameMap().clear();
 				LocalConfig.getInstance().setMaxMetaboliteId(0);
 				maxMetabId = 0;
-				
-				String metaString = "";
-				for (int i = 0; i < 15; i++) {
-					String meta = ", meta_" + (i + 1)+ " varchar(500)";
-					metaString += meta;
-				}
 				
 				stat.executeUpdate("drop table if exists metabolites;");
 				stat.executeUpdate("create table metabolites (id INTEGER PRIMARY KEY, " 
@@ -191,16 +188,21 @@ public class TextReactionsModelReader {
 				
 				stat.executeUpdate("BEGIN TRANSACTION");
 				PreparedStatement reacInsertPrep = conn.prepareStatement("INSERT INTO reactions(knockout, flux_value, reaction_abbreviation, " 
-						+ " reaction_name, reaction_string, reversible, lower_bound, upper_bound, biological_objective," 
-						+ " meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, meta_11, "
-						+ "meta_12, meta_13, meta_14, meta_15) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); 
+						+ " reaction_name, reaction_equn_abbr, reaction_equn_names, reversible, lower_bound, upper_bound, biological_objective," 
+						+ " gene_associations, meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, meta_11, "
+						+ " meta_12, meta_13, meta_14, meta_15) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); 
 				PreparedStatement addMetabPrep = conn.prepareStatement("insert into metabolites (metabolite_abbreviation, boundary) values(?, 'false')");											
 				PreparedStatement rrInsertPrep = conn.prepareStatement("INSERT INTO reaction_reactants(reaction_id, stoic, metabolite_id) values (?, ?, ?)");
 				PreparedStatement rpInsertPrep = conn.prepareStatement("INSERT INTO reaction_products(reaction_id, stoic, metabolite_id) values (?, ?, ?)");
 				PreparedStatement deleteReacPrep = conn.prepareStatement("delete from reaction_reactants where reaction_id=?;");
 				PreparedStatement deleteProdPrep = conn.prepareStatement("delete from reaction_products where reaction_id=?;");
+				PreparedStatement reacNamePrep = conn.prepareStatement("SELECT metabolite_name from metabolites where id=?;");
 				for (int i = 0; i < numLines; i++) {
 					LocalConfig.getInstance().setProgress(i*100/numLines);
+					
+					StringBuffer reacNamesBfr = new StringBuffer();
+					StringBuffer prodNamesBfr = new StringBuffer();
+					StringBuffer rxnNamesBfr = new StringBuffer();
 					
 					String [] dataArray = reader.readNext();
 					for (int s = 0; s < dataArray.length; s++) {
@@ -214,11 +216,13 @@ public class TextReactionsModelReader {
 						Double fluxValue = GraphicalInterfaceConstants.FLUX_VALUE_DEFAULT;
 						String reactionAbbreviation = "";
 						String reactionName = "";
-						String reactionString = "";
+						String reactionEqunAbbr = "";
+						String reactionEqunNames = "";
 						String reversible = "";
 						Double lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
 						Double upperBound =	GraphicalInterfaceConstants.UPPER_BOUND_DEFAULT;
 						Double objective = GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_DEFAULT;
+						String geneAssociations = "";
 						String meta1 = "";
 						String meta2 = "";
 						String meta3 = "";
@@ -254,8 +258,8 @@ public class TextReactionsModelReader {
 							reactionName = dataArray[LocalConfig.getInstance().getReactionNameColumnIndex()];
 						}
 								
-						reactionString = dataArray[LocalConfig.getInstance().getReactionEquationColumnIndex()];
-						reactionString = reactionString.trim();
+						reactionEqunAbbr = dataArray[LocalConfig.getInstance().getReactionEquationColumnIndex()];
+						reactionEqunAbbr = reactionEqunAbbr.trim();
 						
 						if (LocalConfig.getInstance().getReversibleColumnIndex() > -1) {
 							if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("false") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("FALSE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0.0") == 0) {
@@ -267,10 +271,10 @@ public class TextReactionsModelReader {
 								if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].length() > 0) {
 									reversible = dataArray[LocalConfig.getInstance().getReversibleColumnIndex()];
 								} else {
-									if (reactionString != null) {
-										if (reactionString.contains("<") || (reactionString.contains("=") && !reactionString.contains(">"))) {
+									if (reactionEqunAbbr != null) {
+										if (reactionEqunAbbr.contains("<") || (reactionEqunAbbr.contains("=") && !reactionEqunAbbr.contains(">"))) {
 											reversible = "true";
-										} else if (reactionString.contains("-->") || reactionString.contains("->") || reactionString.contains("=>")) {
+										} else if (reactionEqunAbbr.contains("-->") || reactionEqunAbbr.contains("->") || reactionEqunAbbr.contains("=>")) {
 											reversible = "false";		    		
 										}				
 									} 
@@ -282,11 +286,11 @@ public class TextReactionsModelReader {
 							//ReactionParser parser = new ReactionParser();
 							boolean valid = true;
 							
-							ArrayList<ArrayList<ArrayList<String>>> reactionList = parser.reactionList(reactionString.trim());
-							if (parser.isValid(reactionString)) {
+							ArrayList<ArrayList<ArrayList<String>>> reactionList = parser.reactionList(reactionEqunAbbr.trim());
+							if (parser.isValid(reactionEqunAbbr)) {
 								noReactants = false;
 								noProducts = false;
-								ArrayList<ArrayList<String>> reactants = parser.reactionList(reactionString.trim()).get(0);
+								ArrayList<ArrayList<String>> reactants = parser.reactionList(reactionEqunAbbr.trim()).get(0);
 								// if user hits "No", reactant will not be included in equation
 								ArrayList<String> removeReacList = new ArrayList<String>();
 								ArrayList<String> removeProdList = new ArrayList<String>();
@@ -349,6 +353,44 @@ public class TextReactionsModelReader {
 											}										
 											
 											Integer id = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(reactant);				
+											String metabName = "";
+											reacNamePrep.setInt(1, id);
+											ResultSet rs = reacNamePrep.executeQuery();
+											while (rs.next()) {
+												metabName = rs.getString("metabolite_name");
+											}
+											rs.close();
+											if (r == 0) {
+												if (stoicStr.length() == 0 || Double.valueOf(stoicStr) == 1.0) {
+													if (metabName != null && metabName.trim().length() > 0) {
+														reacNamesBfr.append(metabName);
+													} else {
+														reacNamesBfr.append(reactant);
+													}									
+												} else {
+													if (metabName != null && metabName.trim().length() > 0) {
+														reacNamesBfr.append(stoicStr + " " + metabName);
+													} else {
+														reacNamesBfr.append(stoicStr + " " + reactant);
+													}									
+												}
+
+											} else {
+												if (stoicStr.length() == 0 || Double.valueOf(stoicStr) == 1.0) {
+													if (metabName != null && metabName.trim().length() > 0) {
+														reacNamesBfr.append(" + " + metabName);
+													} else {
+														reacNamesBfr.append(" + " + reactant);
+													}
+													
+												} else {
+													if (metabName != null && metabName.trim().length() > 0) {
+														reacNamesBfr.append(" + " + stoicStr + " " + metabName);
+													} else {
+														reacNamesBfr.append(" + " + stoicStr + " " + reactant);
+													}
+												}				
+											}			
 											if (!newMetabolite || LocalConfig.getInstance().addMetaboliteOption) {
 												rrInsertPrep.setInt(1, i - correction);
 												rrInsertPrep.setDouble(2, Double.valueOf(stoicStr));
@@ -375,7 +417,7 @@ public class TextReactionsModelReader {
 								}
 										
 								//reactions of the type a ==> will be size 1, assigned the value [0] in parser
-								ArrayList<ArrayList<String>> products = parser.reactionList(reactionString.trim()).get(1);
+								ArrayList<ArrayList<String>> products = parser.reactionList(reactionEqunAbbr.trim()).get(1);
 								if (products.get(0).size() == 1) {
 									noProducts = true;
 								} else {
@@ -433,6 +475,44 @@ public class TextReactionsModelReader {
 											}
 											
 											Integer id = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(product);											
+											String metabName = "";
+											reacNamePrep.setInt(1, id);
+											ResultSet rs = reacNamePrep.executeQuery();
+											while (rs.next()) {
+												metabName = rs.getString("metabolite_name");
+											}
+											rs.close();
+											if (p == 0) {
+												if (stoicStr.length() == 0 || Double.valueOf(stoicStr) == 1.0) {
+													if (metabName != null && metabName.trim().length() > 0) {
+														prodNamesBfr.append(metabName);
+													} else {
+														prodNamesBfr.append(product);
+													}									
+												} else {
+													if (metabName != null && metabName.trim().length() > 0) {
+														prodNamesBfr.append(stoicStr + " " + metabName);
+													} else {
+														prodNamesBfr.append(stoicStr + " " + product);
+													}									
+												}
+
+											} else {
+												if (stoicStr.length() == 0 || Double.valueOf(stoicStr) == 1.0) {
+													if (metabName != null && metabName.trim().length() > 0) {
+														prodNamesBfr.append(" + " + metabName);
+													} else {
+														prodNamesBfr.append(" + " + product);
+													}
+													
+												} else {
+													if (metabName != null && metabName.trim().length() > 0) {
+														prodNamesBfr.append(" + " + stoicStr + " " + metabName);
+													} else {
+														prodNamesBfr.append(" + " + stoicStr + " " + product);
+													}
+												}				
+											}			
 											if (!newMetabolite || LocalConfig.getInstance().addMetaboliteOption) {
 												rpInsertPrep.setInt(1, i - correction);
 												rpInsertPrep.setDouble(2, Double.valueOf(stoicStr));
@@ -466,16 +546,16 @@ public class TextReactionsModelReader {
 									if (!noReactants) {
 										revisedReactants = revisedReactants(reactants, removeReacList);
 									}									
-									String splitString = parser.splitString(reactionString);
+									String splitString = parser.splitString(reactionEqunAbbr);
 									if (!noProducts) {
 										revisedProducts = revisedProducts(products, removeProdList);
 									}									
 									revisedReaction = revisedReactants + " " + splitString + revisedProducts;
 									// prevents reaction equation from appearing as only an arrow such as ==>
 									if (revisedReaction.trim().compareTo(splitString.trim()) != 0) {
-										reactionString = revisedReaction.trim();
+										reactionEqunAbbr = revisedReaction.trim();
 									} else {
-										reactionString = "";
+										reactionEqunAbbr = "";
 									}									
 								}								
 							} else {
@@ -488,13 +568,21 @@ public class TextReactionsModelReader {
 								deleteReacPrep.executeUpdate();
 								deleteProdPrep.setInt(1, i - correction);
 								deleteProdPrep.executeUpdate();
-								if (reactionString != null && reactionString.length() > 0) {
-									LocalConfig.getInstance().getInvalidReactions().add(reactionString);
+								if (reactionEqunAbbr != null && reactionEqunAbbr.length() > 0) {
+									LocalConfig.getInstance().getInvalidReactions().add(reactionEqunAbbr);
 								}
 							}										
 						} catch (Throwable t) {
 							
 						}
+						
+						if (reversible == "false") {
+							rxnNamesBfr.append(reacNamesBfr).append(" --> ").append(prodNamesBfr);
+						} else {
+							rxnNamesBfr.append(reacNamesBfr).append(" <==> ").append(prodNamesBfr);
+						}
+
+						reactionEqunNames = rxnNamesBfr.toString().trim();
 						
 						if (LocalConfig.getInstance().getLowerBoundColumnIndex() > -1) {
 							if (isNumber(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()])) {
@@ -567,26 +655,28 @@ public class TextReactionsModelReader {
 						reacInsertPrep.setDouble(2, fluxValue);
 						reacInsertPrep.setString(3, reactionAbbreviation);
 						reacInsertPrep.setString(4, reactionName);
-						reacInsertPrep.setString(5, reactionString);
-						reacInsertPrep.setString(6, reversible);
-						reacInsertPrep.setDouble(7, lowerBound);
-						reacInsertPrep.setDouble(8, upperBound);
-						reacInsertPrep.setDouble(9, objective);
-						reacInsertPrep.setString(10, meta1);
-						reacInsertPrep.setString(11, meta2);
-						reacInsertPrep.setString(12, meta3);
-						reacInsertPrep.setString(13, meta4);
-						reacInsertPrep.setString(14, meta5);
-						reacInsertPrep.setString(15, meta6);
-						reacInsertPrep.setString(16, meta7);
-						reacInsertPrep.setString(17, meta8);
-						reacInsertPrep.setString(18, meta9);
-						reacInsertPrep.setString(19, meta10);
-						reacInsertPrep.setString(20, meta11);
-						reacInsertPrep.setString(21, meta12);
-						reacInsertPrep.setString(22, meta13);
-						reacInsertPrep.setString(23, meta14);
-						reacInsertPrep.setString(24, meta15);
+						reacInsertPrep.setString(5, reactionEqunAbbr);
+						reacInsertPrep.setString(6, reactionEqunNames);
+						reacInsertPrep.setString(7, reversible);
+						reacInsertPrep.setDouble(8, lowerBound);
+						reacInsertPrep.setDouble(9, upperBound);
+						reacInsertPrep.setDouble(10, objective);
+						reacInsertPrep.setString(11, geneAssociations);
+						reacInsertPrep.setString(12, meta1);
+						reacInsertPrep.setString(13, meta2);
+						reacInsertPrep.setString(14, meta3);
+						reacInsertPrep.setString(15, meta4);
+						reacInsertPrep.setString(16, meta5);
+						reacInsertPrep.setString(17, meta6);
+						reacInsertPrep.setString(18, meta7);
+						reacInsertPrep.setString(19, meta8);
+						reacInsertPrep.setString(20, meta9);
+						reacInsertPrep.setString(21, meta10);
+						reacInsertPrep.setString(22, meta11);
+						reacInsertPrep.setString(23, meta12);
+						reacInsertPrep.setString(24, meta13);
+						reacInsertPrep.setString(25, meta14);
+						reacInsertPrep.setString(26, meta15);
 						
 						reacInsertPrep.executeUpdate();
 					}

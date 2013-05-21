@@ -40,8 +40,8 @@ public class DatabaseCreator {
 			stat.executeUpdate("drop table if exists reactions;");
 			stat.executeUpdate("create table reactions (id INTEGER PRIMARY KEY, " 
 					+ " knockout varchar(6), flux_value double, reaction_abbreviation varchar(255), reaction_name varchar(500), "
-					+ " reaction_string varchar(500), reversible varchar(6), lower_bound double, " 
-					+ " upper_bound double, biological_objective double" + metaString + ");");
+					+ " reaction_equn_abbr varchar(500), reaction_equn_names varchar(500), reversible varchar(6), lower_bound double, " 
+					+ " upper_bound double, biological_objective double, gene_associations varchar(255)" + metaString + ");");
 
 			stat.executeUpdate("drop table if exists reaction_reactants;");
 			stat.executeUpdate("CREATE TABLE reaction_reactants (reaction_id INTEGER, " 
@@ -309,8 +309,8 @@ public class DatabaseCreator {
 			stat.executeUpdate("drop table if exists reactions;");	
 			stat.executeUpdate("create table reactions (id INTEGER PRIMARY KEY, " 
 					+ " knockout varchar(6), flux_value double, reaction_abbreviation varchar(255), reaction_name varchar(500), "
-					+ " reaction_string varchar(500), reversible varchar(6), lower_bound double, " 
-					+ " upper_bound double, biological_objective double" + metaString + ");");
+					+ " reaction_equn_abbr varchar(500), reaction_equn_names varchar(500), reversible varchar(6), lower_bound double, " 
+					+ " upper_bound double, biological_objective double, gene_associations varchar(255)" + metaString + ");");
 			
 			try {			
 				stat.executeUpdate("BEGIN TRANSACTION");			
