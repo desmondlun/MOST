@@ -6707,7 +6707,7 @@ public class GraphicalInterface extends JFrame {
 						columnNameInterface.setModal(true);
 						columnNameInterface.setIconImages(icons);
 
-						columnNameInterface.setSize(600, 510);
+						columnNameInterface.setSize(600, 550);
 						columnNameInterface.setResizable(false);
 						//columnNameInterface.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 						columnNameInterface.setLocationRelativeTo(null);

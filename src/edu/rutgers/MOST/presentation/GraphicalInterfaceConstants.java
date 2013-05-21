@@ -220,6 +220,10 @@ public class GraphicalInterfaceConstants {
     {"flux"
     };
         
+    public static final String[] GENE_ASSOCIATION_COLUMN_FILTER =
+    {"gene", "assoc"
+    };
+    
     // messages box titles and messages
     // general 
     public static final String NUMERIC_VALUE_ERROR_TITLE = "Invalid numeric entry.";

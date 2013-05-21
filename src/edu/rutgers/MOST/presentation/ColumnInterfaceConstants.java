@@ -38,6 +38,7 @@ public class ColumnInterfaceConstants {
     public static final String LOWER_BOUND_LABEL = "Lower Bound Column                     ";
     public static final String UPPER_BOUND_LABEL = "Upper Bound Column                     ";
     public static final String BIOLOGICAL_OBJECTIVE_LABEL = "Biological Objective Column         "; 
+    public static final String GENE_ASSOCIATION_LABEL = "Gene Association Column             "; 
     
     public static final String REQUIRED_LABEL = "Fields labeled with * are required";
 
