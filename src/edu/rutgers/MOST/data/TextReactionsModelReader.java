@@ -599,7 +599,9 @@ public class TextReactionsModelReader {
 								objective = Double.valueOf(dataArray[LocalConfig.getInstance().getBiologicalObjectiveColumnIndex()]);							
 							} 							
 						} 
-						
+						if (LocalConfig.getInstance().getGeneAssociationColumnIndex() > -1) {
+							geneAssociations = dataArray[LocalConfig.getInstance().getGeneAssociationColumnIndex()];						 							
+						} 
 						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 0) {
 							meta1 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)];						
 						}
