@@ -579,7 +579,6 @@ public class ReactionColumnNameInterface  extends JDialog {
 						LocalConfig.getInstance().setReactionNameColumnIndex(getColumnNamesFromFile().indexOf(cbReactionName.getSelectedItem()));
 						usedIndices.add(getColumnNamesFromFile().indexOf(cbReactionName.getSelectedItem()));
 					}
-					System.out.println("index" + cbReactionAbbreviation.getSelectedIndex());
 					if (getColumnNamesFromFile().contains(cbReactionEquation.getSelectedItem())) {
 						LocalConfig.getInstance().setReactionEquationColumnIndex(getColumnNamesFromFile().indexOf(cbReactionEquation.getSelectedItem()));
 						usedIndices.add(getColumnNamesFromFile().indexOf(cbReactionEquation.getSelectedItem()));
