@@ -184,8 +184,16 @@ public class GraphicalInterfaceConstants {
     {"abbreviation", "reaction id"
     };
     
+    public static final String[] ABBREVIATION_COLUMN_NOT_FILTER =
+    {"metabolite"
+    };
+    
     public static final String[] NAME_COLUMN_FILTER =
     {"name"
+    };
+    
+    public static final String[] NAME_COLUMN_NOT_FILTER =
+    {"metabolite"
     };
     
     public static final String[] EQUATION_COLUMN_FILTER =
