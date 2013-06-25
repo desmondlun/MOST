@@ -1,5 +1,6 @@
 package edu.rutgers.MOST.data;
 
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -7,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class ReactionsMetaColumnManager {
 
@@ -103,6 +105,35 @@ public class ReactionsMetaColumnManager {
 			e.printStackTrace();			
 		}
 		return columnName;
+
+	}
+	
+	public ArrayList<String> getColumnNames(String databaseName) {
+		ArrayList<String> columnNames = new ArrayList<String>();
+		String queryString = "jdbc:sqlite:" + databaseName + ".db";
+		try {
+			Class.forName("org.sqlite.JDBC");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Connection conn;
+		try {
+			conn = DriverManager.getConnection(queryString);
+			PreparedStatement prep1 = conn.prepareStatement("select meta_column_name from reactions_meta_info;");
+
+			ResultSet rs = prep1.executeQuery();
+			while (rs.next()) {
+				columnNames.add(rs.getString("meta_column_name"));
+			}
+
+			conn.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();			
+		}
+		return columnNames;
 
 	}
 

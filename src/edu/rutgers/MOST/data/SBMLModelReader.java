@@ -1,7 +1,5 @@
 package edu.rutgers.MOST.data;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
@@ -9,16 +7,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JOptionPane;
-import javax.swing.WindowConstants;
 import javax.xml.stream.XMLStreamException;
 
 import org.sbml.jsbml.*;
 
 import edu.rutgers.MOST.config.LocalConfig;
-import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 import edu.rutgers.MOST.presentation.ProgressConstants;
-import edu.rutgers.MOST.presentation.ReactionColAddRenameInterface;
 
 public class SBMLModelReader {
 	private String databaseName;
@@ -331,11 +326,8 @@ public class SBMLModelReader {
 								} else {
 									chargeString = value;
 								}
-
-
 							}
 						}
-
 					}
 
 					metabInsertPrep.setString(1, metaboliteAbbreviation);
@@ -362,7 +354,7 @@ public class SBMLModelReader {
 					metabInsertPrep.executeUpdate();	
 				}
 				LocalConfig.getInstance().setMaxMetaboliteId(metabolites.size());
-				LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
+				LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);				
 				//System.out.println("id name map " + LocalConfig.getInstance().getMetaboliteIdNameMap());
 
 				//				long endTime = System.currentTimeMillis();
@@ -372,8 +364,8 @@ public class SBMLModelReader {
 
 				PreparedStatement reacInsertPrep = conn.prepareStatement("INSERT INTO reactions(knockout, flux_value, reaction_abbreviation, " 
 						+ " reaction_name, reaction_equn_abbr, reaction_equn_names, reversible, lower_bound, upper_bound, biological_objective," 
-						+ " gene_associations, meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, meta_11, "
-						+ " meta_12, meta_13, meta_14, meta_15) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); 
+						+ " synthetic_objective, gene_associations, meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, meta_11, "
+						+ " meta_12, meta_13, meta_14, meta_15) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); 
 				PreparedStatement rrInsertPrep = conn.prepareStatement("INSERT INTO reaction_reactants(reaction_id, stoic, metabolite_id) values (?, ?, ?)");
 				PreparedStatement rpInsertPrep = conn.prepareStatement("INSERT INTO reaction_products(reaction_id, stoic, metabolite_id) values (?, ?, ?)");
 				PreparedStatement reacNamePrep = conn.prepareStatement("SELECT metabolite_name from metabolites where id=?;");
@@ -403,9 +395,23 @@ public class SBMLModelReader {
 					if (reactions.get(j).isSetListOfReactants()) {
 						ListOf<SpeciesReference> reactants = reactions.get(j).getListOfReactants();
 						int id = 0;
-						for (int r = 0; r < reactants.size(); r++) {
+						for (int r = 0; r < reactants.size(); r++) {							
 							if (reactants.get(r).isSetSpecies()) {
-								id = (Integer) metaboliteIdNameMap.get(reactants.get(r).getSpecies());
+								// if a metabolite is missing in the model, but used in an equation, 
+								// null error caught here
+								if (metaboliteIdNameMap.get(reactants.get(r).getSpecies()) == null) {
+									// add missing metabolite to maps and database
+									id = LocalConfig.getInstance().getMaxMetaboliteId() + 1;
+									LocalConfig.getInstance().setMaxMetaboliteId(id);
+									metaboliteIdNameMap.put(reactants.get(r).getSpecies(), id);
+									LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
+									
+									PreparedStatement metabInsertPrep2 = conn.prepareStatement("insert into metabolites (metabolite_abbreviation, metabolite_name, boundary) values(?, '', 'false')");
+									metabInsertPrep2.setString(1, reactants.get(r).getSpecies());
+									metabInsertPrep2.executeUpdate();									
+								} else {
+									id = (Integer) metaboliteIdNameMap.get(reactants.get(r).getSpecies());									
+								}
 								rrInsertPrep.setInt(1, j + 1);
 								rrInsertPrep.setDouble(2, reactants.get(r).getStoichiometry());
 								rrInsertPrep.setInt(3, id);
@@ -415,7 +421,7 @@ public class SBMLModelReader {
 									LocalConfig.getInstance().getMetaboliteUsedMap().put(reactants.get(r).getSpecies(), new Integer(usedCount + 1));
 								} else {
 									LocalConfig.getInstance().getMetaboliteUsedMap().put(reactants.get(r).getSpecies(), new Integer(1));
-								}					
+								}
 							}
 
 							String stoicStr = "";
@@ -466,7 +472,7 @@ public class SBMLModelReader {
 										reacNamesBfr.append(" + " + stoicStr + " " + metabName);
 									} else {
 										reacNamesBfr.append(" + " + stoicStr + " " + reactants.get(r).getSpecies());
-									}
+									}								
 								}				
 							}				    	
 						}			  
@@ -478,7 +484,21 @@ public class SBMLModelReader {
 						int id = 0;
 						for (int p = 0; p < products.size(); p++) {	
 							if (products.get(p).isSetSpecies()) {
-								id = (Integer) metaboliteIdNameMap.get(products.get(p).getSpecies());
+								// if a metabolite is missing in the model, but used in an equation, 
+								// null error caught here
+								if (metaboliteIdNameMap.get(products.get(p).getSpecies()) == null) {
+									// add missing metabolite to maps and database
+									id = LocalConfig.getInstance().getMaxMetaboliteId() + 1;
+									LocalConfig.getInstance().setMaxMetaboliteId(id);
+									metaboliteIdNameMap.put(products.get(p).getSpecies(), id);
+									LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
+									
+									PreparedStatement metabInsertPrep2 = conn.prepareStatement("insert into metabolites (metabolite_abbreviation, metabolite_name, boundary) values(?, '', 'false')");
+									metabInsertPrep2.setString(1, products.get(p).getSpecies());
+									metabInsertPrep2.executeUpdate();									
+								} else {
+								    id = (Integer) metaboliteIdNameMap.get(products.get(p).getSpecies());
+								}
 								rpInsertPrep.setInt(1, j + 1);
 								rpInsertPrep.setDouble(2, products.get(p).getStoichiometry());
 								rpInsertPrep.setInt(3, id);
@@ -557,7 +577,8 @@ public class SBMLModelReader {
 					String knockout = GraphicalInterfaceConstants.KO_DEFAULT;	
 					Double lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
 					Double upperBound =	GraphicalInterfaceConstants.UPPER_BOUND_DEFAULT;
-					Double objective = GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_DEFAULT;
+					Double biologicalObjective = GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_DEFAULT;
+					Double syntheticObjective = GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_DEFAULT;
 					Double fluxValue = GraphicalInterfaceConstants.FLUX_VALUE_DEFAULT;
 
 					//if strings contain ' (single quote), it will not execute insert statement
@@ -584,8 +605,15 @@ public class SBMLModelReader {
 								upperBound = reactions.get(j).getKineticLaw().getLocalParameter("UPPER_BOUND").getValue();			
 							} 
 							if (reactions.get(j).getKineticLaw().getListOfLocalParameters().get(k).getId().matches("OBJECTIVE_COEFFICIENT")) {
-								objective = reactions.get(j).getKineticLaw().getLocalParameter("OBJECTIVE_COEFFICIENT").getValue();			
+								biologicalObjective = reactions.get(j).getKineticLaw().getLocalParameter("OBJECTIVE_COEFFICIENT").getValue();			
 							} 
+							/*
+							 * need to see if any sbml files contain a synthetic coefficient and if so, what it is called. this is just a 
+							 * guess. do not uncomment this code unless certain it is correct
+							if (reactions.get(j).getKineticLaw().getListOfLocalParameters().get(k).getId().matches("SYNTHETIC_COEFFICIENT")) {
+								syntheticObjective = reactions.get(j).getKineticLaw().getLocalParameter("SYNTHETIC_COEFFICIENT").getValue();			
+							}
+							*/
 							if (reactions.get(j).getKineticLaw().getListOfLocalParameters().get(k).getId().matches("FLUX_VALUE")) {
 								fluxValue = reactions.get(j).getKineticLaw().getLocalParameter("FLUX_VALUE").getValue();			
 							}
@@ -616,6 +644,7 @@ public class SBMLModelReader {
 							if (!reactions.get(j).getNotes().getChildAt(u).getName().isEmpty()) {
 								String noteString = reactions.get(j).getNotes().getChildAt(u).toXMLString();
 								String noteItem = "";
+								//System.out.println(noteString);
 								//removes xmlns (xml namespace tags)
 								if (noteString.contains("xmlns")) {
 									if (!noteString.endsWith("/>")) {
@@ -628,9 +657,13 @@ public class SBMLModelReader {
 										}
 									}
 								} else {
-									//for "<>", "</>" types of nodes, tags are removed
-									noteItem = noteString.substring(noteString.indexOf(">") + 1, noteString.lastIndexOf("<"));
-									noteItemList.add(noteItem);	
+									if ((noteString.indexOf(">") + 1) < noteString.lastIndexOf("<")) {
+										//for "<>", "</>" types of nodes, tags are removed
+										noteItem = noteString.substring(noteString.indexOf(">") + 1, noteString.lastIndexOf("<"));
+										noteItemList.add(noteItem);	
+									} else if (noteString.contains("listOfGenes")) {
+										noteItemList.add("listOfGenes");
+									}
 								}	
 							}
 						}
@@ -881,23 +914,24 @@ public class SBMLModelReader {
 					reacInsertPrep.setString(7, reversible);
 					reacInsertPrep.setDouble(8, lowerBound);
 					reacInsertPrep.setDouble(9, upperBound);
-					reacInsertPrep.setDouble(10, objective);
-					reacInsertPrep.setString(11, geneAssociations);
-					reacInsertPrep.setString(12, meta1);
-					reacInsertPrep.setString(13, meta2);
-					reacInsertPrep.setString(14, meta3);
-					reacInsertPrep.setString(15, meta4);
-					reacInsertPrep.setString(16, meta5);
-					reacInsertPrep.setString(17, meta6);
-					reacInsertPrep.setString(18, meta7);
-					reacInsertPrep.setString(19, meta8);
-					reacInsertPrep.setString(20, meta9);
-					reacInsertPrep.setString(21, meta10);
-					reacInsertPrep.setString(22, meta11);
-					reacInsertPrep.setString(23, meta12);
-					reacInsertPrep.setString(24, meta13);
-					reacInsertPrep.setString(25, meta14);
-					reacInsertPrep.setString(26, meta15);
+					reacInsertPrep.setDouble(10, biologicalObjective);
+					reacInsertPrep.setDouble(11, syntheticObjective);
+					reacInsertPrep.setString(12, geneAssociations);
+					reacInsertPrep.setString(13, meta1);
+					reacInsertPrep.setString(14, meta2);
+					reacInsertPrep.setString(15, meta3);
+					reacInsertPrep.setString(16, meta4);
+					reacInsertPrep.setString(17, meta5);
+					reacInsertPrep.setString(18, meta6);
+					reacInsertPrep.setString(19, meta7);
+					reacInsertPrep.setString(20, meta8);
+					reacInsertPrep.setString(21, meta9);
+					reacInsertPrep.setString(22, meta10);
+					reacInsertPrep.setString(23, meta11);
+					reacInsertPrep.setString(24, meta12);
+					reacInsertPrep.setString(25, meta13);
+					reacInsertPrep.setString(26, meta14);
+					reacInsertPrep.setString(27, meta15);
 
 					reacInsertPrep.executeUpdate();
 

@@ -1,5 +1,7 @@
 package edu.rutgers.MOST.presentation;
 
+import java.util.Arrays;
+
 public class GraphicalInterfaceConstants {
 	
 	public static final String TITLE = "MOST";
@@ -11,18 +13,19 @@ public class GraphicalInterfaceConstants {
 
 	public static final String[] REACTIONS_DB_COLUMN_NAMES = 
 	{ 
-	"id",                    
-	"ko",  
-	"flux_value", 
-	"reaction_id",           
-	"reaction_name", 
-	"reaction_equn_abbr",
-	"reaction_equn_names",       
-	"reversible",            	
-	"lower_bound",           
-	"upper_bound",           	
-	"biological_objective", 
-	"gene_associations"
+		"id",                    
+		"knockout",  
+		"flux_value", 
+		"reaction_abbreviation",           
+		"reaction_name", 
+		"reaction_equn_abbr",
+		"reaction_equn_names",       
+		"reversible",            	
+		"lower_bound",           
+		"upper_bound",           	
+		"biological_objective", 
+		"synthetic_objective",
+		"gene_associations"
 	};
 	
 	public static final String[] REACTIONS_COLUMN_NAMES = 
@@ -38,20 +41,23 @@ public class GraphicalInterfaceConstants {
 		"Lower Bound",
 		"Upper Bound",	
 		"Biological Objective",
+		"Synthetic Objective",
 		"Gene Associations"
 	};
+	
+	private static java.util.List<String> reactionsList = Arrays.asList(REACTIONS_COLUMN_NAMES);
 	
 	public static final String KNOCKOUT_TOOLTIP = "Knockout";
 	
 	public static final String[] METABOLITES_DB_COLUMN_NAMES = 
 	{ 
 	"id", 
-	"metabolite_id",
+	"metabolite_abbreviation",
 	"metabolite_name",
-	"compartment",
 	"charge",
+	"compartment",	
 	"boundary"
-	};
+	};	
 	
 	public static final String[] METABOLITES_COLUMN_NAMES = 
 	{ 
@@ -63,74 +69,76 @@ public class GraphicalInterfaceConstants {
 		"Boundary Condition"
 	};
 	
+	private static java.util.List<String> metabolitesList = Arrays.asList(METABOLITES_COLUMN_NAMES);
+	
 	//reactions table column numbers and associated widths
 	public static final int DEFAULT_WIDTH = 90; //columns with no assigned width use default	
-    public static final int DB_REACTIONS_ID_WIDTH = 50;
-    public static final int DB_REACTIONS_ID_COLUMN = 0; 
-    public static final int KO_WIDTH = 60;
-    public static final int KO_COLUMN = 1;
-    public static final int FLUX_VALUE_COLUMN = 2;
+	public static final int DB_REACTIONS_ID_COLUMN = reactionsList.indexOf("ID"); 
+	public static final int DB_REACTIONS_ID_WIDTH = 50;    
+    public static final int KO_COLUMN = reactionsList.indexOf("KO");
+    public static final int KO_WIDTH = 60;    
+    public static final int FLUX_VALUE_COLUMN = reactionsList.indexOf("Flux Value");
     public static final int REACTION_ABBREVIATION_WIDTH = 150;
-    public static final int REACTION_ABBREVIATION_COLUMN = 3;
+    public static final int REACTION_ABBREVIATION_COLUMN = reactionsList.indexOf("Reaction Abbreviation");
     public static final int REACTION_NAME_WIDTH = 200; 
-    public static final int REACTION_NAME_COLUMN = 4;
+    public static final int REACTION_NAME_COLUMN = reactionsList.indexOf("Reaction Name");
     public static final int REACTION_EQUN_ABBR_WIDTH = 300;
-    public static final int REACTION_EQUN_ABBR_COLUMN = 5;
+    public static final int REACTION_EQUN_ABBR_COLUMN = reactionsList.indexOf("Reaction Equation (Metabolite Abbreviation)");
     public static final int REACTION_EQUN_NAMES_WIDTH = 300;
-    public static final int REACTION_EQUN_NAMES_COLUMN = 6;
+    public static final int REACTION_EQUN_NAMES_COLUMN = reactionsList.indexOf("Reaction Equation (Metabolite Name)");
     public static final int REVERSIBLE_WIDTH = 60;
-    public static final int REVERSIBLE_COLUMN = 7;         
-    public static final int LOWER_BOUND_COLUMN = 8;
-    public static final int UPPER_BOUND_COLUMN = 9;
-    public static final int BIOLOGICAL_OBJECTIVE_COLUMN = 10;
-    public static final int GENE_ASSOCIATIONS_COLUMN = 11;
-    public static final int REACTION_META1_COLUMN = 12;
-    public static final int REACTION_META2_COLUMN = 13;
-    public static final int REACTION_META3_COLUMN = 14;
-    public static final int REACTION_META4_COLUMN = 15;
-    public static final int REACTION_META5_COLUMN = 16;
-    public static final int REACTION_META6_COLUMN = 17;
-    public static final int REACTION_META7_COLUMN = 18;
-    public static final int REACTION_META8_COLUMN = 19;
-    public static final int REACTION_META9_COLUMN = 20;
-    public static final int REACTION_META10_COLUMN = 21;
-    public static final int REACTION_META11_COLUMN = 22;
-    public static final int REACTION_META12_COLUMN = 23;
-    public static final int REACTION_META13_COLUMN = 24;
-    public static final int REACTION_META14_COLUMN = 25;
-    public static final int REACTION_META15_COLUMN = 26;
+    public static final int REVERSIBLE_COLUMN = reactionsList.indexOf("Reversible");         
+    public static final int LOWER_BOUND_COLUMN = reactionsList.indexOf("Lower Bound");
+    public static final int UPPER_BOUND_COLUMN = reactionsList.indexOf("Upper Bound");
+    public static final int BIOLOGICAL_OBJECTIVE_COLUMN = reactionsList.indexOf("Biological Objective"); 
+    public static final int SYNTHETIC_OBJECTIVE_COLUMN = reactionsList.indexOf("Synthetic Objective");
+    public static final int GENE_ASSOCIATIONS_COLUMN = reactionsList.indexOf("Gene Associations");
+    public static final int REACTION_META1_COLUMN = REACTIONS_COLUMN_NAMES.length;
+    public static final int REACTION_META2_COLUMN = REACTIONS_COLUMN_NAMES.length + 1;
+    public static final int REACTION_META3_COLUMN = REACTIONS_COLUMN_NAMES.length + 2;
+    public static final int REACTION_META4_COLUMN = REACTIONS_COLUMN_NAMES.length + 3;
+    public static final int REACTION_META5_COLUMN = REACTIONS_COLUMN_NAMES.length + 4;
+    public static final int REACTION_META6_COLUMN = REACTIONS_COLUMN_NAMES.length + 5;
+    public static final int REACTION_META7_COLUMN = REACTIONS_COLUMN_NAMES.length + 6;
+    public static final int REACTION_META8_COLUMN = REACTIONS_COLUMN_NAMES.length + 7;
+    public static final int REACTION_META9_COLUMN = REACTIONS_COLUMN_NAMES.length + 8;
+    public static final int REACTION_META10_COLUMN = REACTIONS_COLUMN_NAMES.length + 9;
+    public static final int REACTION_META11_COLUMN = REACTIONS_COLUMN_NAMES.length + 10;
+    public static final int REACTION_META12_COLUMN = REACTIONS_COLUMN_NAMES.length + 11;
+    public static final int REACTION_META13_COLUMN = REACTIONS_COLUMN_NAMES.length + 12;
+    public static final int REACTION_META14_COLUMN = REACTIONS_COLUMN_NAMES.length + 13;
+    public static final int REACTION_META15_COLUMN = REACTIONS_COLUMN_NAMES.length + 14;
     public static final int REACTION_META_DEFAULT_WIDTH = 150;
     
     //metabolites table column numbers and associated widths
     public static final int DB_METABOLITE_ID_WIDTH = 0;  
     //"id_m" to distinguish between numerical id in reactions table and metabolites table
-    public static final int DB_METABOLITE_ID_COLUMN = 0;
+    public static final int DB_METABOLITE_ID_COLUMN = metabolitesList.indexOf("ID");
     public static final int METABOLITE_ABBREVIATION_WIDTH = 200;
-    public static final int METABOLITE_ABBREVIATION_COLUMN = 1;
+    public static final int METABOLITE_ABBREVIATION_COLUMN = metabolitesList.indexOf("Metabolite Abbreviation");
     public static final int METABOLITE_NAME_WIDTH = 300;
-    public static final int METABOLITE_NAME_COLUMN = 2;
+    public static final int METABOLITE_NAME_COLUMN = metabolitesList.indexOf("Metabolite Name");
     public static final int CHARGE_WIDTH = 80;
-    public static final int CHARGE_COLUMN = 3;
+    public static final int CHARGE_COLUMN = metabolitesList.indexOf("Charge");
     public static final int COMPARTMENT_WIDTH = 150;
-    public static final int COMPARTMENT_COLUMN = 4;
+    public static final int COMPARTMENT_COLUMN = metabolitesList.indexOf("Compartment");
     public static final int BOUNDARY_WIDTH = 60;
-    public static final int BOUNDARY_COLUMN = 5;
-    public static final int METABOLITE_META1_COLUMN = 6;
-    public static final int METABOLITE_META2_COLUMN = 7;
-    public static final int METABOLITE_META3_COLUMN = 8;
-    public static final int METABOLITE_META4_COLUMN = 9;
-    public static final int METABOLITE_META5_COLUMN = 10;
-    public static final int METABOLITE_META6_COLUMN = 11;
-    public static final int METABOLITE_META7_COLUMN = 12;
-    public static final int METABOLITE_META8_COLUMN = 13;
-    public static final int METABOLITE_META9_COLUMN = 14;
-    public static final int METABOLITE_META10_COLUMN = 15;
-    public static final int METABOLITE_META11_COLUMN = 16;
-    public static final int METABOLITE_META12_COLUMN = 17;
-    public static final int METABOLITE_META13_COLUMN = 18;
-    public static final int METABOLITE_META14_COLUMN = 19;
-    public static final int METABOLITE_META15_COLUMN = 20;
-    public static final int USED_COLUMN = 21;
+    public static final int BOUNDARY_COLUMN = metabolitesList.indexOf("Boundary Condition");
+    public static final int METABOLITE_META1_COLUMN = METABOLITES_COLUMN_NAMES.length;
+    public static final int METABOLITE_META2_COLUMN = METABOLITES_COLUMN_NAMES.length + 1;
+    public static final int METABOLITE_META3_COLUMN = METABOLITES_COLUMN_NAMES.length + 2;
+    public static final int METABOLITE_META4_COLUMN = METABOLITES_COLUMN_NAMES.length + 3;
+    public static final int METABOLITE_META5_COLUMN = METABOLITES_COLUMN_NAMES.length + 4;
+    public static final int METABOLITE_META6_COLUMN = METABOLITES_COLUMN_NAMES.length + 5;
+    public static final int METABOLITE_META7_COLUMN = METABOLITES_COLUMN_NAMES.length + 6;
+    public static final int METABOLITE_META8_COLUMN = METABOLITES_COLUMN_NAMES.length + 7;
+    public static final int METABOLITE_META9_COLUMN = METABOLITES_COLUMN_NAMES.length + 8;
+    public static final int METABOLITE_META10_COLUMN = METABOLITES_COLUMN_NAMES.length + 9;
+    public static final int METABOLITE_META11_COLUMN = METABOLITES_COLUMN_NAMES.length + 10;
+    public static final int METABOLITE_META12_COLUMN = METABOLITES_COLUMN_NAMES.length + 11;
+    public static final int METABOLITE_META13_COLUMN = METABOLITES_COLUMN_NAMES.length + 12;
+    public static final int METABOLITE_META14_COLUMN = METABOLITES_COLUMN_NAMES.length + 13;
+    public static final int METABOLITE_META15_COLUMN = METABOLITES_COLUMN_NAMES.length + 14;
     public static final int METABOLITE_META_DEFAULT_WIDTH = 150;
     
     public static final double FLUX_VALUE_DEFAULT = 0.0;
@@ -138,6 +146,7 @@ public class GraphicalInterfaceConstants {
     public static final double UPPER_BOUND_DEFAULT = 999999.0;
     public static final String UPPER_BOUND_DEFAULT_STRING = "999999.0";
     public static final double BIOLOGICAL_OBJECTIVE_DEFAULT = 0.0;
+    public static final double SYNTHETIC_OBJECTIVE_DEFAULT = 0.0;
     public static final String KO_DEFAULT = "false";
     // if lower bound default < 0 then reversible must be true
     public static final String REVERSIBLE_DEFAULT = "true";
@@ -200,6 +209,10 @@ public class GraphicalInterfaceConstants {
     {"equation", "reaction"
     };
     
+    public static final String[] EQUATION_COLUMN_NOT_FILTER =
+    {"metabolite name"
+    };
+    
     public static final String[] REVERSIBLE_COLUMN_FILTER =
     {"reversible"
     };
@@ -213,11 +226,19 @@ public class GraphicalInterfaceConstants {
     };
     
     public static final String[] BIOLOGICAL_OBJECTIVE_FILTER =
-    {"objective"
+    {"obj"
     };
     
     public static final String[] BIOLOGICAL_OBJECTIVE_NOT_FILTER =
-    {"synthetic"
+    {"syn"
+    };
+    
+    public static final String[] SYNTHETIC_OBJECTIVE_FILTER =
+    {"obj"
+    };
+    
+    public static final String[] SYNTHETIC_OBJECTIVE_NOT_FILTER =
+    {"bio"
     };
     
     public static final String[] KNOCKOUT_COLUMN_FILTER =
@@ -328,6 +349,7 @@ public class GraphicalInterfaceConstants {
     {"=>", "-->", "->"
     };
     
+
     public static final String GUROBI_KEY_ERROR_TITLE = "Gurobi Key Error";
     public static final String GUROBI_KEY_ERROR = "Gurobi Key Error";
         
@@ -335,5 +357,6 @@ public class GraphicalInterfaceConstants {
     
     // spaces for alignment
     public static final String ROW_HEADER_TITLE = "   Row";
+
 }
 

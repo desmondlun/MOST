@@ -3,7 +3,9 @@ package edu.rutgers.MOST.optimization.GDBB;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -11,6 +13,8 @@ import org.apache.log4j.Logger;
 import edu.rutgers.MOST.data.*;
 import edu.rutgers.MOST.optimization.solvers.*;
 
+//http://commons.apache.org/proper/commons-lang/download_lang.cgi
+import org.apache.commons.lang3.time.StopWatch;
 
 public class GDBB extends Thread {
 
@@ -21,9 +25,10 @@ public class GDBB extends Thread {
 	private Vector<String> varNames;
 	private double maxObj;
 	
-	public static ArrayList<Double> objIntermediate;
-	public static ArrayList<double[]> knockoutVectors;
+//	public static ArrayList<Double> objIntermediate;
+//	public static ArrayList<double[]> knockoutVectors;
 	
+	public static Queue<Solution> intermediateSolution;
 	/*	Ma:
 	 *	[I(n, n) 0(n, n) 0(n, n) 0(n, n) 0(n, m) ad.G']
 	 *	[0(n, n) 0(n, n) 0(n, n) I(n, n) 0(n, m) D.G' ]
@@ -56,11 +61,13 @@ public class GDBB extends Thread {
 
 	private ArrayList<Double> solution;
 
+	private ArrayList<SBMLReaction> reac;
+
 	public GDBB() {
 		GDBB.setSolver(SolverFactory.createSolver());
 		this.varNames = new Vector<String>();
-		objIntermediate = new ArrayList<Double>();
-		knockoutVectors = new ArrayList<double[]>();
+		intermediateSolution = new LinkedList<Solution>();
+		reac = new ArrayList<SBMLReaction>();
 	}
 
 	public GDBB(GDBBModel m) {
@@ -70,38 +77,132 @@ public class GDBB extends Thread {
 	}
 
 	private void setVars() {
+		
+//		System.out.println("**** Start setting problem variables ****");
+		
 		Vector<ModelReaction> reactions = this.model.getReactions();
 		
 		sMatrix = this.model.getSMatrix();
-		String varName;
+//		String varName;
+		
+		StopWatch sw = new StopWatch();
+		sw.start();
+		
 		//	For v
-		for (int i = 0; i < reactions.size(); i++) {
-			SBMLReaction reac = (SBMLReaction) (reactions.elementAt(i));
-			varName = Integer.toString(reac.getId());			
-			GDBB.getSolver().setVar(varName, VarType.CONTINUOUS, -999999.0, 999999.0);
-			this.varNames.add(varName);
+//		for (int i = 0; i < reactions.size(); i++) {
+//			reac.add((SBMLReaction) (reactions.elementAt(i)));
+//			varName = Integer.toString(reac.get(i).getId());			
+//			GDBB.getSolver().setVar(varName, VarType.CONTINUOUS, -999999.0, 999999.0);
+//			this.varNames.add(varName);
+//		}
+		
+		// applying loop unrolling
+		int N = reactions.size() - reactions.size() % 8;
+		for (int i = 0; i < N; i += 8) {
+			reac.add((SBMLReaction) (reactions.elementAt(i)));
+			reac.add((SBMLReaction) (reactions.elementAt(i + 1)));
+			reac.add((SBMLReaction) (reactions.elementAt(i + 2)));
+			reac.add((SBMLReaction) (reactions.elementAt(i + 3)));
+			reac.add((SBMLReaction) (reactions.elementAt(i + 4)));
+			reac.add((SBMLReaction) (reactions.elementAt(i + 5)));
+			reac.add((SBMLReaction) (reactions.elementAt(i + 6)));
+			reac.add((SBMLReaction) (reactions.elementAt(i + 7)));
+			
+			GDBB.getSolver().setVar(Integer.toString(reac.get(i).getId()), VarType.CONTINUOUS, -999999.0, 999999.0);
+			GDBB.getSolver().setVar(Integer.toString(reac.get(i + 1).getId()), VarType.CONTINUOUS, -999999.0, 999999.0);
+			GDBB.getSolver().setVar(Integer.toString(reac.get(i + 2).getId()), VarType.CONTINUOUS, -999999.0, 999999.0);
+			GDBB.getSolver().setVar(Integer.toString(reac.get(i + 3).getId()), VarType.CONTINUOUS, -999999.0, 999999.0);
+			GDBB.getSolver().setVar(Integer.toString(reac.get(i + 4).getId()), VarType.CONTINUOUS, -999999.0, 999999.0);
+			GDBB.getSolver().setVar(Integer.toString(reac.get(i + 5).getId()), VarType.CONTINUOUS, -999999.0, 999999.0);
+			GDBB.getSolver().setVar(Integer.toString(reac.get(i + 6).getId()), VarType.CONTINUOUS, -999999.0, 999999.0);
+			GDBB.getSolver().setVar(Integer.toString(reac.get(i + 7).getId()), VarType.CONTINUOUS, -999999.0, 999999.0);
 		}
+		
+		for (int i = N; i < reactions.size(); i++) {
+			reac.add((SBMLReaction) (reactions.elementAt(i)));
+			GDBB.getSolver().setVar(Integer.toString(reac.get(i).getId()), VarType.CONTINUOUS, -999999.0, 999999.0);
+		}
+		
+		// unrolled
 		
 		reactions_3 = 3*reactions.size();
-		for (int i = reactions.size(); i < reactions_3; i++) {
-			varName = Integer.toString(i);			
-			GDBB.getSolver().setVar(varName, VarType.CONTINUOUS, 0.0, 999999.0);
-			this.varNames.add(varName);
+//		for (int i = reactions.size(); i < reactions_3; i++) {
+//			varName = Integer.toString(i);			
+//			GDBB.getSolver().setVar(varName, VarType.CONTINUOUS, 0.0, 999999.0);
+//			this.varNames.add(varName);
+//		}
+		
+		reactions_2 = 2*reactions.size();
+		N = reactions_3 - reactions_2 % 8;
+		for (int i = reactions.size(); i < N; i += 8) {
+			GDBB.getSolver().setVar(Integer.toString(i), VarType.CONTINUOUS, 0.0, 999999.0);
+			GDBB.getSolver().setVar(Integer.toString(i + 1), VarType.CONTINUOUS, 0.0, 999999.0);
+			GDBB.getSolver().setVar(Integer.toString(i + 2), VarType.CONTINUOUS, 0.0, 999999.0);
+			GDBB.getSolver().setVar(Integer.toString(i + 3), VarType.CONTINUOUS, 0.0, 999999.0);
+			GDBB.getSolver().setVar(Integer.toString(i + 4), VarType.CONTINUOUS, 0.0, 999999.0);
+			GDBB.getSolver().setVar(Integer.toString(i + 5), VarType.CONTINUOUS, 0.0, 999999.0);
+			GDBB.getSolver().setVar(Integer.toString(i + 6), VarType.CONTINUOUS, 0.0, 999999.0);
+			GDBB.getSolver().setVar(Integer.toString(i + 7), VarType.CONTINUOUS, 0.0, 999999.0);
 		}
 		
-		reactions_4_sMatrix = reactions_3 + reactions.size() + sMatrix.size();
-		for (int i = reactions_3; i < reactions_4_sMatrix; i++) {
-			varName = Integer.toString(i);
-			GDBB.getSolver().setVar(varName, VarType.CONTINUOUS, -999999.0, 999999.0);
-			this.varNames.add(varName);
+		for (int i = N; i < reactions_3; i++) {
+			GDBB.getSolver().setVar(Integer.toString(i), VarType.CONTINUOUS, 0.0, 999999.0);
 		}
+		
+		// unrolling
+		// unrolled
+		reactions_4_sMatrix = reactions_3 + reactions.size() + sMatrix.size();
+//		for (int i = reactions_3; i < reactions_4_sMatrix; i++) {
+//			varName = Integer.toString(i);
+//			GDBB.getSolver().setVar(varName, VarType.CONTINUOUS, -999999.0, 999999.0);
+//			this.varNames.add(varName);
+//		}
+		
+		N = reactions_4_sMatrix - ((reactions.size() + sMatrix.size()) % 8);
+		for (int i = reactions_3; i < N; i += 8) {
+			GDBB.getSolver().setVar(Integer.toString(i), VarType.CONTINUOUS, -999999.0, 999999.0);
+			GDBB.getSolver().setVar(Integer.toString(i + 1), VarType.CONTINUOUS, -999999.0, 999999.0);
+			GDBB.getSolver().setVar(Integer.toString(i + 2), VarType.CONTINUOUS, -999999.0, 999999.0);
+			GDBB.getSolver().setVar(Integer.toString(i + 3), VarType.CONTINUOUS, -999999.0, 999999.0);
+			GDBB.getSolver().setVar(Integer.toString(i + 4), VarType.CONTINUOUS, -999999.0, 999999.0);
+			GDBB.getSolver().setVar(Integer.toString(i + 5), VarType.CONTINUOUS, -999999.0, 999999.0);
+			GDBB.getSolver().setVar(Integer.toString(i + 6), VarType.CONTINUOUS, -999999.0, 999999.0);
+			GDBB.getSolver().setVar(Integer.toString(i + 7), VarType.CONTINUOUS, -999999.0, 999999.0);
+		}
+		
+		for (int i = N; i < reactions_4_sMatrix; i++) {
+			GDBB.getSolver().setVar(Integer.toString(i), VarType.CONTINUOUS, -999999.0, 999999.0);
+		}
+		// unrolled
 		
 		reactions_4_sMatrix_gprMatrix = reactions_4_sMatrix + this.model.getGprMatrix().size();
-		for (int i = reactions_4_sMatrix; i < reactions_4_sMatrix_gprMatrix; i++) {
-			varName = Integer.toString(i);		
-			GDBB.getSolver().setVar(varName, VarType.BINARY, 0, 1);
-			this.varNames.add(varName);
+//		for (int i = reactions_4_sMatrix; i < reactions_4_sMatrix_gprMatrix; i++) {
+//			varName = Integer.toString(i);		
+//			GDBB.getSolver().setVar(varName, VarType.BINARY, 0, 1);
+//			this.varNames.add(varName);
+//		}
+		
+		N = reactions_4_sMatrix_gprMatrix - this.model.getGprMatrix().size() % 8;
+		for (int i = reactions_4_sMatrix; i < N; i += 8) {
+			GDBB.getSolver().setVar(Integer.toString(i), VarType.BINARY, 0, 1);
+			GDBB.getSolver().setVar(Integer.toString(i + 1), VarType.BINARY, 0, 1);
+			GDBB.getSolver().setVar(Integer.toString(i + 2), VarType.BINARY, 0, 1);
+			GDBB.getSolver().setVar(Integer.toString(i + 3), VarType.BINARY, 0, 1);
+			GDBB.getSolver().setVar(Integer.toString(i + 4), VarType.BINARY, 0, 1);
+			GDBB.getSolver().setVar(Integer.toString(i + 5), VarType.BINARY, 0, 1);
+			GDBB.getSolver().setVar(Integer.toString(i + 6), VarType.BINARY, 0, 1);
+			GDBB.getSolver().setVar(Integer.toString(i + 7), VarType.BINARY, 0, 1);
 		}
+		
+		for (int i = N; i < reactions_4_sMatrix_gprMatrix; i++) {
+			GDBB.getSolver().setVar(Integer.toString(i), VarType.BINARY, 0, 1);
+		}
+		
+		sw.stop();
+		long setVars_time = sw.getNanoTime();
+		System.out.println("setVars time: " + setVars_time + " ns");
+			
+//		System.out.println("**** End setting problem variables ****");
 	}
 	
 	private void setConstraints() {
@@ -110,6 +211,8 @@ public class GDBB extends Thread {
 	}	
 	
 	private void setConstraints(Vector<ModelReaction> reactions, ConType conType, double bValue) {
+		
+		System.out.println("**** Start problem construction ****");
 		
 		int rowsE = sMatrix.size() + reactions.size() + 1;	//	m + n + 1
 		E = new ArrayList<Map<Integer, Double>>(rowsE);
@@ -128,7 +231,6 @@ public class GDBB extends Thread {
 			}
 		}
 		
-		reactions_2 = 2*reactions.size();
 		reactions_4 = reactions_3 + reactions.size();
 		
 		int rowsE_1 = rowsE - 1;
@@ -155,10 +257,10 @@ public class GDBB extends Thread {
 				E.get(rowsE_1).put(i, objective.get(i).doubleValue());
 			}
 			
-			SBMLReaction reac = (SBMLReaction) (reactions.elementAt(i));
-			E.get(rowsE_1).put(i + reactions.size(), reac.getLowerBound());
+//			SBMLReaction reac = (SBMLReaction) (reactions.elementAt(i));
+			E.get(rowsE_1).put(i + reactions.size(), reac.get(i).getLowerBound());
 			
-			E.get(rowsE_1).put(i + reactions_2, -reac.getUpperBound());
+			E.get(rowsE_1).put(i + reactions_2, -reac.get(i).getUpperBound());
 		}
 		
 		//	Ad*G'
@@ -171,10 +273,10 @@ public class GDBB extends Thread {
 		//	Blocking can be used
 		ArrayList<Map<Integer, Double>> gprMatrix = this.model.getGprMatrix();
 		for (int i = 0; i < reactions.size(); i++) {
-			SBMLReaction reac = (SBMLReaction) (reactions.elementAt(i));
+//			SBMLReaction reac = (SBMLReaction) (reactions.elementAt(i));
 			for (int j = 0; j < gprMatrix.size(); j++) {
 				if(gprMatrix.get(j).get(i) != null) {
-					Gad.get(i).put(j, reac.getLowerBound()*gprMatrix.get(j).get(i).doubleValue());
+					Gad.get(i).put(j, reac.get(i).getLowerBound()*gprMatrix.get(j).get(i).doubleValue());
 				}
 			}
 		}
@@ -212,10 +314,10 @@ public class GDBB extends Thread {
 		}
 
 		for (int i = 0; i < reactions.size(); i++) {
-			SBMLReaction reac = (SBMLReaction) (reactions.elementAt(i));
+//			SBMLReaction reac = (SBMLReaction) (reactions.elementAt(i));
 			for (int j = 0; j < gprMatrix.size(); j++) {
 				if(gprMatrix.get(j).get(i) != null) {
-					Gbd.get(i).put(j, reac.getUpperBound()*gprMatrix.get(j).get(i).doubleValue());
+					Gbd.get(i).put(j, reac.get(i).getUpperBound()*gprMatrix.get(j).get(i).doubleValue());
 				}
 			}
 		}
@@ -269,8 +371,8 @@ public class GDBB extends Thread {
 		GDBB.getSolver().addConstraint(E.get(rowsE_1), conType, bValue);
 		
 		for (int i = 0; i < reactions.size(); i++) {
-			SBMLReaction reac = (SBMLReaction) (reactions.elementAt(i));
-			GDBB.getSolver().addConstraint(Ma.get(i), ConType.GREATER_EQUAL, reac.getLowerBound());
+//			SBMLReaction reac = (SBMLReaction) (reactions.elementAt(i));
+			GDBB.getSolver().addConstraint(Ma.get(i), ConType.GREATER_EQUAL, reac.get(i).getLowerBound());
 		}
 		
 		for (int i = reactions.size(); i < reactions_2; i++) {
@@ -278,8 +380,8 @@ public class GDBB extends Thread {
 		}
 		
 		for (int i = 0; i < reactions.size(); i++) {
-			SBMLReaction reac = (SBMLReaction) (reactions.elementAt(i));
-			GDBB.getSolver().addConstraint(Mb.get(i), ConType.LESS_EQUAL, reac.getUpperBound());
+//			SBMLReaction reac = (SBMLReaction) (reactions.elementAt(i));
+			GDBB.getSolver().addConstraint(Mb.get(i), ConType.LESS_EQUAL, reac.get(i).getUpperBound());
 		}
 		
 		for (int i = reactions.size(); i < reactions_2; i++) {
@@ -287,6 +389,8 @@ public class GDBB extends Thread {
 		}
 		
 		GDBB.getSolver().addConstraint(Mb.get(reactions_2), ConType.LESS_EQUAL, this.model.getC());
+		
+		System.out.println("**** End problem construction ****");
 	}
 	
 	//	Setting Synthetic Objective Function
@@ -316,14 +420,10 @@ public class GDBB extends Thread {
 		this.setVars();
 		log.debug("setConstraints");
 		this.setConstraints();
-//		log.debug("setObjective");
-//		this.setObjective();
 		log.debug("setSyntheticObjective");
 		this.setSyntheticObjective();
 		log.debug("optimize");
 		this.maxObj = GDBB.getSolver().optimize();
-		
-//		return GDBB.getSolver().getSoln();
 		solution = GDBB.getSolver().getSoln();
 	}
 

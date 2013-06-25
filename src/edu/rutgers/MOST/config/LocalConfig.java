@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+
+
 import java.sql.Connection;;
+
 
 public class LocalConfig {	
 
@@ -19,8 +22,7 @@ public class LocalConfig {
     public static LocalConfig getInstance() {
             return instance;
     }
-    
-    
+        
     private String databaseName;
 
 	public String getDatabaseName() {
@@ -223,6 +225,16 @@ public class LocalConfig {
 
 	public void setBiologicalObjectiveColumnIndex(Integer biologicalObjectiveColumnIndex) {
 		this.biologicalObjectiveColumnIndex = biologicalObjectiveColumnIndex;
+	}
+	
+	private static Integer syntheticObjectiveColumnIndex;
+
+	public Integer getSyntheticObjectiveColumnIndex() {
+		return syntheticObjectiveColumnIndex;
+	}
+
+	public void setSyntheticObjectiveColumnIndex(Integer syntheticObjectiveColumnIndex) {
+		this.syntheticObjectiveColumnIndex = syntheticObjectiveColumnIndex;
 	}
 	
 	private static Integer geneAssociationColumnIndex;

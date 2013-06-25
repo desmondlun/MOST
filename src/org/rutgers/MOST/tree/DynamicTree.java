@@ -40,11 +40,18 @@ package org.rutgers.MOST.tree;
 
 import java.awt.GridLayout;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.ToolTipManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -56,6 +63,8 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
+import edu.rutgers.MOST.config.LocalConfig;
+import edu.rutgers.MOST.data.Solution;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 
 public class DynamicTree extends JPanel implements TreeSelectionListener {
@@ -67,6 +76,25 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
     protected DefaultTreeModel treeModel;
     protected JTree tree;
     protected DefaultMutableTreeNode currentParent;
+    
+    public static int row;
+
+	public static int getRow() {
+		return row;
+	}
+
+	public static void setRow(int row) {
+		DynamicTree.row = row;
+	}
+
+	public JPopupMenu jPopupMenu = new JPopupMenu();
+	public JMenuItem saveItem = new JMenuItem("Save As SQLite");         
+	public JMenuItem saveAsCSVItem = new JMenuItem("Save As CSV Reactions");    
+	public JMenuItem saveAsSBMLItem = new JMenuItem("Save As SBML");
+	//public JMenuItem saveAllItem = new JMenuItem("Save All Optimizations");
+	public JMenuItem deleteItem = new JMenuItem("Delete");
+	public JMenuItem clearItem = new JMenuItem("Delete All Optimizations");
+	
     public DefaultMutableTreeNode getCurrentParent() {
 		return currentParent;
 	}
@@ -77,82 +105,145 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
 
 	private Toolkit toolkit = Toolkit.getDefaultToolkit();
 
-    public DynamicTree(String rootName) {
+    public DynamicTree() {
         super(new GridLayout(1,0));
         
-        rootNode = new DefaultMutableTreeNode(rootName);
+        rootNode = new DefaultMutableTreeNode();
         treeModel = new DefaultTreeModel(rootNode);
         treeModel.addTreeModelListener(new MyTreeModelListener());
-        tree = new JTree(treeModel);
-        
+        tree = new JTree(treeModel);       
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
         //Listen for when the selection changes.
         tree.addTreeSelectionListener(this);
 
         tree.setEditable(false);
-        tree.getSelectionModel().setSelectionMode
-                (TreeSelectionModel.SINGLE_TREE_SELECTION);
         tree.setShowsRootHandles(true);
         tree.setRootVisible(false);
-
+        
+        //Enable tool tips.
+        ToolTipManager.sharedInstance().registerComponent(tree);
+        
         //Set the icon for leaf nodes.
-//        ImageIcon leafIcon = createImageIcon("etc/DNA_icon.png");
-//        ImageIcon leafIcon = new ImageIcon("etc/DNA_icon_80.png");
-//        ImageIcon leafIcon = new ImageIcon("etc/dna_16.png");
-//        ImageIcon leafIcon = new ImageIcon("etc/DNA80h.jpg");
-        ImageIcon leafIcon = new ImageIcon("etc/DNA50h.jpg");
+        ImageIcon leafIcon = new ImageIcon("etc/DNA60h.jpg");
         if (leafIcon != null) {
             DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
             renderer.setLeafIcon(leafIcon);
             tree.setCellRenderer(renderer);
-//        } else {
-//            System.err.println("Leaf icon missing; using default.");
         }
 
         JScrollPane scrollPane = new JScrollPane(tree);
         add(scrollPane);
+        
+        tree.addMouseListener(new MouseAdapter() {
+    		public void mousePressed(MouseEvent e)  {check(e);}
+    		public void mouseReleased(MouseEvent e) {check(e);}
+
+			public void check(MouseEvent e) {
+    			if (e.isPopupTrigger()) { //if the event shows the menu
+    				int selRow = tree.getRowForLocation(e.getX(), e.getY());
+    		        TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+    		        if((selRow != -1) && (selRow != 0)) {
+    		        	setRow(selRow);
+    		        	// http://www.javadocexamples.com/java_source/org/gui4j/core/listener/Gui4jMouseListenerTree.java.html
+    		        	tree.setSelectionPath(selPath);
+    		        	
+    		        	saveItem.setEnabled(true);
+        				saveAsCSVItem.setEnabled(true);
+    					//saveAsSBMLItem.setEnabled(true); // will enable when SBML save works
+    					//saveAllItem.setEnabled(true);
+    					deleteItem.setEnabled(true);
+    					clearItem.setEnabled(true);
+        				jPopupMenu.show((JTree) e.getSource(), e.getX(), e.getY()); //and show the menu
+    		        }
+    			}
+    		}
+    	});
+        
+        jPopupMenu.add(saveItem);
+        saveItem.setEnabled(false);
+        saveItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 
+				if (getRow() > 0) {
+					String item = GraphicalInterface.listModel.getElementAt(getRow());
+					LocalConfig.getInstance().getOptimizationFilesList().remove(item);	
+					System.out.println(LocalConfig.getInstance().getOptimizationFilesList());
+				}				
+			}
+		});
+        
+        jPopupMenu.add(saveAsCSVItem);
+		saveAsCSVItem.setEnabled(false);
+		saveAsCSVItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 
+				if (getRow() > 0) {
+					String item = GraphicalInterface.listModel.getElementAt(getRow());
+					LocalConfig.getInstance().getOptimizationFilesList().remove(item);	
+					System.out.println(LocalConfig.getInstance().getOptimizationFilesList());				
+				}				
+			}
+		});
+		
+		jPopupMenu.add(saveAsSBMLItem);
+		saveAsSBMLItem.setEnabled(false);
+		saveAsSBMLItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 
+				if (getRow() > 0) {
+					String item = GraphicalInterface.listModel.getElementAt(getRow());
+					LocalConfig.getInstance().getOptimizationFilesList().remove(item);	
+					System.out.println(LocalConfig.getInstance().getOptimizationFilesList());				
+				}				
+			}
+		});
+		
+		jPopupMenu.addSeparator();
+		
+		jPopupMenu.add(deleteItem);
+		deleteItem.setEnabled(false);
+		deleteItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 
+				if (getRow() > 0) {
+					LocalConfig.getInstance().setLoadedDatabase(LocalConfig.getInstance().getDatabaseName());
+					String item = GraphicalInterface.listModel.getElementAt(getRow());
+					LocalConfig.getInstance().getOptimizationFilesList().remove(item);
+					GraphicalInterface.listModel.remove(getRow());
+					removeCurrentNode();
+//					GraphicalInterface.fileList.setModel(GraphicalInterface.listModel);
+//					GraphicalInterface.fileList.setSelectedIndex(0);
+//					GraphicalInterface.fileListPane.repaint();
+					System.out.println(LocalConfig.getInstance().getOptimizationFilesList());				
+				}				
+			}
+		});
+		
+		jPopupMenu.add(clearItem);
+		clearItem.setEnabled(false);
+		clearItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) {
+				LocalConfig.getInstance().setLoadedDatabase(LocalConfig.getInstance().getDatabaseName());
+				GraphicalInterface.listModel.clear();
+				GraphicalInterface.listModel.addElement(GraphicalInterface.getDatabaseName());
+//				GraphicalInterface.fileList.setModel(GraphicalInterface.listModel);
+//				GraphicalInterface.fileListPane.repaint();
+				clearButFirst();
+				GraphicalInterface.outputTextArea.setText("");
+				LocalConfig.getInstance().getOptimizationFilesList().clear();
+				System.out.println(LocalConfig.getInstance().getOptimizationFilesList());
+//				setSelectedIndex(0);
+			}
+		});
+		
+        tree.add(jPopupMenu);
     }
 
-    /** Required by TreeSelectionListener interface. */
-    public void valueChanged(TreeSelectionEvent e) {
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-                           tree.getLastSelectedPathComponent();
-
-        if (node == null) return;
-
-        Object nodeInfo = node.getUserObject();
-        if (node.isLeaf()) {
-        	try {
-        		SolutionInfo solution = (SolutionInfo)nodeInfo;
-                displaySolution(solution.solutionDesc);
-        	}
-        	catch(Exception eStop) {
-        	}
-        }
-    }
-
-    private void displaySolution(String solutionDesc) {
-//    	System.out.println("clicked Node");
-    	GraphicalInterface.outputTextArea.setText(solutionDesc);
-    	GraphicalInterface.outputTextArea.setCaretPosition(0);
+	protected void clearButFirst() {
+		// TODO Auto-generated method stub
+		rootNode.removeAllChildren();
+		addObject(new Solution(GraphicalInterface.getDatabaseName(), GraphicalInterface.getDatabaseName()));
+		treeModel.reload();
 	}
 
-	public class SolutionInfo {
-        public String solutionObj;
-        public String solutionDesc;
-
-        public SolutionInfo(String solutionObj, String solutionDesc) {
-        	this.solutionObj = solutionObj;
-        	this.solutionDesc = solutionDesc;
-        }
-
-        public String toString() {
-            return solutionObj;
-        }
-    }
-    
-    /** Remove all nodes except the root node. */
+	/** Remove all nodes except the root node. */
     public void clear() {
         rootNode.removeAllChildren();
         treeModel.reload();
@@ -178,15 +269,7 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
     /** Add child to the currently selected node. */
     public DefaultMutableTreeNode addObject(Object child) {
         DefaultMutableTreeNode parentNode = null;
-//        TreePath parentPath = tree.getSelectionPath();
-
-//        if (parentPath == null) {
             parentNode = rootNode;
-//        } else {
-//            parentNode = (DefaultMutableTreeNode)
-//                         (parentPath.getLastPathComponent());
-//        }
-
         return addObject(parentNode, child, true);
     }
 
@@ -260,4 +343,11 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
             return null;
         }
     }
+
+	@Override
+	public void valueChanged(TreeSelectionEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }

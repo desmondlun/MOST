@@ -249,14 +249,14 @@ public class GurobiSolver extends Solver {
 		return 0;
 	}
 
-	public void setEnv(double timeLimit, int threadNum) {
+	public void setEnv(double timeLimit, int numThreads) {
 		try {
 			log.debug("setting Gurobi parameters");
 			model.getEnv().set(GRB.DoubleParam.Heuristics, 1.0);
 			model.getEnv().set(GRB.IntParam.MIPFocus, 1);
 			model.getEnv().set(GRB.DoubleParam.ImproveStartGap, Double.POSITIVE_INFINITY);
 			model.getEnv().set(GRB.DoubleParam.TimeLimit, timeLimit);
-			model.getEnv().set(GRB.IntParam.Threads, threadNum);
+			model.getEnv().set(GRB.IntParam.Threads, numThreads);
 		} catch (Exception e) {
 			log.error("Error code: " + e.getMessage() + ". "
 					+ e.getMessage());

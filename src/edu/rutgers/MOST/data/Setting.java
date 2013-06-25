@@ -1,3 +1,4 @@
+
 package edu.rutgers.MOST.data;
 
 public class Setting {
@@ -21,4 +22,3 @@ public class Setting {
 		this.value = curValue;
 	}
 }
-

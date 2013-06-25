@@ -25,6 +25,7 @@ public class ReactionsUpdater {
 	
 	public void updateReactionRows(ArrayList<Integer> rowList, ArrayList<Integer> reacIdList, ArrayList<String> oldReactionsList, String databaseName) {
 			
+
 		if (LocalConfig.getInstance().includesReactions) {
 			//update MetabolitesUsedMap by decrementing count or removing metabolite
 			//based on oldReactions that are being replaced
@@ -48,6 +49,7 @@ public class ReactionsUpdater {
 								}			
 							}					
 						}
+
 					}
 				}
 			}
@@ -96,6 +98,7 @@ public class ReactionsUpdater {
 					if (reactionName == null) {
 						reactionName = " ";
 					}
+
 					String reactionEqunAbbr = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 					String reactionEqunNames = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 					String reversible = GraphicalInterfaceConstants.REVERSIBLE_DEFAULT;
@@ -132,8 +135,10 @@ public class ReactionsUpdater {
 											}
 										}							
 									}
+
 								}
 								
+
 							}
 						} else {
 							reactionEqunAbbr = " ";
@@ -609,6 +614,7 @@ public class ReactionsUpdater {
 			e.printStackTrace();
 
 		}
+	
 		
 		ReactionParser parser = new ReactionParser();
 		

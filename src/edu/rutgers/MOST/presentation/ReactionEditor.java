@@ -410,9 +410,66 @@ public class ReactionEditor extends JFrame {
 			productCoeffField[j].addActionListener(productsActionListener);
 			cbProduct[j].addActionListener(productsActionListener);			
 		} 
+//src/edu/rutgers/MOST/presentation/ReactionInterface.java
+
+		/*****************************************************************************/
+		//end create box layout
+		/*****************************************************************************/
+
+		/*****************************************************************************/
+		//populate text fields of combo boxes with existing reactants and products and
+		//create reaction string from these species
+		/*****************************************************************************/
+
+		ReactionParser parser = new ReactionParser();
+		if (parser.isValid(reactionEquation)) {
+			setOldReaction(reactionEquation);
+			ArrayList<ArrayList<String>> reactants = parser.reactionList(reactionEquation.trim()).get(0);
+			//reactions of the type ==> b will be size 1, assigned the value [0] in parser
+			if (reactants.get(0).size() == 1) {				
+			} else {
+				for (int r = 0; r < reactants.size(); r++) {
+					if (reactants.get(r).size() == 2) {
+						String stoicStr = (String) reactants.get(r).get(0);
+						if (!(Double.valueOf(stoicStr) == 1)) {
+							if (stoicStr.endsWith(".0")) {
+								stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
+							}
+							reactantCoeffField[r].setText(stoicStr);
+						}
+						String reactant = (String) reactants.get(r).get(1);
+						cbReactant[r].setSelectedItem(reactant);
+					}
+				}			
+			}
+			ArrayList<ArrayList<String>> products = parser.reactionList(reactionEquation.trim()).get(1);
+			//reactions of the type ==> b will be size 1, assigned the value [0] in parser
+			if (products.get(0).size() == 1) {				
+			} else {
+				for (int p = 0; p < products.size(); p++) {
+					if (products.get(p).size() == 2) {
+						String stoicStr = (String) products.get(p).get(0);
+						if (!(Double.valueOf(stoicStr) == 1)) {
+							if (stoicStr.endsWith(".0")) {
+								stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
+							}
+							productCoeffField[p].setText(stoicStr);
+						}
+						String product = (String) products.get(p).get(1);
+						cbProduct[p].setSelectedItem(product);
+					}
+				}			
+			}
+		}
+
+		/*****************************************************************************/
+		//end populate text fields of combo boxes
+		/*****************************************************************************/
+
 		//end product combo boxes
 		/***************************************************************************/
 		
+    //src/edu/rutgers/MOST/presentation/ReactionEditor.java
 		//add reactants panel to scrollpane
 		JScrollPane reactantPane = new JScrollPane(panelReactants);
 		//reactantPane.setPreferredSize(new Dimension(300, 600));
@@ -497,7 +554,7 @@ public class ReactionEditor extends JFrame {
 		//create reaction string from these species
 		/*****************************************************************************/
 
-		ReactionParser parser = new ReactionParser();
+		    parser = new ReactionParser();
 		if (reactionEquation != null && parser.isValid(reactionEquation)) {
 			setOldReaction(reactionEquation);
 			ArrayList<ArrayList<String>> reactants = parser.reactionList(reactionEquation.trim()).get(0);
@@ -625,7 +682,7 @@ public class ReactionEditor extends JFrame {
 		/*****************************************************************************/
 
 		ActionListener revActionListener = new ActionListener() {
-			public void actionPerformed(ActionEvent revActionEvent) {
+			public void actionPerformed(ActionEvent revActionEvent) {		
 				ReactionFactory rFactory = new ReactionFactory("SBML", LocalConfig.getInstance().getLoadedDatabase());			
 				cbProduct[0].grabFocus();
 				if (trueButton.isSelected()) {

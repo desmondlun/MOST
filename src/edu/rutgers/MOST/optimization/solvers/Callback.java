@@ -1,5 +1,6 @@
 package edu.rutgers.MOST.optimization.solvers;
 
+import edu.rutgers.MOST.data.Solution;
 import edu.rutgers.MOST.optimization.GDBB.GDBB;
 
 import gurobi.*;
@@ -18,6 +19,9 @@ public class Callback extends GRBCallback {
 	}
 	
 	protected void callback() {
+		if (isAbort) {
+			abort();
+		}
 		try {
 			if (where == GRB.CB_POLLING) {
 			    /* Ignore polling callback */
@@ -26,23 +30,7 @@ public class Callback extends GRBCallback {
 				/* Do nothing */
 			}
 			else if (where == GRB.CB_MIPSOL) {
-//				double obj = getDoubleInfo(GRB.CB_MIPSOL_OBJ);
-//				int nodecnt = (int) getDoubleInfo(GRB.CB_MIPSOL_NODCNT);
-//				int solcnt = getIntInfo(GRB.CB_MIPSOL_SOLCNT);
-//				double[] x = getSolution(vars);
-				
-//				double objBst = getDoubleInfo(GRB.CB_MIPSOL_OBJBST); 
-//				System.out.println("**** New solution at node " + nodecnt + ", obj " + obj + ", sol " + solcnt + ", objBst " + objBst + " ****");
-				
-//				for (int i = 0; i < x.length; i++) {
-//					System.out.print(" " + x[i]);
-//				}
-				
-				GDBB.objIntermediate.add(getDoubleInfo(GRB.CB_MIPSOL_OBJ));
-				GDBB.knockoutVectors.add(getSolution(vars));
-			}
-			if (isAbort) {
-				abort();
+				GDBB.intermediateSolution.add(new Solution(getDoubleInfo(GRB.CB_MIPSOL_OBJ), getSolution(vars)));
 			}
 		}
 		catch (GRBException e) {
@@ -55,9 +43,5 @@ public class Callback extends GRBCallback {
 	public static void main(String[] args) {
 		
 	}
-
-//	public void callbackAbort() {
-//		isAbort = true;
-//	}
 	
 }

@@ -199,6 +199,7 @@ public class CSVLoadInterface  extends JDialog {
 					String rawPathName = file.getAbsolutePath();
 					GraphicalInterface.curSettings.add("LastCSV", rawPathName);
 
+
 					String rawFilename = file.getName();
 					String filename = rawFilename.substring(0, rawFilename.length() - 4); 
 					
@@ -244,7 +245,7 @@ public class CSVLoadInterface  extends JDialog {
 					
 					String rawFilename = file.getName();
 					String filename = rawFilename.substring(0, rawFilename.length() - 4); 
-					
+				
 					String path = file.getPath();
 					if (!path.endsWith(".csv")) {
 						JOptionPane.showMessageDialog(null,                

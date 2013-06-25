@@ -37,7 +37,27 @@ class ModelCollectionTable
 	private	JPanel		bottomPanel;
 	public static JButton okButton = new JButton("  OK  ");
 	public static JButton cancelButton = new JButton("Cancel");
+	
+	public String fileName;
 
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public String path;
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+	
 	// Constructor of main frame
 	public ModelCollectionTable(File file)
 	{
@@ -48,6 +68,8 @@ class ModelCollectionTable
 		
 		okButton.setEnabled(false);
 		
+		getRootPane().setDefaultButton(okButton);
+		
 		table.setRowHeight(20);
 		table.setColumnSelectionAllowed(false);
 		table.setRowSelectionAllowed(true); 
@@ -57,7 +79,8 @@ class ModelCollectionTable
 		topPanel = new JPanel();
 		topPanel.setLayout( new BorderLayout() );
 		getContentPane().add( topPanel );
-
+		
+		/*
 		// Create columns names
 		String columnNames[] = { "Column 1", "Column 2", "Column 3",  "Column 4", "Column 5", 
 				"Column 6", "Column 7", "Column 8", "Column 9",};		
@@ -67,18 +90,33 @@ class ModelCollectionTable
 		}		
 		
 		table.setModel(model);
+		*/
+		int count = 0;
+		Vector<String> columnNames = new Vector<String>();
+		
 		CSVReader reader;
 		try {
 			reader = new CSVReader(new FileReader(file), ',');
 			String [] dataArray;
 			try {
 				while ((dataArray = reader.readNext()) != null) {
-					Vector <String> row = new Vector<String>();
-					for (int s = 0; s < dataArray.length; s++) {
-						System.out.println(dataArray[s]);						
-						row.add(dataArray[s]);
+					if (count == 0) {
+						for (int s = 0; s < dataArray.length; s++) {						
+							columnNames.add(dataArray[s]);
+						}
+						for (int i = 0; i < columnNames.size(); i++) {
+							model.addColumn(columnNames.get(i));
+						}		
+						
+						table.setModel(model);
+					} else {
+						Vector <String> row = new Vector<String>();
+						for (int s = 0; s < dataArray.length; s++) {						
+							row.add(dataArray[s]);
+						}
+						model.addRow(row);
 					}
-					model.addRow(row);
+					count += 1;
 				}
 				reader.close();
 			} catch (IOException e) {
@@ -112,16 +150,22 @@ class ModelCollectionTable
             column.setCellRenderer(renderer);
             // Column widths can be changed here
             if (i == 1) {
-            	column.setPreferredWidth(150);
+            	column.setPreferredWidth(200);
             }
             if (i == 6) {
             	column.setPreferredWidth(150);
             }
+            if (i == 7 || i == 8) {
+            	//sets column not visible
+    			column.setMaxWidth(0);
+    			column.setMinWidth(0); 
+    			column.setWidth(0); 
+    			column.setPreferredWidth(0);
+            }            
 		}	
 		
 		ActionListener okButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				System.out.println(table.getSelectedRow());				
 				setVisible(false);
 				dispose();				
 			}
@@ -143,15 +187,30 @@ class ModelCollectionTable
 	private class RowListener implements ListSelectionListener {
     	public void valueChanged(ListSelectionEvent event) {
     		if (table.getSelectedRow() > -1) {
+    			// location of folder in the user's computer
+				String userPath = "etc";
+				// model collection folder location
+				String path = (table.getModel().getValueAt(table.getSelectedRow(), 7)).toString();
+				//String path = (table.getModel().getValueAt(table.getSelectedRow(), 7)).toString().trim();
+				String filename = (table.getModel().getValueAt(table.getSelectedRow(), 0)).toString();
+				//String filename = (table.getModel().getValueAt(table.getSelectedRow(), 0)).toString().trim();
+				String ending = "";
+				String type = (table.getModel().getValueAt(table.getSelectedRow(), 8)).toString();
+				if (type.equals("sbml")) {
+					ending = ".xml";
+				} else if (type.equals("csv")) {
+					ending = "._mtb.csv";
+				}
+				setFileName(filename);
+				setPath(userPath + "\\" + path + "\\" + filename + ending);
     			okButton.setEnabled(true);
-				//System.out.println(table.getSelectedRow());
 			}
     	}
     }
 	
 	public static void main( String args[] )
 	{
-		File f = new File("ModelCollection.csv");
+		File f = new File("ModelCollection2.csv");
 		ModelCollectionTable mainFrame	= new ModelCollectionTable(f);
 		mainFrame.setVisible( true );
 	}

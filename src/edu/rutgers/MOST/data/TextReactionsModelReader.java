@@ -115,6 +115,11 @@ public class TextReactionsModelReader {
 		
 		LocalConfig.getInstance().getMetaboliteUsedMap().clear();
 		
+		DatabaseCreator databaseCreator = new DatabaseCreator();
+		databaseCreator.createReactionsTable(databaseName, "reactions");
+		databaseCreator.createReactionReactantsTable(databaseName, "reaction_reactants");
+		databaseCreator.createReactionProductsTable(databaseName, "reaction_products");
+		
 		LocalConfig.getInstance().addMetaboliteOption = true;
 		
 		String metaString = "";
@@ -136,22 +141,7 @@ public class TextReactionsModelReader {
 				DriverManager.getConnection(queryString);
 
 			Statement stat = conn.createStatement();
-
-			stat.executeUpdate("drop table if exists reactions;");
-			stat.executeUpdate("create table reactions (id INTEGER PRIMARY KEY, " 
-					+ " knockout varchar(6), flux_value double, reaction_abbreviation varchar(40), reaction_name varchar(500), "
-					+ " reaction_equn_abbr varchar(500), reaction_equn_names varchar(500), reversible varchar(6), lower_bound double, " 
-					+ " upper_bound double, biological_objective double, gene_associations varchar(255)" + metaString + ");");
-		
-			stat.executeUpdate("drop table if exists reaction_reactants;");
-			stat.executeUpdate("CREATE TABLE reaction_reactants (reaction_id INTEGER, " 
-					+ " metabolite_id INTEGER, stoic FLOAT);");
-
-			stat.executeUpdate("drop table if exists reaction_products;");
-			stat.executeUpdate("CREATE TABLE reaction_products (reaction_id INTEGER, " 
-					+ " metabolite_id INTEGER, stoic FLOAT);");
 			
-			//System.out.println("load " + LocalConfig.getInstance().hasMetabolitesFile);
 			if (!LocalConfig.getInstance().hasMetabolitesFile) {
 						
 				LocalConfig.getInstance().getMetaboliteUsedMap().clear();
@@ -161,11 +151,7 @@ public class TextReactionsModelReader {
 				LocalConfig.getInstance().setMaxMetaboliteId(0);
 				maxMetabId = 0;
 				
-				stat.executeUpdate("drop table if exists metabolites;");
-				stat.executeUpdate("create table metabolites (id INTEGER PRIMARY KEY, " 
-						+ " metabolite_abbreviation varchar(255), metabolite_name varchar(255), "
-						+ " charge varchar(5), compartment varchar(255), boundary varchar(5) " 
-						+ metaString + ");");
+				databaseCreator.createMetabolitesTable(databaseName, "metabolites");
 				
 				stat.executeUpdate("drop table if exists metabolites_meta_info;");		    
 				stat.executeUpdate("CREATE TABLE metabolites_meta_info (id INTEGER PRIMARY KEY, meta_column_name varchar(100));");
@@ -189,8 +175,8 @@ public class TextReactionsModelReader {
 				stat.executeUpdate("BEGIN TRANSACTION");
 				PreparedStatement reacInsertPrep = conn.prepareStatement("INSERT INTO reactions(knockout, flux_value, reaction_abbreviation, " 
 						+ " reaction_name, reaction_equn_abbr, reaction_equn_names, reversible, lower_bound, upper_bound, biological_objective," 
-						+ " gene_associations, meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, meta_11, "
-						+ " meta_12, meta_13, meta_14, meta_15) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); 
+						+ " synthetic_objective, gene_associations, meta_1, meta_2, meta_3, meta_4, meta_5, meta_6, meta_7, meta_8, meta_9, meta_10, meta_11, "
+						+ " meta_12, meta_13, meta_14, meta_15) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); 
 				PreparedStatement addMetabPrep = conn.prepareStatement("insert into metabolites (metabolite_abbreviation, boundary) values(?, 'false')");											
 				PreparedStatement rrInsertPrep = conn.prepareStatement("INSERT INTO reaction_reactants(reaction_id, stoic, metabolite_id) values (?, ?, ?)");
 				PreparedStatement rpInsertPrep = conn.prepareStatement("INSERT INTO reaction_products(reaction_id, stoic, metabolite_id) values (?, ?, ?)");
@@ -221,7 +207,8 @@ public class TextReactionsModelReader {
 						String reversible = "";
 						Double lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
 						Double upperBound =	GraphicalInterfaceConstants.UPPER_BOUND_DEFAULT;
-						Double objective = GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_DEFAULT;
+						Double biologicalObjective = GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_DEFAULT;
+						Double syntheticObjective = GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_DEFAULT;
 						String geneAssociations = "";
 						String meta1 = "";
 						String meta2 = "";
@@ -596,12 +583,18 @@ public class TextReactionsModelReader {
 						} 
 						if (LocalConfig.getInstance().getBiologicalObjectiveColumnIndex() > -1) {
 							if (isNumber(dataArray[LocalConfig.getInstance().getBiologicalObjectiveColumnIndex()])) {
-								objective = Double.valueOf(dataArray[LocalConfig.getInstance().getBiologicalObjectiveColumnIndex()]);							
+								biologicalObjective = Double.valueOf(dataArray[LocalConfig.getInstance().getBiologicalObjectiveColumnIndex()]);							
+							} 							
+						} 
+						if (LocalConfig.getInstance().getSyntheticObjectiveColumnIndex() > -1) {
+							if (isNumber(dataArray[LocalConfig.getInstance().getSyntheticObjectiveColumnIndex()])) {
+								syntheticObjective = Double.valueOf(dataArray[LocalConfig.getInstance().getSyntheticObjectiveColumnIndex()]);							
 							} 							
 						} 
 						if (LocalConfig.getInstance().getGeneAssociationColumnIndex() > -1) {
 							geneAssociations = dataArray[LocalConfig.getInstance().getGeneAssociationColumnIndex()];						 							
 						} 
+						
 						if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 0) {
 							meta1 = dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(0)];						
 						}
@@ -662,23 +655,24 @@ public class TextReactionsModelReader {
 						reacInsertPrep.setString(7, reversible);
 						reacInsertPrep.setDouble(8, lowerBound);
 						reacInsertPrep.setDouble(9, upperBound);
-						reacInsertPrep.setDouble(10, objective);
-						reacInsertPrep.setString(11, geneAssociations);
-						reacInsertPrep.setString(12, meta1);
-						reacInsertPrep.setString(13, meta2);
-						reacInsertPrep.setString(14, meta3);
-						reacInsertPrep.setString(15, meta4);
-						reacInsertPrep.setString(16, meta5);
-						reacInsertPrep.setString(17, meta6);
-						reacInsertPrep.setString(18, meta7);
-						reacInsertPrep.setString(19, meta8);
-						reacInsertPrep.setString(20, meta9);
-						reacInsertPrep.setString(21, meta10);
-						reacInsertPrep.setString(22, meta11);
-						reacInsertPrep.setString(23, meta12);
-						reacInsertPrep.setString(24, meta13);
-						reacInsertPrep.setString(25, meta14);
-						reacInsertPrep.setString(26, meta15);
+						reacInsertPrep.setDouble(10, biologicalObjective);
+						reacInsertPrep.setDouble(11, syntheticObjective);
+						reacInsertPrep.setString(12, geneAssociations);
+						reacInsertPrep.setString(13, meta1);
+						reacInsertPrep.setString(14, meta2);
+						reacInsertPrep.setString(15, meta3);
+						reacInsertPrep.setString(16, meta4);
+						reacInsertPrep.setString(17, meta5);
+						reacInsertPrep.setString(18, meta6);
+						reacInsertPrep.setString(19, meta7);
+						reacInsertPrep.setString(20, meta8);
+						reacInsertPrep.setString(21, meta9);
+						reacInsertPrep.setString(22, meta10);
+						reacInsertPrep.setString(23, meta11);
+						reacInsertPrep.setString(24, meta12);
+						reacInsertPrep.setString(25, meta13);
+						reacInsertPrep.setString(26, meta14);
+						reacInsertPrep.setString(27, meta15);
 						
 						reacInsertPrep.executeUpdate();
 					}
