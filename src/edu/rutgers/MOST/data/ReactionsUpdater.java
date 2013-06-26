@@ -25,7 +25,6 @@ public class ReactionsUpdater {
 	
 	public void updateReactionRows(ArrayList<Integer> rowList, ArrayList<Integer> reacIdList, ArrayList<String> oldReactionsList, String databaseName) {
 			
-
 		if (LocalConfig.getInstance().includesReactions) {
 			//update MetabolitesUsedMap by decrementing count or removing metabolite
 			//based on oldReactions that are being replaced
@@ -49,10 +48,10 @@ public class ReactionsUpdater {
 								}			
 							}					
 						}
-
 					}
 				}
 			}
+			System.out.println("ru upd rxn old " + LocalConfig.getInstance().getMetaboliteUsedMap());
 		}		
 		
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
@@ -63,7 +62,7 @@ public class ReactionsUpdater {
 			Statement stat = conn.createStatement();
 			PreparedStatement reacInsertPrep = conn.prepareStatement("update reactions set knockout=?, flux_value=?, " 
 					+ " reaction_abbreviation=?, reaction_name=?, reaction_equn_abbr=?, reaction_equn_names=?, reversible=?, lower_bound=?, " 
-					+ " upper_bound=?, biological_objective=?, gene_associations=?, meta_1=?, meta_2=?, meta_3=?, meta_4=?, meta_5=?, meta_6=?, "
+					+ " upper_bound=?, biological_objective=?, synthetic_objective=?, gene_associations=?, meta_1=?, meta_2=?, meta_3=?, meta_4=?, meta_5=?, meta_6=?, "
 					+ " meta_7=?, meta_8=?, meta_9=?, meta_10=?, meta_11=?, meta_12=?, meta_13=?, meta_14=?, meta_15=? where id=?"); 
 
 			try {
@@ -98,7 +97,6 @@ public class ReactionsUpdater {
 					if (reactionName == null) {
 						reactionName = " ";
 					}
-
 					String reactionEqunAbbr = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 					String reactionEqunNames = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 					String reversible = GraphicalInterfaceConstants.REVERSIBLE_DEFAULT;
@@ -135,11 +133,10 @@ public class ReactionsUpdater {
 											}
 										}							
 									}
-
 								}
 								
-
 							}
+							System.out.println("ru upd rxn new " + LocalConfig.getInstance().getMetaboliteUsedMap());													
 						} else {
 							reactionEqunAbbr = " ";
 						}
@@ -162,9 +159,13 @@ public class ReactionsUpdater {
 						upperBound = Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.UPPER_BOUND_COLUMN));
 				
 					} 
-					Double objective = GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_DEFAULT;
+					Double biologicalObjective = GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_DEFAULT;
 					if (GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN) != null) {
-						objective = Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN));			
+						biologicalObjective = Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN));			
+					} 
+					Double syntheticObjective = GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_DEFAULT;
+					if (GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN) != null) {
+						syntheticObjective = Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN));			
 					} 
 					
 					String geneAssociations = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.GENE_ASSOCIATIONS_COLUMN);
@@ -239,24 +240,25 @@ public class ReactionsUpdater {
 					reacInsertPrep.setString(7, reversible);
 					reacInsertPrep.setDouble(8, lowerBound);
 					reacInsertPrep.setDouble(9, upperBound);
-					reacInsertPrep.setDouble(10, objective);
-					reacInsertPrep.setString(11, geneAssociations);
-					reacInsertPrep.setString(12, meta1);
-					reacInsertPrep.setString(13, meta2);
-					reacInsertPrep.setString(14, meta3);
-					reacInsertPrep.setString(15, meta4);
-					reacInsertPrep.setString(16, meta5);
-					reacInsertPrep.setString(17, meta6);
-					reacInsertPrep.setString(18, meta7);
-					reacInsertPrep.setString(19, meta8);
-					reacInsertPrep.setString(20, meta9);
-					reacInsertPrep.setString(21, meta10);
-					reacInsertPrep.setString(22, meta11);
-					reacInsertPrep.setString(23, meta12);
-					reacInsertPrep.setString(24, meta13);
-					reacInsertPrep.setString(25, meta14);
-					reacInsertPrep.setString(26, meta15);
-					reacInsertPrep.setInt(27, reacIdList.get(i));
+					reacInsertPrep.setDouble(10, biologicalObjective);
+					reacInsertPrep.setDouble(11, syntheticObjective);
+					reacInsertPrep.setString(12, geneAssociations);
+					reacInsertPrep.setString(13, meta1);
+					reacInsertPrep.setString(14, meta2);
+					reacInsertPrep.setString(15, meta3);
+					reacInsertPrep.setString(16, meta4);
+					reacInsertPrep.setString(17, meta5);
+					reacInsertPrep.setString(18, meta6);
+					reacInsertPrep.setString(19, meta7);
+					reacInsertPrep.setString(20, meta8);
+					reacInsertPrep.setString(21, meta9);
+					reacInsertPrep.setString(22, meta10);
+					reacInsertPrep.setString(23, meta11);
+					reacInsertPrep.setString(24, meta12);
+					reacInsertPrep.setString(25, meta13);
+					reacInsertPrep.setString(26, meta14);
+					reacInsertPrep.setString(27, meta15);
+					reacInsertPrep.setInt(28, reacIdList.get(i));
 					
 					reacInsertPrep.executeUpdate();
 				}
@@ -295,6 +297,8 @@ public class ReactionsUpdater {
 			//update for old reaction
 			if (oldEquation != null && parser.isValid(oldEquation)) {
 				ArrayList<ArrayList<ArrayList<String>>> oldReactionList = parser.reactionList(oldEquation);
+				System.out.println(oldEquation);
+				System.out.println("old " + oldReactionList);
 				
 				//remove old species from used map
 				for (int x = 0; x < oldReactionList.size(); x++) {
@@ -311,6 +315,7 @@ public class ReactionsUpdater {
 						}					
 					}
 				}
+				System.out.println("ru ure old used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 			}
 
 			try {
@@ -555,6 +560,7 @@ public class ReactionsUpdater {
 					//Invalid reaction
 					valid = false;
 				}
+				System.out.println("ru ure new used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 				
 				if (!valid) {
 					String deleteReac = "delete from reaction_reactants where reaction_id=" + id + ";";
@@ -563,6 +569,7 @@ public class ReactionsUpdater {
 					stat.executeUpdate(deleteProd);
 					if (newEquation != null && newEquation.trim().length() > 0) {
 						LocalConfig.getInstance().getInvalidReactions().add(newEquation);
+						System.out.println("invalid " + LocalConfig.getInstance().getInvalidReactions());
 					}	
 				}
 				parser.invalidSyntax = false;
@@ -614,7 +621,6 @@ public class ReactionsUpdater {
 			e.printStackTrace();
 
 		}
-	
 		
 		ReactionParser parser = new ReactionParser();
 		
@@ -638,6 +644,7 @@ public class ReactionsUpdater {
 				}
 			}			
 		}
+		System.out.println("del used map" + LocalConfig.getInstance().getMetaboliteUsedMap());		
 	}
 	
 	// methods used if "No" button is pressed in order to reconstruct reaction equation with species omitted
@@ -754,11 +761,11 @@ public class ReactionsUpdater {
 						r += 1;
 					}
 					
-					PreparedStatement eqPrep = conn.prepareStatement("select reaction_string from reactions where id=?");
+					PreparedStatement eqPrep = conn.prepareStatement("select reaction_equn_abbr from reactions where id=?");
 					eqPrep.setInt(1, reactionIdList.get(i));
 					conn.setAutoCommit(true);
 					rsEqun = eqPrep.executeQuery();
-					String equation = rsEqun.getString("reaction_string");
+					String equation = rsEqun.getString("reaction_equn_abbr");
 					String splitString = parser.splitString(equation);
 					
 					PreparedStatement pPrep = conn.prepareStatement("select metabolite_id, stoic from reaction_products where reaction_id=?");
@@ -787,7 +794,7 @@ public class ReactionsUpdater {
 						r += 1;
 					}
 					rxnBfr.append(reacBfr).append(" " + splitString).append(prodBfr);
-					PreparedStatement eqUpdatePrep = conn.prepareStatement("update reactions set reaction_string=? where id=?");
+					PreparedStatement eqUpdatePrep = conn.prepareStatement("update reactions set reaction_equn_abbr=? where id=?");
 					eqUpdatePrep.setString(1, rxnBfr.toString());
 					eqUpdatePrep.setInt(2, reactionIdList.get(i));
 					conn.setAutoCommit(true);
