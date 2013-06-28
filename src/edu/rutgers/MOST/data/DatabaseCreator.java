@@ -242,7 +242,7 @@ public class DatabaseCreator {
 			prep.setDouble(5, GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT);
 			prep.setDouble(6, GraphicalInterfaceConstants.UPPER_BOUND_DEFAULT);
 			prep.setDouble(7, GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_DEFAULT);
-			prep.setDouble(7, GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_DEFAULT);
+			prep.setDouble(8, GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_DEFAULT);
 
 			prep.addBatch();
 
