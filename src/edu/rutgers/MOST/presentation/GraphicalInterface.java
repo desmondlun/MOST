@@ -765,24 +765,7 @@ public class GraphicalInterface extends JFrame {
 				} else {
 					disableMenuItems();
 					if (fileList.getSelectedValue() != null) {
-						//gets the full path of optimize
-						String optimizePath = getOptimizePath();
-						if (optimizePath.contains("\\")) {
-							optimizePath = optimizePath.substring(0, optimizePath.lastIndexOf("\\") + 1) + fileList.getSelectedValue().toString();
-						} else {
-							optimizePath = fileList.getSelectedValue().toString();
-						}
-						setOptimizePath(optimizePath);
-						if (getOptimizePath().endsWith(fileList.getSelectedValue().toString())) {
-							loadOutputPane(getOptimizePath() + ".log");
-							if (getPopout() != null) {
-								getPopout().load(getOptimizePath() + ".log");
-							}	
-
-							closeConnection();
-							LocalConfig.getInstance().setLoadedDatabase(getOptimizePath());
-							reloadTables(getOptimizePath());
-						} 
+						loadOptimization();
 					}
 				}        	  
 			} 
@@ -7378,6 +7361,27 @@ public class GraphicalInterface extends JFrame {
 		getFindReplaceDialog().replaceFindButton.setEnabled(false);
 	}
     
+	public void loadOptimization() {
+		//gets the full path of optimize
+		String optimizePath = getOptimizePath();
+		if (optimizePath.contains("\\")) {
+			optimizePath = optimizePath.substring(0, optimizePath.lastIndexOf("\\") + 1) + fileList.getSelectedValue().toString();
+		} else {
+			optimizePath = fileList.getSelectedValue().toString();
+		}
+		setOptimizePath(optimizePath);
+		if (getOptimizePath().endsWith(fileList.getSelectedValue().toString())) {
+			loadOutputPane(getOptimizePath() + ".log");
+			if (getPopout() != null) {
+				getPopout().load(getOptimizePath() + ".log");
+			}	
+
+			closeConnection();
+			LocalConfig.getInstance().setLoadedDatabase(getOptimizePath());
+			reloadTables(getOptimizePath());
+		} 
+	}
+	
 	public void deleteItemFromFileList() {
 		Utilities u = new Utilities();
 		closeConnection();
