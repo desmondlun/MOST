@@ -1644,7 +1644,7 @@ public class GraphicalInterface extends JFrame {
 		formulaBarPopupMenu.add(formulaBarPasteItem);
 		formulaBarPasteItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 	
-				 						
+				formulaBar.setText(getClipboardContents(GraphicalInterface.this));						
 			}
 		});
 		
