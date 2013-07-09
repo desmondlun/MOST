@@ -164,6 +164,12 @@ public class MetabolitesUpdater {
 				stat.executeUpdate("BEGIN TRANSACTION");
 
 				for (int i = 0; i < idList.size(); i++) {
+					if (LocalConfig.getInstance().getBlankMetabIds().contains(idList.get(i))) {
+						LocalConfig.getInstance().getBlankMetabIds().remove(idList.get(i));
+					}
+					if (LocalConfig.getInstance().getDuplicateIds().contains(idList.get(i))) {
+						LocalConfig.getInstance().getDuplicateIds().remove(idList.get(i));
+					}
 					if (LocalConfig.getInstance().getSuspiciousMetabolites().contains(idList.get(i))) {
 						LocalConfig.getInstance().getSuspiciousMetabolites().remove(idList.get(i));
 					}

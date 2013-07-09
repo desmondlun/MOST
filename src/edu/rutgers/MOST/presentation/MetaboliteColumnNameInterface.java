@@ -75,7 +75,7 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		LocalConfig.getInstance().setProgress(0);
 		progressBar.pack();
 		progressBar.setIconImages(icons);
-		progressBar.setSize(200, 70);
+		progressBar.setSize(GraphicalInterfaceConstants.PROGRESS_BAR_WIDTH, GraphicalInterfaceConstants.PROGRESS_BAR_HEIGHT);
 		progressBar.setTitle("Loading...");
 		progressBar.setLocationRelativeTo(null);
 		progressBar.setVisible(false);

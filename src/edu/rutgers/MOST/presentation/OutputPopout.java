@@ -12,7 +12,7 @@ import java.io.*;
 public class OutputPopout extends JFrame {
 
 	private static JTextArea    textArea;
-	private JFileChooser fileChooser = new JFileChooser();
+	private JFileChooser fileChooser = new JFileChooser(new java.io.File("."));
 
 	public OutputPopout() {
 		//... Create scrollable text area.
@@ -47,7 +47,7 @@ public class OutputPopout extends JFrame {
 		setJMenuBar(menuBar);
 
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		setTitle(GraphicalInterfaceConstants.TITLE + " - " + LocalConfig.getInstance().getDatabaseName());
+		setTitle(GraphicalInterfaceConstants.TITLE + " - " + LocalConfig.getInstance().getLoadedDatabase());
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
@@ -70,24 +70,54 @@ public class OutputPopout extends JFrame {
 		}
 	}
 
-	// TODO: add if filename does not end with ".txt" add it to filename
-	// also add copy to console
 	class SaveAction implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			int retval = fileChooser.showSaveDialog(OutputPopout.this);
-			if (retval == JFileChooser.APPROVE_OPTION) {
-				File f = fileChooser.getSelectedFile();
-				try {
-					FileWriter writer = new FileWriter(f);
-					textArea.write(writer);  // Use TextComponent write
-				} catch (IOException ie) {
-					JOptionPane.showMessageDialog(OutputPopout.this, ie);
-					System.exit(1);
+		public void actionPerformed(ActionEvent e) {			
+			boolean done = false;
+			while (!done) {
+				int retval = fileChooser.showSaveDialog(OutputPopout.this);
+				if (retval == JFileChooser.CANCEL_OPTION) {
+					done = true;
+				}
+				if (retval == JFileChooser.APPROVE_OPTION) {					
+					String path = fileChooser.getSelectedFile().getPath();
+					if (!path.endsWith(".txt")) {
+						path = path + ".txt";
+					}
+					File f = new File(path);
+
+					if (path == null) {
+						done = true;
+					} else {        	    	  
+						if (f.exists()) {
+							int confirmDialog = JOptionPane.showConfirmDialog(fileChooser, "Replace existing file?");
+							if (confirmDialog == JOptionPane.YES_OPTION) {
+								done = true;
+								writeFile(f);
+							} else if (confirmDialog == JOptionPane.NO_OPTION) {        		    	  
+								done = false;
+							} else {
+								done = true;
+							}       		    	  
+						} else {
+							done = true;
+							writeFile(f);
+						}
+					}	
 				}
 			}
 		}
 	}
-
+	
+	public void writeFile(File f) {
+		try {
+			FileWriter writer = new FileWriter(f);
+			textArea.write(writer);  // Use TextComponent write
+		} catch (IOException ie) {
+			JOptionPane.showMessageDialog(OutputPopout.this, ie);
+			System.exit(1);
+		}
+	}
+	
 	//based on http://www.java2s.com/Code/Java/File-Input-Output/Textfileviewer.htm
 	public void load(String path) {
 		File file;

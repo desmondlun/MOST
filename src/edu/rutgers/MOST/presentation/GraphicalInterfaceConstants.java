@@ -288,6 +288,10 @@ public class GraphicalInterfaceConstants {
     public static final String PARTICIPATING_METAB_RENAME_MESSAGE_PREFIX = "Renaming ";
     public static final String PARTICIPATING_METAB_RENAME_MESSAGE_SUFFIX = " will result in changing one or more reactions. Are you sure you want to do this?";
         
+    // duplicate metabolite
+    public static final String DUPLICATE_METABOLITE_TITLE = "Duplicate Metabolite";
+    public static final String DUPLICATE_METABOLITE_MESSAGE = "Duplicate Metabolite. Add anyway?"; 
+    
     // invalid reactions
     public static final String INVALID_REACTIONS_ERROR_TITLE = "Invalid Reactions Warning";
     public static final String INVALID_REACTIONS_ERROR_MESSAGE = "Model contains invalid reactions. Are you sure you wish to save?";    
@@ -349,7 +353,14 @@ public class GraphicalInterfaceConstants {
     {"=>", "-->", "->"
     };
     
-
+    public static final int PROGRESS_BAR_WIDTH = 175;
+    public static final int PROGRESS_BAR_HEIGHT = 38;
+    
+    public static final String UNDO_ICON_IMAGE_PATH = "etc/toolbarIcons/Sideways_Arrow_Icon16b.png";
+    public static final String REDO_ICON_IMAGE_PATH = "etc/toolbarIcons/Sideways_Arrow_Icon16a.png";
+    public static final String UNDO_GRAYED_ICON_IMAGE_PATH = "etc/toolbarIcons/Sideways_Arrow_Icon16d.png";
+    public static final String REDO_GRAYED_ICON_IMAGE_PATH = "etc/toolbarIcons/Sideways_Arrow_Icon16c.png";
+    
     public static final String GUROBI_KEY_ERROR_TITLE = "Gurobi Key Error";
     public static final String GUROBI_KEY_ERROR = "Gurobi Key Error";
         
@@ -357,6 +368,5 @@ public class GraphicalInterfaceConstants {
     
     // spaces for alignment
     public static final String ROW_HEADER_TITLE = "   Row";
-
 }
 

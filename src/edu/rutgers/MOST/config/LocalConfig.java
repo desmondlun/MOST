@@ -378,6 +378,16 @@ public class LocalConfig {
 		this.metaboliteUsedMap = metaboliteUsedMap;
 	}
 	
+    private static ArrayList<Integer> unusedList = new ArrayList<Integer>();
+	
+	public static ArrayList<Integer> getUnusedList() {
+		return unusedList;
+	}
+
+	public static void setUnusedList(ArrayList<Integer> unusedList) {
+		LocalConfig.unusedList = unusedList;
+	}
+	
 	private static File metabolitesCSVFile;
 
 	public void setMetabolitesCSVFile(File metabolitesCSVFile) {
@@ -439,6 +449,8 @@ public class LocalConfig {
 	public boolean findReplaceFocusGained;
 	
 	public boolean addReactantPromptShown;
+	public boolean reactionEditorVisible;
+	public boolean loadExistingVisible;
 	
 	public static Integer reactionsLocationsListCount;
 	

@@ -90,7 +90,7 @@ public class ReactionColumnNameInterface  extends JDialog {
 		LocalConfig.getInstance().setProgress(0);
 		progressBar.pack();
 		progressBar.setIconImages(icons);
-		progressBar.setSize(200, 75);
+		progressBar.setSize(GraphicalInterfaceConstants.PROGRESS_BAR_WIDTH, GraphicalInterfaceConstants.PROGRESS_BAR_HEIGHT);
 		progressBar.setTitle("Loading...");
 		progressBar.setLocation(x  - progressBar.getSize().width/2, y - 180);
 		progressBar.setVisible(false);

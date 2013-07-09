@@ -14,7 +14,7 @@ import edu.rutgers.MOST.config.LocalConfig;
 
 import static javax.swing.GroupLayout.Alignment.*;
  
-public class FindReplaceFrame extends JFrame {
+public class FindReplaceDialog extends JDialog {
 	
 	public static JButton findButton = new JButton("Find Next");
 	public static JButton findAllButton = new JButton("Find All");
@@ -53,16 +53,10 @@ public class FindReplaceFrame extends JFrame {
 	
 	private WindowFocusListener windowFocusListener;
 	
-    public FindReplaceFrame() {
+    public FindReplaceDialog() {
     	
     	setMaximumSize(new Dimension(250, 300));
     	setResizable(false);
-    	
-    	addWindowListener(new WindowAdapter() {
-	        public void windowClosing(WindowEvent evt) {
-	        	LocalConfig.getInstance().findMode = false;
-	        }
-		});
     	
         JLabel findLabel = new JLabel("Find What:");
         JLabel replaceLabel = new JLabel("Replace:");
@@ -161,7 +155,8 @@ public class FindReplaceFrame extends JFrame {
             
         setTitle("Find/Replace");
         pack();
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        //setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         
         caseCheckBox.setSelected(false);
         
@@ -214,9 +209,11 @@ public class FindReplaceFrame extends JFrame {
         
         ActionListener findButtonActionListener = new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
-    			setFindText(findField.getText());	
-    			replaceButton.setEnabled(true);
-    			replaceFindButton.setEnabled(true);
+    			setFindText(findField.getText());
+    			if (GraphicalInterface.fileList.getSelectedIndex() == 0) {
+    				replaceButton.setEnabled(true);
+        			replaceFindButton.setEnabled(true);
+    			}    			
     		}
     	};
 
@@ -226,7 +223,9 @@ public class FindReplaceFrame extends JFrame {
     		public void actionPerformed(ActionEvent ae) {
     			setFindText(findField.getText());
     			replaceButton.setEnabled(false);
-    			replaceAllButton.setEnabled(true);
+    			if (GraphicalInterface.fileList.getSelectedIndex() == 0) {
+    				replaceAllButton.setEnabled(true);
+    			}    			
     			replaceFindButton.setEnabled(false);
     		}
     	};
@@ -260,7 +259,6 @@ public class FindReplaceFrame extends JFrame {
     	
         ActionListener doneButtonActionListener = new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
-    			LocalConfig.getInstance().findMode = false;
     			setVisible(false);
     			dispose();				
     		}
@@ -339,7 +337,7 @@ public class FindReplaceFrame extends JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 
-                new FindReplaceFrame().setVisible(true);
+                new FindReplaceDialog().setVisible(true);
             }
         });
     }
