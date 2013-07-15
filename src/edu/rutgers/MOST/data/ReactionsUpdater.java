@@ -284,6 +284,8 @@ public class ReactionsUpdater {
 		
 		LocalConfig.getInstance().addMetaboliteOption = true;
 		
+		LocalConfig.getInstance().getAddedMetabolites().clear();
+		
 		ReactionParser parser = new ReactionParser();
 		DatabaseCreator creator = new DatabaseCreator();
 
@@ -392,6 +394,7 @@ public class ReactionsUpdater {
 												creator.addMetaboliteRow(databaseName);
 												stat.executeUpdate(update);
 												LocalConfig.getInstance().getMetaboliteIdNameMap().put(reactant, (maxMetabId + 1));
+												LocalConfig.getInstance().getAddedMetabolites().add((maxMetabId + 1));
 												maxMetabId += 1;
 											}
 											//No option actually corresponds to "Yes to All" button
@@ -402,6 +405,7 @@ public class ReactionsUpdater {
 												creator.addMetaboliteRow(databaseName);
 												stat.executeUpdate(update);
 												LocalConfig.getInstance().getMetaboliteIdNameMap().put(reactant, (maxMetabId + 1));
+												LocalConfig.getInstance().getAddedMetabolites().add((maxMetabId + 1));
 												maxMetabId += 1;
 												LocalConfig.getInstance().yesToAllButtonClicked = true;
 											}
@@ -415,6 +419,7 @@ public class ReactionsUpdater {
 											creator.addMetaboliteRow(databaseName);
 											stat.executeUpdate(update);
 											LocalConfig.getInstance().getMetaboliteIdNameMap().put(reactant, (maxMetabId + 1));
+											LocalConfig.getInstance().getAddedMetabolites().add((maxMetabId + 1));
 											maxMetabId += 1;
 										}											
 									}										
@@ -482,6 +487,7 @@ public class ReactionsUpdater {
 												creator.addMetaboliteRow(databaseName);
 												stat.executeUpdate(update);
 											    LocalConfig.getInstance().getMetaboliteIdNameMap().put(product, (maxMetabId + 1));
+											    LocalConfig.getInstance().getAddedMetabolites().add((maxMetabId + 1));
 												maxMetabId += 1;
 											}
 											//No option actually corresponds to "Yes to All" button
@@ -492,6 +498,7 @@ public class ReactionsUpdater {
 												creator.addMetaboliteRow(databaseName);
 												stat.executeUpdate(update);
 												LocalConfig.getInstance().getMetaboliteIdNameMap().put(product, (maxMetabId + 1));
+												LocalConfig.getInstance().getAddedMetabolites().add((maxMetabId + 1));
 												maxMetabId += 1;
 												LocalConfig.getInstance().yesToAllButtonClicked = true;
 											}
@@ -505,6 +512,7 @@ public class ReactionsUpdater {
 											creator.addMetaboliteRow(databaseName);
 											stat.executeUpdate(update);
 											LocalConfig.getInstance().getMetaboliteIdNameMap().put(product, (maxMetabId + 1));
+											LocalConfig.getInstance().getAddedMetabolites().add((maxMetabId + 1));
 											maxMetabId += 1;
 										}		
 									}
@@ -711,7 +719,7 @@ public class ReactionsUpdater {
 	// method used when renaming metabolites
 	public void rewriteReactions(ArrayList<Integer> reactionIdList, String databaseName) {		
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
-
+		
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {

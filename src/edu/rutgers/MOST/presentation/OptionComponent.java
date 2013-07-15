@@ -5,8 +5,7 @@ import java.awt.event.*;
 import java.awt.font.*;
 import java.awt.geom.*;
 import javax.swing.*;
-
-import edu.rutgers.MOST.config.LocalConfig;
+import javax.swing.border.TitledBorder;
  
 //from http://www.coderanch.com/t/343889/GUI/java/Drop-Menu-Buttons
 public class OptionComponent extends JPanel {
@@ -17,18 +16,31 @@ public class OptionComponent extends JPanel {
     boolean firstTime = true;
     boolean isSelected = false;
     public boolean buttonClicked = false;
-    private JPopupMenu popupMenu;
+    private JScrollPopupMenu popupMenu;
+    private String lastMenuItem;
+    //private JPopupMenu popupMenu;
  
-    public JPopupMenu getPopupMenu() {
+    public JScrollPopupMenu getPopupMenu() {
+    //public JPopupMenu getPopupMenu() {
 		return popupMenu;
 	}
 
-	public void setPopupMenu(JPopupMenu popupMenu) {
+    public void setPopupMenu(JScrollPopupMenu popupMenu) {
+	//public void setPopupMenu(JPopupMenu popupMenu) {
 		this.popupMenu = popupMenu;
 	}
-    
-    OptionComponent(String text, String imagePath) {
-    	JPopupMenu popupMenu = new JPopupMenu();
+
+	public String getLastMenuItem() {
+		return lastMenuItem;
+	}
+
+	public void setLastMenuItem(String lastMenuItem) {
+		this.lastMenuItem = lastMenuItem;
+	}
+
+	OptionComponent(String text, String imagePath) {
+    	JScrollPopupMenu popupMenu = new JScrollPopupMenu();
+    	//JPopupMenu popupMenu = new JPopupMenu();
     	setPopupMenu(popupMenu);
         this.text = text;
         if (this.text.equals("image")) {
@@ -125,6 +137,9 @@ public class OptionComponent extends JPanel {
         			//System.out.println("button clicked");
         		} else {
         			buttonClicked = false;
+        			getPopupMenu().setBackground(new Color(190, 190, 190));
+        			setLastMenuItem("Cancel");
+        			getPopupMenu().setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, 25, 0), getLastMenuItem(), TitledBorder.LEFT, TitledBorder.BOTTOM));
         			getPopupMenu().show(OptionComponent.this, 0, getHeight());
         		}                    
         	}            
@@ -155,5 +170,6 @@ public class OptionComponent extends JPanel {
         return popupMenu;
     }
     */
+    
 }
 

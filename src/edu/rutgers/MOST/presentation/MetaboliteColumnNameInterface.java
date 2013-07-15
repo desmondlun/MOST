@@ -416,6 +416,7 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 			public void actionPerformed(ActionEvent prodActionEvent) {
 				setVisible(false);
 				dispose();
+				/*
 				//this is a hack, same as clear method in gui
 				if (LocalConfig.getInstance().getCurrentConnection() != null) {
 					try {
@@ -440,6 +441,7 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				*/
 			}
 		};
 

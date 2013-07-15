@@ -14,7 +14,7 @@ public class ReactionsMetaColumnManager {
 
 	public ArrayList<String> metaColumnNames;
 
-	public void setMetaColumnName(ArrayList metaColumnNames) {
+	public void setMetaColumnName(ArrayList<String> metaColumnNames) {
 		this.metaColumnNames = metaColumnNames;
 	}
 

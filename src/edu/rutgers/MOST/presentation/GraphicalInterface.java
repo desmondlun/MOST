@@ -1,6 +1,7 @@
 package edu.rutgers.MOST.presentation;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -29,12 +30,13 @@ import edu.rutgers.MOST.data.DatabaseCreator;
 import edu.rutgers.MOST.data.FBAModel;
 import edu.rutgers.MOST.data.GDBBModel;
 import edu.rutgers.MOST.data.JSBMLWriter;
-//import edu.rutgers.MOST.data.MemoryDatabaseCopier;
 import edu.rutgers.MOST.data.MetaboliteFactory;
+import edu.rutgers.MOST.data.MetaboliteUndoItem;
 import edu.rutgers.MOST.data.MetabolitesMetaColumnManager;
 import edu.rutgers.MOST.data.MetabolitesUpdater;
 import edu.rutgers.MOST.data.ObjectCloner;
 import edu.rutgers.MOST.data.ReactionFactory;
+import edu.rutgers.MOST.data.ReactionUndoItem;
 import edu.rutgers.MOST.data.ReactionsMetaColumnManager;
 import edu.rutgers.MOST.data.ReactionsUpdater;
 import edu.rutgers.MOST.data.SBMLMetabolite;
@@ -47,6 +49,7 @@ import edu.rutgers.MOST.data.TextMetabolitesModelReader;
 import edu.rutgers.MOST.data.TextMetabolitesWriter;
 import edu.rutgers.MOST.data.TextReactionsModelReader;
 import edu.rutgers.MOST.data.TextReactionsWriter;
+import edu.rutgers.MOST.data.UndoConstants;
 import edu.rutgers.MOST.logic.ReactionParser;
 import edu.rutgers.MOST.optimization.FBA.FBA;
 import edu.rutgers.MOST.optimization.GDBB.GDBB;
@@ -70,6 +73,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -81,6 +86,7 @@ import java.io.Writer;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.sql.*;
+import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -205,6 +211,7 @@ public class GraphicalInterface extends JFrame {
 	public static boolean renameMetabolite;           // if Rename menu action determines used, is set to true to for OK button action          
 	public static boolean reactionsTableEditable;	  // if fileList item index > 0, is false
 	public static boolean modelCollectionOKButtonClicked;
+	public static boolean reactionCancelLoad;
 	// close
 	public static boolean exit;
 	public static boolean saveDatabaseFile;
@@ -591,6 +598,9 @@ public class GraphicalInterface extends JFrame {
 	// end sorting
 	/*****************************************************************************/
 	
+	public Integer undoCount;
+	public Integer redoCount;
+	
 	@SuppressWarnings("unchecked")
 	public GraphicalInterface(final Connection con)
 	throws SQLException {
@@ -667,7 +677,8 @@ public class GraphicalInterface extends JFrame {
 		csvLoadInterface.setLocationRelativeTo(null);		
 		csvLoadInterface.setVisible(false);			
 		csvLoadInterface.okButton.addActionListener(okButtonCSVLoadActionListener);
-
+		csvLoadInterface.cancelButton.addActionListener(cancelButtonCSVLoadActionListener);
+		
 		setDatabaseName(ConfigConstants.DEFAULT_DATABASE_NAME);
 		LocalConfig.getInstance().setLoadedDatabase(ConfigConstants.DEFAULT_DATABASE_NAME);
 
@@ -731,7 +742,45 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().setHiddenReactionsColumns(hiddenReactionsColumns);
 		ArrayList<Integer> hiddenMetabolitesColumns = new ArrayList<Integer>();
 		LocalConfig.getInstance().setHiddenMetabolitesColumns(hiddenMetabolitesColumns);
-					
+			
+		// undo/redo
+		Map<Object, Object> undoItemMap = new HashMap<Object, Object>();
+		LocalConfig.getInstance().setUndoItemMap(undoItemMap);
+		Map<Object, Object> redoItemMap = new HashMap<Object, Object>();
+		LocalConfig.getInstance().setRedoItemMap(redoItemMap);
+		
+		undoCount = 1;
+		redoCount = 1;
+		LocalConfig.getInstance().setNumReactionTablesCopied(0);
+		LocalConfig.getInstance().setNumMetabolitesTableCopied(0);
+		LocalConfig.getInstance().setUndoMenuIndex(0);
+		
+		// undo/redo sort order
+		ArrayList<Integer> reactionsSortColumns = new ArrayList<Integer>();		
+		ArrayList<SortOrder> reactionsSortOrderList = new ArrayList<SortOrder>();		
+		ArrayList<Integer> metabolitesSortColumns = new ArrayList<Integer>();		
+		ArrayList<SortOrder> metabolitesSortOrderList = new ArrayList<SortOrder>();
+		reactionsSortColumns.add(0);
+		LocalConfig.getInstance().setReactionsSortColumns(reactionsSortColumns);
+		reactionsSortOrderList.add(SortOrder.ASCENDING);
+		LocalConfig.getInstance().setReactionsSortOrderList(reactionsSortOrderList);
+		metabolitesSortColumns.add(0);
+		LocalConfig.getInstance().setMetabolitesSortColumns(metabolitesSortColumns);
+		metabolitesSortOrderList.add(SortOrder.ASCENDING);
+		LocalConfig.getInstance().setMetabolitesSortOrderList(metabolitesSortOrderList);
+		
+		ArrayList<Integer> reactionsRedoSortColumns = new ArrayList<Integer>();		
+		ArrayList<SortOrder> reactionsRedoSortOrderList = new ArrayList<SortOrder>();		
+		ArrayList<Integer> metabolitesRedoSortColumns = new ArrayList<Integer>();		
+		ArrayList<SortOrder> metabolitesRedoSortOrderList = new ArrayList<SortOrder>();
+		LocalConfig.getInstance().setReactionsRedoSortColumns(reactionsRedoSortColumns);
+		LocalConfig.getInstance().setReactionsRedoSortOrderList(reactionsRedoSortOrderList);
+		LocalConfig.getInstance().setMetabolitesRedoSortColumns(metabolitesRedoSortColumns);
+		LocalConfig.getInstance().setMetabolitesRedoSortOrderList(metabolitesRedoSortOrderList);
+		
+		ArrayList<Integer> addedMetabolites = new ArrayList<Integer>();
+		LocalConfig.getInstance().setAddedMetabolites(addedMetabolites);
+		
 		/**************************************************************************/
 		//set up fileList
 		/**************************************************************************/
@@ -1026,7 +1075,7 @@ public class GraphicalInterface extends JFrame {
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
 				}
-				fileList.setSelectedIndex(listModel.size() - 1);
+				//fileList.setSelectedIndex(listModel.size() - 1);
 			}
 			
 		});
@@ -1046,7 +1095,7 @@ public class GraphicalInterface extends JFrame {
 				Utilities u = new Utilities();
 				//load original db into tables
 		        
-				fileList.removeSelectionInterval(0, listModel.size());
+				//fileList.removeSelectionInterval(0, listModel.size());
 				//String fileString1 = "jdbc:sqlite:" + getDatabaseName() + ".db";
 				closeConnection();
 				reloadTables(getDatabaseName());
@@ -1110,7 +1159,6 @@ public class GraphicalInterface extends JFrame {
 
 		editMenu.add(highlightUnusedMetabolitesItem);
 		highlightUnusedMetabolitesItem.setMnemonic(KeyEvent.VK_H);
-		//highlightUnusedMetabolitesItem.setEnabled(false);
 		
 		highlightUnusedMetabolitesItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -1135,6 +1183,10 @@ public class GraphicalInterface extends JFrame {
 		deleteUnusedItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {				
 				tabbedPane.setSelectedIndex(1);
+				copyMetaboliteDatabaseTable();
+				MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn(), 1, UndoConstants.DELETE_UNUSED, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+				undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
+				setUndoOldCollections(undoItem);
 				Map<String, Object> usedMap = LocalConfig.getInstance().getMetaboliteUsedMap();
 				Map<String, Object> idMap = new HashMap<String, Object>();
 
@@ -1160,7 +1212,9 @@ public class GraphicalInterface extends JFrame {
 					highlightUnusedMetabolitesItem.setState(false);
 					formulaBar.setText("");
 					LocalConfig.getInstance().getUnusedList().clear();
-					LocalConfig.getInstance().setMetaboliteIdNameMap(idMap);		
+					LocalConfig.getInstance().setMetaboliteIdNameMap(idMap);
+					copyMetaboliteDatabaseTable();
+					setUpMetabolitesUndo(undoItem);	
 					reloadTables(LocalConfig.getInstance().getLoadedDatabase());
 				} catch (Exception e3) {
 					// TODO Auto-generated catch block
@@ -1211,9 +1265,16 @@ public class GraphicalInterface extends JFrame {
 			public void actionPerformed(ActionEvent ae) {
 				tabbedPane.setSelectedIndex(0);
 				DatabaseCreator creator = new DatabaseCreator();
+				int id = creator.maxReactionId(LocalConfig.getInstance().getLoadedDatabase()) + 1;
+				ReactionUndoItem undoItem = createReactionUndoItem("", "", reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), id, UndoConstants.ADD_ROW, UndoConstants.REACTION_UNDO_ITEM_TYPE);		
 				creator.addReactionRow(LocalConfig.getInstance().getLoadedDatabase());
 				closeConnection();
 				reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+				//set focus to id cell in new row in order to set row visible
+				int maxRow = reactionsTable.getModel().getRowCount();
+				int viewRow = reactionsTable.convertRowIndexToView(maxRow - 1);
+				setTableCellFocused(viewRow, 1, reactionsTable);
+				setUpReactionsUndo(undoItem);
 			}
 		};  
 		
@@ -1221,14 +1282,21 @@ public class GraphicalInterface extends JFrame {
    
 		editMenu.add(addMetabRowItem); 
 		addMetabRowItem.setMnemonic(KeyEvent.VK_M);
-
+		
 		addMetabRowItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				tabbedPane.setSelectedIndex(1);
 				DatabaseCreator creator = new DatabaseCreator();
+				int id = creator.maxMetaboliteId(LocalConfig.getInstance().getLoadedDatabase()) + 1;
+				MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn(), id, UndoConstants.ADD_ROW, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+				setUndoOldCollections(undoItem);				
 				creator.addMetaboliteRow(LocalConfig.getInstance().getLoadedDatabase());
-				LocalConfig.getInstance().setCurrentConnection(con);
+				closeConnection();
 				reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+				int maxRow = metabolitesTable.getModel().getRowCount();
+				int viewRow = metabolitesTable.convertRowIndexToView(maxRow - 1);
+				setTableCellFocused(viewRow, 1, metabolitesTable);
+				setUpMetabolitesUndo(undoItem);
 			}
 		});
 		
@@ -1241,6 +1309,9 @@ public class GraphicalInterface extends JFrame {
 			public void actionPerformed(ActionEvent ae) {
 				tabbedPane.setSelectedIndex(0);
 				closeConnection();
+				LocalConfig.getInstance().addColumnInterfaceVisible = true;
+				addReacColumnItem.setEnabled(false);
+				addMetabColumnItem.setEnabled(false);
 				try {
 					Class.forName("org.sqlite.JDBC");
 					Connection con = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getLoadedDatabase()));
@@ -1251,8 +1322,16 @@ public class GraphicalInterface extends JFrame {
 					reactionColAddRenameInterface.setIconImages(icons);
 					reactionColAddRenameInterface.setSize(350, 160);
 					reactionColAddRenameInterface.setResizable(false);
-					reactionColAddRenameInterface.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+					reactionColAddRenameInterface.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+					//reactionColAddRenameInterface.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+					reactionColAddRenameInterface.setAlwaysOnTop(true);
+					reactionColAddRenameInterface.setModal(true);
 					reactionColAddRenameInterface.setLocationRelativeTo(null);
+					reactionColAddRenameInterface.addWindowListener(new WindowAdapter() {
+				        public void windowClosing(WindowEvent evt) {
+				        	addReactionColumnCloseAction();
+				        }
+					});					
 					reactionColAddRenameInterface.setVisible(true);					
 				} catch (ClassNotFoundException e1) {
 					// TODO Auto-generated catch block
@@ -1278,6 +1357,12 @@ public class GraphicalInterface extends JFrame {
 					Connection con = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getLoadedDatabase()));
 					LocalConfig.getInstance().setCurrentConnection(con);
 					setUpReactionsTable(con);
+					//TODO : set selected row and column
+					ReactionUndoItem undoItem = createReactionUndoItem("", "", reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), 1, UndoConstants.ADD_COLUMN, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+					ReactionsMetaColumnManager reactionsMetaColumnManager = new ReactionsMetaColumnManager();
+					int metaColumnCount = reactionsMetaColumnManager.getMetaColumnCount(LocalConfig.getInstance().getDatabaseName());
+					undoItem.setAddedColumnIndex(metaColumnCount + GraphicalInterfaceConstants.REACTIONS_DB_COLUMN_NAMES.length - 1);
+					setUpReactionsUndo(undoItem);
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -1286,10 +1371,19 @@ public class GraphicalInterface extends JFrame {
 					e.printStackTrace();
 				}
 				addReacColumn = false;
+				addReactionColumnCloseAction();
+			}
+		};
+		
+		ActionListener addColCancelButtonActionListener = new ActionListener() {
+			public void actionPerformed(ActionEvent prodActionEvent) {
+				closeConnection();
+				addReactionColumnCloseAction();
 			}
 		};
 		
 		reactionColAddRenameInterface.okButton.addActionListener(addColOKButtonActionListener);
+		reactionColAddRenameInterface.cancelButton.addActionListener(addColCancelButtonActionListener);
 		
 		editMenu.add(addMetabColumnItem);
 		addMetabColumnItem.setMnemonic(KeyEvent.VK_O);
@@ -1298,9 +1392,12 @@ public class GraphicalInterface extends JFrame {
 			public void actionPerformed(ActionEvent ae) {
 				tabbedPane.setSelectedIndex(1);
 				closeConnection();
+				LocalConfig.getInstance().addColumnInterfaceVisible = true;
+				addReacColumnItem.setEnabled(false);
+				addMetabColumnItem.setEnabled(false);
 				try {
 					Class.forName("org.sqlite.JDBC");
-					Connection con = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getLoadedDatabase()));		
+					Connection con = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getLoadedDatabase()));	
 					LocalConfig.getInstance().setCurrentConnection(con);
 					MetaboliteColAddRenameInterface metaboliteColAddRenameInterface = new MetaboliteColAddRenameInterface(con);
 					setMetaboliteColAddRenameInterface(metaboliteColAddRenameInterface);
@@ -1308,9 +1405,17 @@ public class GraphicalInterface extends JFrame {
 					metaboliteColAddRenameInterface.setIconImages(icons);
 					metaboliteColAddRenameInterface.setSize(350, 160);
 					metaboliteColAddRenameInterface.setResizable(false);
-					metaboliteColAddRenameInterface.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+					//metaboliteColAddRenameInterface.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+					metaboliteColAddRenameInterface.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+					metaboliteColAddRenameInterface.setAlwaysOnTop(true);
+					metaboliteColAddRenameInterface.setModal(true);
 					metaboliteColAddRenameInterface.setLocationRelativeTo(null);
-					metaboliteColAddRenameInterface.setVisible(true);					
+					metaboliteColAddRenameInterface.addWindowListener(new WindowAdapter() {
+				        public void windowClosing(WindowEvent evt) {
+				        	addMetaboliteColumnCloseAction();
+				        }
+					});
+					metaboliteColAddRenameInterface.setVisible(true);						
 				} catch (ClassNotFoundException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -1335,6 +1440,11 @@ public class GraphicalInterface extends JFrame {
 					Connection con = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getLoadedDatabase()));
 					LocalConfig.getInstance().setCurrentConnection(con);
 					setUpMetabolitesTable(con);
+					MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn(), 1, UndoConstants.ADD_COLUMN, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);		
+					MetabolitesMetaColumnManager metabolitesMetaColumnManager = new MetabolitesMetaColumnManager();
+					int metaColumnCount = metabolitesMetaColumnManager.getMetaColumnCount(LocalConfig.getInstance().getDatabaseName());
+					undoItem.setAddedColumnIndex(metaColumnCount + GraphicalInterfaceConstants.METABOLITES_DB_COLUMN_NAMES.length - 1);
+					setUpMetabolitesUndo(undoItem);
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -1343,10 +1453,19 @@ public class GraphicalInterface extends JFrame {
 					e.printStackTrace();
 				}
 				addMetabColumn = false;
+				addMetaboliteColumnCloseAction();
+			}
+		};
+		
+		ActionListener addMetabColCancelButtonActionListener = new ActionListener() {
+			public void actionPerformed(ActionEvent prodActionEvent) {
+				closeConnection();
+				addMetaboliteColumnCloseAction();
 			}
 		};
 		
 		metaboliteColAddRenameInterface.okButton.addActionListener(addMetabColOKButtonActionListener);
+		metaboliteColAddRenameInterface.cancelButton.addActionListener(addMetabColCancelButtonActionListener);
 		
 		menuBar.add(editMenu);
 		
@@ -1408,14 +1527,14 @@ public class GraphicalInterface extends JFrame {
 		addImage(undoSplitButton, undoLabel);
 		addImage(undoSplitButton, undoGrayedLabel);
 		undoSplitButton.setToolTipText("Undo");	
-		//undoSplitButton.addMouseListener(undoButtonMouseListener);
+		undoSplitButton.addMouseListener(undoButtonMouseListener);
 		disableOptionComponent(undoSplitButton, undoLabel, undoGrayedLabel);
 		toolbar.add(undoSplitButton);
 		
 		addImage(redoSplitButton, redoLabel);
 		addImage(redoSplitButton, redoGrayedLabel);
 		redoSplitButton.setToolTipText("Redo");
-		//redoSplitButton.addMouseListener(redoButtonMouseListener);
+		redoSplitButton.addMouseListener(redoButtonMouseListener);
 		disableOptionComponent(redoSplitButton, redoLabel, redoGrayedLabel);
 		toolbar.add(redoSplitButton);		
 		
@@ -1486,8 +1605,15 @@ public class GraphicalInterface extends JFrame {
 		reactionsTable.registerKeyboardAction(reactionsFindActionListener,reacFind,JComponent.WHEN_FOCUSED); 
 		
 		// from http://www.java.net/node/651087
-		// need tab to skip hidden columns
-		//reactionsTable.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "selectNextRowCell");
+		// need tab to skip hidden columns		
+		/*
+		reactionsTable.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "actionString");
+		reactionsTable.getActionMap().put("actionString", new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				// This overrides tab key and performs an action	
+			}
+		});
+		*/
 		
 		ActionListener metabolitesCopyActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
@@ -1765,17 +1891,30 @@ public class GraphicalInterface extends JFrame {
 		}						
 		int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
 		String newValue = formulaBar.getText();
+		ReactionUndoItem undoItem = createReactionUndoItem(getTableCellOldValue(), newValue, reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), viewRow + 1, UndoConstants.TYPING, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 		updateReactionsCellIfValid(getTableCellOldValue(), newValue, viewRow, reactionsTable.getSelectedColumn());
+		if (reactionUpdateValid) {
+			setUpReactionsUndo(undoItem);
+		}
 	}
 	
 	public void updateMetabolitesCell() {
 		if (formulaBar.getText() != null) {
 			LocalConfig.getInstance().metabolitesTableChanged = true;
 		}						
-		int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
+		int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());		
 		String newValue = formulaBar.getText();
-		updateMetabolitesCellIfValid(getTableCellOldValue(), newValue, viewRow, metabolitesTable.getSelectedColumn());
+		// these variables are needed since after the table is reloaded, there is
+		// no selected cell
+		int row = metabolitesTable.getSelectedRow();
+		int col = metabolitesTable.getSelectedColumn();
+		MetaboliteUndoItem undoItem = createMetaboliteUndoItem(getTableCellOldValue(), newValue, row, col, viewRow + 1, UndoConstants.TYPING, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+		setUndoOldCollections(undoItem);
+		updateMetabolitesCellIfValid(getTableCellOldValue(), newValue, viewRow, metabolitesTable.getSelectedColumn());	
 		reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+		if (metaboliteUpdateValid) {
+			setUpMetabolitesUndo(undoItem);
+		}		
 	}
 	
 	/*******************************************************************************/
@@ -1856,7 +1995,9 @@ public class GraphicalInterface extends JFrame {
 	class LoadCSVAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			SaveChangesPrompt();
-			setExtension(".csv");	
+			setExtension(".csv");
+			csvLoadInterface.textMetabField.setText("");
+			csvLoadInterface.textReacField.setText("");
 			csvLoadInterface.setVisible(true);	
 		}
 	}
@@ -1876,6 +2017,12 @@ public class GraphicalInterface extends JFrame {
 		}
 	}; 
 	
+	ActionListener cancelButtonCSVLoadActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {	
+			clearTables();
+		}
+	};
+	
 	public void loadCSV() {	
 		DynamicTreeDemo.treePanel.clear();
 		//fileList.setSelectedIndex(-1);
@@ -1893,15 +2040,13 @@ public class GraphicalInterface extends JFrame {
 				TextMetabolitesModelReader reader = new TextMetabolitesModelReader();
 				ArrayList<String> columnNamesFromFile = reader.columnNamesFromFile(LocalConfig.getInstance().getMetabolitesCSVFile(), 0);
 				MetaboliteColumnNameInterface columnNameInterface = new MetaboliteColumnNameInterface(con, columnNamesFromFile);
-
-				columnNameInterface.setModal(true);
 				columnNameInterface.setIconImages(icons);
-
 				columnNameInterface.setSize(600, 360);
 				columnNameInterface.setResizable(false);
 				columnNameInterface.setLocationRelativeTo(null);
 				columnNameInterface.setVisible(true);
 				columnNameInterface.setAlwaysOnTop(true);
+				columnNameInterface.cancelButton.addActionListener(cancelButtonCSVLoadActionListener);
 			} else {
 				LocalConfig.getInstance().setProgress(100);
 			}
@@ -1956,6 +2101,8 @@ public class GraphicalInterface extends JFrame {
 					copier.copyDatabase(path, path + GraphicalInterfaceConstants.DB_COPIER_SUFFIX);
 					LocalConfig.getInstance().setLoadedDatabase(path);
 					setUpTables();
+					DatabaseCreator creator = new DatabaseCreator();
+					creator.copyTables(LocalConfig.getInstance().getLoadedDatabase(), tableCopySuffix(0));
 					// check for invalid reactions and add to invalid list
 					SQLiteLoader loader = new SQLiteLoader();
 					ArrayList<String> invalidReactions = loader.invalidReactions(path);
@@ -1983,7 +2130,6 @@ public class GraphicalInterface extends JFrame {
 	
 	class LoadExistingItemAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
-			//File f = new File("ModelCollection4.csv");
 			File f = new File("ModelCollection1.csv");
 			ModelCollectionTable mcTable = new ModelCollectionTable(f);
 			mcTable.setIconImages(icons);
@@ -2079,7 +2225,7 @@ public class GraphicalInterface extends JFrame {
 		TextMetabolitesWriter writer = new TextMetabolitesWriter();
 		writer.write(path, LocalConfig.getInstance().getLoadedDatabase());				    		
 		setTitle(GraphicalInterfaceConstants.TITLE + " - " + filename);
-		fileList.setSelectedIndex(-1);
+		//fileList.setSelectedIndex(-1);
 		//list holds dateTime stamps from items in old fileList
 		ArrayList<String> suffixList = new ArrayList();
 		for (int i = 1; i < listModel.size(); i++) {
@@ -2099,7 +2245,7 @@ public class GraphicalInterface extends JFrame {
 			copier.copyLogFile(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + oldName + suffixList.get(i), GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + filename + suffixList.get(i));
 		}
 
-		fileList.setModel(listModel);
+		//fileList.setModel(listModel);
 		clearOutputPane();
 	}
 
@@ -2193,7 +2339,7 @@ public class GraphicalInterface extends JFrame {
 		writer.write(path, LocalConfig.getInstance().getLoadedDatabase());				    
 		setTitle(GraphicalInterfaceConstants.TITLE + " - " + filename);	
 		if (!saveOptFile) {
-			fileList.setSelectedIndex(-1);
+			//fileList.setSelectedIndex(-1);
 			//list holds dateTime stamps from items in old fileList
 			ArrayList<String> suffixList = new ArrayList();
 			for (int i = 1; i < listModel.size(); i++) {
@@ -2210,7 +2356,7 @@ public class GraphicalInterface extends JFrame {
 				copier.copyLogFile(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + oldName + suffixList.get(i), GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + filename + suffixList.get(i));
 			}
 
-			fileList.setModel(listModel);
+			//fileList.setModel(listModel);
 			DynamicTreeDemo.treePanel.addObject(new Solution(GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1)));
 			clearOutputPane();
 		}	
@@ -2460,32 +2606,39 @@ public class GraphicalInterface extends JFrame {
 	
 	class ClearAction implements ActionListener {
 		public void actionPerformed(ActionEvent cae) {
-			SaveChangesPrompt();
-			loadSetUp();
-			closeConnection();
-			try {
-				Class.forName("org.sqlite.JDBC");       
-				DatabaseCreator databaseCreator = new DatabaseCreator();
-				setDatabaseName(ConfigConstants.DEFAULT_DATABASE_NAME);
-				LocalConfig.getInstance().setLoadedDatabase(ConfigConstants.DEFAULT_DATABASE_NAME);
-				Connection con = DriverManager.getConnection("jdbc:sqlite:" + ConfigConstants.DEFAULT_DATABASE_NAME + ".db");
-				LocalConfig.getInstance().setCurrentConnection(con);
-				databaseCreator.createDatabase(LocalConfig.getInstance().getDatabaseName());
-				databaseCreator.addRows(LocalConfig.getInstance().getDatabaseName(), GraphicalInterfaceConstants.BLANK_DB_METABOLITE_ROW_COUNT, GraphicalInterfaceConstants.BLANK_DB_REACTION_ROW_COUNT);
-				reloadTables(getDatabaseName());
-				listModel.clear();
-				listModel.addElement(ConfigConstants.DEFAULT_DATABASE_NAME);
-				fileList.setModel(listModel);
-				fileList.setSelectedIndex(0);
-				setTableCellFocused(0, 1, metabolitesTable);
-				setTableCellFocused(0, 1, reactionsTable);
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			clearTables();
+		}
+	}
+	
+	public void clearTables() {
+		SaveChangesPrompt();
+		loadSetUp();
+		closeConnection();
+		try {
+			Class.forName("org.sqlite.JDBC");       
+			DatabaseCreator databaseCreator = new DatabaseCreator();
+			setDatabaseName(ConfigConstants.DEFAULT_DATABASE_NAME);
+			LocalConfig.getInstance().setLoadedDatabase(ConfigConstants.DEFAULT_DATABASE_NAME);
+			Connection con = DriverManager.getConnection("jdbc:sqlite:" + ConfigConstants.DEFAULT_DATABASE_NAME + ".db");
+			LocalConfig.getInstance().setCurrentConnection(con);
+			databaseCreator.createDatabase(LocalConfig.getInstance().getDatabaseName());
+			databaseCreator.addRows(LocalConfig.getInstance().getDatabaseName(), GraphicalInterfaceConstants.BLANK_DB_METABOLITE_ROW_COUNT, GraphicalInterfaceConstants.BLANK_DB_REACTION_ROW_COUNT);
+			databaseCreator.copyTables(LocalConfig.getInstance().getDatabaseName(), tableCopySuffix(0));
+			reloadTables(getDatabaseName());
+			listModel.clear();
+			listModel.addElement(ConfigConstants.DEFAULT_DATABASE_NAME);
+			DynamicTreeDemo.treePanel.clear();
+			DynamicTreeDemo.treePanel.addObject(new Solution(GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1), ConfigConstants.DEFAULT_DATABASE_NAME));			
+			//fileList.setModel(listModel);
+			//fileList.setSelectedIndex(0);
+			setTableCellFocused(0, 1, metabolitesTable);
+			setTableCellFocused(0, 1, reactionsTable);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -2598,12 +2751,16 @@ public class GraphicalInterface extends JFrame {
 		public void actionPerformed(ActionEvent ae)
 		{		  	
 			TableCellListener tcl = (TableCellListener)ae.getSource();
-
+		
 			if (tcl.getOldValue() != tcl.getNewValue()) {
+				int id = Integer.parseInt((String) (reactionsTable.getModel().getValueAt(tcl.getRow(), 0)));
+				ReactionUndoItem undoItem = createReactionUndoItem(tcl.getOldValue(), tcl.getNewValue(), reactionsTable.getSelectedRow(), tcl.getColumn(), id, UndoConstants.TYPING, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 				LocalConfig.getInstance().reactionsTableChanged = true;
 				updateReactionsCellIfValid(tcl.getOldValue(), tcl.getNewValue(), tcl.getRow(), tcl.getColumn());
+				if (reactionUpdateValid) {
+					setUpReactionsUndo(undoItem);
+				}
 			}
-			//updateReactionsCellIfValid(tcl.getOldValue(), tcl.getNewValue(), tcl.getRow(), tcl.getColumn());
 		}
 	};
 	
@@ -2613,23 +2770,26 @@ public class GraphicalInterface extends JFrame {
 		{   	  
 			TableCellListener mtcl = (TableCellListener)e.getSource();
 			
-			if (mtcl.getOldValue() != mtcl.getNewValue()) {
+			if (mtcl.getOldValue() != mtcl.getNewValue()) {				
 				LocalConfig.getInstance().metabolitesTableChanged = true;
+				int id = Integer.parseInt((String) (metabolitesTable.getModel().getValueAt(mtcl.getRow(), 0)));
+				MetaboliteUndoItem undoItem = createMetaboliteUndoItem(mtcl.getOldValue(), mtcl.getNewValue(), metabolitesTable.getSelectedRow(), mtcl.getColumn(), id, UndoConstants.TYPING, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+				setUndoOldCollections(undoItem);
 				updateMetabolitesCellIfValid(mtcl.getOldValue(), mtcl.getNewValue(), mtcl.getRow(), mtcl.getColumn());
-			}
-			//updateMetabolitesCellIfValid(mtcl.getOldValue(), mtcl.getNewValue(), mtcl.getRow(), mtcl.getColumn());
+				if (metaboliteUpdateValid) {
+					setUpMetabolitesUndo(undoItem);
+				}
+			}			
 		}
 	};
-	
+    
 	// updates reactions table with new value is valid, else reverts to old value
 	public void updateReactionsCellIfValid(String oldValue, String newValue, int rowIndex, int colIndex) {		
 		reactionUpdateValid = true;
 		EntryValidator validator = new EntryValidator();
 		LocalConfig.getInstance().editMode = true;
-		int id = Integer.parseInt((String) (reactionsTable.getModel().getValueAt(rowIndex, 0)));
-		boolean isNumber = true;		
-		if (colIndex == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN && LocalConfig.getInstance().includesReactions) {
-			//if (oldValue != newValue) {				
+		int id = Integer.parseInt((String) (reactionsTable.getModel().getValueAt(rowIndex, 0)));		
+		if (colIndex == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN && LocalConfig.getInstance().includesReactions) {								
 			ReactionsUpdater updater = new ReactionsUpdater();
 			//  if reaction is changed unhighlight unused metabolites since
 			//  used status may change, same with participating reactions
@@ -2698,9 +2858,9 @@ public class GraphicalInterface extends JFrame {
 				statusBar.setText("Row 1" + "                   " + getLoadErrorMessage());
 			}
 		} else if (colIndex == GraphicalInterfaceConstants.KO_COLUMN) {
-			if (newValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_TRUE_VALUES[0])) {
+			if (validator.validTrueEntry(newValue)) {
 				reactionsTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[1], rowIndex, GraphicalInterfaceConstants.KO_COLUMN);
-			} else if (newValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_FALSE_VALUES[0])) {
+			} else if (validator.validFalseEntry(newValue)) {
 				reactionsTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[0], rowIndex, GraphicalInterfaceConstants.KO_COLUMN);
 			} else if (newValue != null) {				
 				if (!replaceAllMode) {
@@ -2727,30 +2887,21 @@ public class GraphicalInterface extends JFrame {
 				colIndex == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN || 
 				colIndex == GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN || 
 				colIndex == GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN) {
-			try
-			{
-				Double.parseDouble(newValue); 				
-			}
-			catch (NumberFormatException nfe) {
+			if (!validator.isNumber(newValue)) {
 				if (!replaceAllMode) {
 					JOptionPane.showMessageDialog(null,                
 							GraphicalInterfaceConstants.NUMERIC_VALUE_ERROR_TITLE,                
 							GraphicalInterfaceConstants.NUMERIC_VALUE_ERROR_MESSAGE,                               
 							JOptionPane.ERROR_MESSAGE);
-				}				
-				reactionUpdateValid = false;
-				isNumber = false;
-			} 
-			if (!isNumber) {
+				}	
 				reactionsTable.getModel().setValueAt(oldValue, rowIndex, colIndex);
 				updateReactionsDatabaseRow(rowIndex, Integer.parseInt((String) (reactionsTable.getModel().getValueAt(rowIndex, 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase());					
-			}
-			// check if lower bound is >= 0 if reversible = false, and upper bound > lower bound
-			if (isNumber) {			
+			} else {
 				if (colIndex == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN) { 
 					Double lowerBound = Double.valueOf(newValue);
 					Double upperBound = Double.valueOf((String) (reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));
-					if (reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN).toString().compareTo("false") == 0 && lowerBound < 0) {
+					String reversible = reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN).toString();
+					if (!validator.lowerBoundReversibleValid(lowerBound, upperBound, reversible)) {
 						Object[] options = {"    Yes    ", "    No    ",};
 						int choice = JOptionPane.showOptionDialog(null, 
 								GraphicalInterfaceConstants.LOWER_BOUND_ERROR_MESSAGE, 
@@ -2764,7 +2915,7 @@ public class GraphicalInterface extends JFrame {
 						if (choice == JOptionPane.NO_OPTION) {
 							reactionUpdateValid = false;
 							reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
-						}							
+						}	
 					} else if (lowerBound > upperBound) {
 						Object[] options = {"    Yes    ", "    No    ",};
 						int choice = JOptionPane.showOptionDialog(null, 
@@ -2785,7 +2936,6 @@ public class GraphicalInterface extends JFrame {
 					}
 				}
 				if (colIndex == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN) { 
-
 					Double lowerBound = Double.valueOf((String) (reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));
 					Double upperBound = Double.valueOf(newValue);
 					if (upperBound < lowerBound) {
@@ -2812,8 +2962,8 @@ public class GraphicalInterface extends JFrame {
 						colIndex == GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN) {
 					reactionsTable.getModel().setValueAt(newValue, rowIndex, colIndex);
 				}				
-				updateReactionsDatabaseRow(rowIndex, Integer.parseInt((String) (reactionsTable.getModel().getValueAt(rowIndex, 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase());					
-			}			
+				updateReactionsDatabaseRow(rowIndex, Integer.parseInt((String) (reactionsTable.getModel().getValueAt(rowIndex, 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase());
+			}
 		} else {
 			// action for remaining columns
 			reactionsTable.getModel().setValueAt(newValue, rowIndex, colIndex);
@@ -2996,9 +3146,10 @@ public class GraphicalInterface extends JFrame {
 		closeConnection();
 		reloadTables(getDatabaseName());
 		DatabaseCreator databaseCreator = new DatabaseCreator();
+		databaseCreator.copyTables(LocalConfig.getInstance().getDatabaseName(), tableCopySuffix(0));
 		listModel.addElement(titleName);
-		fileList.setModel(listModel);
-		fileList.setSelectedIndex(0);
+		//fileList.setModel(listModel);
+		//fileList.setSelectedIndex(0);
 		setSortDefault();
 		//set focus to top left
 		setTableCellFocused(0, 1, reactionsTable);
@@ -3027,6 +3178,12 @@ public class GraphicalInterface extends JFrame {
 		clearConfigLists();
 		undoSplitButton.setToolTipText("Undo");
 		redoSplitButton.setToolTipText("Redo");
+		disableOptionComponent(undoSplitButton, undoLabel, undoGrayedLabel);
+		disableOptionComponent(redoSplitButton, undoLabel, undoGrayedLabel);
+		undoCount = 1;
+		redoCount = 1;
+		LocalConfig.getInstance().setNumReactionTablesCopied(0);
+		LocalConfig.getInstance().setNumMetabolitesTableCopied(0);
 		showPrompt = true;
 		LocalConfig.getInstance().pastedReaction = false;
 		LocalConfig.getInstance().hasMetabolitesFile = false;
@@ -3091,6 +3248,8 @@ public class GraphicalInterface extends JFrame {
 		modelCollectionOKButtonClicked = false;
 		LocalConfig.getInstance().reactionEditorVisible = false;
 		LocalConfig.getInstance().loadExistingVisible = false;
+		LocalConfig.getInstance().addColumnInterfaceVisible = false;
+		reactionCancelLoad = false;
 	}
 	
 	public void clearConfigLists() {
@@ -3104,6 +3263,20 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().getOptimizationFilesList().clear();
 		LocalConfig.getInstance().getHiddenReactionsColumns().clear();
 		LocalConfig.getInstance().getHiddenMetabolitesColumns().clear();
+        LocalConfig.getInstance().getAddedMetabolites().clear();
+		
+		LocalConfig.getInstance().getUndoItemMap().clear();
+		LocalConfig.getInstance().getUndoItemMap().clear();
+		
+		// clear and reinitialize sort lists
+		LocalConfig.getInstance().getReactionsSortColumns().clear();
+		LocalConfig.getInstance().getReactionsSortColumns().add(0);
+		LocalConfig.getInstance().getReactionsSortOrderList().clear();
+		LocalConfig.getInstance().getReactionsSortOrderList().add(SortOrder.ASCENDING);
+		LocalConfig.getInstance().getMetabolitesSortColumns().clear();
+		LocalConfig.getInstance().getMetabolitesSortColumns().add(0);
+		LocalConfig.getInstance().getMetabolitesSortOrderList().clear();
+		LocalConfig.getInstance().getMetabolitesSortOrderList().add(SortOrder.ASCENDING);
 	}
 	
 	public String createConnectionStatement(String databaseName) {
@@ -3371,9 +3544,21 @@ public class GraphicalInterface extends JFrame {
 	
 	// saves sort column and order so it is preserved when table is refreshed
 	// after editing and updating database
-	class ReactionsColumnHeaderListener extends MouseAdapter {
+    class ReactionsColumnHeaderListener extends MouseAdapter {
 		  public void mouseClicked(MouseEvent evt) {
 			  int r = reactionsTable.getSortedColumnIndex();
+			  // bug: mouse listener sets multiple undo items for one event at times
+			  // this fix works
+			  if (r != getReactionsSortColumnIndex() || reactionsTable.getSortOrder(reactionsTable.getSortedColumnIndex()) != getReactionsSortOrder()) {
+				  ReactionUndoItem undoItem = createReactionUndoItem("", "", reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), 1, UndoConstants.SORT, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+				  LocalConfig.getInstance().getReactionsSortColumns().add(r);
+				  LocalConfig.getInstance().getReactionsSortOrderList().add(reactionsTable.getSortOrder(reactionsTable.getSortedColumnIndex()));
+				  undoItem.setOldSortColumnIndex(LocalConfig.getInstance().getReactionsSortColumns().get(LocalConfig.getInstance().getReactionsSortColumns().size() - 2));
+				  undoItem.setNewSortColumnIndex(LocalConfig.getInstance().getReactionsSortColumns().get(LocalConfig.getInstance().getReactionsSortColumns().size() - 1));
+				  undoItem.setOldSortOrder(LocalConfig.getInstance().getReactionsSortOrderList().get(LocalConfig.getInstance().getReactionsSortOrderList().size() - 2));
+				  undoItem.setNewSortOrder(LocalConfig.getInstance().getReactionsSortOrderList().get(LocalConfig.getInstance().getReactionsSortOrderList().size() - 1));
+				  setUpReactionsUndo(undoItem);
+			  }
 			  setReactionsSortColumnIndex(r);
 			  setReactionsSortOrder(reactionsTable.getSortOrder(reactionsTable.getSortedColumnIndex()));
 		  }
@@ -3801,6 +3986,19 @@ public class GraphicalInterface extends JFrame {
 	class MetabolitesColumnHeaderListener extends MouseAdapter {
 		  public void mouseClicked(MouseEvent evt) {
 			  int m = metabolitesTable.getSortedColumnIndex();
+			  // bug: mouse listener sets multiple undo items
+			  // this fix works
+			  if (m != getMetabolitesSortColumnIndex() || metabolitesTable.getSortOrder(metabolitesTable.getSortedColumnIndex()) != getMetabolitesSortOrder()) {
+				  MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn(), 1, UndoConstants.SORT, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+				  setUndoOldCollections(undoItem);
+				  LocalConfig.getInstance().getMetabolitesSortColumns().add(m);
+				  LocalConfig.getInstance().getMetabolitesSortOrderList().add(metabolitesTable.getSortOrder(metabolitesTable.getSortedColumnIndex()));
+				  undoItem.setOldSortColumnIndex(LocalConfig.getInstance().getMetabolitesSortColumns().get(LocalConfig.getInstance().getMetabolitesSortColumns().size() - 2));
+				  undoItem.setNewSortColumnIndex(LocalConfig.getInstance().getMetabolitesSortColumns().get(LocalConfig.getInstance().getMetabolitesSortColumns().size() - 1));
+				  undoItem.setOldSortOrder(LocalConfig.getInstance().getMetabolitesSortOrderList().get(LocalConfig.getInstance().getMetabolitesSortOrderList().size() - 2));
+				  undoItem.setNewSortOrder(LocalConfig.getInstance().getMetabolitesSortOrderList().get(LocalConfig.getInstance().getMetabolitesSortOrderList().size() - 1));
+				  setUpMetabolitesUndo(undoItem);
+			  }
 			  setMetabolitesSortColumnIndex(m);
 			  setMetabolitesSortOrder(metabolitesTable.getSortOrder(metabolitesTable.getSortedColumnIndex()));
 		  }
@@ -4194,9 +4392,12 @@ public class GraphicalInterface extends JFrame {
 		}
 		deleteColumnMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
+				ReactionUndoItem undoItem = createReactionUndoItem("", "", reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), 1, UndoConstants.DELETE_COLUMN, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 				LocalConfig.getInstance().getHiddenReactionsColumns().add(columnIndex);				
 				closeConnection();
-				reloadTables(LocalConfig.getInstance().getLoadedDatabase()); 				 
+				reloadTables(LocalConfig.getInstance().getLoadedDatabase()); 				
+				undoItem.setDeletedColumnIndex(columnIndex);
+				setUpReactionsUndo(undoItem);
 			}
 		});
 		reactionsHeaderContextMenu.add(deleteColumnMenu);	
@@ -4241,9 +4442,13 @@ public class GraphicalInterface extends JFrame {
 		}
 		deleteColumnMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
+				MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn(), 1, UndoConstants.DELETE_COLUMN, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+				setUndoOldCollections(undoItem);
 				LocalConfig.getInstance().getHiddenMetabolitesColumns().add(columnIndex);	
 				closeConnection();
-				reloadTables(LocalConfig.getInstance().getLoadedDatabase());		   
+				reloadTables(LocalConfig.getInstance().getLoadedDatabase());		
+				undoItem.setDeletedColumnIndex(columnIndex);
+				setUpMetabolitesUndo(undoItem);
 			}
 		});
 		metabolitesHeaderContextMenu.add(deleteColumnMenu);	
@@ -4370,7 +4575,8 @@ public class GraphicalInterface extends JFrame {
 			int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
 		    int id = (Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.DB_REACTIONS_ID_COLUMN)));
 		    reactionEditor.setReactionEquation(reactionEditor.reactionArea.getText());
-			if (reactionEditor.getReactionEquation().contains("<") || (reactionEditor.getReactionEquation().contains("=") && !reactionEditor.getReactionEquation().contains(">"))) {
+		    ReactionUndoItem undoItem = createReactionUndoItem(reactionEditor.getOldReaction(), reactionEditor.getReactionEquation(), reactionsTable.getSelectedRow(), GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN, id, UndoConstants.TYPING, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+		    if (reactionEditor.getReactionEquation().contains("<") || (reactionEditor.getReactionEquation().contains("=") && !reactionEditor.getReactionEquation().contains(">"))) {
 				reactionsTable.getModel().setValueAt(reactionEditor.getReactionEquation(), viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 				reactionsTable.getModel().setValueAt("true", viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
 			} else if (reactionEditor.getReactionEquation().contains("-->") || reactionEditor.getReactionEquation().contains("->") || reactionEditor.getReactionEquation().contains("=>")) {
@@ -4389,6 +4595,7 @@ public class GraphicalInterface extends JFrame {
 			
 			ReactionsUpdater updater = new ReactionsUpdater();
 			updater.updateReactionEquations(id, reactionEditor.getOldReaction(), reactionEditor.getReactionEquation(), LocalConfig.getInstance().getLoadedDatabase());
+			setUpReactionsUndo(undoItem);
 			//TODO: change to Cancel button, only 2 buttons: Yes, Cancel, Cancel button runs undo
 			if (LocalConfig.getInstance().noButtonClicked) {
 				reactionsTable.getModel().setValueAt(updater.reactionEqunAbbr, viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
@@ -4618,7 +4825,8 @@ public class GraphicalInterface extends JFrame {
 				if (row >= 0 && row < metabolitesTable.getRowCount()) {
 					cancelCellEditing();            
 					// create popup menu for abbreviation column
-					if (col == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
+					if (col == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN ||
+							col == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
 						JPopupMenu abbrevContextMenu = createMetaboliteAbbreviationContextMenu(row, col);
 						// ... and show it
 						if (abbrevContextMenu != null
@@ -4729,11 +4937,22 @@ public class GraphicalInterface extends JFrame {
 					} else {
 						// update id name map
 						Object idValue = LocalConfig.getInstance().getMetaboliteIdNameMap().get(metabAbbrev);
+						MetaboliteUndoItem undoItem = null;
+						if (columnIndex == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
+							undoItem = createMetaboliteUndoItem(metabAbbrev, newName, metabolitesTable.getSelectedRow(), 
+									GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN, (Integer) idValue, UndoConstants.RENAME_METABOLITE, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+						} else if (columnIndex == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
+							undoItem = createMetaboliteUndoItem(metabName, newName, metabolitesTable.getSelectedRow(), 
+									GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN, (Integer) idValue, UndoConstants.RENAME_METABOLITE, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+						}
+						// this only prevents a null pointer exception, lists updated in undo item
+						setUndoOldCollections(undoItem);
 						LocalConfig.getInstance().getMetaboliteIdNameMap().remove(metabAbbrev);	
 						LocalConfig.getInstance().getMetaboliteIdNameMap().put(newName, idValue);
 						if (renameMetabolite) { 
 							MetaboliteFactory aFactory = new MetaboliteFactory("SBML", LocalConfig.getInstance().getLoadedDatabase());
 							ArrayList<Integer> participatingReactions = aFactory.participatingReactions(newName);
+							undoItem.setReactionIdList(participatingReactions);
 							// update used list for new name
 							Object value = LocalConfig.getInstance().getMetaboliteUsedMap().get(metabAbbrev);
 							LocalConfig.getInstance().getMetaboliteUsedMap().remove(metabAbbrev);
@@ -4749,7 +4968,10 @@ public class GraphicalInterface extends JFrame {
 						reloadTables(LocalConfig.getInstance().getLoadedDatabase());
 						metaboliteRenameInterface.textField.setText("");
 						metaboliteRenameInterface.setVisible(false);
-						metaboliteRenameInterface.dispose();	
+						metaboliteRenameInterface.dispose();
+						if (undoItem != null) {
+							setUpMetabolitesUndo(undoItem);
+						}	
 					}						
 				}
 			}
@@ -5192,6 +5414,10 @@ public class GraphicalInterface extends JFrame {
 					"Paste Error",                                
 					JOptionPane.ERROR_MESSAGE);
 		} else {
+			// save old data before paste
+			copyReactionsDatabaseTables();
+			ReactionUndoItem undoItem = createReactionUndoItem("", "", startRow, startCol, 1, UndoConstants.PASTE, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+			undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());
 			if (LocalConfig.getInstance().getNumberCopiedRows() != null && reactionsTable.getSelectedRows().length >= LocalConfig.getInstance().getNumberCopiedRows()) {
 				if (LocalConfig.getInstance().getNumberCopiedRows() > 0) {
 					//if selected area is larger than copied area, it will fill the same cell
@@ -5236,13 +5462,16 @@ public class GraphicalInterface extends JFrame {
 					pasteReactionRows(rowList, reacIdList, s1, startCol, quotient, LocalConfig.getInstance().getNumberCopiedRows(), min, visibleColumns);
 					if (validPaste) {					
 						updater.updateReactionRows(rowList, reacIdList, oldReactionsList, LocalConfig.getInstance().getLoadedDatabase());
+						copyReactionsDatabaseTables();
+						setUpReactionsUndo(undoItem);
 					} else {
 						if (showErrorMessage = true) {
 							JOptionPane.showMessageDialog(null,                
 									getPasteError(),                
 									"Paste Error",                                
 									JOptionPane.ERROR_MESSAGE);
-						}						
+						}
+						deleteReactionsPasteUndoItem();
 						validPaste = true;
 					}
 
@@ -5264,13 +5493,16 @@ public class GraphicalInterface extends JFrame {
 				pasteReactionRows(rowList, reacIdList, s1, startCol, 0, LocalConfig.getInstance().getNumberCopiedRows(), s1.length, visibleColumns);
 				if (validPaste) {
 					updater.updateReactionRows(rowList, reacIdList, oldReactionsList, LocalConfig.getInstance().getLoadedDatabase());
+					copyReactionsDatabaseTables();
+					setUpReactionsUndo(undoItem);
 				} else {
 					if (showErrorMessage = true) {
 						JOptionPane.showMessageDialog(null,                
 								getPasteError(),                
 								"Paste Error",                                
 								JOptionPane.ERROR_MESSAGE);
-					}					
+					}
+					deleteReactionsPasteUndoItem();
 					validPaste = true;
 				}
 
@@ -5280,6 +5512,15 @@ public class GraphicalInterface extends JFrame {
 		}		
 	}
 
+	// used for invalid paste, invalid clear, and invalid replace all
+	public void deleteReactionsPasteUndoItem() {
+		DatabaseCreator creator = new DatabaseCreator();
+		int numCopied = LocalConfig.getInstance().getNumReactionTablesCopied();	
+		creator.deleteReactionsTables(LocalConfig.getInstance().getLoadedDatabase(), tableCopySuffix(numCopied));
+		numCopied -= 1;
+		LocalConfig.getInstance().setNumReactionTablesCopied(numCopied);
+	}
+	
 	public void pasteReactionRows(ArrayList<Integer> rowList, ArrayList<Integer> reacIdList, String[] s1, int startCol, int multiplier, int numCopiedRows, int range, ArrayList<Integer> visibleColumns) {
 		// multiplier is used if number of selected paste rows is greater than
 		// number of copied rows, so that start rows is incremented by number of
@@ -5408,15 +5649,18 @@ public class GraphicalInterface extends JFrame {
 	}
 		
 	public void reactionsClear() {
+		int startRow=(reactionsTable.getSelectedRows())[0]; 
+		int startCol=(reactionsTable.getSelectedColumns())[0];
+		copyReactionsDatabaseTables();
+		ReactionUndoItem undoItem = createReactionUndoItem("", "", startRow, startCol, 1, UndoConstants.CLEAR_CONTENTS, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+		undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());		
 		boolean valid = true;
 		//TODO: add if column is reactionEqunAbbrs add to oldReactionsList
 		ReactionsUpdater updater = new ReactionsUpdater();
 		ArrayList<Integer> rowList = new ArrayList<Integer>();
 		ArrayList<Integer> reacIdList = new ArrayList<Integer>();
 		ArrayList<String> oldReactionsList = new ArrayList<String>();
-		
-		int startRow=(reactionsTable.getSelectedRows())[0]; 
-		int startCol=(reactionsTable.getSelectedColumns())[0];
+				
 		for (int r = 0; r < reactionsTable.getSelectedRows().length; r++) {
 			int row = reactionsTable.convertRowIndexToModel(startRow + r);
 			rowList.add(row);
@@ -5442,15 +5686,19 @@ public class GraphicalInterface extends JFrame {
 				} 
 			}
 			updater.updateReactionRows(rowList, reacIdList, oldReactionsList, LocalConfig.getInstance().getLoadedDatabase());	
+			copyReactionsDatabaseTables(); 
+			setUpReactionsUndo(undoItem);
 		} else {
 			JOptionPane.showMessageDialog(null,                
 					GraphicalInterfaceConstants.CLEAR_ERROR_MESSAGE,                
 					"Clear Error",                                
 					JOptionPane.ERROR_MESSAGE);
-		}		
+			deleteReactionsPasteUndoItem();
+		}
 	}
 
 	public void reactionsDeleteRows() {
+		copyReactionsDatabaseTables();
 		int rowIndexStart = reactionsTable.getSelectedRow();
 		int rowIndexEnd = reactionsTable.getSelectionModel().getMaxSelectionIndex();
 		ArrayList<Integer> deleteIds = new ArrayList<Integer>();
@@ -5463,9 +5711,12 @@ public class GraphicalInterface extends JFrame {
 			String reactionString = (String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 			deletedReactions.add(reactionString);			
 		}
-		
+		ReactionUndoItem undoItem = createReactionUndoItem("", "", rowIndexStart, reactionsTable.getSelectedColumn(), deleteIds.get(0), UndoConstants.DELETE_ROW, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+		undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());
 		ReactionsUpdater updater = new ReactionsUpdater();
 		updater.deleteRows(deleteIds, deletedReactions, LocalConfig.getInstance().getLoadedDatabase());
+		copyReactionsDatabaseTables();
+		setUpReactionsUndo(undoItem);
 		
 		closeConnection();
 		reloadTables(LocalConfig.getInstance().getLoadedDatabase());
@@ -5614,6 +5865,11 @@ public class GraphicalInterface extends JFrame {
 					"Paste Error",                                
 					JOptionPane.ERROR_MESSAGE);
 		} else {
+			// save old data before paste
+			copyMetaboliteDatabaseTable();
+			MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", startRow, startCol, 1, UndoConstants.PASTE, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+			undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
+			setUndoOldCollections(undoItem);			
 			if (LocalConfig.getInstance().getNumberCopiedRows() != null && metabolitesTable.getSelectedRows().length >= LocalConfig.getInstance().getNumberCopiedRows()) {
 				if (LocalConfig.getInstance().getNumberCopiedRows() > 0) {
 					//if selected area is larger than copied area, it will fill the same cell
@@ -5652,13 +5908,16 @@ public class GraphicalInterface extends JFrame {
 					pasteMetaboliteRows(rowList, metabIdList, s1, startCol, quotient, LocalConfig.getInstance().getNumberCopiedRows(), min, visibleColumns);
 					if (validPaste) {						
 						updater.updateMetaboliteRows(rowList, metabIdList, LocalConfig.getInstance().getLoadedDatabase());
+						copyMetaboliteDatabaseTable();
+						setUpMetabolitesUndo(undoItem);
 					} else {
 						if (showErrorMessage = true) {
 							JOptionPane.showMessageDialog(null,                
 									getPasteError(),                
 									"Paste Error",                                
 									JOptionPane.ERROR_MESSAGE);
-						}						
+						}
+						deleteMetabolitesPasteUndoItem();
 						validPaste = true;
 					}					
 				}
@@ -5674,19 +5933,31 @@ public class GraphicalInterface extends JFrame {
 				pasteMetaboliteRows(rowList, metabIdList, s1, startCol, 0, LocalConfig.getInstance().getNumberCopiedRows(), s1.length, visibleColumns);
 				if (validPaste) {						
 					updater.updateMetaboliteRows(rowList, metabIdList, LocalConfig.getInstance().getLoadedDatabase());
+					copyMetaboliteDatabaseTable();
+					setUpMetabolitesUndo(undoItem);
 				} else {
 					if (showErrorMessage = true) {
 						JOptionPane.showMessageDialog(null,                
 								getPasteError(),                
 								"Paste Error",                                
 								JOptionPane.ERROR_MESSAGE);
-					}						
+					}	
+					deleteMetabolitesPasteUndoItem();
 					validPaste = true;
 				}	
 			}
 		}
 		showDuplicatePrompt = true;
 		duplicateMetabOK = true;
+	}
+	
+	// used for invalid paste, invalid clear, and invalid replace all
+	public void deleteMetabolitesPasteUndoItem() {
+		DatabaseCreator creator = new DatabaseCreator();
+		int numCopied = LocalConfig.getInstance().getNumMetabolitesTableCopied();	
+		creator.deleteTable(LocalConfig.getInstance().getLoadedDatabase(), "metabolites" + tableCopySuffix(numCopied));
+		numCopied -= 1;
+		LocalConfig.getInstance().setNumMetabolitesTableCopied(numCopied);
 	}
 	
 	public void pasteMetaboliteRows(ArrayList<Integer> rowList, ArrayList<Integer> metabIdList, String[] s1, int startCol, int multiplier, int numCopiedRows, int range, ArrayList<Integer> visibleColumns) {
@@ -5702,33 +5973,35 @@ public class GraphicalInterface extends JFrame {
 		}
 		int count = 0;
 		int p = 0;// number of pasted columns
-		while (p < LocalConfig.getInstance().getNumberCopiedColumns() && (startCol + p + count) < metabolitesTable.getColumnCount()) {			
-			if (!visibleColumns.contains(startCol + p + count)) {
-				count += 1;
-			} else {
-				pasteColumns.add(startCol + p + count);
-				p += 1;
-			}
-		}
-		for (int r = 0; r < range; r++) {	
-			int viewRow = metabolitesTable.convertRowIndexToView(rowList.get(multiplier * numCopiedRows + r));			
-			String[] rowstring = s1[r].split("\t");
-			for (int c = 0; c < pasteColumns.size(); c++) {
-				if (c < rowstring.length) {		
-					updateMetabolitesCellIfPasteValid(pasteColumns.get(c), viewRow, rowstring[c]);
+		if (duplicateMetabOK) {
+			while (p < LocalConfig.getInstance().getNumberCopiedColumns() && (startCol + p + count) < metabolitesTable.getColumnCount()) {			
+				if (!visibleColumns.contains(startCol + p + count)) {
+					count += 1;
 				} else {
-					metabolitesTable.setValueAt(" ", viewRow, pasteColumns.get(c));
-				}				
-			}
-		}
-		if (diff > 0) {
-			for (int r = s1.length; r < numCopiedRows; r++) {
-				int viewRow = metabolitesTable.convertRowIndexToView(rowList.get(multiplier * numCopiedRows + r));
-				for (int c = 0; c < pasteColumns.size(); c++) {
-					updateMetabolitesCellIfPasteValid(pasteColumns.get(c), viewRow, "");			
+					pasteColumns.add(startCol + p + count);
+					p += 1;
 				}
 			}
-		}
+			for (int r = 0; r < range; r++) {	
+				int viewRow = metabolitesTable.convertRowIndexToView(rowList.get(multiplier * numCopiedRows + r));			
+				String[] rowstring = s1[r].split("\t");
+				for (int c = 0; c < pasteColumns.size(); c++) {
+					if (c < rowstring.length) {		
+						updateMetabolitesCellIfPasteValid(pasteColumns.get(c), viewRow, rowstring[c]);
+					} else {
+						metabolitesTable.setValueAt(" ", viewRow, pasteColumns.get(c));
+					}				
+				}
+			}
+			if (diff > 0) {
+				for (int r = s1.length; r < numCopiedRows; r++) {
+					int viewRow = metabolitesTable.convertRowIndexToView(rowList.get(multiplier * numCopiedRows + r));
+					for (int c = 0; c < pasteColumns.size(); c++) {
+						updateMetabolitesCellIfPasteValid(pasteColumns.get(c), viewRow, "");			
+					}
+				}
+			}
+		}		
 	}
 	
 	public void updateMetabolitesCellIfPasteValid(int col, int row, String value) {
@@ -5801,6 +6074,10 @@ public class GraphicalInterface extends JFrame {
 	public void metabolitesClear() {
 		int startRow=(metabolitesTable.getSelectedRows())[0]; 
 		int startCol=(metabolitesTable.getSelectedColumns())[0];
+		copyMetaboliteDatabaseTable();
+		MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", startRow, startCol, 1, UndoConstants.CLEAR_CONTENTS, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+		undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
+		setUndoOldCollections(undoItem);		
 		boolean valid = true;
 		MetabolitesUpdater updater = new MetabolitesUpdater();
 		ArrayList<Integer> rowList = new ArrayList<Integer>();
@@ -5835,16 +6112,20 @@ public class GraphicalInterface extends JFrame {
 					} 
 				}
 				updater.updateMetaboliteRows(rowList, metabIdList, LocalConfig.getInstance().getLoadedDatabase());				
+				copyMetaboliteDatabaseTable();
+				setUpMetabolitesUndo(undoItem);
 			} else {
 				JOptionPane.showMessageDialog(null,                
 						GraphicalInterfaceConstants.CLEAR_ERROR_MESSAGE,                
 						"Clear Error",                                
 						JOptionPane.ERROR_MESSAGE);
+				deleteMetabolitesPasteUndoItem();
 			}			
 		} 
 	}
 
 	public void metaboliteDeleteRows() {
+		copyMetaboliteDatabaseTable();
 		int rowIndexStart = metabolitesTable.getSelectedRow();
 		int rowIndexEnd = metabolitesTable.getSelectionModel().getMaxSelectionIndex();
 		ArrayList<Integer> deleteIds = new ArrayList<Integer>();
@@ -5870,9 +6151,13 @@ public class GraphicalInterface extends JFrame {
 				deleteIds.add(id);
 			}
 		}
-		
+		MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", rowIndexStart, 1, deleteIds.get(0), UndoConstants.DELETE_ROW, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+		undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
+		setUndoOldCollections(undoItem);
 		MetabolitesUpdater updater = new MetabolitesUpdater();
-		updater.deleteRows(deleteIds, LocalConfig.getInstance().getLoadedDatabase());		
+		updater.deleteRows(deleteIds, LocalConfig.getInstance().getLoadedDatabase());
+		copyMetaboliteDatabaseTable(); 
+		setUpMetabolitesUndo(undoItem);
 		closeConnection();
 		reloadTables(LocalConfig.getInstance().getLoadedDatabase());
 	} 
@@ -6163,6 +6448,7 @@ public class GraphicalInterface extends JFrame {
 					//fileList.setModel(listModel);  					
 					closeConnection();
 					String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
+					String filename = LocalConfig.getInstance().getDatabaseName();
 					try {						
 						Class.forName("org.sqlite.JDBC");
 						Connection con = DriverManager.getConnection(fileString);
@@ -6181,12 +6467,26 @@ public class GraphicalInterface extends JFrame {
 						columnNameInterface.setResizable(false);
 						//columnNameInterface.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 						columnNameInterface.setLocationRelativeTo(null);
+						columnNameInterface.cancelButton.addActionListener(cancelButtonCSVReacLoadActionListener);
 						columnNameInterface.setVisible(true);	
 						columnNameInterface.setAlwaysOnTop(true);
 						// sets value to default and loads any new metabolites
 						// from reactions file into metabolites table
-						//LocalConfig.getInstance().hasMetabolitesFile = true;
-						timer.start();
+						if (!reactionCancelLoad) {
+							timer.start();
+						} else {
+							if (!LocalConfig.getInstance().hasMetabolitesFile) {
+					        	clearTables();
+					        } else {
+								listModel.clear();
+								listModel.addElement(filename);
+						        //fileList.setModel(listModel);
+						        LocalConfig.getInstance().setDatabaseName(filename);
+						        LocalConfig.getInstance().setLoadedDatabase(filename);
+						        reloadTables(filename);
+					        }							
+						}
+						reactionCancelLoad = false;
 					} catch (ClassNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -6200,6 +6500,14 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 
+	ActionListener cancelButtonCSVReacLoadActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			reactionCancelLoad = true;
+			LocalConfig.getInstance().setProgress(100);
+			progressBar.setVisible(false);
+		}
+	};
+	
 	/*******************************************************************************/
 	//end progressBar methods
 	/*******************************************************************************/
@@ -6495,11 +6803,16 @@ public class GraphicalInterface extends JFrame {
 	
 	public void reactionsReplace() {
 		int viewRow = reactionsTable.convertRowIndexToModel(getReactionsReplaceLocation().get(0));
-		String oldValue = (String) reactionsTable.getModel().getValueAt(viewRow, getReactionsReplaceLocation().get(1));
+		String oldValue = (String) reactionsTable.getModel().getValueAt(viewRow, getReactionsReplaceLocation().get(1));		
+		String newValue = replaceValue(oldValue, replaceLocation(oldValue));
+		ReactionUndoItem undoItem = createReactionUndoItem(oldValue, newValue, reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), viewRow + 1, UndoConstants.REPLACE, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 		ArrayList<ArrayList<Integer>> locationList = reactionsLocationsList();
 		if (replaceLocation(oldValue) > -1) {
-			reactionsTable.getModel().setValueAt(replaceValue(oldValue, replaceLocation(oldValue)), viewRow, getReactionsReplaceLocation().get(1));
-			updateReactionsCellIfValid(oldValue, replaceValue(oldValue, replaceLocation(oldValue)), viewRow, getReactionsReplaceLocation().get(1));
+			reactionsTable.getModel().setValueAt(newValue, viewRow, getReactionsReplaceLocation().get(1));
+			updateReactionsCellIfValid(oldValue, newValue, viewRow, getReactionsReplaceLocation().get(1));
+			if (reactionUpdateValid) {
+				setUpReactionsUndo(undoItem);
+			}
 			setReactionsFindLocationsList(locationList);
 			int count = LocalConfig.getInstance().getReactionsLocationsListCount();
 			if (!searchBackwards) {
@@ -6541,6 +6854,9 @@ public class GraphicalInterface extends JFrame {
 	ActionListener replaceAllReactionsButtonActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			if (tabbedPane.getSelectedIndex() == 0) {
+				copyReactionsDatabaseTables();
+				ReactionUndoItem undoItem = createReactionUndoItem("", "", getReactionsFindLocationsList().get(0).get(0), getReactionsFindLocationsList().get(0).get(1), 1, UndoConstants.REPLACE_ALL, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+				undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());
 				replaceAllMode = true;
 				showErrorMessage = true;
 				ReactionsUpdater updater = new ReactionsUpdater();
@@ -6568,7 +6884,6 @@ public class GraphicalInterface extends JFrame {
 						} catch (Throwable t){
 							// catches regex error when () or [] are not in pairs
 							validPaste = false;
-							//replaceAllValue = oldValue.replaceAll(findReplaceDialog.getFindText(), findReplaceDialog.getReplaceText());
 						}						
 					}
 					if (isReactionsEntryValid(getReactionsFindLocationsList().get(i).get(1), viewRow, replaceAllValue)) {
@@ -6579,15 +6894,18 @@ public class GraphicalInterface extends JFrame {
 				}
 				if (validPaste) {
 					updater.updateReactionRows(rowList, reacIdList, oldReactionsList, LocalConfig.getInstance().getLoadedDatabase());
+					copyReactionsDatabaseTables();
+					setUpReactionsUndo(undoItem);
 				} else {
 					if (showErrorMessage = true) {
 						JOptionPane.showMessageDialog(null,                
 								getReplaceAllError(),                
 								GraphicalInterfaceConstants.REPLACE_ALL_ERROR_TITLE,                                
 								JOptionPane.ERROR_MESSAGE);
-					}						
+					}	
+					deleteReactionsPasteUndoItem();
 					validPaste = true;
-				}				
+				}					
 			}
 			
 			closeConnection();
@@ -6774,15 +7092,6 @@ public class GraphicalInterface extends JFrame {
 					}
 				}						
 			} catch (Throwable t){
-				// catches strange index error not often reproducible
-				/*
-				findReplaceDialog.setVisible(false);
-				JOptionPane.showMessageDialog(null,                
-						"Find Error.",                
-						"Find Error",                                
-						JOptionPane.ERROR_MESSAGE); 
-				findReplaceDialog.setVisible(true);
-				*/
 				LocalConfig.getInstance().setMetabolitesLocationsListCount(LocalConfig.getInstance().getMetabolitesLocationsListCount());
 				try {
 					metabolitesTable.changeSelection(locationList.get(LocalConfig.getInstance().getMetabolitesLocationsListCount()).get(0), locationList.get(LocalConfig.getInstance().getMetabolitesLocationsListCount()).get(1), false, false);
@@ -6876,9 +7185,16 @@ public class GraphicalInterface extends JFrame {
 	public void metabolitesReplace() {
 		int viewRow = metabolitesTable.convertRowIndexToModel(getMetabolitesReplaceLocation().get(0));
 		String oldValue = (String) metabolitesTable.getModel().getValueAt(viewRow, getMetabolitesReplaceLocation().get(1));
+		String newValue = replaceValue(oldValue, replaceLocation(oldValue));
+		MetaboliteUndoItem undoItem = createMetaboliteUndoItem(oldValue, newValue, metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn(), viewRow + 1, UndoConstants.REPLACE, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+		setUndoOldCollections(undoItem);
 		if (replaceLocation(oldValue) > -1) {
-			metabolitesTable.getModel().setValueAt(replaceValue(oldValue, replaceLocation(oldValue)), viewRow, getMetabolitesReplaceLocation().get(1));
-			updateMetabolitesCellIfValid(oldValue, replaceValue(oldValue, replaceLocation(oldValue)), viewRow, getMetabolitesReplaceLocation().get(1));
+			//String newValue = replaceValue(oldValue, replaceLocation(oldValue));
+			metabolitesTable.getModel().setValueAt(newValue, viewRow, getMetabolitesReplaceLocation().get(1));
+			updateMetabolitesCellIfValid(oldValue, newValue, viewRow, getMetabolitesReplaceLocation().get(1));
+			if (metaboliteUpdateValid) {
+				setUpMetabolitesUndo(undoItem);
+			}
 			setMetabolitesFindLocationsList(metabolitesLocationsList());
 			int count = LocalConfig.getInstance().getMetabolitesLocationsListCount();
 			if (!searchBackwards) {
@@ -6920,6 +7236,10 @@ public class GraphicalInterface extends JFrame {
 	ActionListener replaceAllMetabolitesButtonActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			if (tabbedPane.getSelectedIndex() == 1) {
+				copyMetaboliteDatabaseTable();
+				MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", getMetabolitesFindLocationsList().get(0).get(0), getMetabolitesFindLocationsList().get(0).get(1), 1, UndoConstants.REPLACE_ALL, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+				undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
+				setUndoOldCollections(undoItem);	
 				replaceAllMode = true;
 				showErrorMessage = true;
 				MetabolitesUpdater updater = new MetabolitesUpdater();
@@ -6945,7 +7265,6 @@ public class GraphicalInterface extends JFrame {
 						} catch (Throwable t){
 							// catches regex error when () or [] are not in pairs
 							validPaste = false;
-							//replaceAllValue = oldValue.replaceAll(findReplaceDialog.getFindText(), findReplaceDialog.getReplaceText());
 						}						
 					}
 					if (getMetabolitesFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
@@ -6956,7 +7275,6 @@ public class GraphicalInterface extends JFrame {
 							validPaste = false;
 						} else {
 						    metabolitesTable.getModel().setValueAt(replaceAllValue, viewRow, getMetabolitesFindLocationsList().get(i).get(1));							
-							//validPaste = false;
 						}
 					} else if (getMetabolitesFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.CHARGE_COLUMN) {
 						replaceAllValue = oldValue.replaceAll(findReplaceDialog.getFindText(), findReplaceDialog.getReplaceText());
@@ -6972,7 +7290,7 @@ public class GraphicalInterface extends JFrame {
 							metabolitesTable.getModel().setValueAt("", viewRow, getMetabolitesFindLocationsList().get(i).get(1));
 						}
 						if (validPaste) {
-							metabolitesTable.getModel().setValueAt(replaceAllValue, viewRow, getMetabolitesFindLocationsList().get(i).get(1));
+							metabolitesTable.getModel().setValueAt(replaceAllValue, viewRow, getMetabolitesFindLocationsList().get(i).get(1));							
 						}						
 					} else {
 						if (isMetabolitesEntryValid(getMetabolitesFindLocationsList().get(i).get(1), replaceAllValue)) {
@@ -6984,15 +7302,18 @@ public class GraphicalInterface extends JFrame {
 				}
 				if (validPaste) {						
 					updater.updateMetaboliteRows(rowList, metabIdList, LocalConfig.getInstance().getLoadedDatabase());
+					copyMetaboliteDatabaseTable();
+					setUpMetabolitesUndo(undoItem);
 				} else {
 					if (showErrorMessage = true) {
 						JOptionPane.showMessageDialog(null,                
 								getReplaceAllError(),                
 								GraphicalInterfaceConstants.REPLACE_ALL_ERROR_TITLE,                                
 								JOptionPane.ERROR_MESSAGE);
-					}						
+					}
+					deleteMetabolitesPasteUndoItem();
 					validPaste = true;
-				}				
+				}					
 			}
 			
 			closeConnection();
@@ -7248,7 +7569,633 @@ public class GraphicalInterface extends JFrame {
 		label.setVisible(false);
 		grayedLabel.setVisible(true);
 	}
+    
+    public ReactionUndoItem createReactionUndoItem(String oldValue, String newValue, 
+    		int row, int column, int id, String undoType, String undoItemType) {
+    	if (oldValue == null) {
+    		oldValue = "";
+    	}
+    	if (newValue == null) {
+    		newValue = "";
+    	}
+    	ReactionUndoItem undoItem = new ReactionUndoItem();
+    	undoItem.setDatabaseName(LocalConfig.getInstance().getLoadedDatabase());
+    	undoItem.setOldValue(oldValue);
+    	undoItem.setNewValue(newValue);
+    	undoItem.setRow(row);
+    	undoItem.setColumn(column);
+    	undoItem.setId(id);
+    	undoItem.setUndoType(undoType);
+    	undoItem.setUndoItemType(undoItemType);
+		return undoItem;
+    	
+    }
+    
+    public MetaboliteUndoItem createMetaboliteUndoItem(String oldValue, String newValue, 
+    		int row, int column, int id, String undoType, String undoItemType) {
+    	if (oldValue == null) {
+    		oldValue = "";
+    	}
+    	if (newValue == null) {
+    		newValue = "";
+    	}
+    	MetaboliteUndoItem undoItem = new MetaboliteUndoItem();
+    	undoItem.setDatabaseName(LocalConfig.getInstance().getLoadedDatabase());
+    	undoItem.setOldValue(oldValue);
+    	undoItem.setNewValue(newValue);
+    	undoItem.setRow(row);
+    	undoItem.setColumn(column);
+    	undoItem.setId(id);
+    	undoItem.setUndoType(undoType);
+    	undoItem.setUndoItemType(undoItemType);
+    	// make deep copies of lists and maps to be restored if undo is executed		
+		ArrayList<Integer> oldBlankMetabIds = null;
+		ArrayList<Integer> oldDuplicateIds = null;
+		Map<String, Object> oldMetaboliteIdNameMap = null;
+		Map<String, Object> oldMetaboliteUsedMap = null;
+		ArrayList<Integer> oldSuspiciousMetabolites = null;		
+		ArrayList<Integer> oldUnusedList = null;
+		
+		try {
+			oldBlankMetabIds = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getBlankMetabIds()));
+			oldDuplicateIds = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getDuplicateIds()));
+			oldMetaboliteIdNameMap = (Map<String, Object>) (ObjectCloner.deepCopy(LocalConfig.getInstance().getMetaboliteIdNameMap()));
+			oldMetaboliteUsedMap = (Map<String, Object>) (ObjectCloner.deepCopy(LocalConfig.getInstance().getMetaboliteUsedMap()));
+			oldSuspiciousMetabolites = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getSuspiciousMetabolites()));
+			oldUnusedList = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getUnusedList()));
+			undoItem.setOldBlankMetabIds(oldBlankMetabIds);
+			undoItem.setOldDuplicateIds(oldDuplicateIds);
+			undoItem.setOldMetaboliteIdNameMap(oldMetaboliteIdNameMap);
+			undoItem.setOldMetaboliteUsedMap(oldMetaboliteUsedMap);
+			undoItem.setOldSuspiciousMetabolites(oldSuspiciousMetabolites);
+			undoItem.setOldUnusedList(oldUnusedList);
+		} catch (Exception e3) {
+			// TODO Auto-generated catch block
+			e3.printStackTrace();
+		}
+		return undoItem;
+    	
+    }
+    
+    public void setUndoOldCollections(MetaboliteUndoItem undoItem) {
+    	// make deep copies of lists and maps to be restored if undo is executed		
+		ArrayList<Integer> oldBlankMetabIds = new ArrayList<Integer>();
+		ArrayList<Integer> oldDuplicateIds = new ArrayList<Integer>();
+		Map<String, Object> oldMetaboliteIdNameMap = new HashMap<String, Object>();
+		Map<String, Object> oldMetaboliteUsedMap = new HashMap<String, Object>();
+		ArrayList<Integer> oldSuspiciousMetabolites = new ArrayList<Integer>();		
+		ArrayList<Integer> oldUnusedList = new ArrayList<Integer>();
+		
+		try {
+			if (LocalConfig.getInstance().getBlankMetabIds() != null) {
+				oldBlankMetabIds = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getBlankMetabIds()));
+			}
+			if (LocalConfig.getInstance().getDuplicateIds() != null) {
+				oldDuplicateIds = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getDuplicateIds()));
+			}
+			if (LocalConfig.getInstance().getMetaboliteIdNameMap() != null) {
+				oldMetaboliteIdNameMap = (Map<String, Object>) (ObjectCloner.deepCopy(LocalConfig.getInstance().getMetaboliteIdNameMap()));
+			}
+			if (LocalConfig.getInstance().getMetaboliteUsedMap() != null) {
+				oldMetaboliteUsedMap = (Map<String, Object>) (ObjectCloner.deepCopy(LocalConfig.getInstance().getMetaboliteUsedMap()));
+			}
+			if (LocalConfig.getInstance().getSuspiciousMetabolites() != null) {
+				oldSuspiciousMetabolites = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getSuspiciousMetabolites()));
+			}
+			if (LocalConfig.getInstance().getUnusedList() != null) {
+				oldUnusedList = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getUnusedList()));
+			}
+			undoItem.setOldBlankMetabIds(oldBlankMetabIds);
+			undoItem.setOldDuplicateIds(oldDuplicateIds);
+			undoItem.setOldMetaboliteIdNameMap(oldMetaboliteIdNameMap);
+			undoItem.setOldMetaboliteUsedMap(oldMetaboliteUsedMap);
+			undoItem.setOldSuspiciousMetabolites(oldSuspiciousMetabolites);
+			undoItem.setOldUnusedList(oldUnusedList);
+		} catch (Exception e3) {
+			// TODO Auto-generated catch block
+			e3.printStackTrace();
+		}
+    }
+    
+    public void setUndoNewCollections(MetaboliteUndoItem undoItem) {
+    	// make deep copies of lists and maps to be restored if redo is executed		
+		ArrayList<Integer> newBlankMetabIds = new ArrayList<Integer>();
+		ArrayList<Integer> newDuplicateIds = new ArrayList<Integer>();
+		Map<String, Object> newMetaboliteIdNameMap = new HashMap<String, Object>();
+		Map<String, Object> newMetaboliteUsedMap = new HashMap<String, Object>();
+		ArrayList<Integer> newSuspiciousMetabolites = new ArrayList<Integer>();	
+		ArrayList<Integer> newUnusedList = new ArrayList<Integer>();
+		
+		try {
+			if (LocalConfig.getInstance().getBlankMetabIds() != null) {
+				newBlankMetabIds = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getBlankMetabIds()));
+			}
+			if (LocalConfig.getInstance().getDuplicateIds() != null) {
+				newDuplicateIds = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getDuplicateIds()));
+			}
+			if (LocalConfig.getInstance().getMetaboliteIdNameMap() != null) {
+				newMetaboliteIdNameMap = (Map<String, Object>) (ObjectCloner.deepCopy(LocalConfig.getInstance().getMetaboliteIdNameMap()));
+			}
+			if (LocalConfig.getInstance().getMetaboliteUsedMap() != null) {
+				newMetaboliteUsedMap = (Map<String, Object>) (ObjectCloner.deepCopy(LocalConfig.getInstance().getMetaboliteUsedMap()));
+			}
+			if (LocalConfig.getInstance().getSuspiciousMetabolites() != null) {
+				newSuspiciousMetabolites = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getSuspiciousMetabolites()));
+			}
+			if (LocalConfig.getInstance().getUnusedList() != null) {
+				newUnusedList = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getUnusedList()));
+			}
+			
+			undoItem.setNewBlankMetabIds(newBlankMetabIds);
+			undoItem.setNewDuplicateIds(newDuplicateIds);
+			undoItem.setNewMetaboliteIdNameMap(newMetaboliteIdNameMap);
+			undoItem.setNewMetaboliteUsedMap(newMetaboliteUsedMap);
+			undoItem.setNewSuspiciousMetabolites(newSuspiciousMetabolites);
+			undoItem.setNewUnusedList(newUnusedList);
+		} catch (Exception e3) {
+			// TODO Auto-generated catch block
+			e3.printStackTrace();
+		}
+    }
+    
+    public void updateUndoButton() {
+    	JScrollPopupMenu popupMenu = undoSplitButton.getPopupMenu();
+    	addMenuItems(LocalConfig.getInstance().getUndoItemMap(), "undo");
+		if (undoCount > 0) {
+			enableOptionComponent(undoSplitButton, undoLabel, undoGrayedLabel);
+			Class cls = LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size()).getClass();
+			if ((cls.getName().equals("edu.rutgers.MOST.data.ReactionUndoItem"))) {
+				undoSplitButton.setToolTipText("Undo " + ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).createUndoDescription());
+			} else if ((cls.getName().equals("edu.rutgers.MOST.data.MetaboliteUndoItem"))) {
+				undoSplitButton.setToolTipText("Undo " + ((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).createUndoDescription());
+			}			
+		} else {
+			disableOptionComponent(undoSplitButton, undoLabel, undoGrayedLabel);
+			undoSplitButton.setToolTipText("Undo");
+		}		
+		undoCount += 1;	
+	}
 	
+	public void updateRedoButton() {
+		JScrollPopupMenu popupMenu = redoSplitButton.getPopupMenu();
+		addMenuItems(LocalConfig.getInstance().getRedoItemMap(), "redo");
+		if (LocalConfig.getInstance().getRedoItemMap().size() > 0) {
+			enableOptionComponent(redoSplitButton, redoLabel, redoGrayedLabel);
+			Class cls = LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size()).getClass();
+			if ((cls.getName().equals("edu.rutgers.MOST.data.ReactionUndoItem"))) {
+				redoSplitButton.setToolTipText("Redo " + ((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).createUndoDescription());
+			} else if ((cls.getName().equals("edu.rutgers.MOST.data.MetaboliteUndoItem"))) {
+				redoSplitButton.setToolTipText("Redo " + ((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).createUndoDescription());
+			}
+		} else {
+			disableOptionComponent(redoSplitButton, redoLabel, redoGrayedLabel);
+			redoSplitButton.setToolTipText("Redo");
+		}			
+	}
+	
+	public void addMenuItems(final Map<Object, Object> undoMap, final String type) {
+		final JScrollPopupMenu popupMenu = new JScrollPopupMenu();
+		popupMenu.addMouseListener(new MouseListener() {
+	        public void mouseClicked(MouseEvent e) {
+	        	popupMenu.setVisible(false);
+	        }
+	        public void mouseEntered(MouseEvent e) {
+	        	LocalConfig.getInstance().setUndoMenuIndex(undoMap.size() + 1);
+	        	popupMenu.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, 25, 0), "Cancel", TitledBorder.LEFT, TitledBorder.BOTTOM));
+	        }
+	        public void mouseExited(MouseEvent e) {
+	        }
+			public void mousePressed(MouseEvent arg0) {
+			}
+			public void mouseReleased(MouseEvent arg0) {				
+			}
+	      });
+		if (type.equals("undo")) {
+			undoSplitButton.setPopupMenu(popupMenu);
+		} else if (type.equals("redo")) {
+			redoSplitButton.setPopupMenu(popupMenu);
+		}
+		for (int i = undoMap.size() - 1; i > -1; i--) {
+			String item = "";
+			Class cls = undoMap.get(i + 1).getClass();
+			if ((cls.getName().equals("edu.rutgers.MOST.data.ReactionUndoItem"))) {
+				item = ((ReactionUndoItem) undoMap.get(i + 1)).createUndoDescription();
+			} else if ((cls.getName().equals("edu.rutgers.MOST.data.MetaboliteUndoItem"))) {
+				item = ((MetaboliteUndoItem) undoMap.get(i + 1)).createUndoDescription();
+			}
+        	final JMenuItem menuItem = new JMenuItem(item);
+        	menuItem.setName(Integer.toString(i + 1));
+        	menuItem.addActionListener(new ActionListener() {
+    			public void actionPerformed(ActionEvent e) {
+    				int scrollRow = 0;
+					int scrollCol = 1;
+					for (int i = undoMap.size(); i >= Integer.valueOf(menuItem.getName()); i--) {
+						if (isMenuItemVisible(undoMap, popupMenu, menuItem)) {
+							Class cls = undoMap.get(i).getClass();
+							if ((cls.getName().equals("edu.rutgers.MOST.data.ReactionUndoItem"))) {
+								int row = ((ReactionUndoItem) undoMap.get(i)).getRow();
+								if (row > -1) {
+									scrollRow = row;
+								}
+								int col = ((ReactionUndoItem) undoMap.get(i)).getColumn();
+								if (col > -1) {
+									scrollCol = col;
+								}
+								if (type.equals("undo")) {								
+									reactionUndoAction(i);
+									undoCount -= 1;	       					
+								} else if (type.equals("redo")) { 
+									if (((ReactionUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.ADD_ROW)) {
+										scrollRow = redoAddRowScrollRow(reactionsTable);
+									}
+									if (((ReactionUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.ADD_COLUMN)) {
+										scrollCol = redoAddColumnScrollColumn("reactions");
+									}
+									reactionRedoAction(i);
+								}  
+								updateUndoButton();
+								updateRedoButton();
+								if (i == Integer.valueOf(menuItem.getName())) {
+									reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+									tabbedPane.setSelectedIndex(0);
+									scrollToLocation(reactionsTable, scrollRow, scrollCol);	
+								}											
+							} else if ((cls.getName().equals("edu.rutgers.MOST.data.MetaboliteUndoItem"))) {
+								int row = ((MetaboliteUndoItem) undoMap.get(i)).getRow();
+								if (row > -1) {
+									scrollRow = row;
+								}
+								int col = ((MetaboliteUndoItem) undoMap.get(i)).getColumn();
+								if (col > -1) {
+									scrollCol = col;
+								}
+								if (type.equals("undo")) {								
+									metaboliteUndoAction(i);
+									undoCount -= 1;	       					
+								} else if (type.equals("redo")) { 
+									if (((MetaboliteUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.ADD_ROW)) {
+										scrollRow = redoAddRowScrollRow(metabolitesTable);
+									}
+									if (((MetaboliteUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.ADD_COLUMN)) {
+										scrollCol = redoAddColumnScrollColumn("metabolites");
+									}
+									metaboliteRedoAction(i);				        					
+								} 
+								updateUndoButton();
+								updateRedoButton();
+								if (i == Integer.valueOf(menuItem.getName())) {
+									reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+									tabbedPane.setSelectedIndex(1);
+									scrollToLocation(metabolitesTable, scrollRow, scrollCol);					
+								}							
+							}
+						} else {
+							popupMenu.setVisible(false);
+						}
+					}
+					LocalConfig.getInstance().setUndoMenuIndex(undoMap.size() + 1);
+    			}
+    		});
+        	menuItem.addMouseListener(new MouseListener() {
+        		boolean increase;
+    	        public void mouseClicked(MouseEvent e) {
+    	        }
+    	        public void mouseEntered(MouseEvent e) {
+    	        	/*
+    	        	 * highlighting all undo entries above selected entry does not work correctly
+    	        	int oldValue = LocalConfig.getInstance().getUndoMenuIndex();
+    	        	System.out.println("oldValue " + oldValue + " new value " + Integer.valueOf(menuItem.getName()));
+        			menuItem.setBackground(new Color(190,205,225));
+        			if (Integer.valueOf(menuItem.getName()) > oldValue) {
+        				increase = true;
+        			} else {
+        				increase = false;
+        			}
+        			//System.out.println("enter " + increase);
+    	        	LocalConfig.getInstance().setUndoMenuIndex(Integer.valueOf(menuItem.getName()));
+    	        	*/
+    	        }
+    	        public void mouseExited(MouseEvent e) {
+    	        	/*
+    	        	System.out.println("exit " + increase);
+    	        	if (increase) { 
+    	        		//menuItem.setBackground(UIManager.getColor("Menu.background"));        				
+        				//menuItem.setBackground(new Color(190,205,225));
+        			} else {
+        				//menuItem.setBackground(UIManager.getColor("Menu.background"));        				
+        				//menuItem.setBackground(new Color(190,205,225));
+        			}
+        			*/
+    	        }
+    			public void mousePressed(MouseEvent arg0) {
+    			}
+    			public void mouseReleased(MouseEvent arg0) {				
+    			}
+    	      });
+        	menuItem.addChangeListener(new ChangeListener() {
+        		public void stateChanged(ChangeEvent e) {
+        			String lastmenuItem = "";
+        			int numberOfActions = undoMap.size() - Integer.valueOf(menuItem.getName()) + 1; 
+        			if (type.equals("undo")) {
+        				lastmenuItem = "Undo " + Integer.toString(numberOfActions) + " Item(s)";
+        			} else if (type.equals("redo")) {
+        				lastmenuItem = "Redo " + Integer.toString(numberOfActions) + " Item(s)";
+        			}
+        			isMenuItemVisible(undoMap, popupMenu, menuItem);
+        			if (isMenuItemVisible(undoMap, popupMenu, menuItem)) {
+        				popupMenu.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, 25, 0), lastmenuItem, TitledBorder.LEFT, TitledBorder.BOTTOM));
+        			} else {
+        				popupMenu.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, 25, 0), "Cancel", TitledBorder.LEFT, TitledBorder.BOTTOM));
+        			}
+        			
+        			/*
+        			if (LocalConfig.getInstance().getUndoMenuIndex() >= Integer.valueOf(menuItem.getName())) {        					
+        				menuItem.setBackground(new Color(190,205,225));
+        			} else if (LocalConfig.getInstance().getUndoMenuIndex() < Integer.valueOf(menuItem.getName())) {        					
+        				menuItem.setBackground(UIManager.getColor("Menu.background"));        				
+        			}
+        			/*
+        			if (LocalConfig.getInstance().getUndoMenuIndex() >= Integer.valueOf(menuItem.getName())) {        					
+        				menuItem.setBackground(new Color(190,205,225));
+        			} else {
+        				menuItem.setBackground(UIManager.getColor("Menu.background"));        				        				
+        			}
+        			*/
+        			//repaint();
+        		}
+        	});
+        	menuItem.addMouseMotionListener(mml);
+        	popupMenu.add(menuItem);
+        }
+    }
+	
+	public boolean isMenuItemVisible(Map<Object, Object> undoMap, JScrollPopupMenu popupMenu, JMenuItem menuItem) {
+		int topIndex = popupMenu.getScrollBar().getValue()/menuItem.getHeight();
+		//System.out.println("topIndex" + topIndex);
+		int topItem = undoMap.size() - topIndex;
+		//System.out.println("topItem" + topItem);
+		int bottomItem = topItem - (GraphicalInterfaceConstants.UNDO_MAX_VISIBLE_ROWS - 1);
+		//System.out.println("bottomItem" + bottomItem);
+		//System.out.println("name" + Integer.valueOf(menuItem.getName()));
+		if (Integer.valueOf(menuItem.getName()) > topItem || Integer.valueOf(menuItem.getName()) < bottomItem) { 
+			return false;
+		}
+		return true;
+			
+	}
+	
+	private MouseMotionAdapter mml = new MouseMotionAdapter() {
+		public void mouseMoved( MouseEvent e) {
+			//JMenuItem menuItem = (JMenuItem) e.getSource();
+			//LocalConfig.getInstance().setUndoMenuIndex(Integer.valueOf(menuItem.getName()));
+		}
+    };
+    
+    private MouseListener undoButtonMouseListener = new MouseAdapter() { 
+    	public void mousePressed(MouseEvent e) {
+    		if (undoSplitButton.buttonClicked) {
+    			Class cls = LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size()).getClass();
+				if ((cls.getName().equals("edu.rutgers.MOST.data.ReactionUndoItem"))) {
+					int row = ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getRow();
+    				int col = ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getColumn();	    				
+    				reactionUndoAction(LocalConfig.getInstance().getUndoItemMap().size());
+    				undoCount -= 1;				
+    				updateUndoButton();
+    				updateRedoButton(); 
+    				reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+    				tabbedPane.setSelectedIndex(0);
+    				if (row > -1 && col > -1) {
+    					scrollToLocation(reactionsTable, row, col);
+    				}			
+    			} else if ((cls.getName().equals("edu.rutgers.MOST.data.MetaboliteUndoItem"))) {
+    				int row = ((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getRow();
+    				int col = ((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getColumn();	    				
+    				metaboliteUndoAction(LocalConfig.getInstance().getUndoItemMap().size());
+    				undoCount -= 1;
+    				updateUndoButton();
+    				updateRedoButton();
+    				reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+    				tabbedPane.setSelectedIndex(1);
+    				if (row > -1 && col > -1) {
+    					scrollToLocation(metabolitesTable, row, col);
+    				}
+    			}				
+    			// used for highlighting menu items, necessary here?
+    			LocalConfig.getInstance().setUndoMenuIndex(0);   
+    		}            
+    	}
+    };
+    
+    public void metaboliteUndoAction(int index) {
+    	((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).undo(); 
+    	LocalConfig.getInstance().getRedoItemMap().put(redoCount, LocalConfig.getInstance().getUndoItemMap().get(index));
+    	redoCount += 1;		
+    	if (((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getUndoType().equals(UndoConstants.SORT)) {
+    		setMetabolitesSortColumnIndex(((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getOldSortColumnIndex());
+    		setMetabolitesSortOrder(((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getOldSortOrder());
+    		LocalConfig.getInstance().getMetabolitesRedoSortColumns().add(getMetabolitesSortColumnIndex());
+    		LocalConfig.getInstance().getMetabolitesRedoSortOrderList().add(getMetabolitesSortOrder());
+    		LocalConfig.getInstance().getMetabolitesSortColumns().remove(LocalConfig.getInstance().getMetabolitesSortColumns().size() - 1);
+    		LocalConfig.getInstance().getMetabolitesSortOrderList().remove(LocalConfig.getInstance().getMetabolitesSortOrderList().size() - 1);
+    		// TODO; test moving this out of loop, may be slow for many undos
+    		reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+    	}
+    	LocalConfig.getInstance().getUndoItemMap().remove(index);
+    	undoCount -= 1;
+    	highlightUnusedMetabolites = false;
+		highlightUnusedMetabolitesItem.setState(false);
+		closeConnection();
+    }
+
+    public void reactionUndoAction(int index) {
+    	((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).undo(); 
+    	LocalConfig.getInstance().getRedoItemMap().put(redoCount, LocalConfig.getInstance().getUndoItemMap().get(index));    	
+    	redoCount += 1;		
+    	if (((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getUndoType().equals(UndoConstants.SORT)) {
+    		setReactionsSortColumnIndex(((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getOldSortColumnIndex());
+    		setReactionsSortOrder(((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getOldSortOrder());
+    		LocalConfig.getInstance().getReactionsRedoSortColumns().add(getReactionsSortColumnIndex());
+    		LocalConfig.getInstance().getReactionsRedoSortOrderList().add(getReactionsSortOrder());
+    		LocalConfig.getInstance().getReactionsSortColumns().remove(LocalConfig.getInstance().getReactionsSortColumns().size() - 1);
+    		LocalConfig.getInstance().getReactionsSortOrderList().remove(LocalConfig.getInstance().getReactionsSortOrderList().size() - 1);
+    		// TODO; test moving this out of loop, may be slow for many undos
+    		reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+    	}
+    	LocalConfig.getInstance().getUndoItemMap().remove(index);
+    	undoCount -= 1;		
+    	closeConnection();
+    }
+    
+    private MouseListener redoButtonMouseListener = new MouseAdapter() { 
+    	public void mousePressed(MouseEvent e) {
+    		if (redoSplitButton.buttonClicked) {
+    			Class cls = LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size()).getClass();
+				if ((cls.getName().equals("edu.rutgers.MOST.data.ReactionUndoItem"))) {
+					int row = ((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getRow();
+    				int col = ((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getColumn();	    				
+    				if (((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getUndoType().equals(UndoConstants.ADD_ROW)) {
+						row = redoAddRowScrollRow(reactionsTable);
+					}
+    				if (((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getUndoType().equals(UndoConstants.ADD_COLUMN)) {
+    					col = redoAddColumnScrollColumn("reactions");
+					}
+    				reactionRedoAction(LocalConfig.getInstance().getRedoItemMap().size());				
+    				updateUndoButton();
+    				updateRedoButton();  
+    				reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+    				tabbedPane.setSelectedIndex(0);
+    				if (row > -1 && col > -1) {
+    					scrollToLocation(reactionsTable, row, col);  					
+    				}	
+    			} else if ((cls.getName().equals("edu.rutgers.MOST.data.MetaboliteUndoItem"))) {
+    				int row = ((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getRow();
+    				int col = ((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getColumn();	    	
+    				if (((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getUndoType().equals(UndoConstants.ADD_ROW)) {
+						row = redoAddRowScrollRow(metabolitesTable);
+					}
+    				if (((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getUndoType().equals(UndoConstants.ADD_COLUMN)) {
+    					col = redoAddColumnScrollColumn("metabolites");
+					}
+    				metaboliteRedoAction(LocalConfig.getInstance().getRedoItemMap().size());
+    				updateUndoButton();
+    				updateRedoButton();
+    				reloadTables(LocalConfig.getInstance().getLoadedDatabase()); 
+    				tabbedPane.setSelectedIndex(1);
+    				if (row > -1 && col > -1) {
+    					scrollToLocation(metabolitesTable, row, col);				
+    				}
+    			}
+    			// used for highlighting menu items, necessary here?
+    			LocalConfig.getInstance().setUndoMenuIndex(0);  
+    		}            
+    	}
+    };
+    
+    public void metaboliteRedoAction(int index) {    	
+    	((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(index)).redo();     	
+    	LocalConfig.getInstance().getUndoItemMap().put(undoCount, LocalConfig.getInstance().getRedoItemMap().get(index));
+    	//undoCount += 1;
+    	if (((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(index)).getUndoType().equals(UndoConstants.SORT)) {
+    		setMetabolitesSortColumnIndex(((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(index)).getNewSortColumnIndex());
+    		setMetabolitesSortOrder(((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(index)).getNewSortOrder());
+    		LocalConfig.getInstance().getMetabolitesSortColumns().add(getMetabolitesSortColumnIndex());
+    		LocalConfig.getInstance().getMetabolitesSortOrderList().add(getMetabolitesSortOrder());
+    		LocalConfig.getInstance().getMetabolitesRedoSortColumns().remove(LocalConfig.getInstance().getMetabolitesRedoSortColumns().size() - 1);
+    		LocalConfig.getInstance().getMetabolitesRedoSortOrderList().remove(LocalConfig.getInstance().getMetabolitesRedoSortOrderList().size() - 1);
+    		reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+    	}
+    	LocalConfig.getInstance().getRedoItemMap().remove(index);
+    	redoCount -= 1; 
+    	highlightUnusedMetabolites = false;
+		highlightUnusedMetabolitesItem.setState(false);
+		closeConnection();
+    }
+    
+    public void reactionRedoAction(int index) {    	
+    	((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(index)).redo();  
+    	LocalConfig.getInstance().getUndoItemMap().put(undoCount, LocalConfig.getInstance().getRedoItemMap().get(index));    	
+    	//undoCount += 1;
+    	if (((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(index)).getUndoType().equals(UndoConstants.SORT)) {
+    		setReactionsSortColumnIndex(((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(index)).getNewSortColumnIndex());
+    		setReactionsSortOrder(((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(index)).getNewSortOrder());
+    		LocalConfig.getInstance().getReactionsSortColumns().add(getReactionsSortColumnIndex());
+    		LocalConfig.getInstance().getReactionsSortOrderList().add(getReactionsSortOrder());
+    		LocalConfig.getInstance().getReactionsRedoSortColumns().remove(LocalConfig.getInstance().getReactionsRedoSortColumns().size() - 1);
+    		LocalConfig.getInstance().getReactionsRedoSortOrderList().remove(LocalConfig.getInstance().getReactionsRedoSortOrderList().size() - 1);
+    		reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+    	}
+    	LocalConfig.getInstance().getRedoItemMap().remove(index);
+    	redoCount -= 1;
+    	closeConnection();
+    }
+    
+    public void setUpMetabolitesUndo(MetaboliteUndoItem undoItem) {
+    	setUndoNewCollections(undoItem);
+		LocalConfig.getInstance().getUndoItemMap().put(undoCount, undoItem);				
+		updateUndoButton();
+		clearRedoButton();
+    }
+    
+    public void setUpReactionsUndo(ReactionUndoItem undoItem) {
+        ArrayList<Integer> addedMetabList = new ArrayList<Integer>();		
+		try {
+			if (LocalConfig.getInstance().getBlankMetabIds() != null) {
+				addedMetabList = (ArrayList<Integer>)(ObjectCloner.deepCopy(LocalConfig.getInstance().getAddedMetabolites()));
+			}			
+			undoItem.setAddedMetabolites(addedMetabList);
+	    	LocalConfig.getInstance().getUndoItemMap().put(undoCount, undoItem);				
+			updateUndoButton();
+			clearRedoButton();
+		} catch (Exception e3) {
+			// TODO Auto-generated catch block
+			e3.printStackTrace();
+		}
+    }
+    
+    public static String tableCopySuffix(int count) {
+    	return new DecimalFormat("000").format(count);
+    }
+    
+    public void copyReactionsDatabaseTables() {
+    	int numCopied = LocalConfig.getInstance().getNumReactionTablesCopied();
+		LocalConfig.getInstance().setNumReactionTablesCopied(numCopied + 1);
+		DatabaseCreator databaseCreator = new DatabaseCreator();
+		databaseCreator.copyReactionTables(LocalConfig.getInstance().getDatabaseName(), tableCopySuffix(LocalConfig.getInstance().getNumReactionTablesCopied()));
+    }
+    
+    public void copyMetaboliteDatabaseTable() {
+    	int numCopied = LocalConfig.getInstance().getNumMetabolitesTableCopied();
+		LocalConfig.getInstance().setNumMetabolitesTableCopied(numCopied + 1);
+		DatabaseCreator databaseCreator = new DatabaseCreator();
+		databaseCreator.copyMetabolitesTable(LocalConfig.getInstance().getDatabaseName(), tableCopySuffix(LocalConfig.getInstance().getNumMetabolitesTableCopied()));
+    }    
+    
+    // any changes in table clears redo button
+    public void clearRedoButton() {
+    	disableOptionComponent(redoSplitButton, redoLabel, redoGrayedLabel);
+    	redoSplitButton.setToolTipText("Redo");
+    	redoCount = 1;
+    	LocalConfig.getInstance().getRedoItemMap().clear();
+    	LocalConfig.getInstance().getReactionsRedoSortColumns().clear();
+		LocalConfig.getInstance().getReactionsRedoSortOrderList().clear();
+		LocalConfig.getInstance().getMetabolitesRedoSortColumns().clear();
+		LocalConfig.getInstance().getMetabolitesRedoSortOrderList().clear();
+    }
+    
+    public void scrollToLocation(JXTable table, int row, int column) {
+    	try {
+    		table.scrollRectToVisible(table.getCellRect(row, column, false));
+    		setTableCellFocused(row, column, table);
+    		int viewRow = table.convertRowIndexToModel(row);
+    		formulaBar.setText((String) table.getModel().getValueAt(viewRow, column));
+    	} catch (Throwable t) {
+    		
+    	}    	
+    }
+    
+    public int redoAddRowScrollRow(JXTable table) {
+    	int maxRow = table.getModel().getRowCount();
+		int row = table.convertRowIndexToView(maxRow - 1);
+		row += 1;
+		
+		return row;
+    }
+    
+    public int redoAddColumnScrollColumn(String tableName) {
+    	int col = 0;
+    	if (tableName.equals("reactions")) {
+    		ReactionsMetaColumnManager reactionsMetaColumnManager = new ReactionsMetaColumnManager();
+    		int metaColumnCount = reactionsMetaColumnManager.getMetaColumnCount(LocalConfig.getInstance().getLoadedDatabase());
+    		col = metaColumnCount + GraphicalInterfaceConstants.REACTIONS_DB_COLUMN_NAMES.length;
+    	} else if (tableName.equals("metabolites")) {
+    		MetabolitesMetaColumnManager metabolitesMetaColumnManager = new MetabolitesMetaColumnManager();
+    		int metaColumnCount = metabolitesMetaColumnManager.getMetaColumnCount(LocalConfig.getInstance().getLoadedDatabase());
+    		col = metaColumnCount + GraphicalInterfaceConstants.METABOLITES_DB_COLUMN_NAMES.length;
+    	}
+    			
+		return col;
+    }
+    
     /******************************************************************************/
     // end undo/redo
     /******************************************************************************/
@@ -7442,6 +8389,22 @@ public class GraphicalInterface extends JFrame {
 
 		}
 		setUpTables();	
+	}
+	
+	public void addReactionColumnCloseAction() {
+		LocalConfig.getInstance().addColumnInterfaceVisible = false;
+    	addReacColumnItem.setEnabled(true);
+    	addMetabColumnItem.setEnabled(true);
+    	getReactionColAddRenameInterface().setVisible(false);
+    	getReactionColAddRenameInterface().dispose();
+	}
+	
+	public void addMetaboliteColumnCloseAction() {
+		LocalConfig.getInstance().addColumnInterfaceVisible = false;
+    	addReacColumnItem.setEnabled(true);
+    	addMetabColumnItem.setEnabled(true);
+    	getMetaboliteColAddRenameInterface().setVisible(false);
+    	getMetaboliteColAddRenameInterface().dispose();
 	}
 	
 	public static void main(String[] args) throws Exception {
