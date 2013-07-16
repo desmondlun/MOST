@@ -210,10 +210,10 @@ public class FindReplaceDialog extends JDialog {
         ActionListener findButtonActionListener = new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     			setFindText(findField.getText());
-    			if (GraphicalInterface.fileList.getSelectedIndex() == 0) {
+    			//if (GraphicalInterface.fileList.getSelectedIndex() == 0) {
     				replaceButton.setEnabled(true);
         			replaceFindButton.setEnabled(true);
-    			}    			
+    			//}    			
     		}
     	};
 
@@ -223,9 +223,9 @@ public class FindReplaceDialog extends JDialog {
     		public void actionPerformed(ActionEvent ae) {
     			setFindText(findField.getText());
     			replaceButton.setEnabled(false);
-    			if (GraphicalInterface.fileList.getSelectedIndex() == 0) {
+    			//if (GraphicalInterface.fileList.getSelectedIndex() == 0) {
     				replaceAllButton.setEnabled(true);
-    			}    			
+    			//}    			
     			replaceFindButton.setEnabled(false);
     		}
     	};
