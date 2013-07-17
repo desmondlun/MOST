@@ -65,6 +65,8 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
@@ -493,6 +495,16 @@ public class GraphicalInterface extends JFrame {
 		return loadErrorMessage;
 	}
 	
+    public static int menuItemHeight;
+	
+	public static int getMenuItemHeight() {
+		return menuItemHeight;
+	}
+
+	public static void setMenuItemHeight(int menuItemHeight) {
+		GraphicalInterface.menuItemHeight = menuItemHeight;
+	}
+	
 	public static String oldReaction;
 
 	public void setOldReaction(String oldReaction) {
@@ -597,6 +609,9 @@ public class GraphicalInterface extends JFrame {
 	/*****************************************************************************/
 	// end sorting
 	/*****************************************************************************/
+	
+	public static final String ENABLE = "ENABLE";
+	public static final String DISABLE = "DISABLE";
 	
 	public Integer undoCount;
 	public Integer redoCount;
@@ -7783,14 +7798,14 @@ public class GraphicalInterface extends JFrame {
 			} else if ((cls.getName().equals("edu.rutgers.MOST.data.MetaboliteUndoItem"))) {
 				item = ((MetaboliteUndoItem) undoMap.get(i + 1)).createUndoDescription();
 			}
-        	final JMenuItem menuItem = new JMenuItem(item);
-        	menuItem.setName(Integer.toString(i + 1));
-        	menuItem.addActionListener(new ActionListener() {
-    			public void actionPerformed(ActionEvent e) {
-    				int scrollRow = 0;
-					int scrollCol = 1;
-					for (int i = undoMap.size(); i >= Integer.valueOf(menuItem.getName()); i--) {
-						if (isMenuItemVisible(undoMap, popupMenu, menuItem)) {
+			final JMenuItem menuItem = new JMenuItem(item);
+			menuItem.setName(Integer.toString(i + 1));
+			menuItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if (e.getActionCommand().equals(ENABLE)) {
+						int scrollRow = 0;
+						int scrollCol = 1;
+						for (int i = undoMap.size(); i >= Integer.valueOf(menuItem.getName()); i--) {
 							Class cls = undoMap.get(i).getClass();
 							if ((cls.getName().equals("edu.rutgers.MOST.data.ReactionUndoItem"))) {
 								int row = ((ReactionUndoItem) undoMap.get(i)).getRow();
@@ -7849,43 +7864,22 @@ public class GraphicalInterface extends JFrame {
 									scrollToLocation(metabolitesTable, scrollRow, scrollCol);					
 								}							
 							}
-						} else {
-							popupMenu.setVisible(false);
 						}
-					}
-					LocalConfig.getInstance().setUndoMenuIndex(undoMap.size() + 1);
-    			}
-    		});
+						LocalConfig.getInstance().setUndoMenuIndex(undoMap.size() + 1);
+					} else if (e.getActionCommand().equals(DISABLE)) {
+						popupMenu.setVisible(false);
+					}					
+				}
+			});
         	menuItem.addMouseListener(new MouseListener() {
         		boolean increase;
     	        public void mouseClicked(MouseEvent e) {
     	        }
     	        public void mouseEntered(MouseEvent e) {
-    	        	/*
-    	        	 * highlighting all undo entries above selected entry does not work correctly
-    	        	int oldValue = LocalConfig.getInstance().getUndoMenuIndex();
-    	        	System.out.println("oldValue " + oldValue + " new value " + Integer.valueOf(menuItem.getName()));
-        			menuItem.setBackground(new Color(190,205,225));
-        			if (Integer.valueOf(menuItem.getName()) > oldValue) {
-        				increase = true;
-        			} else {
-        				increase = false;
-        			}
-        			//System.out.println("enter " + increase);
-    	        	LocalConfig.getInstance().setUndoMenuIndex(Integer.valueOf(menuItem.getName()));
-    	        	*/
+    	        	
     	        }
     	        public void mouseExited(MouseEvent e) {
-    	        	/*
-    	        	System.out.println("exit " + increase);
-    	        	if (increase) { 
-    	        		//menuItem.setBackground(UIManager.getColor("Menu.background"));        				
-        				//menuItem.setBackground(new Color(190,205,225));
-        			} else {
-        				//menuItem.setBackground(UIManager.getColor("Menu.background"));        				
-        				//menuItem.setBackground(new Color(190,205,225));
-        			}
-        			*/
+    	        	
     	        }
     			public void mousePressed(MouseEvent arg0) {
     			}
@@ -7901,47 +7895,52 @@ public class GraphicalInterface extends JFrame {
         			} else if (type.equals("redo")) {
         				lastmenuItem = "Redo " + Integer.toString(numberOfActions) + " Item(s)";
         			}
-        			isMenuItemVisible(undoMap, popupMenu, menuItem);
         			if (isMenuItemVisible(undoMap, popupMenu, menuItem)) {
+        				menuItem.setActionCommand(ENABLE);
         				popupMenu.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, 25, 0), lastmenuItem, TitledBorder.LEFT, TitledBorder.BOTTOM));
         			} else {
+        				menuItem.setActionCommand(DISABLE);
         				popupMenu.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, 25, 0), "Cancel", TitledBorder.LEFT, TitledBorder.BOTTOM));
         			}
-        			
-        			/*
-        			if (LocalConfig.getInstance().getUndoMenuIndex() >= Integer.valueOf(menuItem.getName())) {        					
-        				menuItem.setBackground(new Color(190,205,225));
-        			} else if (LocalConfig.getInstance().getUndoMenuIndex() < Integer.valueOf(menuItem.getName())) {        					
-        				menuItem.setBackground(UIManager.getColor("Menu.background"));        				
-        			}
-        			/*
-        			if (LocalConfig.getInstance().getUndoMenuIndex() >= Integer.valueOf(menuItem.getName())) {        					
-        				menuItem.setBackground(new Color(190,205,225));
-        			} else {
-        				menuItem.setBackground(UIManager.getColor("Menu.background"));        				        				
-        			}
-        			*/
-        			//repaint();
         		}
         	});
+        	popupMenu.getScrollBar().addAdjustmentListener(new AdjustmentListener() {
+    			@Override
+    			public void adjustmentValueChanged(AdjustmentEvent e) {
+    				if(e.getValueIsAdjusting()) {
+    					enableVisibleMenuItems(undoMap, popupMenu, menuItem);
+    				}
+    				if(popupMenu.getScrollBar().getValueIsAdjusting()) {
+    					enableVisibleMenuItems(undoMap, popupMenu, menuItem);
+    				}
+    				if(e.getAdjustmentType() == AdjustmentEvent.TRACK) { 
+    					enableVisibleMenuItems(undoMap, popupMenu, menuItem);
+    				}
+    			}
+    		});	
         	menuItem.addMouseMotionListener(mml);
         	popupMenu.add(menuItem);
         }
     }
 	
 	public boolean isMenuItemVisible(Map<Object, Object> undoMap, JScrollPopupMenu popupMenu, JMenuItem menuItem) {
-		int topIndex = popupMenu.getScrollBar().getValue()/menuItem.getHeight();
-		//System.out.println("topIndex" + topIndex);
+		int topIndex = (int) (popupMenu.getScrollBar().getValue()/menuItem.getPreferredSize().getHeight());
 		int topItem = undoMap.size() - topIndex;
-		//System.out.println("topItem" + topItem);
 		int bottomItem = topItem - (GraphicalInterfaceConstants.UNDO_MAX_VISIBLE_ROWS - 1);
-		//System.out.println("bottomItem" + bottomItem);
-		//System.out.println("name" + Integer.valueOf(menuItem.getName()));
 		if (Integer.valueOf(menuItem.getName()) > topItem || Integer.valueOf(menuItem.getName()) < bottomItem) { 
 			return false;
 		}
 		return true;
 			
+	}
+	
+	public void enableVisibleMenuItems(Map<Object, Object> undoMap, JScrollPopupMenu popupMenu, JMenuItem menuItem) {
+		if (isMenuItemVisible(undoMap, popupMenu, menuItem)) {
+			menuItem.setActionCommand(ENABLE);
+		} else {
+			menuItem.setActionCommand(DISABLE);
+			popupMenu.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, 25, 0), "Cancel", TitledBorder.LEFT, TitledBorder.BOTTOM));
+		}
 	}
 	
 	private MouseMotionAdapter mml = new MouseMotionAdapter() {
@@ -8418,6 +8417,8 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().setCurrentConnection(con);
 		databaseCreator.createDatabase(LocalConfig.getInstance().getDatabaseName());
 		databaseCreator.addRows(LocalConfig.getInstance().getDatabaseName(), GraphicalInterfaceConstants.BLANK_DB_METABOLITE_ROW_COUNT, GraphicalInterfaceConstants.BLANK_DB_REACTION_ROW_COUNT);
+		databaseCreator.copyReactionTables(LocalConfig.getInstance().getDatabaseName(), tableCopySuffix(0));
+		databaseCreator.copyMetabolitesTable(LocalConfig.getInstance().getDatabaseName(), tableCopySuffix(0));
 
 		//based on code from http://stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
