@@ -139,7 +139,7 @@ public class OptionComponent extends JPanel {
         			buttonClicked = false;
         			getPopupMenu().setBackground(new Color(190, 190, 190));
         			setLastMenuItem("Cancel");
-        			getPopupMenu().setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, 25, 0), getLastMenuItem(), TitledBorder.LEFT, TitledBorder.BOTTOM));
+        			getPopupMenu().setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, GraphicalInterfaceConstants.UNDO_BORDER_HEIGHT, 0), getLastMenuItem(), TitledBorder.LEFT, TitledBorder.BOTTOM));
         			getPopupMenu().show(OptionComponent.this, 0, getHeight());
         		}                    
         	}            

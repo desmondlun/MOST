@@ -7776,7 +7776,7 @@ public class GraphicalInterface extends JFrame {
 	        }
 	        public void mouseEntered(MouseEvent e) {
 	        	LocalConfig.getInstance().setUndoMenuIndex(undoMap.size() + 1);
-	        	popupMenu.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, 25, 0), "Cancel", TitledBorder.LEFT, TitledBorder.BOTTOM));
+	        	popupMenu.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, GraphicalInterfaceConstants.UNDO_BORDER_HEIGHT, 0), "Cancel", TitledBorder.LEFT, TitledBorder.BOTTOM));
 	        }
 	        public void mouseExited(MouseEvent e) {
 	        }
@@ -7897,10 +7897,10 @@ public class GraphicalInterface extends JFrame {
         			}
         			if (isMenuItemVisible(undoMap, popupMenu, menuItem)) {
         				menuItem.setActionCommand(ENABLE);
-        				popupMenu.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, 25, 0), lastmenuItem, TitledBorder.LEFT, TitledBorder.BOTTOM));
+        				popupMenu.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, GraphicalInterfaceConstants.UNDO_BORDER_HEIGHT, 0), lastmenuItem, TitledBorder.LEFT, TitledBorder.BOTTOM));
         			} else {
         				menuItem.setActionCommand(DISABLE);
-        				popupMenu.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, 25, 0), "Cancel", TitledBorder.LEFT, TitledBorder.BOTTOM));
+        				popupMenu.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, GraphicalInterfaceConstants.UNDO_BORDER_HEIGHT, 0), "Cancel", TitledBorder.LEFT, TitledBorder.BOTTOM));
         			}
         		}
         	});
@@ -7924,9 +7924,17 @@ public class GraphicalInterface extends JFrame {
     }
 	
 	public boolean isMenuItemVisible(Map<Object, Object> undoMap, JScrollPopupMenu popupMenu, JMenuItem menuItem) {
+		int visibilityCorrection = 0;		
+		double top = popupMenu.getScrollBar().getValue()/menuItem.getPreferredSize().getHeight();
+		double fraction = top - Math.floor(top);
+		if (fraction > GraphicalInterfaceConstants.UNDO_VISIBILITY_FRACTION) {
+			visibilityCorrection = 1;
+		} else {
+			visibilityCorrection = 0;
+		}
 		int topIndex = (int) (popupMenu.getScrollBar().getValue()/menuItem.getPreferredSize().getHeight());
 		int topItem = undoMap.size() - topIndex;
-		int bottomItem = topItem - (GraphicalInterfaceConstants.UNDO_MAX_VISIBLE_ROWS - 1);
+		int bottomItem = topItem - (GraphicalInterfaceConstants.UNDO_MAX_VISIBLE_ROWS - 1) - visibilityCorrection;
 		if (Integer.valueOf(menuItem.getName()) > topItem || Integer.valueOf(menuItem.getName()) < bottomItem) { 
 			return false;
 		}
@@ -7939,7 +7947,7 @@ public class GraphicalInterface extends JFrame {
 			menuItem.setActionCommand(ENABLE);
 		} else {
 			menuItem.setActionCommand(DISABLE);
-			popupMenu.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, 25, 0), "Cancel", TitledBorder.LEFT, TitledBorder.BOTTOM));
+			popupMenu.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(0, 0, GraphicalInterfaceConstants.UNDO_BORDER_HEIGHT, 0), "Cancel", TitledBorder.LEFT, TitledBorder.BOTTOM));
 		}
 	}
 	

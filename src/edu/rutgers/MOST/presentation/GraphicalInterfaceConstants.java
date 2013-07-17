@@ -357,6 +357,8 @@ public class GraphicalInterfaceConstants {
     public static final int PROGRESS_BAR_HEIGHT = 38;
     
     public static final int UNDO_MAX_VISIBLE_ROWS = 10;
+    public static final double UNDO_VISIBILITY_FRACTION = 0.1;
+    public static final int UNDO_BORDER_HEIGHT = 30;
     
     public static final String UNDO_ICON_IMAGE_PATH = "etc/toolbarIcons/Sideways_Arrow_Icon16b.png";
     public static final String REDO_ICON_IMAGE_PATH = "etc/toolbarIcons/Sideways_Arrow_Icon16a.png";
