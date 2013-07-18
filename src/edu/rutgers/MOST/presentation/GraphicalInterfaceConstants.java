@@ -166,6 +166,10 @@ public class GraphicalInterfaceConstants {
     {"abbreviation", "id"
     };
     
+    public static final String[] METAB_ABBREVIATION_NOT_FILTER =
+    {"required", "recommended", "optional"
+    };
+    
     public static final String[] METAB_NAME_FILTER =
     {"name"
     };

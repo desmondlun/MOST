@@ -495,16 +495,6 @@ public class GraphicalInterface extends JFrame {
 		return loadErrorMessage;
 	}
 	
-    public static int menuItemHeight;
-	
-	public static int getMenuItemHeight() {
-		return menuItemHeight;
-	}
-
-	public static void setMenuItemHeight(int menuItemHeight) {
-		GraphicalInterface.menuItemHeight = menuItemHeight;
-	}
-	
 	public static String oldReaction;
 
 	public void setOldReaction(String oldReaction) {
@@ -680,7 +670,7 @@ public class GraphicalInterface extends JFrame {
 		progressBar.setIconImages(icons);
 		progressBar.setSize(GraphicalInterfaceConstants.PROGRESS_BAR_WIDTH, GraphicalInterfaceConstants.PROGRESS_BAR_HEIGHT);		
 		progressBar.setResizable(false);
-		progressBar.setTitle("Loading...");
+		//progressBar.setTitle("Loading...");
 		progressBar.progress.setIndeterminate(true);
 		progressBar.setLocationRelativeTo(null);
 		progressBar.setVisible(false);
@@ -2010,9 +2000,13 @@ public class GraphicalInterface extends JFrame {
 	class LoadCSVAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			SaveChangesPrompt();
-			setExtension(".csv");
+			setExtension(".csv");	
 			csvLoadInterface.textMetabField.setText("");
 			csvLoadInterface.textReacField.setText("");
+			LocalConfig.getInstance().setMetabolitesCSVFile(null);
+			LocalConfig.getInstance().hasMetabolitesFile = false;
+			LocalConfig.getInstance().hasReactionsFile = false;
+			csvLoadInterface.okButton.setEnabled(false);
 			csvLoadInterface.setVisible(true);	
 		}
 	}
@@ -2025,7 +2019,9 @@ public class GraphicalInterface extends JFrame {
 			loadSetUp();
 			isCSVFile = true;
 			loadCSV();
-			progressBar.setTitle("Loading...");
+			progressBar.setVisible(false);
+			System.out.println("csv ok false");
+			//progressBar.setTitle("Loading...");
 			// Timer used by time listener to set up tables  
 			// and set progress bar not visible
 			timer.start();
@@ -2060,7 +2056,7 @@ public class GraphicalInterface extends JFrame {
 				columnNameInterface.setResizable(false);
 				columnNameInterface.setLocationRelativeTo(null);
 				columnNameInterface.setVisible(true);
-				columnNameInterface.setAlwaysOnTop(true);
+				//columnNameInterface.setAlwaysOnTop(true);
 				columnNameInterface.cancelButton.addActionListener(cancelButtonCSVLoadActionListener);
 			} else {
 				LocalConfig.getInstance().setProgress(100);
@@ -6451,13 +6447,14 @@ public class GraphicalInterface extends JFrame {
 					modelCollectionOKButtonClicked = false;
 					DynamicTreeDemo.treePanel.clear();
 					DynamicTreeDemo.treePanel.addObject(new Solution(GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1), getDatabaseName()));
+					progressBar.setVisible(false);
 				}				
 				timer.stop();
+				// This appears redundant, but is the only way to not have an extra progress bar on screen
 				progressBar.setVisible(false);
-				//progressBar.dispose();
-				LocalConfig.getInstance().setProgress(0);
-				progressBar.progress.setIndeterminate(true);
 				if (isCSVFile && LocalConfig.getInstance().hasReactionsFile) {
+					LocalConfig.getInstance().setProgress(0);
+					progressBar.progress.setIndeterminate(true);
 					//fileList.setSelectedIndex(-1);
 					listModel.clear();
 					//fileList.setModel(listModel);  					
@@ -6474,8 +6471,6 @@ public class GraphicalInterface extends JFrame {
 						TextReactionsModelReader reader = new TextReactionsModelReader();			    
 						ArrayList<String> columnNamesFromFile = reader.columnNamesFromFile(LocalConfig.getInstance().getReactionsCSVFile(), 0);	
 						ReactionColumnNameInterface columnNameInterface = new ReactionColumnNameInterface(con, columnNamesFromFile);
-						
-						columnNameInterface.setModal(true);
 						columnNameInterface.setIconImages(icons);
 
 						columnNameInterface.setSize(600, 600);

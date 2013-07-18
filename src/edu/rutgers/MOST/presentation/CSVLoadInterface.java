@@ -16,6 +16,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -29,7 +30,7 @@ import edu.rutgers.MOST.data.SettingsFactory;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterface.XMLFileFilter;
 
-public class CSVLoadInterface  extends JDialog {
+public class CSVLoadInterface  extends JFrame {
 
 	public JTextField columnNameField = new JTextField();
 	public static JButton metabFileButton = new JButton(GraphicalInterfaceConstants.CSV_FILE_LOAD_METAB_BUTTON);
@@ -124,13 +125,16 @@ public class CSVLoadInterface  extends JDialog {
 				if (textReacField.getText() != null && textReacField.getText().length() > 0) {
 					okButton.setEnabled(true);
 					LocalConfig.getInstance().hasReactionsFile = true;
+				} else {
+					LocalConfig.getInstance().hasReactionsFile = false;
 				}
 				if (textMetabField.getText() != null && textMetabField.getText().length() > 0) {
+					okButton.setEnabled(true);
 					LocalConfig.getInstance().hasMetabolitesFile = true;
 				} else {
 					LocalConfig.getInstance().hasMetabolitesFile = false;
 				}
-				System.out.println("csv load " + LocalConfig.getInstance().hasMetabolitesFile);
+				//System.out.println("csv load " + LocalConfig.getInstance().hasMetabolitesFile);
 			}
 		});
 		
@@ -199,7 +203,6 @@ public class CSVLoadInterface  extends JDialog {
 					String rawPathName = file.getAbsolutePath();
 					GraphicalInterface.curSettings.add("LastCSV", rawPathName);
 
-
 					String rawFilename = file.getName();
 					String filename = rawFilename.substring(0, rawFilename.length() - 4); 
 					
@@ -245,7 +248,7 @@ public class CSVLoadInterface  extends JDialog {
 					
 					String rawFilename = file.getName();
 					String filename = rawFilename.substring(0, rawFilename.length() - 4); 
-				
+					
 					String path = file.getPath();
 					if (!path.endsWith(".csv")) {
 						JOptionPane.showMessageDialog(null,                

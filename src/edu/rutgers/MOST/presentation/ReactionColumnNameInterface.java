@@ -18,6 +18,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -28,24 +29,21 @@ import edu.rutgers.MOST.config.ConfigConstants;
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.DatabaseCreator;
 import edu.rutgers.MOST.data.ReactionsMetaColumnManager;
-import edu.rutgers.MOST.data.TextMetabolitesModelReader;
 import edu.rutgers.MOST.data.TextReactionsModelReader;
-import edu.rutgers.MOST.presentation.MetaboliteColumnNameInterface.Task;
-import edu.rutgers.MOST.presentation.MetaboliteColumnNameInterface.TimeListener;
 
-public class ReactionColumnNameInterface  extends JDialog {
+public class ReactionColumnNameInterface  extends JFrame {
 
-	public JComboBox<String> cbKnockout = new JComboBox();
-	public JComboBox<String> cbFluxValue = new JComboBox();
-	public JComboBox<String> cbReactionAbbreviation = new JComboBox();
-	public JComboBox<String> cbReactionName = new JComboBox();
-	public JComboBox<String> cbReactionEquation = new JComboBox();
-	public JComboBox<String> cbReversible = new JComboBox();
-	public JComboBox<String> cbLowerBound = new JComboBox();
-	public JComboBox<String> cbUpperBound = new JComboBox();
-	public JComboBox<String> cbBiologicalObjective = new JComboBox();
-	public JComboBox<String> cbSyntheticObjective = new JComboBox();
-	public JComboBox<String> cbGeneAssociation = new JComboBox();
+	public JComboBox<String> cbKnockout = new JComboBox<String>();
+	public JComboBox<String> cbFluxValue = new JComboBox<String>();
+	public JComboBox<String> cbReactionAbbreviation = new JComboBox<String>();
+	public JComboBox<String> cbReactionName = new JComboBox<String>();
+	public JComboBox<String> cbReactionEquation = new JComboBox<String>();
+	public JComboBox<String> cbReversible = new JComboBox<String>();
+	public JComboBox<String> cbLowerBound = new JComboBox<String>();
+	public JComboBox<String> cbUpperBound = new JComboBox<String>();
+	public JComboBox<String> cbBiologicalObjective = new JComboBox<String>();
+	public JComboBox<String> cbSyntheticObjective = new JComboBox<String>();
+	public JComboBox<String> cbGeneAssociation = new JComboBox<String>();
 
 	public JButton okButton = new JButton("     OK     ");
 	public JButton cancelButton = new JButton("  Cancel  ");
@@ -91,6 +89,7 @@ public class ReactionColumnNameInterface  extends JDialog {
 		progressBar.pack();
 		progressBar.setIconImages(icons);
 		progressBar.setSize(GraphicalInterfaceConstants.PROGRESS_BAR_WIDTH, GraphicalInterfaceConstants.PROGRESS_BAR_HEIGHT);
+		//progressBar.setSize(200, 75);
 		progressBar.setTitle("Loading...");
 		progressBar.setLocation(x  - progressBar.getSize().width/2, y - 180);
 		progressBar.setVisible(false);
@@ -157,6 +156,9 @@ public class ReactionColumnNameInterface  extends JDialog {
 		cbGeneAssociation.setMaximumSize(new Dimension(250, 30));
 		cbGeneAssociation.setMinimumSize(new Dimension(250, 30));
 		
+		populateNamesFromFileBoxes(columnNamesFromFile);
+		
+		/*
 		JTextField fieldReactionAbbreviation = (JTextField)cbReactionAbbreviation.getEditor().getEditorComponent();
 		fieldReactionAbbreviation.addKeyListener(new ComboKeyHandler(cbReactionAbbreviation));
 		
@@ -189,8 +191,8 @@ public class ReactionColumnNameInterface  extends JDialog {
 		
 		JTextField fieldGeneAssociation = (JTextField)cbGeneAssociation.getEditor().getEditorComponent();
 		fieldGeneAssociation.addKeyListener(new ComboKeyHandler(cbGeneAssociation));
-		
-		populateNamesFromFileBoxes(columnNamesFromFile);
+		*/
+		//populateNamesFromFileBoxes(columnNamesFromFile);
 
 		//box layout
 		Box vb = Box.createVerticalBox();
@@ -593,6 +595,13 @@ public class ReactionColumnNameInterface  extends JDialog {
 					JOptionPane.showMessageDialog(null,                
 							ColumnInterfaceConstants.BLANK_REACTION_FIELDS_ERROR_MESSAGE,
 							ColumnInterfaceConstants.BLANK_REACTION_FIELDS_ERROR_TITLE,                                
+							JOptionPane.ERROR_MESSAGE);
+				} else if (cbReactionAbbreviation.getSelectedItem().toString().toLowerCase().equals(GraphicalInterfaceConstants.METAB_ABBREVIATION_NOT_FILTER[0]) ||
+						cbReactionAbbreviation.getSelectedItem().toString().toLowerCase().equals(GraphicalInterfaceConstants.METAB_ABBREVIATION_NOT_FILTER[1]) ||
+						cbReactionAbbreviation.getSelectedItem().toString().toLowerCase().equals(GraphicalInterfaceConstants.METAB_ABBREVIATION_NOT_FILTER[2])) {
+					JOptionPane.showMessageDialog(null,                
+							"Invalid name for Reaction Abbreviation column.",
+							"Column Name Error",                                
 							JOptionPane.ERROR_MESSAGE);
 				} else {
 					//add metacolumn names to db

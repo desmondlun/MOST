@@ -17,11 +17,14 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingWorker;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import edu.rutgers.MOST.config.ConfigConstants;
 import edu.rutgers.MOST.config.LocalConfig;
@@ -29,13 +32,13 @@ import edu.rutgers.MOST.data.DatabaseCreator;
 import edu.rutgers.MOST.data.MetabolitesMetaColumnManager;
 import edu.rutgers.MOST.data.TextMetabolitesModelReader;
 
-public class MetaboliteColumnNameInterface  extends JDialog {
+public class MetaboliteColumnNameInterface  extends JFrame {
 
-	public JComboBox<String> cbMetaboliteAbbreviation = new JComboBox();
-	public JComboBox<String> cbMetaboliteName = new JComboBox();
-	public JComboBox<String> cbCharge = new JComboBox();
-	public JComboBox<String> cbCompartment = new JComboBox();
-	public JComboBox<String> cbBoundary = new JComboBox();
+	public JComboBox<String> cbMetaboliteAbbreviation = new JComboBox<String>();
+	public JComboBox<String> cbMetaboliteName = new JComboBox<String>();
+	public JComboBox<String> cbCharge = new JComboBox<String>();
+	public JComboBox<String> cbCompartment = new JComboBox<String>();
+	public JComboBox<String> cbBoundary = new JComboBox<String>();
 
 	public JButton okButton = new JButton("     OK     ");
 	public JButton cancelButton = new JButton("  Cancel  ");
@@ -76,6 +79,7 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		progressBar.pack();
 		progressBar.setIconImages(icons);
 		progressBar.setSize(GraphicalInterfaceConstants.PROGRESS_BAR_WIDTH, GraphicalInterfaceConstants.PROGRESS_BAR_HEIGHT);
+		//progressBar.setSize(200, 75);
 		progressBar.setTitle("Loading...");
 		progressBar.setLocationRelativeTo(null);
 		progressBar.setVisible(false);
@@ -114,6 +118,9 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		cbBoundary.setMaximumSize(new Dimension(250, 30));
 		cbBoundary.setMinimumSize(new Dimension(250, 30));
 
+		populateNamesFromFileBoxes(columnNamesFromFile);
+		
+		/*
 		JTextField fieldMetaboliteAbbreviation = (JTextField)cbMetaboliteAbbreviation.getEditor().getEditorComponent();
 		fieldMetaboliteAbbreviation.addKeyListener(new ComboKeyHandler(cbMetaboliteAbbreviation));
 
@@ -128,9 +135,9 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 
 		JTextField fieldBoundary = (JTextField)cbBoundary.getEditor().getEditorComponent();
 		fieldBoundary.addKeyListener(new ComboKeyHandler(cbBoundary));
-
-		populateNamesFromFileBoxes(columnNamesFromFile);
-
+        */
+		//populateNamesFromFileBoxes(columnNamesFromFile);
+		
 		//box layout
 		Box vb = Box.createVerticalBox();
 
@@ -353,6 +360,13 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 							ColumnInterfaceConstants.BLANK_METABOLITE_FIELDS_ERROR_MESSAGE,
 							ColumnInterfaceConstants.BLANK_METABOLITE_FIELDS_ERROR_TITLE,                                
 							JOptionPane.ERROR_MESSAGE);
+				} else if (cbMetaboliteAbbreviation.getSelectedItem().toString().toLowerCase().equals(GraphicalInterfaceConstants.METAB_ABBREVIATION_NOT_FILTER[0]) ||
+						cbMetaboliteAbbreviation.getSelectedItem().toString().toLowerCase().equals(GraphicalInterfaceConstants.METAB_ABBREVIATION_NOT_FILTER[1]) ||
+						cbMetaboliteAbbreviation.getSelectedItem().toString().toLowerCase().equals(GraphicalInterfaceConstants.METAB_ABBREVIATION_NOT_FILTER[2])) {
+					JOptionPane.showMessageDialog(null,                
+							"Invalid name for Metabolite Abbreviation column.",
+							"Column Name Error",                                
+							JOptionPane.ERROR_MESSAGE);
 				} else {
 					//add metacolumn names to db
 					MetabolitesMetaColumnManager metabolitesMetaColumnManager = new MetabolitesMetaColumnManager();
@@ -416,7 +430,7 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 			public void actionPerformed(ActionEvent prodActionEvent) {
 				setVisible(false);
 				dispose();
-				/*
+				/*				
 				//this is a hack, same as clear method in gui
 				if (LocalConfig.getInstance().getCurrentConnection() != null) {
 					try {
@@ -576,9 +590,9 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		icons.add(new ImageIcon("images/most32.jpg").getImage());
 
 		ArrayList<String> list = new ArrayList();
-		list.add("test");
-		list.add("test");
-		list.add("test");
+		list.add("test1");
+		list.add("test2");
+		list.add("test3");
 
 		MetaboliteColumnNameInterface frame = new MetaboliteColumnNameInterface(con, list);
 
