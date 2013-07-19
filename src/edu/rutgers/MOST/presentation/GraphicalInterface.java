@@ -250,6 +250,17 @@ public class GraphicalInterface extends JFrame {
 		return metaboliteColAddRenameInterface;
 	}
 	
+    public static MetaboliteColumnNameInterface metaboliteColumnNameInterface;
+	
+	public static MetaboliteColumnNameInterface getMetaboliteColumnNameInterface() {
+		return metaboliteColumnNameInterface;
+	}
+
+	public static void setMetaboliteColumnNameInterface(
+			MetaboliteColumnNameInterface metaboliteColumnNameInterface) {
+		GraphicalInterface.metaboliteColumnNameInterface = metaboliteColumnNameInterface;
+	}
+	
 	public static MetaboliteRenameInterface metaboliteRenameInterface;
 	
 	public void setMetaboliteRenameInterface(MetaboliteRenameInterface metaboliteRenameInterface) {
@@ -290,6 +301,17 @@ public class GraphicalInterface extends JFrame {
 		return reactionColAddRenameInterface;
 	}
 		
+    public static ReactionColumnNameInterface reactionColumnNameInterface;
+	
+	public static ReactionColumnNameInterface getReactionColumnNameInterface() {
+		return reactionColumnNameInterface;
+	}
+
+	public static void setReactionColumnNameInterface(
+			ReactionColumnNameInterface reactionColumnNameInterface) {
+		GraphicalInterface.reactionColumnNameInterface = reactionColumnNameInterface;
+	}
+	
 	public static ReactionEditor reactionEditor;
 
 	public void setReactionEditor(ReactionEditor reactionEditor) {
@@ -701,9 +723,15 @@ public class GraphicalInterface extends JFrame {
 		csvLoadInterface.setIconImages(icons);					
 		csvLoadInterface.setSize(600, 200);
 		csvLoadInterface.setResizable(false);
-		csvLoadInterface.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		csvLoadInterface.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		csvLoadInterface.setLocationRelativeTo(null);		
-		csvLoadInterface.setVisible(false);			
+		csvLoadInterface.setVisible(false);	
+		csvLoadInterface.addWindowListener(new WindowAdapter() {
+	        public void windowClosing(WindowEvent evt) {
+	        	csvLoadInterface.setVisible(false);
+	        	clearTables();	        	
+	        }
+		});			
 		csvLoadInterface.okButton.addActionListener(okButtonCSVLoadActionListener);
 		csvLoadInterface.cancelButton.addActionListener(cancelButtonCSVLoadActionListener);
 		
@@ -2054,7 +2082,6 @@ public class GraphicalInterface extends JFrame {
 			isCSVFile = true;
 			loadCSV();
 			progressBar.setVisible(false);
-			System.out.println("csv ok false");
 			progressBar.setTitle("Loading...");
 			// Timer used by time listener to set up tables  
 			// and set progress bar not visible
@@ -2085,13 +2112,22 @@ public class GraphicalInterface extends JFrame {
 				TextMetabolitesModelReader reader = new TextMetabolitesModelReader();
 				ArrayList<String> columnNamesFromFile = reader.columnNamesFromFile(LocalConfig.getInstance().getMetabolitesCSVFile(), 0);
 				MetaboliteColumnNameInterface columnNameInterface = new MetaboliteColumnNameInterface(con, columnNamesFromFile);
+				setMetaboliteColumnNameInterface(columnNameInterface);
 				columnNameInterface.setIconImages(icons);
+				columnNameInterface.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 				columnNameInterface.setSize(600, 360);
 				columnNameInterface.setResizable(false);
 				columnNameInterface.setLocationRelativeTo(null);
 				columnNameInterface.setVisible(true);
+				columnNameInterface.addWindowListener(new WindowAdapter() {
+			        public void windowClosing(WindowEvent evt) {		        	
+			        	getMetaboliteColumnNameInterface().setVisible(false);
+			        	getMetaboliteColumnNameInterface().dispose();
+			        	clearTables();
+			        }
+				});
 				//columnNameInterface.setAlwaysOnTop(true);
-				columnNameInterface.cancelButton.addActionListener(cancelButtonCSVLoadActionListener);
+				columnNameInterface.cancelButton.addActionListener(cancelButtonCSVMetabLoadActionListener);
 			} else {
 				LocalConfig.getInstance().setProgress(100);
 			}
@@ -2104,6 +2140,13 @@ public class GraphicalInterface extends JFrame {
 			e.printStackTrace();
 		}		
 	}
+	
+	ActionListener cancelButtonCSVMetabLoadActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			getMetaboliteColumnNameInterface().setVisible(false);
+			clearTables();
+		}
+	};
 	
 	class LoadSQLiteItemAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
@@ -6512,14 +6555,26 @@ public class GraphicalInterface extends JFrame {
 						TextReactionsModelReader reader = new TextReactionsModelReader();			    
 						ArrayList<String> columnNamesFromFile = reader.columnNamesFromFile(LocalConfig.getInstance().getReactionsCSVFile(), 0);	
 						ReactionColumnNameInterface columnNameInterface = new ReactionColumnNameInterface(con, columnNamesFromFile);
+						setReactionColumnNameInterface(columnNameInterface);
 						columnNameInterface.setIconImages(icons);
-
+						columnNameInterface.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 						columnNameInterface.setSize(600, 600);
 						columnNameInterface.setResizable(false);
-						//columnNameInterface.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 						columnNameInterface.setLocationRelativeTo(null);
 						columnNameInterface.cancelButton.addActionListener(cancelButtonCSVReacLoadActionListener);
 						columnNameInterface.setVisible(true);	
+						columnNameInterface.addWindowListener(new WindowAdapter() {
+					        public void windowClosing(WindowEvent evt) {
+					        	getReactionColumnNameInterface().setVisible(false);
+					        	getReactionColumnNameInterface().dispose();
+					        	//csvReactionCancelLoadAction();
+					        	if (LocalConfig.getInstance().hasMetabolitesFile) {
+					        		csvReactionCancelLoadAction();
+						        } else {
+						        	clearTables();
+						        }
+					        }
+						});
 						//columnNameInterface.setAlwaysOnTop(true);
 						// sets value to default and loads any new metabolites
 						// from reactions file into metabolites table
@@ -6553,11 +6608,15 @@ public class GraphicalInterface extends JFrame {
 
 	ActionListener cancelButtonCSVReacLoadActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
-			reactionCancelLoad = true;
-			LocalConfig.getInstance().setProgress(100);
-			progressBar.setVisible(false);
+			csvReactionCancelLoadAction();
 		}
 	};
+	
+	public void csvReactionCancelLoadAction() {
+		reactionCancelLoad = true;
+		LocalConfig.getInstance().setProgress(100);
+		progressBar.setVisible(false);
+	}
 	
 	/*******************************************************************************/
 	//end progressBar methods

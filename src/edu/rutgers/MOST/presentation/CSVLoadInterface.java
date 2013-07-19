@@ -268,8 +268,8 @@ public class CSVLoadInterface  extends JFrame {
 		
 		ActionListener cancelButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
-				setVisible(false);
-				dispose();
+				//setVisible(false);
+				//dispose();
 			}
 		}; 
 		
