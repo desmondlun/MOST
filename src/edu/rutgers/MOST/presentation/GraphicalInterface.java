@@ -456,6 +456,7 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem addReacColumnItem = new JMenuItem("Add Column to Reactions Table");
 	public final JMenuItem addMetabColumnItem = new JMenuItem("Add Column to Metabolites Table"); 
 	public final JMenuItem editorMenu = new JMenuItem("Launch Reaction Editor");
+	public final JMenuItem formulaBarPasteItem = new JMenuItem("Paste");
 	
 	/*****************************************************************************/
 	// end menu items
@@ -475,7 +476,7 @@ public class GraphicalInterface extends JFrame {
 		return currentRow;
 	}
 		
-	static ArrayList<Image> icons;
+	public static ArrayList<Image> icons;
 
 	public void setIconsList(ArrayList<Image> icons) {
 		this.icons = icons;
@@ -544,6 +545,28 @@ public class GraphicalInterface extends JFrame {
 	public static String getTableCellOldValue() {
 		return tableCellOldValue;
 	}    
+	
+    public static ArrayList<Integer> visibleMetabolitesColumns;
+	
+	public static ArrayList<Integer> getVisibleMetabolitesColumns() {
+		return visibleMetabolitesColumns;
+	}
+
+	public static void setVisibleMetabolitesColumns(
+			ArrayList<Integer> visibleMetabolitesColumns) {
+		GraphicalInterface.visibleMetabolitesColumns = visibleMetabolitesColumns;
+	}
+	
+	public static ArrayList<Integer> visibleReactionsColumns;
+
+	public static ArrayList<Integer> getVisibleReactionsColumns() {
+		return visibleReactionsColumns;
+	}
+
+	public static void setVisibleReactionsColumns(
+			ArrayList<Integer> visibleReactionsColumns) {
+		GraphicalInterface.visibleReactionsColumns = visibleReactionsColumns;
+	}
 	
 	ArrayList<String> invalidNew = new ArrayList<String>();
 	Map<String, Object> usedNew = new HashMap<String, Object>();
@@ -670,7 +693,7 @@ public class GraphicalInterface extends JFrame {
 		progressBar.setIconImages(icons);
 		progressBar.setSize(GraphicalInterfaceConstants.PROGRESS_BAR_WIDTH, GraphicalInterfaceConstants.PROGRESS_BAR_HEIGHT);		
 		progressBar.setResizable(false);
-		//progressBar.setTitle("Loading...");
+		progressBar.setTitle("Loading...");
 		progressBar.progress.setIndeterminate(true);
 		progressBar.setLocationRelativeTo(null);
 		progressBar.setVisible(false);
@@ -1614,9 +1637,8 @@ public class GraphicalInterface extends JFrame {
 		reactionsTable.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "actionString");
 		reactionsTable.getActionMap().put("actionString", new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
-				// This overrides tab key and performs an action	
-				ArrayList<Integer> visibleColumns = visibleReactionsColumnList();
-				tabToNextVisibleCell(reactionsTable, visibleColumns);
+				// This overrides tab key and performs an action
+				tabToNextVisibleCell(reactionsTable, getVisibleReactionsColumns());
 			}
 		});
 		
@@ -1624,8 +1646,7 @@ public class GraphicalInterface extends JFrame {
 		metabolitesTable.getActionMap().put("actionString", new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
 				// This overrides tab key and performs an action	
-				ArrayList<Integer> visibleColumns = visibleMetabolitesColumnList();
-				tabToNextVisibleCell(metabolitesTable, visibleColumns);
+				tabToNextVisibleCell(metabolitesTable, getVisibleMetabolitesColumns());
 			}
 		});
 		
@@ -1780,11 +1801,15 @@ public class GraphicalInterface extends JFrame {
 		});
 			
 		final JPopupMenu formulaBarPopupMenu = new JPopupMenu(); 
-		JMenuItem formulaBarPasteItem = new JMenuItem("Paste");
 		formulaBarPopupMenu.add(formulaBarPasteItem);
+		if (reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REVERSIBLE_COLUMN || reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
+			formulaBarPasteItem.setEnabled(false);
+		} else {
+			formulaBarPasteItem.setEnabled(true);
+		}
 		formulaBarPasteItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 	
-				formulaBar.setText(getClipboardContents(GraphicalInterface.this));						
+				formulaBar.setText(getClipboardContents(GraphicalInterface.this));
 			}
 		});
 		
@@ -2030,7 +2055,7 @@ public class GraphicalInterface extends JFrame {
 			loadCSV();
 			progressBar.setVisible(false);
 			System.out.println("csv ok false");
-			//progressBar.setTitle("Loading...");
+			progressBar.setTitle("Loading...");
 			// Timer used by time listener to set up tables  
 			// and set progress bar not visible
 			timer.start();
@@ -3093,7 +3118,9 @@ public class GraphicalInterface extends JFrame {
 			} else {
 				highlightUnusedMetabolitesItem.setEnabled(false);
 				deleteUnusedItem.setEnabled(false);
-			}				
+			}
+			ArrayList<Integer> visibleMetabolitesColumns = visibleMetabolitesColumnList();
+			setVisibleMetabolitesColumns(visibleMetabolitesColumns);
 			if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
 				setLoadErrorMessage("Model contains suspicious metabolites.");
 				// selected row default at row 1 (index 0)
@@ -3136,7 +3163,9 @@ public class GraphicalInterface extends JFrame {
 			} else {
 				setReactionsSortColumnIndex(0);
 				setReactionsSortOrder(SortOrder.ASCENDING);
-			}			
+			}	
+			ArrayList<Integer> visibleReactionsColumns = visibleReactionsColumnList();
+			setVisibleReactionsColumns(visibleReactionsColumns);
 			// selected row default at row 1 (index 0)
 			try {
 				if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
@@ -3497,11 +3526,13 @@ public class GraphicalInterface extends JFrame {
 				statusBar.setText("Row " + reactionRow);
 			}
     		if (reactionsTable.getRowCount() > 0 && reactionsTable.getSelectedRow() > -1 && tabbedPane.getSelectedIndex() == 0) {
-    			if (reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
+    			if (reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REVERSIBLE_COLUMN || reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
 					formulaBar.setEditable(false);
 					formulaBar.setBackground(Color.WHITE);
+					formulaBarPasteItem.setEnabled(false);
 				}  else {
 					formulaBar.setEditable(true);
+					formulaBarPasteItem.setEnabled(true);
 				}
     			// if any cell selected any existing find all highlighting is unhighlighted
     			reactionsFindAll = false;
@@ -3541,11 +3572,13 @@ public class GraphicalInterface extends JFrame {
 				} else {
 					statusBar.setText("Row " + reactionRow);
 				}
-				if (reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REVERSIBLE_COLUMN || fileList.getSelectedIndex() > 0) {
+				if (reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REVERSIBLE_COLUMN || reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN || fileList.getSelectedIndex() > 0) {
 					formulaBar.setEditable(false);
 					formulaBar.setBackground(Color.WHITE);
+					formulaBarPasteItem.setEnabled(false);
 				}  else {
 					formulaBar.setEditable(true);
+					formulaBarPasteItem.setEnabled(true);
 				}
 				// if any cell selected any existing find all highlighting is unhighlighted
 				reactionsFindAll = false;
@@ -3949,8 +3982,10 @@ public class GraphicalInterface extends JFrame {
 					if (metabolitesTable.getSelectedColumn() == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN && metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()) != null && LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(value)) {
 						formulaBar.setEditable(false);
 						formulaBar.setBackground(Color.WHITE);
+						formulaBarPasteItem.setEnabled(false);
 					} else {
 						formulaBar.setEditable(true);
+						formulaBarPasteItem.setEnabled(true);
 					}
 					// if any cell selected any existing find all highlighting is unhighlighted
 					reactionsFindAll = false;
@@ -3986,8 +4021,10 @@ public class GraphicalInterface extends JFrame {
 				if (metabolitesTable.getSelectedColumn() == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN && metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()) != null && LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(value)) {
 					formulaBar.setEditable(false);
 					formulaBar.setBackground(Color.WHITE);
+					formulaBarPasteItem.setEnabled(false);
 				} else {
 					formulaBar.setEditable(true);
+					formulaBarPasteItem.setEnabled(true);
 				}
 				// if any cell selected any existing find all highlighting is unhighlighted
 				reactionsFindAll = false;
@@ -5300,7 +5337,6 @@ public class GraphicalInterface extends JFrame {
 	//http://stackoverflow.com/questions/4671657/how-to-copy-content-of-the-jtable-to-clipboard
 	
 	public void selectReactionsRows() {
-		ArrayList<Integer> visibleColumns = visibleReactionsColumnList();
 		setClipboardContents("");
 		ReactionsMetaColumnManager reactionsMetaColumnManager = new ReactionsMetaColumnManager();
 		int metaColumnCount = reactionsMetaColumnManager.getMetaColumnCount(LocalConfig.getInstance().getLoadedDatabase());	
@@ -5317,7 +5353,7 @@ public class GraphicalInterface extends JFrame {
 		if (includeRxnColumnNames == true) {
 			//add column names to clipboard
 			for (int c = 1; c < GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length; c++) {
-				if (visibleColumns.contains(c)) {
+				if (getVisibleReactionsColumns().contains(c)) {
 					sbf.append(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[c]);
 					if (c < GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length - 1) {
 						sbf.append("\t"); 
@@ -5326,7 +5362,7 @@ public class GraphicalInterface extends JFrame {
 			}
 			if (metaColumnCount > 0) {
 				for (int r = 1; r <= metaColumnCount; r++) {
-					if (visibleColumns.contains(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length + r - 1)) {
+					if (getVisibleReactionsColumns().contains(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length + r - 1)) {
 						sbf.append("\t");
 						sbf.append(reactionsMetaColumnManager.getColumnName(LocalConfig.getInstance().getLoadedDatabase(), r));
 					}					
@@ -5339,7 +5375,7 @@ public class GraphicalInterface extends JFrame {
 			//starts at 1 to avoid reading hidden db id column
 			for (int j = 1; j < reactionsTable.getColumnCount() - 1; j++) 
 			{ 
-				if (visibleColumns.contains(j)) {
+				if (getVisibleReactionsColumns().contains(j)) {
 					if (reactionsTable.getValueAt(rowsselected[i], j) != null) {
 						sbf.append(reactionsTable.getValueAt(rowsselected[i], j));
 					} else {
@@ -5366,7 +5402,6 @@ public class GraphicalInterface extends JFrame {
 		if (rowsselected.length == reactionsTable.getRowCount() && colsselected.length == reactionsTable.getColumnCount() && includeRxnColumnNames) {
 			
 		} else {
-			ArrayList<Integer> visibleColumns = visibleReactionsColumnList();
 			if (getSelectionMode() == 2) {
 				LocalConfig.getInstance().includesReactions = true;
 				if (getSelectionMode() == 2) {
@@ -5392,8 +5427,8 @@ public class GraphicalInterface extends JFrame {
 					return; 
 				} 
 				for (int i=0;i<numrows;i++) { 
-					for (int j=0;j<numcols;j++) { 
-						if (visibleColumns.contains(colsselected[j])) {
+					for (int j=0;j<numcols;j++) {
+						if (getVisibleReactionsColumns().contains(colsselected[j])) {
 							if (reactionsTable.getValueAt(rowsselected[i],colsselected[j]) != null) {
 								sbf.append(reactionsTable.getValueAt(rowsselected[i],colsselected[j]));
 							} else {
@@ -5416,7 +5451,6 @@ public class GraphicalInterface extends JFrame {
 		ArrayList<Integer> rowList = new ArrayList<Integer>();
 		ArrayList<Integer> reacIdList = new ArrayList<Integer>();
 		ArrayList<String> oldReactionsList = new ArrayList<String>();
-		ArrayList<Integer> visibleColumns = visibleReactionsColumnList();
 		String copiedString = getClipboardContents(GraphicalInterface.this);
 		String[] s1 = copiedString.split("\n");
 		int startRow = (reactionsTable.getSelectedRows())[0];
@@ -5458,7 +5492,7 @@ public class GraphicalInterface extends JFrame {
 							setOldReaction(oldReaction);
 							oldReactionsList.add(oldReaction);
 						}
-						pasteReactionRows(rowList, reacIdList, s1, startCol, q, LocalConfig.getInstance().getNumberCopiedRows(), s1.length, visibleColumns);
+						pasteReactionRows(rowList, reacIdList, s1, startCol, q, LocalConfig.getInstance().getNumberCopiedRows(), s1.length);
 						startRow += LocalConfig.getInstance().getNumberCopiedRows();					
 					}
 					for (int m = 0; m < remainder; m++) {
@@ -5479,7 +5513,7 @@ public class GraphicalInterface extends JFrame {
 						min = remainder;
 					}					
 					// if remainder is larger, have to fill in difference with ""
-					pasteReactionRows(rowList, reacIdList, s1, startCol, quotient, LocalConfig.getInstance().getNumberCopiedRows(), min, visibleColumns);
+					pasteReactionRows(rowList, reacIdList, s1, startCol, quotient, LocalConfig.getInstance().getNumberCopiedRows(), min);
 					if (validPaste) {					
 						updater.updateReactionRows(rowList, reacIdList, oldReactionsList, LocalConfig.getInstance().getLoadedDatabase());
 						copyReactionsDatabaseTables();
@@ -5490,7 +5524,7 @@ public class GraphicalInterface extends JFrame {
 									getPasteError(),                
 									"Paste Error",                                
 									JOptionPane.ERROR_MESSAGE);
-						}
+						}	
 						deleteReactionsPasteUndoItem();
 						validPaste = true;
 					}
@@ -5510,7 +5544,7 @@ public class GraphicalInterface extends JFrame {
 					setOldReaction(oldReaction);
 					oldReactionsList.add(oldReaction);
 				}
-				pasteReactionRows(rowList, reacIdList, s1, startCol, 0, LocalConfig.getInstance().getNumberCopiedRows(), s1.length, visibleColumns);
+				pasteReactionRows(rowList, reacIdList, s1, startCol, 0, LocalConfig.getInstance().getNumberCopiedRows(), s1.length);
 				if (validPaste) {
 					updater.updateReactionRows(rowList, reacIdList, oldReactionsList, LocalConfig.getInstance().getLoadedDatabase());
 					copyReactionsDatabaseTables();
@@ -5529,9 +5563,9 @@ public class GraphicalInterface extends JFrame {
 				closeConnection();
 				reloadTables(LocalConfig.getInstance().getLoadedDatabase());
 			}
-		}		
+		}	
 	}
-
+	
 	// used for invalid paste, invalid clear, and invalid replace all
 	public void deleteReactionsPasteUndoItem() {
 		DatabaseCreator creator = new DatabaseCreator();
@@ -5541,7 +5575,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().setNumReactionTablesCopied(numCopied);
 	}
 	
-	public void pasteReactionRows(ArrayList<Integer> rowList, ArrayList<Integer> reacIdList, String[] s1, int startCol, int multiplier, int numCopiedRows, int range, ArrayList<Integer> visibleColumns) {
+	public void pasteReactionRows(ArrayList<Integer> rowList, ArrayList<Integer> reacIdList, String[] s1, int startCol, int multiplier, int numCopiedRows, int range) {
 		// multiplier is used if number of selected paste rows is greater than
 		// number of copied rows, so that start rows is incremented by number of
 		// selected rows each loop - see quotient in reactionsPaste()
@@ -5557,7 +5591,7 @@ public class GraphicalInterface extends JFrame {
 		int count = 0;
 		int p = 0;// number of pasted columns
 		while (p < LocalConfig.getInstance().getNumberCopiedColumns() && (startCol + p + count) < reactionsTable.getColumnCount()) {			
-			if (!visibleColumns.contains(startCol + p + count)) {
+			if (!getVisibleReactionsColumns().contains(startCol + p + count)) {
 				count += 1;
 			} else {
 				pasteColumns.add(startCol + p + count);
@@ -5751,7 +5785,6 @@ public class GraphicalInterface extends JFrame {
 	/**************************************************************************/
 	
 	public void selectMetabolitesRows() {
-		ArrayList<Integer> visibleColumns = visibleMetabolitesColumnList();
 		setClipboardContents("");
 		MetabolitesMetaColumnManager metabolitesMetaColumnManager = new MetabolitesMetaColumnManager();
 		int metaColumnCount = metabolitesMetaColumnManager.getMetaColumnCount(LocalConfig.getInstance().getLoadedDatabase());	
@@ -5770,7 +5803,7 @@ public class GraphicalInterface extends JFrame {
 		if (includeMtbColumnNames == true) {
 			//add column names to clipboard
 			for (int c = 1; c < GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length; c++) {
-				if (visibleColumns.contains(c)) {
+				if (getVisibleMetabolitesColumns().contains(c)) {
 					sbf.append(GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES[c]);
 					if (c < GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length - 1) {
 						sbf.append("\t"); 
@@ -5779,7 +5812,7 @@ public class GraphicalInterface extends JFrame {
 			}
 			if (metaColumnCount > 0) {
 				for (int r = 1; r <= metaColumnCount; r++) {
-					if (visibleColumns.contains(GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length + r - 1)) {
+					if (getVisibleMetabolitesColumns().contains(GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length + r - 1)) {
 						sbf.append("\t");
 						sbf.append(metabolitesMetaColumnManager.getColumnName(LocalConfig.getInstance().getLoadedDatabase(), r));
 					}					
@@ -5817,7 +5850,6 @@ public class GraphicalInterface extends JFrame {
 		if (rowsselected.length == metabolitesTable.getRowCount() && colsselected.length == metabolitesTable.getColumnCount() && includeMtbColumnNames) {
 			
 		} else {
-			ArrayList<Integer> visibleColumns = visibleMetabolitesColumnList();
 			if (getSelectionMode() == 2) {
 				if (getSelectionMode() == 2) {
 					includeMtbColumnNames = false;				
@@ -5845,7 +5877,7 @@ public class GraphicalInterface extends JFrame {
 				} 
 				for (int i=0;i<numrows;i++) { 
 					for (int j=0;j<numcols;j++) { 
-						if (visibleColumns.contains(colsselected[j])) {
+						if (getVisibleMetabolitesColumns().contains(colsselected[j])) {
 							if (metabolitesTable.getValueAt(rowsselected[i],colsselected[j]) != null) {
 								sbf.append(metabolitesTable.getValueAt(rowsselected[i],colsselected[j]));
 							} else {
@@ -5867,7 +5899,6 @@ public class GraphicalInterface extends JFrame {
 		MetabolitesUpdater updater = new MetabolitesUpdater();
 		ArrayList<Integer> rowList = new ArrayList<Integer>();
 		ArrayList<Integer> metabIdList = new ArrayList<Integer>();
-		ArrayList<Integer> visibleColumns = visibleMetabolitesColumnList();
 		String copiedString = getClipboardContents(GraphicalInterface.this);
 		String[] s1 = copiedString.split("\n");
 		int startRow = (metabolitesTable.getSelectedRows())[0];
@@ -5907,7 +5938,7 @@ public class GraphicalInterface extends JFrame {
 							int metabId = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(row, 0));
 							metabIdList.add(metabId);
 						}
-						pasteMetaboliteRows(rowList, metabIdList, s1, startCol, q, LocalConfig.getInstance().getNumberCopiedRows(), s1.length, visibleColumns);
+						pasteMetaboliteRows(rowList, metabIdList, s1, startCol, q, LocalConfig.getInstance().getNumberCopiedRows(), s1.length);
 						startRow += LocalConfig.getInstance().getNumberCopiedRows();
 					}
 					for (int m = 0; m < remainder; m++) {
@@ -5925,7 +5956,7 @@ public class GraphicalInterface extends JFrame {
 						min = remainder;
 					}
 					// if remainder is larger, have to fill in difference with ""
-					pasteMetaboliteRows(rowList, metabIdList, s1, startCol, quotient, LocalConfig.getInstance().getNumberCopiedRows(), min, visibleColumns);
+					pasteMetaboliteRows(rowList, metabIdList, s1, startCol, quotient, LocalConfig.getInstance().getNumberCopiedRows(), min);
 					if (validPaste) {						
 						updater.updateMetaboliteRows(rowList, metabIdList, LocalConfig.getInstance().getLoadedDatabase());
 						copyMetaboliteDatabaseTable();
@@ -5950,7 +5981,7 @@ public class GraphicalInterface extends JFrame {
 					int metabId = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(row, 0));
 					metabIdList.add(metabId);
 				}
-				pasteMetaboliteRows(rowList, metabIdList, s1, startCol, 0, LocalConfig.getInstance().getNumberCopiedRows(), s1.length, visibleColumns);
+				pasteMetaboliteRows(rowList, metabIdList, s1, startCol, 0, LocalConfig.getInstance().getNumberCopiedRows(), s1.length);
 				if (validPaste) {						
 					updater.updateMetaboliteRows(rowList, metabIdList, LocalConfig.getInstance().getLoadedDatabase());
 					copyMetaboliteDatabaseTable();
@@ -5980,7 +6011,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().setNumMetabolitesTableCopied(numCopied);
 	}
 	
-	public void pasteMetaboliteRows(ArrayList<Integer> rowList, ArrayList<Integer> metabIdList, String[] s1, int startCol, int multiplier, int numCopiedRows, int range, ArrayList<Integer> visibleColumns) {
+	public void pasteMetaboliteRows(ArrayList<Integer> rowList, ArrayList<Integer> metabIdList, String[] s1, int startCol, int multiplier, int numCopiedRows, int range) {
 		// multiplier is used if number of selected paste rows is greater than
 		// number of copied rows, so that start rows is incremented by number of
 		// selected rows each loop - see quotient in metabolitesPaste()
@@ -5995,7 +6026,7 @@ public class GraphicalInterface extends JFrame {
 		int p = 0;// number of pasted columns
 		if (duplicateMetabOK) {
 			while (p < LocalConfig.getInstance().getNumberCopiedColumns() && (startCol + p + count) < metabolitesTable.getColumnCount()) {			
-				if (!visibleColumns.contains(startCol + p + count)) {
+				if (!getVisibleMetabolitesColumns().contains(startCol + p + count)) {
 					count += 1;
 				} else {
 					pasteColumns.add(startCol + p + count);
@@ -6461,6 +6492,7 @@ public class GraphicalInterface extends JFrame {
 				timer.stop();
 				// This appears redundant, but is the only way to not have an extra progress bar on screen
 				progressBar.setVisible(false);
+				progressBar.progress.setIndeterminate(true);
 				if (isCSVFile && LocalConfig.getInstance().hasReactionsFile) {
 					LocalConfig.getInstance().setProgress(0);
 					progressBar.progress.setIndeterminate(true);
@@ -6488,7 +6520,7 @@ public class GraphicalInterface extends JFrame {
 						columnNameInterface.setLocationRelativeTo(null);
 						columnNameInterface.cancelButton.addActionListener(cancelButtonCSVReacLoadActionListener);
 						columnNameInterface.setVisible(true);	
-						columnNameInterface.setAlwaysOnTop(true);
+						//columnNameInterface.setAlwaysOnTop(true);
 						// sets value to default and loads any new metabolites
 						// from reactions file into metabolites table
 						if (!reactionCancelLoad) {
@@ -6788,7 +6820,6 @@ public class GraphicalInterface extends JFrame {
 			}			
 		}		
 		ArrayList<ArrayList<Integer>> reactionsLocationsList = new ArrayList<ArrayList<Integer>>();
-		ArrayList<Integer> visibleColumns = visibleReactionsColumnList();
 		for (int r = rowStartIndex; r < rowEndIndex; r++) {				
 			for (int c = colStartIndex; c < colEndIndex; c++) {				
 				int viewRow = reactionsTable.convertRowIndexToModel(r);
@@ -6799,7 +6830,7 @@ public class GraphicalInterface extends JFrame {
 						cellValue = cellValue.toLowerCase();
 						findValue = findValue.toLowerCase();						
 					}
-					if (cellValue.contains(findValue) && visibleColumns.contains(c)) {
+					if (cellValue.contains(findValue) && getVisibleReactionsColumns().contains(c)) {
 						ArrayList<Integer> rowColumnList = new ArrayList<Integer>();
 						rowColumnList.add(r);
 						rowColumnList.add(c);
@@ -7169,7 +7200,6 @@ public class GraphicalInterface extends JFrame {
 			}			
 		}		
 		ArrayList<ArrayList<Integer>> metabolitesLocationsList = new ArrayList<ArrayList<Integer>>();
-		ArrayList<Integer> visibleColumns = visibleMetabolitesColumnList();
 		for (int r = rowStartIndex; r < rowEndIndex; r++) {				
 			for (int c = colStartIndex; c < colEndIndex; c++) {					
 				int viewRow = metabolitesTable.convertRowIndexToModel(r);
@@ -7180,7 +7210,7 @@ public class GraphicalInterface extends JFrame {
 						cellValue = cellValue.toLowerCase();
 						findValue = findValue.toLowerCase();
 					}
-					if (cellValue.contains(findValue) && visibleColumns.contains(c)) {
+					if (cellValue.contains(findValue) && getVisibleMetabolitesColumns().contains(c)) {
 						ArrayList<Integer> rowColumnList = new ArrayList<Integer>();
 						rowColumnList.add(r);
 						rowColumnList.add(c);
