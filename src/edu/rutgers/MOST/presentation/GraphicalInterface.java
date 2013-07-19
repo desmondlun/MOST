@@ -1611,14 +1611,23 @@ public class GraphicalInterface extends JFrame {
 		
 		// from http://www.java.net/node/651087
 		// need tab to skip hidden columns		
-		/*
 		reactionsTable.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "actionString");
 		reactionsTable.getActionMap().put("actionString", new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
 				// This overrides tab key and performs an action	
+				ArrayList<Integer> visibleColumns = visibleReactionsColumnList();
+				tabToNextVisibleCell(reactionsTable, visibleColumns);
 			}
 		});
-		*/
+		
+		metabolitesTable.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "actionString");
+		metabolitesTable.getActionMap().put("actionString", new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				// This overrides tab key and performs an action	
+				ArrayList<Integer> visibleColumns = visibleMetabolitesColumnList();
+				tabToNextVisibleCell(metabolitesTable, visibleColumns);
+			}
+		});
 		
 		ActionListener metabolitesCopyActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
@@ -8407,6 +8416,28 @@ public class GraphicalInterface extends JFrame {
     	addMetabColumnItem.setEnabled(true);
     	getMetaboliteColAddRenameInterface().setVisible(false);
     	getMetaboliteColAddRenameInterface().dispose();
+	}
+	
+	public void tabToNextVisibleCell(JXTable table, ArrayList<Integer> visibleColumns) {
+		// This overrides tab key and performs an action	
+		// from http://www.coderanch.com/t/344392/GUI/java/Tabbing-cells-JTable
+		int row = table.getSelectedRow();  
+        int col = table.getSelectedColumn();  
+        // Make sure we start with legal values.  
+        while(col < 0) col++;  
+        while(row < 0) row++;  
+        // Find the next editable cell.  
+        col++;
+        while(!(visibleColumns.contains(col)))  
+        {  
+            col++;  
+            if(col > table.getColumnCount()-1)  
+            {  
+                col = 1;  
+                row = (row == table.getRowCount()-1) ? 0 : row+1;
+            }  
+        }
+        scrollToLocation(table, row, col);
 	}
 	
 	public static void main(String[] args) throws Exception {
