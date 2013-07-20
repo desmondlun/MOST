@@ -681,9 +681,9 @@ public class GraphicalInterface extends JFrame {
 						}	
 						closeConnection();
 						LocalConfig.getInstance().setLoadedDatabase(LocalConfig.getInstance().getDatabaseName());
+						reloadTables(LocalConfig.getInstance().getLoadedDatabase());
 						isRoot = true;
-					} else {
-						disableMenuItems();
+					} else {						
 						if (node.getUserObject().toString() != null) {
 							//gets the full path of optimize since it may not be in MOST directory
 							String optimizePath = getOptimizePath();
@@ -698,14 +698,14 @@ public class GraphicalInterface extends JFrame {
 								if (getPopout() != null) {
 									getPopout().load(getOptimizePath() + ".log");
 								}	
-
-								closeConnection();
-								isRoot = false;
+								disableMenuItems();								
+								closeConnection();								
 								LocalConfig.getInstance().setLoadedDatabase(getOptimizePath());
+								reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+								isRoot = false;
 							} 
 						}
-					}
-					reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+					}					
 				}
 			}
 		});
@@ -3573,6 +3573,7 @@ public class GraphicalInterface extends JFrame {
 	
     private class ReactionsRowListener implements ListSelectionListener {
     	public void valueChanged(ListSelectionEvent event) {
+    		System.out.println("rr " + isRoot);
     		if (LocalConfig.getInstance().findReplaceFocusLost) {
 				findButtonReactionsClicked = false;
 				throwNotFoundError = false;
@@ -3595,8 +3596,10 @@ public class GraphicalInterface extends JFrame {
 					formulaBar.setBackground(Color.WHITE);
 					formulaBarPasteItem.setEnabled(false);
 				}  else {
-					formulaBar.setEditable(true);
-					formulaBarPasteItem.setEnabled(true);
+					if (isRoot) {
+						formulaBar.setEditable(true);
+						formulaBarPasteItem.setEnabled(true);
+					}					
 				}
     			// if any cell selected any existing find all highlighting is unhighlighted
     			reactionsFindAll = false;
@@ -3619,6 +3622,7 @@ public class GraphicalInterface extends JFrame {
 
     private class ReactionsColumnListener implements ListSelectionListener {
 		public void valueChanged(ListSelectionEvent event) {
+			System.out.println("rc " + isRoot);
 			if (LocalConfig.getInstance().findReplaceFocusLost) {
 				findButtonReactionsClicked = false;
 				throwNotFoundError = false;
@@ -3636,13 +3640,16 @@ public class GraphicalInterface extends JFrame {
 				} else {
 					statusBar.setText("Row " + reactionRow);
 				}
-				if (reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REVERSIBLE_COLUMN || reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN || fileList.getSelectedIndex() > 0) {
+				if (reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REVERSIBLE_COLUMN || reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
+				//if (reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REVERSIBLE_COLUMN || reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN || fileList.getSelectedIndex() > 0) {
 					formulaBar.setEditable(false);
 					formulaBar.setBackground(Color.WHITE);
 					formulaBarPasteItem.setEnabled(false);
 				}  else {
-					formulaBar.setEditable(true);
-					formulaBarPasteItem.setEnabled(true);
+					if (isRoot) {
+						formulaBar.setEditable(true);
+						formulaBarPasteItem.setEnabled(true);
+					}		
 				}
 				// if any cell selected any existing find all highlighting is unhighlighted
 				reactionsFindAll = false;

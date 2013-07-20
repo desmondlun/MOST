@@ -13,7 +13,7 @@ public class ReactionsDatabaseTableModel extends DefaultTableModel {
 	public boolean isCellEditable(int row, int col) {
 		if (col == GraphicalInterfaceConstants.DB_REACTIONS_ID_COLUMN || col == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
 			return false; 
-		} else if (GraphicalInterface.fileList.getSelectedIndex() > 0) {
+		} else if (!GraphicalInterface.isRoot) {
 		//} else if (GraphicalInterface.fileList.getSelectedIndex() > 0) {
 			return false;	
 		} else {
