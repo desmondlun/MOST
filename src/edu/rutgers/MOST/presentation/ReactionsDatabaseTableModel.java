@@ -14,6 +14,7 @@ public class ReactionsDatabaseTableModel extends DefaultTableModel {
 		if (col == GraphicalInterfaceConstants.DB_REACTIONS_ID_COLUMN || col == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
 			return false; 
 		} else if (GraphicalInterface.fileList.getSelectedIndex() > 0) {
+		//} else if (GraphicalInterface.fileList.getSelectedIndex() > 0) {
 			return false;	
 		} else {
 			return true; 

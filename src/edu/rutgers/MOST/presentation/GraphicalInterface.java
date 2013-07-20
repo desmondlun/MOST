@@ -214,6 +214,7 @@ public class GraphicalInterface extends JFrame {
 	public static boolean reactionsTableEditable;	  // if fileList item index > 0, is false
 	public static boolean modelCollectionOKButtonClicked;
 	public static boolean reactionCancelLoad;
+	public static boolean isRoot;
 	// close
 	public static boolean exit;
 	public static boolean saveDatabaseFile;
@@ -656,40 +657,59 @@ public class GraphicalInterface extends JFrame {
 	throws SQLException {
 		gi = this;
 		
+		isRoot = true;
+		
 		// Tree Panel
 		newContentPane = new DynamicTreeDemo(new DynamicTree() {
 			private static final long serialVersionUID = 1L;
-			
-			public void valueChanged(TreeSelectionEvent e) {
-	        DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-                    tree.getLastSelectedPathComponent();
 
-	        if (node == null) return;
-	        
-			Solution nodeInfo = (Solution)node.getUserObject();
-				if (node.isLeaf()) {						
-					String databaseName = nodeInfo.getDatabaseName();
-					LocalConfig.getInstance().setLoadedDatabase(databaseName);
-					try {
-						Class.forName("org.sqlite.JDBC");
-						Connection con = DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db");
-						LocalConfig.getInstance().setCurrentConnection(con);
-						highlightUnusedMetabolites = false;
-						highlightUnusedMetabolitesItem.setState(false);
-						setUpMetabolitesTable(con);
-						setUpReactionsTable(con);						
-						setTitle(GraphicalInterfaceConstants.TITLE + " - " + databaseName);
-						con.close();
-					} catch (ClassNotFoundException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (SQLException e2) {
-						// TODO Auto-generated catch block
-						e2.printStackTrace();
+			public void valueChanged(TreeSelectionEvent e) {
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+				tree.getLastSelectedPathComponent();
+
+				if (node == null) return;
+                
+				//Solution nodeInfo = (Solution)node.getUserObject();
+				if (node.isLeaf()) {
+					System.out.println(node.getUserObject().toString());
+					// may need to account for path, currently in same directory as MOST directory
+					if (node.getUserObject().toString().equals(LocalConfig.getInstance().getDatabaseName())) {
+						enableMenuItems();
+						clearOutputPane();
+						if (getPopout() != null) {
+							getPopout().clear();
+						}	
+						closeConnection();
+						LocalConfig.getInstance().setLoadedDatabase(LocalConfig.getInstance().getDatabaseName());
+						isRoot = true;
+					} else {
+						disableMenuItems();
+						if (node.getUserObject().toString() != null) {
+							//gets the full path of optimize since it may not be in MOST directory
+							String optimizePath = getOptimizePath();
+							if (optimizePath.contains("\\")) {
+								optimizePath = optimizePath.substring(0, optimizePath.lastIndexOf("\\") + 1) + fileList.getSelectedValue().toString();
+							} else {
+								optimizePath = node.getUserObject().toString();
+							}
+							setOptimizePath(optimizePath);
+							if (getOptimizePath().endsWith(node.getUserObject().toString())) {
+								loadOutputPane(getOptimizePath() + ".log");
+								if (getPopout() != null) {
+									getPopout().load(getOptimizePath() + ".log");
+								}	
+
+								closeConnection();
+								isRoot = false;
+								LocalConfig.getInstance().setLoadedDatabase(getOptimizePath());
+							} 
+						}
 					}
-			 	}
+					reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+				}
 			}
 		});
+	
 		
 		// this code must be before any components if the components
 		// are going to have an image icon
@@ -1138,7 +1158,7 @@ public class GraphicalInterface extends JFrame {
 		
 		menuBar.add(analysisMenu);
 
-		JMenuItem gdbbItem = new JMenuItem("GDBB");
+		//JMenuItem gdbbItem = new JMenuItem("GDBB");
 
 		analysisMenu.add(gdbbItem);
 		
@@ -3342,6 +3362,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().loadExistingVisible = false;
 		LocalConfig.getInstance().addColumnInterfaceVisible = false;
 		reactionCancelLoad = false;
+		isRoot = true;
 	}
 	
 	public void clearConfigLists() {
