@@ -671,7 +671,6 @@ public class GraphicalInterface extends JFrame {
                 
 				//Solution nodeInfo = (Solution)node.getUserObject();
 				if (node.isLeaf()) {
-					System.out.println(node.getUserObject().toString());
 					// may need to account for path, currently in same directory as MOST directory
 					if (node.getUserObject().toString().equals(LocalConfig.getInstance().getDatabaseName())) {
 						enableMenuItems();
@@ -3573,7 +3572,6 @@ public class GraphicalInterface extends JFrame {
 	
     private class ReactionsRowListener implements ListSelectionListener {
     	public void valueChanged(ListSelectionEvent event) {
-    		System.out.println("rr " + isRoot);
     		if (LocalConfig.getInstance().findReplaceFocusLost) {
 				findButtonReactionsClicked = false;
 				throwNotFoundError = false;
@@ -3622,7 +3620,6 @@ public class GraphicalInterface extends JFrame {
 
     private class ReactionsColumnListener implements ListSelectionListener {
 		public void valueChanged(ListSelectionEvent event) {
-			System.out.println("rc " + isRoot);
 			if (LocalConfig.getInstance().findReplaceFocusLost) {
 				findButtonReactionsClicked = false;
 				throwNotFoundError = false;
