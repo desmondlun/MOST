@@ -2,13 +2,15 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="lib/commons-dbutils-1.4.jar"/>
-	<classpathentry kind="lib" path="lib/jsbml-0.8-b1-with-dependencies.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.17.jar"/>
 	<classpathentry kind="lib" path="lib/opencsv-2.3.jar"/>
 	<classpathentry kind="lib" path="lib/poi-3.5-beta5-20090219.jar"/>
 	<classpathentry kind="lib" path="lib/sqlitejdbc-v056.jar"/>
 	<classpathentry kind="lib" path="lib/TableLayout.jar"/>
 	<classpathentry kind="lib" path="lib/swingx-all-1.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang3-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/jsbml-0.8-with-dependencies.jar"/>
+	<classpathentry kind="lib" path="lib/weka-3.7.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/gurobi500/win64/lib/gurobi.jar"/>
 	<classpathentry kind="output" path="bin"/>

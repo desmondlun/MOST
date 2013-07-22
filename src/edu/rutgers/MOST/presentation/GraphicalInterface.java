@@ -1879,16 +1879,36 @@ public class GraphicalInterface extends JFrame {
 		JLabel rowLabel = new JLabel(GraphicalInterfaceConstants.ROW_HEADER_TITLE);
 		rowLabel.setFont(rowLabel.getFont().deriveFont(Font.PLAIN));		
 		scrollPaneReac.setCorner(JScrollPane.UPPER_LEFT_CORNER, rowLabel);
+		scrollPaneReac.getCorner(JScrollPane.UPPER_LEFT_CORNER).addMouseListener(new MouseListener() {
+			public void mouseClicked(MouseEvent e) {
+				setSortDefault();
+				reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+			}
+			public void mouseEntered(MouseEvent e) {}
+			public void mouseExited(MouseEvent e) {}
+			public void mousePressed(MouseEvent arg0) {}
+			public void mouseReleased(MouseEvent arg0) {}
+		});
 		tabbedPane.addTab(GraphicalInterfaceConstants.DEFAULT_REACTION_TABLE_TAB_NAME, scrollPaneReac);
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_R);
 
 		JScrollPane scrollPaneMetab = new JScrollPane(metabolitesTable);
 		LineNumberTableRowHeader tableMetabLineNumber = new LineNumberTableRowHeader(scrollPaneMetab, metabolitesTable);
 		tableMetabLineNumber.setBackground(new Color(240, 240, 240));
-		scrollPaneMetab.setRowHeaderView(tableMetabLineNumber);
+		scrollPaneMetab.setRowHeaderView(tableMetabLineNumber);		
 		JLabel metabRowLabel = new JLabel(GraphicalInterfaceConstants.ROW_HEADER_TITLE);
 		metabRowLabel.setFont(rowLabel.getFont().deriveFont(Font.PLAIN));		
 		scrollPaneMetab.setCorner(JScrollPane.UPPER_LEFT_CORNER, metabRowLabel);
+		scrollPaneMetab.getCorner(JScrollPane.UPPER_LEFT_CORNER).addMouseListener(new MouseListener() {
+			public void mouseClicked(MouseEvent e) {
+				setSortDefault();
+				reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+			}
+			public void mouseEntered(MouseEvent e) {}
+			public void mouseExited(MouseEvent e) {}
+			public void mousePressed(MouseEvent arg0) {}
+			public void mouseReleased(MouseEvent arg0) {}
+		});
 		tabbedPane.addTab(GraphicalInterfaceConstants.DEFAULT_METABOLITE_TABLE_TAB_NAME, scrollPaneMetab);
 		tabbedPane.setMnemonicAt(1, KeyEvent.VK_B);  	  
 		
