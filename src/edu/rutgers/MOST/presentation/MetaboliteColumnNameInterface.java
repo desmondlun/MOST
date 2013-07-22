@@ -60,7 +60,7 @@ public class MetaboliteColumnNameInterface  extends JFrame {
 
 	public final ProgressBar progressBar = new ProgressBar();
 
-	javax.swing.Timer timer = new javax.swing.Timer(1000, new TimeListener());
+	javax.swing.Timer timer = new javax.swing.Timer(100, new TimeListener());
 
 	public MetaboliteColumnNameInterface(final Connection con, ArrayList<String> columnNamesFromFile)
 	throws SQLException {
@@ -575,6 +575,7 @@ public class MetaboliteColumnNameInterface  extends JFrame {
 			if (LocalConfig.getInstance().getProgress() == 100) {
 				progressBar.setVisible(false);
 				progressBar.dispose();
+				timer.stop();
 			}
 		}
 	}

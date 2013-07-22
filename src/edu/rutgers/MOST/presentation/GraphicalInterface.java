@@ -163,7 +163,7 @@ public class GraphicalInterface extends JFrame {
 	
 	private Task task;	
 	public final ProgressBar progressBar = new ProgressBar();	
-	javax.swing.Timer timer = new javax.swing.Timer(1000, new TimeListener());
+	javax.swing.Timer timer = new javax.swing.Timer(100, new TimeListener());
 	
 	private TextInputDemo textInput;
 
@@ -199,6 +199,8 @@ public class GraphicalInterface extends JFrame {
 	public static boolean reactionsFindAll;
 	public static boolean metabolitesFindAll;
 	public static boolean throwNotFoundError;
+	public static boolean changeReactionFindSelection;
+	public static boolean changeMetaboliteFindSelection;
 	// paste
 	public static boolean validPaste;                 // used for error message when pasting non-valid values
 	public static boolean pasting;
@@ -499,6 +501,16 @@ public class GraphicalInterface extends JFrame {
 		return currentRow;
 	}
 		
+	public static int currentColumn;
+
+	public void setCurrentColumn(int currentColumn){
+		GraphicalInterface.currentColumn = currentColumn;
+	}
+
+	public static int getCurrentColumn() {
+		return currentColumn;
+	}
+	
 	public static ArrayList<Image> icons;
 
 	public void setIconsList(ArrayList<Image> icons) {
@@ -1157,8 +1169,6 @@ public class GraphicalInterface extends JFrame {
 		
 		menuBar.add(analysisMenu);
 
-		//JMenuItem gdbbItem = new JMenuItem("GDBB");
-
 		analysisMenu.add(gdbbItem);
 		
 		gdbbItem.setMnemonic(KeyEvent.VK_G);
@@ -1382,6 +1392,8 @@ public class GraphicalInterface extends JFrame {
 		
 		addReacColumnItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
+				setCurrentRow(reactionsTable.getSelectedRow());
+				setCurrentColumn(reactionsTable.getSelectedColumn());
 				tabbedPane.setSelectedIndex(0);
 				closeConnection();
 				LocalConfig.getInstance().addColumnInterfaceVisible = true;
@@ -1398,7 +1410,6 @@ public class GraphicalInterface extends JFrame {
 					reactionColAddRenameInterface.setSize(350, 160);
 					reactionColAddRenameInterface.setResizable(false);
 					reactionColAddRenameInterface.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-					//reactionColAddRenameInterface.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 					reactionColAddRenameInterface.setAlwaysOnTop(true);
 					reactionColAddRenameInterface.setModal(true);
 					reactionColAddRenameInterface.setLocationRelativeTo(null);
@@ -1432,8 +1443,7 @@ public class GraphicalInterface extends JFrame {
 					Connection con = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getLoadedDatabase()));
 					LocalConfig.getInstance().setCurrentConnection(con);
 					setUpReactionsTable(con);
-					//TODO : set selected row and column
-					ReactionUndoItem undoItem = createReactionUndoItem("", "", reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), 1, UndoConstants.ADD_COLUMN, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+					ReactionUndoItem undoItem = createReactionUndoItem("", "", getCurrentRow(), getCurrentColumn(), 1, UndoConstants.ADD_COLUMN, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 					ReactionsMetaColumnManager reactionsMetaColumnManager = new ReactionsMetaColumnManager();
 					int metaColumnCount = reactionsMetaColumnManager.getMetaColumnCount(LocalConfig.getInstance().getDatabaseName());
 					undoItem.setAddedColumnIndex(metaColumnCount + GraphicalInterfaceConstants.REACTIONS_DB_COLUMN_NAMES.length - 1);
@@ -1465,6 +1475,8 @@ public class GraphicalInterface extends JFrame {
 		
 		addMetabColumnItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
+				setCurrentRow(metabolitesTable.getSelectedRow());
+				setCurrentColumn(metabolitesTable.getSelectedColumn());
 				tabbedPane.setSelectedIndex(1);
 				closeConnection();
 				LocalConfig.getInstance().addColumnInterfaceVisible = true;
@@ -1480,7 +1492,6 @@ public class GraphicalInterface extends JFrame {
 					metaboliteColAddRenameInterface.setIconImages(icons);
 					metaboliteColAddRenameInterface.setSize(350, 160);
 					metaboliteColAddRenameInterface.setResizable(false);
-					//metaboliteColAddRenameInterface.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 					metaboliteColAddRenameInterface.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 					metaboliteColAddRenameInterface.setAlwaysOnTop(true);
 					metaboliteColAddRenameInterface.setModal(true);
@@ -1515,7 +1526,7 @@ public class GraphicalInterface extends JFrame {
 					Connection con = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getLoadedDatabase()));
 					LocalConfig.getInstance().setCurrentConnection(con);
 					setUpMetabolitesTable(con);
-					MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn(), 1, UndoConstants.ADD_COLUMN, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);		
+					MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", getCurrentRow(), getCurrentColumn(), 1, UndoConstants.ADD_COLUMN, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);		
 					MetabolitesMetaColumnManager metabolitesMetaColumnManager = new MetabolitesMetaColumnManager();
 					int metaColumnCount = metabolitesMetaColumnManager.getMetaColumnCount(LocalConfig.getInstance().getDatabaseName());
 					undoItem.setAddedColumnIndex(metaColumnCount + GraphicalInterfaceConstants.METABOLITES_DB_COLUMN_NAMES.length - 1);
@@ -2130,6 +2141,7 @@ public class GraphicalInterface extends JFrame {
 	
 	ActionListener cancelButtonCSVLoadActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {	
+			csvLoadInterface.setVisible(false);
 			clearTables();
 		}
 	};
@@ -3354,6 +3366,8 @@ public class GraphicalInterface extends JFrame {
 		replaceAllMode = false;
 		reactionsFindAll = false;
 		metabolitesFindAll = false;
+		changeReactionFindSelection = true;
+		changeMetaboliteFindSelection = true;
 		// paste
 		validPaste = true;
 		pasting = false;
@@ -3625,6 +3639,7 @@ public class GraphicalInterface extends JFrame {
     			reactionsTable.repaint();
     			metabolitesTable.repaint();  
     			selectedCellChanged = true;
+    			changeReactionFindSelection = true;
     			int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
     			try {
     				formulaBar.setText((String) reactionsTable.getModel().getValueAt(viewRow, reactionsTable.getSelectedColumn()));
@@ -3658,7 +3673,6 @@ public class GraphicalInterface extends JFrame {
 					statusBar.setText("Row " + reactionRow);
 				}
 				if (reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REVERSIBLE_COLUMN || reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
-				//if (reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REVERSIBLE_COLUMN || reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN || fileList.getSelectedIndex() > 0) {
 					formulaBar.setEditable(false);
 					formulaBar.setBackground(Color.WHITE);
 					formulaBarPasteItem.setEnabled(false);
@@ -3674,6 +3688,7 @@ public class GraphicalInterface extends JFrame {
 				reactionsTable.repaint();
 				metabolitesTable.repaint();
 				selectedCellChanged = true;	
+				changeReactionFindSelection = true;
 				int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
     			formulaBar.setText((String) reactionsTable.getModel().getValueAt(viewRow, reactionsTable.getSelectedColumn()));				
 			} 
@@ -3715,7 +3730,7 @@ public class GraphicalInterface extends JFrame {
 						}
 					}
 				} else {
-					if (getReactionsReplaceLocation().size() > 0) {
+					if (getReactionsReplaceLocation().size() > 0 && !changeReactionFindSelection) {
 						if (adapter.row == getReactionsReplaceLocation().get(0) && adapter.column == getReactionsReplaceLocation().get(1)) {
 							return true;
 						}
@@ -3727,8 +3742,8 @@ public class GraphicalInterface extends JFrame {
 		}
 	};
 	
-	ColorHighlighter reactionFindAll = new ColorHighlighter(reactionFindAllPredicate, new Color(190,205,225), null);
-	//ColorHighlighter reactionFindAll = new ColorHighlighter(reactionFindAllPredicate, new Color(140,160,200), null);
+	//ColorHighlighter reactionFindAll = new ColorHighlighter(reactionFindAllPredicate, new Color(190,205,225), null);
+	ColorHighlighter reactionFindAll = new ColorHighlighter(reactionFindAllPredicate, new Color(140,160,200), null);
 	
 	HighlightPredicate participatingPredicate = new HighlightPredicate() {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
@@ -4081,6 +4096,7 @@ public class GraphicalInterface extends JFrame {
 					reactionsTable.repaint();
 					metabolitesTable.repaint();			 
 					selectedCellChanged = true;
+					changeMetaboliteFindSelection = true;
 	    			formulaBar.setText((String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()));	
 				} else {
 					formulaBar.setText("");
@@ -4120,6 +4136,7 @@ public class GraphicalInterface extends JFrame {
 				reactionsTable.repaint();
 				metabolitesTable.repaint();								 
 				selectedCellChanged = true;
+				changeMetaboliteFindSelection = true;
 				formulaBar.setText((String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()));			
 				if (event.getValueIsAdjusting()) {
 					return;
@@ -4201,7 +4218,7 @@ public class GraphicalInterface extends JFrame {
 						}
 					}
 				} else {
-					if (getMetabolitesReplaceLocation().size() > 0) {
+					if (getMetabolitesReplaceLocation().size() > 0 && !changeMetaboliteFindSelection) {
 						if (adapter.row == getMetabolitesReplaceLocation().get(0) && adapter.column == getMetabolitesReplaceLocation().get(1)) {
 							return true;
 						}
@@ -6815,9 +6832,10 @@ public class GraphicalInterface extends JFrame {
 			LocalConfig.getInstance().setReactionsLocationsListCount(0);
 		} else {
 			try {
+				changeReactionFindSelection = false;
 				setReactionsReplaceLocation(locationList.get(LocalConfig.getInstance().getReactionsLocationsListCount()));			
-				reactionsTable.repaint();
-				reactionsTable.changeSelection(locationList.get(LocalConfig.getInstance().getReactionsLocationsListCount()).get(0), locationList.get(LocalConfig.getInstance().getReactionsLocationsListCount()).get(1), false, false);
+				reactionsTable.clearSelection();
+				//reactionsTable.changeSelection(locationList.get(LocalConfig.getInstance().getReactionsLocationsListCount()).get(0), locationList.get(LocalConfig.getInstance().getReactionsLocationsListCount()).get(1), false, false);				
 				reactionsTable.requestFocus();
 				reactionsTable.scrollRectToVisible(reactionsTable.getCellRect(locationList.get(LocalConfig.getInstance().getReactionsLocationsListCount()).get(0), locationList.get(LocalConfig.getInstance().getReactionsLocationsListCount()).get(1), false));
 				// if not at end of list increment, else start over
@@ -6867,8 +6885,8 @@ public class GraphicalInterface extends JFrame {
 				LocalConfig.getInstance().setReactionsLocationsListCount(LocalConfig.getInstance().getReactionsLocationsListCount());
 				if (locationList.size() > 0) {
 					try {
-						reactionsTable.changeSelection(locationList.get(LocalConfig.getInstance().getReactionsLocationsListCount()).get(0), locationList.get(LocalConfig.getInstance().getReactionsLocationsListCount()).get(1), false, false);
-						reactionsTable.requestFocus();
+						//reactionsTable.changeSelection(locationList.get(LocalConfig.getInstance().getReactionsLocationsListCount()).get(0), locationList.get(LocalConfig.getInstance().getReactionsLocationsListCount()).get(1), false, false);
+						//reactionsTable.requestFocus();
 					} catch (Throwable t1){
 						
 					}					
@@ -6914,11 +6932,11 @@ public class GraphicalInterface extends JFrame {
 			int numrows=reactionsTable.getSelectedRowCount(); 
 			int[] rowsselected=reactionsTable.getSelectedRows(); 
 			int[] colsselected=reactionsTable.getSelectedColumns();
-			if (getSelectionMode() != 1) {
+			if (numrows > 0 && getSelectionMode() != 1) {
 				rowStartIndex = rowsselected[0];
 				rowEndIndex = rowsselected[0] + numrows;
 			}			
-			if (getSelectionMode() != 2) {
+			if (numcols > 0 && getSelectionMode() != 2) {
 				colStartIndex = colsselected[0];
 				colEndIndex = colsselected[0] + numcols;
 			}			
@@ -7197,9 +7215,11 @@ public class GraphicalInterface extends JFrame {
 			LocalConfig.getInstance().setMetabolitesLocationsListCount(0);
 		} else {
 			try {
+				changeMetaboliteFindSelection = false;
 				setMetabolitesReplaceLocation(locationList.get(LocalConfig.getInstance().getMetabolitesLocationsListCount()));
-				metabolitesTable.repaint();
-				metabolitesTable.changeSelection(locationList.get(LocalConfig.getInstance().getMetabolitesLocationsListCount()).get(0), locationList.get(LocalConfig.getInstance().getMetabolitesLocationsListCount()).get(1), false, false);
+				//metabolitesTable.repaint();
+				//metabolitesTable.changeSelection(locationList.get(LocalConfig.getInstance().getMetabolitesLocationsListCount()).get(0), locationList.get(LocalConfig.getInstance().getMetabolitesLocationsListCount()).get(1), false, false);
+				metabolitesTable.clearSelection();
 				metabolitesTable.requestFocus();
 				metabolitesTable.scrollRectToVisible(metabolitesTable.getCellRect(locationList.get(LocalConfig.getInstance().getMetabolitesLocationsListCount()).get(0), locationList.get(LocalConfig.getInstance().getMetabolitesLocationsListCount()).get(1), false));
 				// if not at end of list increment, else start over
@@ -7248,8 +7268,8 @@ public class GraphicalInterface extends JFrame {
 			} catch (Throwable t){
 				LocalConfig.getInstance().setMetabolitesLocationsListCount(LocalConfig.getInstance().getMetabolitesLocationsListCount());
 				try {
-					metabolitesTable.changeSelection(locationList.get(LocalConfig.getInstance().getMetabolitesLocationsListCount()).get(0), locationList.get(LocalConfig.getInstance().getMetabolitesLocationsListCount()).get(1), false, false);
-					metabolitesTable.requestFocus();
+					//metabolitesTable.changeSelection(locationList.get(LocalConfig.getInstance().getMetabolitesLocationsListCount()).get(0), locationList.get(LocalConfig.getInstance().getMetabolitesLocationsListCount()).get(1), false, false);
+					//metabolitesTable.requestFocus();
 				} catch (Throwable t1){
 					
 				}				
@@ -7294,11 +7314,11 @@ public class GraphicalInterface extends JFrame {
 			int numrows=metabolitesTable.getSelectedRowCount(); 
 			int[] rowsselected=metabolitesTable.getSelectedRows(); 
 			int[] colsselected=metabolitesTable.getSelectedColumns();
-			if (getSelectionMode() != 1) {
+			if (numrows > 0 && getSelectionMode() != 1) {
 				rowStartIndex = rowsselected[0];
 				rowEndIndex = rowsselected[0] + numrows;
 			}			
-			if (getSelectionMode() != 2) {
+			if (numcols > 0 && getSelectionMode() != 2) {
 				colStartIndex = colsselected[0];
 				colEndIndex = colsselected[0] + numcols;
 			}			
