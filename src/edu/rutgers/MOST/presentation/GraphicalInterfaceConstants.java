@@ -383,7 +383,8 @@ public class GraphicalInterfaceConstants {
     
     // icons from http://www.softpedia.com/get/Desktop-Enhancements/Icons-Related/24x24-Free-Application-Icons.shtml
     // also free license from Aha-soft
-    public static final String FIND_ICON_IMAGE_PATH = "etc/toolbarIcons/Search.png";
+    // resized to 16x16 in Photoshop
+    public static final String FIND_ICON_IMAGE_PATH = "etc/toolbarIcons/Search1.png";
     
     public static final String GUROBI_KEY_ERROR_TITLE = "Gurobi Key Error";
     public static final String GUROBI_KEY_ERROR = "Gurobi Key Error";

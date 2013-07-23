@@ -59,6 +59,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
@@ -109,7 +110,12 @@ public class GraphicalInterface extends JFrame {
 	//log4j
 	static Logger log = Logger.getLogger(GraphicalInterface.class);
 
-	public static JToolBar toolbar = new JToolBar("Toolbar", JToolBar.HORIZONTAL);	        
+	public static JToolBar toolbar = new JToolBar("Toolbar", JToolBar.HORIZONTAL);
+	public static JButton openbutton = new JButton(new ImageIcon(GraphicalInterfaceConstants.OPEN_ICON_IMAGE_PATH));
+	public static JButton savebutton = new JButton(new ImageIcon(GraphicalInterfaceConstants.SAVE_ICON_IMAGE_PATH));
+	public static JButton copybutton = new JButton(new ImageIcon(GraphicalInterfaceConstants.COPY_ICON_IMAGE_PATH));
+	public static JButton pastebutton = new JButton(new ImageIcon(GraphicalInterfaceConstants.PASTE_ICON_IMAGE_PATH));
+	public static JButton findbutton = new JButton(new ImageIcon(GraphicalInterfaceConstants.FIND_ICON_IMAGE_PATH));
 	public static OptionComponent undoSplitButton = new OptionComponent("image", "");
 	public static OptionComponent redoSplitButton = new OptionComponent("image", "");	
 	public static JLabel undoLabel = new JLabel(new ImageIcon(GraphicalInterfaceConstants.UNDO_ICON_IMAGE_PATH));
@@ -1610,7 +1616,19 @@ public class GraphicalInterface extends JFrame {
 		//set up toolbar
 		/**************************************************************************/	
 		
-		
+		toolbar.add(openbutton);
+		setUpToolbarButton(openbutton);
+		openbutton.setToolTipText("Load");
+		toolbar.add(savebutton);
+		setUpToolbarButton(savebutton);
+		savebutton.setToolTipText("Save");	
+		toolbar.add(copybutton);
+		setUpToolbarButton(copybutton);
+		copybutton.setToolTipText("Copy");
+		toolbar.add(pastebutton);
+		setUpToolbarButton(pastebutton);
+		pastebutton.setToolTipText("Paste");
+		pastebutton.setEnabled(false);
 		
 		addImage(undoSplitButton, undoLabel);
 		addImage(undoSplitButton, undoGrayedLabel);
@@ -1625,6 +1643,10 @@ public class GraphicalInterface extends JFrame {
 		redoSplitButton.addMouseListener(redoButtonMouseListener);
 		disableOptionComponent(redoSplitButton, redoLabel, redoGrayedLabel);
 		toolbar.add(redoSplitButton);		
+		
+		toolbar.add(findbutton);
+		setUpToolbarButton(findbutton);
+		findbutton.setToolTipText("Find/Replace");
 		
 		/**************************************************************************/
 		//end set up toolbar
@@ -8594,6 +8616,32 @@ public class GraphicalInterface extends JFrame {
             }  
         }
         scrollToLocation(table, row, col);
+	}
+	
+	public void setUpToolbarButton(final JButton button) {
+		// based on http://www.java2s.com/Tutorial/Java/0240__Swing/Buttonsusedintoolbars.htm
+		if (!System.getProperty("java.version").startsWith("1.3")) {
+			button.setOpaque(false);
+			button.setBackground(new java.awt.Color(0, 0, 0, 0));
+        }
+		button.setBorderPainted(false);
+		button.setMargin(new Insets(2, 2, 2, 2));
+		button.addMouseListener(new MouseListener() {
+			public void mouseClicked(MouseEvent e) {
+			}
+			public void mouseEntered(MouseEvent e) {
+				if (button.isEnabled()) {
+					button.setBorderPainted(true);
+				}				
+			}
+			public void mouseExited(MouseEvent e) {
+				button.setBorderPainted(false);
+			}
+			public void mousePressed(MouseEvent arg0) {
+			}
+			public void mouseReleased(MouseEvent arg0) {				
+			}
+		});
 	}
 	
 	public static void main(String[] args) throws Exception {
