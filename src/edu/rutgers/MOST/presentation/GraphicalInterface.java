@@ -1632,6 +1632,8 @@ public class GraphicalInterface extends JFrame {
 		pastebutton.setToolTipText("Paste");
 		pastebutton.addActionListener(pasteButtonActionListener);
 			
+		toolbar.addSeparator();
+		
 		addImage(undoSplitButton, undoLabel);
 		addImage(undoSplitButton, undoGrayedLabel);
 		undoSplitButton.setToolTipText("Undo");	

@@ -364,10 +364,14 @@ public class GraphicalInterfaceConstants {
     public static final double UNDO_VISIBILITY_FRACTION = 0.1;
     public static final int UNDO_BORDER_HEIGHT = 30;
     
-    public static final String UNDO_ICON_IMAGE_PATH = "etc/toolbarIcons/Sideways_Arrow_Icon16b.png";
-    public static final String REDO_ICON_IMAGE_PATH = "etc/toolbarIcons/Sideways_Arrow_Icon16a.png";
-    public static final String UNDO_GRAYED_ICON_IMAGE_PATH = "etc/toolbarIcons/Sideways_Arrow_Icon16d.png";
-    public static final String REDO_GRAYED_ICON_IMAGE_PATH = "etc/toolbarIcons/Sideways_Arrow_Icon16c.png";
+    //public static final String UNDO_ICON_IMAGE_PATH = "etc/toolbarIcons/Sideways_Arrow_Icon16b.png";
+    public static final String UNDO_ICON_IMAGE_PATH = "etc/toolbarIcons/1374634434_back_undo.png";
+    public static final String REDO_ICON_IMAGE_PATH = "etc/toolbarIcons/1374634411_redo_forward.png";
+    //public static final String REDO_ICON_IMAGE_PATH = "etc/toolbarIcons/Sideways_Arrow_Icon16a.png";
+    //public static final String UNDO_GRAYED_ICON_IMAGE_PATH = "etc/toolbarIcons/Sideways_Arrow_Icon16d.png";
+    public static final String UNDO_GRAYED_ICON_IMAGE_PATH = "etc/toolbarIcons/1374634434_back_undo_grey.png";
+    //public static final String REDO_GRAYED_ICON_IMAGE_PATH = "etc/toolbarIcons/Sideways_Arrow_Icon16c.png";
+    public static final String REDO_GRAYED_ICON_IMAGE_PATH = "etc/toolbarIcons/1374634411_redo_forward_grey.png";
     
     // icons from http://www.veryicon.com/icons/application/toolbar-icons/
     /*
@@ -378,8 +382,9 @@ public class GraphicalInterfaceConstants {
     */
     public static final String OPEN_ICON_IMAGE_PATH = "etc/toolbarIcons/Open.png";
     public static final String SAVE_ICON_IMAGE_PATH = "etc/toolbarIcons/Save.png";
-    public static final String COPY_ICON_IMAGE_PATH = "etc/toolbarIcons/Copy.png";
-    public static final String PASTE_ICON_IMAGE_PATH = "etc/toolbarIcons/Paste.png";
+    // From a 48x48 image, resized in Photoshop and color and contrast changed
+    public static final String COPY_ICON_IMAGE_PATH = "etc/toolbarIcons/copy16.png";
+    public static final String PASTE_ICON_IMAGE_PATH = "etc/toolbarIcons/Paste16.png";
     
     // icons from http://www.softpedia.com/get/Desktop-Enhancements/Icons-Related/24x24-Free-Application-Icons.shtml
     // also free license from Aha-soft
