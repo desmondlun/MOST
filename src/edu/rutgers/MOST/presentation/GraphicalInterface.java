@@ -1344,6 +1344,7 @@ public class GraphicalInterface extends JFrame {
 			public void actionPerformed(ActionEvent a) {
 				showFindReplace();
 				findReplaceItem.setEnabled(false);
+				findbutton.setEnabled(false);
 			}    	     
 		});
 		
@@ -1625,11 +1626,12 @@ public class GraphicalInterface extends JFrame {
 		toolbar.add(copybutton);
 		setUpToolbarButton(copybutton);
 		copybutton.setToolTipText("Copy");
+		copybutton.addActionListener(copyButtonActionListener);
 		toolbar.add(pastebutton);
 		setUpToolbarButton(pastebutton);
 		pastebutton.setToolTipText("Paste");
-		pastebutton.setEnabled(false);
-		
+		pastebutton.addActionListener(pasteButtonActionListener);
+			
 		addImage(undoSplitButton, undoLabel);
 		addImage(undoSplitButton, undoGrayedLabel);
 		undoSplitButton.setToolTipText("Undo");	
@@ -1647,6 +1649,7 @@ public class GraphicalInterface extends JFrame {
 		toolbar.add(findbutton);
 		setUpToolbarButton(findbutton);
 		findbutton.setToolTipText("Find/Replace");
+		findbutton.addActionListener(findButtonActionListener);
 		
 		/**************************************************************************/
 		//end set up toolbar
@@ -1684,6 +1687,7 @@ public class GraphicalInterface extends JFrame {
 					showFindReplace();
 				}
 				findReplaceItem.setEnabled(false);
+				findbutton.setEnabled(false);
 			}
 		};
 		
@@ -1758,6 +1762,7 @@ public class GraphicalInterface extends JFrame {
 					showFindReplace();
 				}				
 				findReplaceItem.setEnabled(false);
+				findbutton.setEnabled(false);
 			}
 		};
 		
@@ -1966,6 +1971,7 @@ public class GraphicalInterface extends JFrame {
 		    			formulaBar.setText((String) reactionsTable.getModel().getValueAt(viewRow, reactionsTable.getSelectedColumn()));
 		    			setTableCellOldValue(formulaBar.getText());
 					} 
+					enableOrDisableReactionsItems();
 				} else if (tabIndex == 1 && metabolitesTable.getSelectedRow() > - 1) {
 					selectedCellChanged = true;
 					if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
@@ -1979,6 +1985,7 @@ public class GraphicalInterface extends JFrame {
 						formulaBar.setText((String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn())); 
 						setTableCellOldValue(formulaBar.getText());
 					}
+					enableOrDisableMetabolitesItems();
 				} else {
 					if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
 						setLoadErrorMessage("Model contains suspicious metabolites.");
@@ -3647,16 +3654,7 @@ public class GraphicalInterface extends JFrame {
 				statusBar.setText("Row " + reactionRow);
 			}
     		if (reactionsTable.getRowCount() > 0 && reactionsTable.getSelectedRow() > -1 && tabbedPane.getSelectedIndex() == 0) {
-    			if (reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REVERSIBLE_COLUMN || reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
-					formulaBar.setEditable(false);
-					formulaBar.setBackground(Color.WHITE);
-					formulaBarPasteItem.setEnabled(false);
-				}  else {
-					if (isRoot) {
-						formulaBar.setEditable(true);
-						formulaBarPasteItem.setEnabled(true);
-					}					
-				}
+    			enableOrDisableReactionsItems();
     			// if any cell selected any existing find all highlighting is unhighlighted
     			reactionsFindAll = false;
     			metabolitesFindAll = false;	
@@ -3696,16 +3694,7 @@ public class GraphicalInterface extends JFrame {
 				} else {
 					statusBar.setText("Row " + reactionRow);
 				}
-				if (reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REVERSIBLE_COLUMN || reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
-					formulaBar.setEditable(false);
-					formulaBar.setBackground(Color.WHITE);
-					formulaBarPasteItem.setEnabled(false);
-				}  else {
-					if (isRoot) {
-						formulaBar.setEditable(true);
-						formulaBarPasteItem.setEnabled(true);
-					}		
-				}
+				enableOrDisableReactionsItems();
 				// if any cell selected any existing find all highlighting is unhighlighted
 				reactionsFindAll = false;
 				metabolitesFindAll = false;	
@@ -3722,6 +3711,22 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 	
+    // disables items if cell is non-editable
+    public void enableOrDisableReactionsItems() {
+    	if (reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REVERSIBLE_COLUMN || reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
+			formulaBar.setEditable(false);
+			formulaBar.setBackground(Color.WHITE);
+			formulaBarPasteItem.setEnabled(false);
+			pastebutton.setEnabled(false);
+		}  else {
+			if (isRoot) {
+				formulaBar.setEditable(true);
+				formulaBarPasteItem.setEnabled(true);
+				pastebutton.setEnabled(true);
+			}					
+		}
+    }
+    
 	// saves sort column and order so it is preserved when table is refreshed
 	// after editing and updating database
     class ReactionsColumnHeaderListener extends MouseAdapter {
@@ -4105,15 +4110,8 @@ public class GraphicalInterface extends JFrame {
 			if (metabolitesTable.getRowCount() > 0 && metabolitesTable.getSelectedRow() > -1 && tabbedPane.getSelectedIndex() == 1) {
 				if (metabolitesTable.getSelectedRow() > -1) {
 					int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
-					String value = (String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()); 
-					if (metabolitesTable.getSelectedColumn() == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN && metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()) != null && LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(value)) {
-						formulaBar.setEditable(false);
-						formulaBar.setBackground(Color.WHITE);
-						formulaBarPasteItem.setEnabled(false);
-					} else {
-						formulaBar.setEditable(true);
-						formulaBarPasteItem.setEnabled(true);
-					}
+					//String value = (String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()); 
+					enableOrDisableMetabolitesItems();
 					// if any cell selected any existing find all highlighting is unhighlighted
 					reactionsFindAll = false;
 					metabolitesFindAll = false;	
@@ -4143,17 +4141,10 @@ public class GraphicalInterface extends JFrame {
 					getFindReplaceDialog().replaceFindButton.setEnabled(false);
 				}				
 			}
-			if (metabolitesTable.getSelectedRow() > -1 && metabolitesTable.getSelectedColumn() > -1 && tabbedPane.getSelectedIndex() == 1) {
+			if (metabolitesTable.getSelectedRow() > -1 && metabolitesTable.getSelectedColumn() > -1 && tabbedPane.getSelectedIndex() == 1) {				
 				int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
-				String value = (String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()); 
-				if (metabolitesTable.getSelectedColumn() == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN && metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()) != null && LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(value)) {
-					formulaBar.setEditable(false);
-					formulaBar.setBackground(Color.WHITE);
-					formulaBarPasteItem.setEnabled(false);
-				} else {
-					formulaBar.setEditable(true);
-					formulaBarPasteItem.setEnabled(true);
-				}
+				//String value = (String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()); 
+				enableOrDisableMetabolitesItems();
 				// if any cell selected any existing find all highlighting is unhighlighted
 				reactionsFindAll = false;
 				metabolitesFindAll = false;	
@@ -4168,6 +4159,24 @@ public class GraphicalInterface extends JFrame {
 			}			
 		}
 	}
+	
+	// disables items if cell is non-editable
+    public void enableOrDisableMetabolitesItems() {
+    	int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
+		String value = (String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()); 
+    	if (metabolitesTable.getSelectedColumn() == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN && metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()) != null && LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(value)) {
+			formulaBar.setEditable(false);
+			formulaBar.setBackground(Color.WHITE);
+			formulaBarPasteItem.setEnabled(false);
+			pastebutton.setEnabled(false);
+		}  else {
+			if (isRoot) {
+				formulaBar.setEditable(true);
+				formulaBarPasteItem.setEnabled(true);
+				pastebutton.setEnabled(true);
+			}					
+		}
+    }
 	
 	class MetabolitesColumnHeaderListener extends MouseAdapter {
 		  public void mouseClicked(MouseEvent evt) {
@@ -7641,6 +7650,7 @@ public class GraphicalInterface extends JFrame {
 		reactionsTable.repaint();
 		metabolitesTable.repaint();	
 		findReplaceItem.setEnabled(true);
+		findbutton.setEnabled(true);
 	}
 	
 	/*******************************************************************************/
@@ -8389,6 +8399,75 @@ public class GraphicalInterface extends JFrame {
     // end undo/redo
     /******************************************************************************/
     
+    /********************************************************************************/
+	// toolbar methods
+	/********************************************************************************/
+	
+	public void setUpToolbarButton(final JButton button) {
+		// based on http://www.java2s.com/Tutorial/Java/0240__Swing/Buttonsusedintoolbars.htm
+		if (!System.getProperty("java.version").startsWith("1.3")) {
+			button.setOpaque(false);
+			button.setBackground(new java.awt.Color(0, 0, 0, 0));
+        }
+		button.setBorderPainted(false);
+		button.setMargin(new Insets(2, 2, 2, 2));
+		button.addMouseListener(new MouseListener() {
+			public void mouseClicked(MouseEvent e) {
+			}
+			public void mouseEntered(MouseEvent e) {
+				if (button.isEnabled()) {
+					button.setBorderPainted(true);
+				}				
+			}
+			public void mouseExited(MouseEvent e) {
+				button.setBorderPainted(false);
+			}
+			public void mousePressed(MouseEvent arg0) {
+			}
+			public void mouseReleased(MouseEvent arg0) {				
+			}
+		});
+	}
+	
+	ActionListener copyButtonActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {	
+			if (tabbedPane.getSelectedIndex() == 0) {
+				reactionsCopy();
+			} else if (tabbedPane.getSelectedIndex() == 1) {
+				metabolitesCopy();
+			}
+		}
+	};
+	
+	ActionListener pasteButtonActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {	
+			if (tabbedPane.getSelectedIndex() == 0) {
+				pasting = true;
+				reactionsPaste();
+				pasting = false;
+				LocalConfig.getInstance().pastedReaction = false;
+			} else if (tabbedPane.getSelectedIndex() == 1) {
+				pasting = true;
+				metabolitesPaste();
+				pasting = false;
+			}
+		}
+	};
+	
+	ActionListener findButtonActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {	
+			if (!findMode) {
+				showFindReplace();
+			}
+			findReplaceItem.setEnabled(false);
+			findbutton.setEnabled(false);
+		}
+	};
+	
+	/********************************************************************************/
+	// end toolbar methods
+	/********************************************************************************/
+    
     public void deleteItemFromDynamicTree() {
     	Utilities u = new Utilities();
 		closeConnection();
@@ -8616,32 +8695,6 @@ public class GraphicalInterface extends JFrame {
             }  
         }
         scrollToLocation(table, row, col);
-	}
-	
-	public void setUpToolbarButton(final JButton button) {
-		// based on http://www.java2s.com/Tutorial/Java/0240__Swing/Buttonsusedintoolbars.htm
-		if (!System.getProperty("java.version").startsWith("1.3")) {
-			button.setOpaque(false);
-			button.setBackground(new java.awt.Color(0, 0, 0, 0));
-        }
-		button.setBorderPainted(false);
-		button.setMargin(new Insets(2, 2, 2, 2));
-		button.addMouseListener(new MouseListener() {
-			public void mouseClicked(MouseEvent e) {
-			}
-			public void mouseEntered(MouseEvent e) {
-				if (button.isEnabled()) {
-					button.setBorderPainted(true);
-				}				
-			}
-			public void mouseExited(MouseEvent e) {
-				button.setBorderPainted(false);
-			}
-			public void mousePressed(MouseEvent arg0) {
-			}
-			public void mouseReleased(MouseEvent arg0) {				
-			}
-		});
 	}
 	
 	public static void main(String[] args) throws Exception {
