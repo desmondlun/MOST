@@ -369,6 +369,22 @@ public class GraphicalInterfaceConstants {
     public static final String UNDO_GRAYED_ICON_IMAGE_PATH = "etc/toolbarIcons/Sideways_Arrow_Icon16d.png";
     public static final String REDO_GRAYED_ICON_IMAGE_PATH = "etc/toolbarIcons/Sideways_Arrow_Icon16c.png";
     
+    // icons from http://www.veryicon.com/icons/application/toolbar-icons/
+    /*
+    Icon Author: Ruby Software
+
+    HomePage: http://www.rubysoftware.nl/free-toolbar-icon-collection/old.php?lang=en
+    License: Commercial usage: Allowed
+    */
+    public static final String OPEN_ICON_IMAGE_PATH = "etc/toolbarIcons/Open.png";
+    public static final String SAVE_ICON_IMAGE_PATH = "etc/toolbarIcons/Save.png";
+    public static final String COPY_ICON_IMAGE_PATH = "etc/toolbarIcons/Copy.png";
+    public static final String PASTE_ICON_IMAGE_PATH = "etc/toolbarIcons/Paste.png";
+    
+    // icons from http://www.softpedia.com/get/Desktop-Enhancements/Icons-Related/24x24-Free-Application-Icons.shtml
+    // also free license from Aha-soft
+    public static final String FIND_ICON_IMAGE_PATH = "etc/toolbarIcons/Search.png";
+    
     public static final String GUROBI_KEY_ERROR_TITLE = "Gurobi Key Error";
     public static final String GUROBI_KEY_ERROR = "Gurobi Key Error";
         

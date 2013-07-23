@@ -1610,6 +1610,8 @@ public class GraphicalInterface extends JFrame {
 		//set up toolbar
 		/**************************************************************************/	
 		
+		
+		
 		addImage(undoSplitButton, undoLabel);
 		addImage(undoSplitButton, undoGrayedLabel);
 		undoSplitButton.setToolTipText("Undo");	
