@@ -1,5 +1,6 @@
 package edu.rutgers.MOST.presentation;
 
+import java.awt.Color;
 import java.util.Arrays;
 
 public class GraphicalInterfaceConstants {
@@ -390,6 +391,9 @@ public class GraphicalInterfaceConstants {
     // also free license from Aha-soft
     // resized to 16x16 in Photoshop
     public static final String FIND_ICON_IMAGE_PATH = "etc/toolbarIcons/Search1.png";
+    
+    public static final Color FIND_ALL_COLOR = new Color(140,160,200);
+    //public static final Color FIND_ALL_COLOR = new Color(190,205,225);
     
     public static final String GUROBI_KEY_ERROR_TITLE = "Gurobi Key Error";
     public static final String GUROBI_KEY_ERROR = "Gurobi Key Error";

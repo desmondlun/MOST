@@ -1956,6 +1956,7 @@ public class GraphicalInterface extends JFrame {
 		
 		tabbedPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
+				GraphicalInterface.this.requestFocus();
 				tabChanged = true;
 				int tabIndex = tabbedPane.getSelectedIndex();
 				String reactionRow = Integer.toString((reactionsTable.getSelectedRow() + 1));
@@ -3773,8 +3774,7 @@ public class GraphicalInterface extends JFrame {
 		}
 	};
 	
-	//ColorHighlighter reactionFindAll = new ColorHighlighter(reactionFindAllPredicate, new Color(190,205,225), null);
-	ColorHighlighter reactionFindAll = new ColorHighlighter(reactionFindAllPredicate, new Color(140,160,200), null);
+	ColorHighlighter reactionFindAll = new ColorHighlighter(reactionFindAllPredicate, GraphicalInterfaceConstants.FIND_ALL_COLOR, null);
 	
 	HighlightPredicate participatingPredicate = new HighlightPredicate() {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
@@ -4264,8 +4264,7 @@ public class GraphicalInterface extends JFrame {
 		}
 	};
 	
-	ColorHighlighter metaboliteFindAll = new ColorHighlighter(metaboliteFindAllPredicate, new Color(190,205,225), null);
-	//ColorHighlighter metaboliteFindAll = new ColorHighlighter(metaboliteFindAllPredicate, new Color(140,160,200), null);
+	ColorHighlighter metaboliteFindAll = new ColorHighlighter(metaboliteFindAllPredicate, GraphicalInterfaceConstants.FIND_ALL_COLOR, null);
 	
 	public void setMetabolitesTableLayout() {	 
 		metabolitesTable.getSelectionModel().addListSelectionListener(new MetabolitesRowListener());
@@ -6867,12 +6866,14 @@ public class GraphicalInterface extends JFrame {
 			LocalConfig.getInstance().setReactionsLocationsListCount(0);
 		} else {
 			try {
+				// set focus to an invisible cell to give appearance that find cell is 
+				// only cell selected
+				reactionsTable.changeSelection(0, 0, false, false);	
 				changeReactionFindSelection = false;
 				setReactionsReplaceLocation(locationList.get(LocalConfig.getInstance().getReactionsLocationsListCount()));			
-				reactionsTable.clearSelection();
-				//reactionsTable.changeSelection(locationList.get(LocalConfig.getInstance().getReactionsLocationsListCount()).get(0), locationList.get(LocalConfig.getInstance().getReactionsLocationsListCount()).get(1), false, false);				
 				reactionsTable.requestFocus();
 				reactionsTable.scrollRectToVisible(reactionsTable.getCellRect(locationList.get(LocalConfig.getInstance().getReactionsLocationsListCount()).get(0), locationList.get(LocalConfig.getInstance().getReactionsLocationsListCount()).get(1), false));
+				getFindReplaceDialog().requestFocus();
 				// if not at end of list increment, else start over
 				int count = LocalConfig.getInstance().getReactionsLocationsListCount();
 				if (!searchBackwards) {
@@ -6947,7 +6948,8 @@ public class GraphicalInterface extends JFrame {
 					reactionsTable.changeSelection(locationList.get(0).get(0), locationList.get(0).get(1), false, false);
 					reactionsTable.requestFocus();
 					// enables highlighter
-					reactionsFindAll = true;	
+					reactionsFindAll = true;
+					getFindReplaceDialog().requestFocus();
 					
 					closeConnection();
 					reloadTables(LocalConfig.getInstance().getLoadedDatabase());
@@ -7056,6 +7058,7 @@ public class GraphicalInterface extends JFrame {
 			//TODO: Display an error message here in the unlikely event that there is an error
 			System.out.println("String not found");
 		}
+		getFindReplaceDialog().requestFocus();
 	}
 	
 	ActionListener replaceAllReactionsButtonActionListener = new ActionListener() {
@@ -7094,7 +7097,7 @@ public class GraphicalInterface extends JFrame {
 						}						
 					}
 					if (isReactionsEntryValid(getReactionsFindLocationsList().get(i).get(1), viewRow, replaceAllValue)) {
-						reactionsTable.setValueAt(replaceAllValue, viewRow, getReactionsFindLocationsList().get(i).get(1));			
+						reactionsTable.setValueAt(replaceAllValue, viewRow, getReactionsFindLocationsList().get(i).get(1));	
 					} else {
 						validPaste = false;
 					}		
@@ -7112,15 +7115,15 @@ public class GraphicalInterface extends JFrame {
 					}	
 					deleteReactionsPasteUndoItem();
 					validPaste = true;
-				}					
+				}
 			}
 			
 			closeConnection();
 			reloadTables(LocalConfig.getInstance().getLoadedDatabase());
-			
 			// reset boolean values to default
 			LocalConfig.getInstance().yesToAllButtonClicked = false;
 			replaceAllMode = false;
+			getFindReplaceDialog().requestFocus();
 		}
 	};
 	
@@ -7133,6 +7136,7 @@ public class GraphicalInterface extends JFrame {
 				setReactionsFindLocationsList(locationList);				
 				reactionsFindNext();
 			}
+			getFindReplaceDialog().requestFocus();
 		}
 	};
 	
@@ -7250,13 +7254,14 @@ public class GraphicalInterface extends JFrame {
 			LocalConfig.getInstance().setMetabolitesLocationsListCount(0);
 		} else {
 			try {
+				// set focus to an invisible cell to give appearance that find cell is 
+				// only cell selected
+				metabolitesTable.changeSelection(0, 0, false, false);
 				changeMetaboliteFindSelection = false;
 				setMetabolitesReplaceLocation(locationList.get(LocalConfig.getInstance().getMetabolitesLocationsListCount()));
-				//metabolitesTable.repaint();
-				//metabolitesTable.changeSelection(locationList.get(LocalConfig.getInstance().getMetabolitesLocationsListCount()).get(0), locationList.get(LocalConfig.getInstance().getMetabolitesLocationsListCount()).get(1), false, false);
-				metabolitesTable.clearSelection();
 				metabolitesTable.requestFocus();
 				metabolitesTable.scrollRectToVisible(metabolitesTable.getCellRect(locationList.get(LocalConfig.getInstance().getMetabolitesLocationsListCount()).get(0), locationList.get(LocalConfig.getInstance().getMetabolitesLocationsListCount()).get(1), false));
+				getFindReplaceDialog().requestFocus();
 				// if not at end of list increment, else start over
 				int count = LocalConfig.getInstance().getMetabolitesLocationsListCount();
 				if (!searchBackwards) {
@@ -7330,6 +7335,7 @@ public class GraphicalInterface extends JFrame {
 					metabolitesTable.requestFocus();
 					// enables highlighter
 					metabolitesFindAll = true;	
+					getFindReplaceDialog().requestFocus();
 					
 					closeConnection();
 					reloadTables(LocalConfig.getInstance().getLoadedDatabase());
@@ -7439,6 +7445,7 @@ public class GraphicalInterface extends JFrame {
 			//TODO: Display an error message here in the unlikely event that there is an error
 			System.out.println("String not found");
 		}
+		getFindReplaceDialog().requestFocus();
 	}
 	
 	ActionListener replaceAllMetabolitesButtonActionListener = new ActionListener() {
@@ -7447,7 +7454,7 @@ public class GraphicalInterface extends JFrame {
 				copyMetaboliteDatabaseTable();
 				MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", getMetabolitesFindLocationsList().get(0).get(0), getMetabolitesFindLocationsList().get(0).get(1), 1, UndoConstants.REPLACE_ALL, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
 				undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
-				setUndoOldCollections(undoItem);	
+				setUndoOldCollections(undoItem);				
 				replaceAllMode = true;
 				showErrorMessage = true;
 				MetabolitesUpdater updater = new MetabolitesUpdater();
@@ -7493,12 +7500,12 @@ public class GraphicalInterface extends JFrame {
 								setReplaceAllError("Number format exception");
 						    	validPaste = false;
 						    	metabolitesTable.getModel().setValueAt(oldValue, viewRow, getMetabolitesFindLocationsList().get(i).get(1));	
-							}	           
+							}
 						} else {
 							metabolitesTable.getModel().setValueAt("", viewRow, getMetabolitesFindLocationsList().get(i).get(1));
 						}
 						if (validPaste) {
-							metabolitesTable.getModel().setValueAt(replaceAllValue, viewRow, getMetabolitesFindLocationsList().get(i).get(1));							
+							metabolitesTable.getModel().setValueAt(replaceAllValue, viewRow, getMetabolitesFindLocationsList().get(i).get(1));
 						}						
 					} else {
 						if (isMetabolitesEntryValid(getMetabolitesFindLocationsList().get(i).get(1), replaceAllValue)) {
@@ -7521,7 +7528,7 @@ public class GraphicalInterface extends JFrame {
 					}
 					deleteMetabolitesPasteUndoItem();
 					validPaste = true;
-				}					
+				}				
 			}
 			
 			closeConnection();
@@ -7529,6 +7536,7 @@ public class GraphicalInterface extends JFrame {
 			// reset boolean values to default
 			LocalConfig.getInstance().yesToAllButtonClicked = false;
 			replaceAllMode = false;
+			getFindReplaceDialog().requestFocus();
 		}
 	};
 	
@@ -7541,6 +7549,7 @@ public class GraphicalInterface extends JFrame {
 				setMetabolitesFindLocationsList(locationList);				
 				metabolitesFindNext();
 			}
+			getFindReplaceDialog().requestFocus();
 		}
 	};
 	

@@ -3,7 +3,7 @@ package edu.rutgers.MOST.presentation;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import javax.swing.*;
@@ -28,8 +28,6 @@ public class FindReplaceDialog extends JDialog {
 	public static final JCheckBox wrapCheckBox = new JCheckBox("Wrap Around");
 	public static final JCheckBox selectedAreaCheckBox = new JCheckBox("Selected Area  ");
 	public static final JCheckBox backwardsCheckBox = new JCheckBox("Backwards");
-	//public static final SizedComboBox tableColumns = new SizedComboBox();
-	//public static final JComboBox<String> tableColumns = new JComboBox<String>(); 
 		
 	private String findText;
 
@@ -62,8 +60,6 @@ public class FindReplaceDialog extends JDialog {
         JLabel replaceLabel = new JLabel("Replace:");
         JLabel searchLabel = new JLabel("Search:"); 
         JLabel placeholder = new JLabel(""); 
-        
-        //populateTableColumns();
          
         findField.setText("");
         replaceField.setText("");
@@ -72,6 +68,18 @@ public class FindReplaceDialog extends JDialog {
     	wrapCheckBox.setSelected(false);
     	selectedAreaCheckBox.setSelected(false);
         backwardsCheckBox.setSelected(false);
+        
+        findButton.setMnemonic(KeyEvent.VK_N);
+        findAllButton.setMnemonic(KeyEvent.VK_L);
+        replaceButton.setMnemonic(KeyEvent.VK_R);
+        replaceAllButton.setMnemonic(KeyEvent.VK_P);
+        replaceFindButton.setMnemonic(KeyEvent.VK_I);
+        doneButton.setMnemonic(KeyEvent.VK_D);
+        
+        caseCheckBox.setMnemonic(KeyEvent.VK_M);
+        wrapCheckBox.setMnemonic(KeyEvent.VK_W);
+        selectedAreaCheckBox.setMnemonic(KeyEvent.VK_S);
+        backwardsCheckBox.setMnemonic(KeyEvent.VK_B);
         
         findButton.setEnabled(false);
         findAllButton.setEnabled(false);
@@ -116,8 +124,6 @@ public class FindReplaceDialog extends JDialog {
                                 .addComponent(doneButton, getButtonWidth(), getButtonWidth(), getButtonWidth()))))
                           
             );
-            
-            //layout.linkSize(SwingConstants.HORIZONTAL, findButton, replaceButton, replaceFindButton, replaceAllButton, doneButton);
      
             layout.setVerticalGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(BASELINE)
@@ -156,7 +162,6 @@ public class FindReplaceDialog extends JDialog {
         setTitle("Find/Replace");
         pack();
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        //setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         
         caseCheckBox.setSelected(false);
         
@@ -211,7 +216,6 @@ public class FindReplaceDialog extends JDialog {
     		public void actionPerformed(ActionEvent ae) {
     			setFindText(findField.getText());
     			if (GraphicalInterface.isRoot) {
-    			//if (GraphicalInterface.fileList.getSelectedIndex() == 0) {
     				replaceButton.setEnabled(true);
         			replaceFindButton.setEnabled(true);
     			} 
@@ -226,7 +230,6 @@ public class FindReplaceDialog extends JDialog {
     			setFindText(findField.getText());
     			replaceButton.setEnabled(false);
     			if (GraphicalInterface.isRoot) {
-    			//if (GraphicalInterface.fileList.getSelectedIndex() == 0) {
     				replaceAllButton.setEnabled(true);
     			}    			
     			replaceFindButton.setEnabled(false);
@@ -277,14 +280,6 @@ public class FindReplaceDialog extends JDialog {
     	
     	backwardsCheckBox.addActionListener(searchBackwardsActionListener);
     	
-    	/*
-    	GraphicalInterface.tabbedPane.addChangeListener(new ChangeListener() {
-    		public void stateChanged(ChangeEvent e) {
-    			populateTableColumns();
-    		}
-    	});
-    	*/
-    	
     	windowFocusListener = new WindowFocusListener()
         {
             public void windowGainedFocus(WindowEvent we)
@@ -319,22 +314,6 @@ public class FindReplaceDialog extends JDialog {
     { 
         return 25; 
     }
-    
-    /*
-    public void populateTableColumns() {
-    	tableColumns.removeAllItems();
-    	tableColumns.addItem("All");
-        if (GraphicalInterface.tabbedPane.getSelectedIndex() == 0) {
-        	for (int i = 0; i < GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length; i++) {
-            	tableColumns.addItem(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[i]);
-            }
-        } else if (GraphicalInterface.tabbedPane.getSelectedIndex() == 1) {
-        	for (int i = 0; i < GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length; i++) {
-            	tableColumns.addItem(GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES[i]);
-            }
-        }  
-    }
-    */
     
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
