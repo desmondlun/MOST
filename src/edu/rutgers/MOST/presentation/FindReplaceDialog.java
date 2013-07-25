@@ -22,12 +22,16 @@ public class FindReplaceDialog extends JDialog {
 	public static JButton replaceAllButton = new JButton("Replace All");
 	public static JButton replaceFindButton = new JButton("Replace/Find");
 	public static JButton doneButton = new JButton("Done");
+	public static JLabel findLabel = new JLabel("Find What:");
+	public static JLabel replaceLabel = new JLabel("Replace:");
 	public static final JTextField findField = new JTextField();
 	public static final JTextField replaceField = new JTextField();
 	public static final JCheckBox caseCheckBox = new JCheckBox("Match Case");//1
 	public static final JCheckBox wrapCheckBox = new JCheckBox("Wrap Around");
 	public static final JCheckBox selectedAreaCheckBox = new JCheckBox("Selected Area  ");
 	public static final JCheckBox backwardsCheckBox = new JCheckBox("Backwards");
+	//public static final SizedComboBox tableColumns = new SizedComboBox();
+	//public static final JComboBox<String> tableColumns = new JComboBox<String>(); 
 		
 	private String findText;
 
@@ -56,10 +60,10 @@ public class FindReplaceDialog extends JDialog {
     	setMaximumSize(new Dimension(250, 300));
     	setResizable(false);
     	
-        JLabel findLabel = new JLabel("Find What:");
-        JLabel replaceLabel = new JLabel("Replace:");
         JLabel searchLabel = new JLabel("Search:"); 
         JLabel placeholder = new JLabel(""); 
+        
+        //populateTableColumns();
          
         findField.setText("");
         replaceField.setText("");
@@ -69,6 +73,10 @@ public class FindReplaceDialog extends JDialog {
     	selectedAreaCheckBox.setSelected(false);
         backwardsCheckBox.setSelected(false);
         
+        findLabel.setDisplayedMnemonic('F');
+        findLabel.setLabelFor(findField);
+        replaceLabel.setDisplayedMnemonic('E');
+        replaceLabel.setLabelFor(replaceField);
         findButton.setMnemonic(KeyEvent.VK_N);
         findAllButton.setMnemonic(KeyEvent.VK_L);
         replaceButton.setMnemonic(KeyEvent.VK_R);

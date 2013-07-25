@@ -7119,6 +7119,10 @@ public class GraphicalInterface extends JFrame {
 			}
 			
 			closeConnection();
+			// these two lines remove highlighting from find all
+			ArrayList<ArrayList<Integer>> locationList = reactionsLocationsList();
+			setReactionsFindLocationsList(locationList);
+			
 			reloadTables(LocalConfig.getInstance().getLoadedDatabase());
 			// reset boolean values to default
 			LocalConfig.getInstance().yesToAllButtonClicked = false;
@@ -7532,6 +7536,10 @@ public class GraphicalInterface extends JFrame {
 			}
 			
 			closeConnection();
+			// these two lines remove highlighting from find all
+			ArrayList<ArrayList<Integer>> locationList = metabolitesLocationsList();
+			setMetabolitesFindLocationsList(locationList);
+			
 			reloadTables(LocalConfig.getInstance().getLoadedDatabase());
 			// reset boolean values to default
 			LocalConfig.getInstance().yesToAllButtonClicked = false;
@@ -7573,7 +7581,14 @@ public class GraphicalInterface extends JFrame {
 		if (endIndex != oldValue.length()) {
 			replaceEnd = oldValue.substring(endIndex);
 		}
-		replaceValue = oldValue.substring(0, replaceLocation) + findReplaceDialog.getReplaceText() + replaceEnd;
+		try {
+			replaceValue = oldValue.substring(0, replaceLocation) + findReplaceDialog.getReplaceText() + replaceEnd;
+		} catch (Throwable t) {
+			getFindReplaceDialog().replaceButton.setEnabled(false);
+			getFindReplaceDialog().replaceFindButton.setEnabled(false);
+			return "";
+		}
+		
 		return replaceValue;
 	}
 	
