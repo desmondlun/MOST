@@ -264,8 +264,13 @@ public class FindReplaceDialog extends JDialog {
     	
     	ActionListener replaceFindButtonActionListener = new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
+    			setReplaceText(replaceField.getText());
     			setFindText(findField.getText());
-    			setReplaceText(replaceField.getText());		
+    			if (GraphicalInterface.isRoot) {
+    				replaceButton.setEnabled(true);
+        			replaceFindButton.setEnabled(true);
+    			}
+    			replaceAllButton.setEnabled(false);
     		}
     	};
 
@@ -326,7 +331,7 @@ public class FindReplaceDialog extends JDialog {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                
+            	
                 new FindReplaceDialog().setVisible(true);
             }
         });

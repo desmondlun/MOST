@@ -267,7 +267,8 @@ public class GraphicalInterfaceConstants {
     public static final String[] VALID_FALSE_VALUES = {"f"};
     public static final String[] VALID_TRUE_VALUES = {"t"};
     public static final String BOOLEAN_VALUE_ERROR_TITLE = "Boolean Value Error";
-    public static final String BOOLEAN_VALUE_ERROR_MESSAGE = "Invalid entry. Enter \"t\" for \"true\", \"f\" for \"false\"";
+    public static final String BOOLEAN_VALUE_ERROR_MESSAGE = "Invalid Boolean Value";
+    //public static final String BOOLEAN_VALUE_ERROR_MESSAGE = "Invalid entry. Enter \"t\" for \"true\", \"f\" for \"false\"";
 	
     // lower/upper bound/reversible
     public static final String LOWER_BOUND_ERROR_TITLE = "Lower Bound Error.";
@@ -394,6 +395,7 @@ public class GraphicalInterfaceConstants {
     
     public static final Color FIND_ALL_COLOR = new Color(140,160,200);
     //public static final Color FIND_ALL_COLOR = new Color(190,205,225);
+    public static final Color SELECTED_AREA_COLOR = new Color(190,205,225);
     
     public static final String GUROBI_KEY_ERROR_TITLE = "Gurobi Key Error";
     public static final String GUROBI_KEY_ERROR = "Gurobi Key Error";

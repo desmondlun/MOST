@@ -103,7 +103,6 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
-
 import layout.TableLayout;
 
 public class GraphicalInterface extends JFrame {
@@ -259,7 +258,7 @@ public class GraphicalInterface extends JFrame {
 		return metaboliteColAddRenameInterface;
 	}
 	
-    public static MetaboliteColumnNameInterface metaboliteColumnNameInterface;
+	public static MetaboliteColumnNameInterface metaboliteColumnNameInterface;
 	
 	public static MetaboliteColumnNameInterface getMetaboliteColumnNameInterface() {
 		return metaboliteColumnNameInterface;
@@ -269,7 +268,7 @@ public class GraphicalInterface extends JFrame {
 			MetaboliteColumnNameInterface metaboliteColumnNameInterface) {
 		GraphicalInterface.metaboliteColumnNameInterface = metaboliteColumnNameInterface;
 	}
-	
+
 	public static MetaboliteRenameInterface metaboliteRenameInterface;
 	
 	public void setMetaboliteRenameInterface(MetaboliteRenameInterface metaboliteRenameInterface) {
@@ -280,7 +279,7 @@ public class GraphicalInterface extends JFrame {
 		return metaboliteRenameInterface;
 	}
 	
-    public static ModelCollectionTable modelCollectionTable;
+	public static ModelCollectionTable modelCollectionTable;
 	
 	public static ModelCollectionTable getModelCollectionTable() {
 		return modelCollectionTable;
@@ -289,7 +288,7 @@ public class GraphicalInterface extends JFrame {
 	public static void setModelCollectionTable(ModelCollectionTable modelCollectionTable) {
 		GraphicalInterface.modelCollectionTable = modelCollectionTable;
 	}
-	
+
 	public static OutputPopout popout;
 
 	public void setPopout(OutputPopout popout) {
@@ -310,7 +309,7 @@ public class GraphicalInterface extends JFrame {
 		return reactionColAddRenameInterface;
 	}
 		
-    public static ReactionColumnNameInterface reactionColumnNameInterface;
+	public static ReactionColumnNameInterface reactionColumnNameInterface;
 	
 	public static ReactionColumnNameInterface getReactionColumnNameInterface() {
 		return reactionColumnNameInterface;
@@ -320,7 +319,7 @@ public class GraphicalInterface extends JFrame {
 			ReactionColumnNameInterface reactionColumnNameInterface) {
 		GraphicalInterface.reactionColumnNameInterface = reactionColumnNameInterface;
 	}
-	
+
 	public static ReactionEditor reactionEditor;
 
 	public void setReactionEditor(ReactionEditor reactionEditor) {
@@ -329,7 +328,7 @@ public class GraphicalInterface extends JFrame {
 
 	public static ReactionEditor getReactionEditor() {
 		return reactionEditor;
-	}	    	
+	}	    
 	
 	/*****************************************************************************/
 	// end components
@@ -609,9 +608,6 @@ public class GraphicalInterface extends JFrame {
 		GraphicalInterface.visibleReactionsColumns = visibleReactionsColumns;
 	}
 	
-	ArrayList<String> invalidNew = new ArrayList<String>();
-	Map<String, Object> usedNew = new HashMap<String, Object>();
-	
 	/*****************************************************************************/
 	// end misc
 	/*****************************************************************************/
@@ -664,11 +660,23 @@ public class GraphicalInterface extends JFrame {
 	// end sorting
 	/*****************************************************************************/
 	
+	// used in undo/redo when adding menu items actions, allows action to be
+	// enabled or disabled, based on visibility
 	public static final String ENABLE = "ENABLE";
 	public static final String DISABLE = "DISABLE";
 	
 	public Integer undoCount;
 	public Integer redoCount;
+	
+	// used for highlighting selected area in find mode
+	public Integer selectedReactionsRowStartIndex;
+	public Integer selectedReactionsRowEndIndex;
+	public Integer selectedReactionsColumnStartIndex;
+	public Integer selectedReactionsColumnEndIndex;
+	public Integer selectedMetabolitesRowStartIndex;
+	public Integer selectedMetabolitesRowEndIndex;
+	public Integer selectedMetabolitesColumnStartIndex;
+	public Integer selectedMetabolitesColumnEndIndex;
 	
 	@SuppressWarnings("unchecked")
 	public GraphicalInterface(final Connection con)
@@ -823,6 +831,15 @@ public class GraphicalInterface extends JFrame {
 		setReactionsReplaceLocation(reactionsReplaceLocation);
 		ArrayList<Integer> metabolitesReplaceLocation = new ArrayList<Integer>();
 		setMetabolitesReplaceLocation(metabolitesReplaceLocation);
+		
+		selectedReactionsRowStartIndex = 0;
+		selectedReactionsRowEndIndex = 0;
+		selectedReactionsColumnStartIndex = 1;
+		selectedReactionsColumnEndIndex = 1;
+		selectedMetabolitesRowStartIndex = 0;
+		selectedMetabolitesRowEndIndex = 0;
+		selectedMetabolitesColumnStartIndex = 1;
+		selectedMetabolitesColumnEndIndex = 1;
 		
 		// miscellaneous lists
 		ArrayList<Integer> participatingReactions = new ArrayList<Integer>();
@@ -1425,7 +1442,7 @@ public class GraphicalInterface extends JFrame {
 				        	addReactionColumnCloseAction();
 				        }
 					});					
-					reactionColAddRenameInterface.setVisible(true);					
+					reactionColAddRenameInterface.setVisible(true);	
 				} catch (ClassNotFoundException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -1615,7 +1632,7 @@ public class GraphicalInterface extends JFrame {
 
 		/**************************************************************************/
 		//set up toolbar
-		/**************************************************************************/	
+		/**************************************************************************/			
 		
 		toolbar.add(openbutton);
 		setUpToolbarButton(openbutton);
@@ -2545,7 +2562,6 @@ public class GraphicalInterface extends JFrame {
 		
 		String lastCSV_path = curSettings.get("LastCSV");
 		if (lastCSV_path == null) {
-
 			lastCSV_path = ".";	
 		}
 		fileChooser.setCurrentDirectory(new File(lastCSV_path));
@@ -2567,8 +2583,7 @@ public class GraphicalInterface extends JFrame {
 				//... The user selected a file, get it, use it.
 				String rawPathName = fileChooser.getSelectedFile().getAbsolutePath();
 				curSettings.add("LastCSV", rawPathName);
-
-
+				
 				LocalConfig.getInstance().hasReactionsFile = true;
 				
 				String path = "";
@@ -2702,7 +2717,6 @@ public class GraphicalInterface extends JFrame {
 						}       		    	  
 					} else {
 						done = true;
-
 						saveSQLiteFile();
 					}
 				}			                  	  
@@ -2869,7 +2883,7 @@ public class GraphicalInterface extends JFrame {
 				if (LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {				
 					for (int i = 0; i < LocalConfig.getInstance().getOptimizationFilesList().size(); i++) {
 						// TODO: determine where and how to display these messages
-						System.out.println("opt files" + LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".db will be saved.");
+						System.out.println(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".db will be saved.");
 					}
 				}
 				LocalConfig.getInstance().getOptimizationFilesList().clear();
@@ -2962,7 +2976,7 @@ public class GraphicalInterface extends JFrame {
 		EntryValidator validator = new EntryValidator();
 		LocalConfig.getInstance().editMode = true;
 		int id = Integer.parseInt((String) (reactionsTable.getModel().getValueAt(rowIndex, 0)));		
-		if (colIndex == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN && LocalConfig.getInstance().includesReactions) {								
+		if (colIndex == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN && LocalConfig.getInstance().includesReactions) {				
 			ReactionsUpdater updater = new ReactionsUpdater();
 			//  if reaction is changed unhighlight unused metabolites since
 			//  used status may change, same with participating reactions
@@ -2978,6 +2992,7 @@ public class GraphicalInterface extends JFrame {
 				// if lower bound < 0, display option dialog
 				if (Double.valueOf((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)) < 0)  {
 					if (!replaceAllMode) {
+						setFindReplaceAlwaysOnTop(false);
 						Object[] options = {"    Yes    ", "    No    ",};
 						int choice = JOptionPane.showOptionDialog(null, 
 								GraphicalInterfaceConstants.LOWER_BOUND_ERROR_MESSAGE, 
@@ -2998,6 +3013,7 @@ public class GraphicalInterface extends JFrame {
 							reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 							updateReactionsDatabaseRow(rowIndex, Integer.parseInt((String) (reactionsTable.getModel().getValueAt(rowIndex, 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase());					
 						}
+						setFindReplaceAlwaysOnTop(true);
 						// if in replace all mode, just set lower bound to 0 and set new equation
 					} else {
 						reactionsTable.getModel().setValueAt("0.0", rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
@@ -3037,10 +3053,12 @@ public class GraphicalInterface extends JFrame {
 				reactionsTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[0], rowIndex, GraphicalInterfaceConstants.KO_COLUMN);
 			} else if (newValue != null) {				
 				if (!replaceAllMode) {
+					setFindReplaceAlwaysOnTop(false);
 					JOptionPane.showMessageDialog(null,                
 							GraphicalInterfaceConstants.BOOLEAN_VALUE_ERROR_MESSAGE,                
 							GraphicalInterfaceConstants.BOOLEAN_VALUE_ERROR_TITLE,                               
 							JOptionPane.ERROR_MESSAGE);
+					setFindReplaceAlwaysOnTop(true);
 				}				
 				reactionUpdateValid = false;
 				reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.KO_COLUMN);
@@ -3048,10 +3066,12 @@ public class GraphicalInterface extends JFrame {
 			updateReactionsDatabaseRow(rowIndex, Integer.parseInt((String) (reactionsTable.getModel().getValueAt(rowIndex, 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase());					
 		} else if (colIndex == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
 			if (!replaceAllMode) {
+				setFindReplaceAlwaysOnTop(false);
 				JOptionPane.showMessageDialog(null, 
 						GraphicalInterfaceConstants.REVERSIBLE_ERROR_MESSAGE,                
 						GraphicalInterfaceConstants.REVERSIBLE_ERROR_TITLE, 					                               
 						JOptionPane.ERROR_MESSAGE);
+				setFindReplaceAlwaysOnTop(true);
 			}			
 			reactionUpdateValid = false;
 			reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
@@ -3062,10 +3082,12 @@ public class GraphicalInterface extends JFrame {
 				colIndex == GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN) {
 			if (!validator.isNumber(newValue)) {
 				if (!replaceAllMode) {
+					setFindReplaceAlwaysOnTop(false);
 					JOptionPane.showMessageDialog(null,                
 							GraphicalInterfaceConstants.NUMERIC_VALUE_ERROR_TITLE,                
 							GraphicalInterfaceConstants.NUMERIC_VALUE_ERROR_MESSAGE,                               
 							JOptionPane.ERROR_MESSAGE);
+					setFindReplaceAlwaysOnTop(true);
 				}	
 				reactionsTable.getModel().setValueAt(oldValue, rowIndex, colIndex);
 				updateReactionsDatabaseRow(rowIndex, Integer.parseInt((String) (reactionsTable.getModel().getValueAt(rowIndex, 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase());					
@@ -3075,6 +3097,7 @@ public class GraphicalInterface extends JFrame {
 					Double upperBound = Double.valueOf((String) (reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));
 					String reversible = reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN).toString();
 					if (!validator.lowerBoundReversibleValid(lowerBound, upperBound, reversible)) {
+						setFindReplaceAlwaysOnTop(false);
 						Object[] options = {"    Yes    ", "    No    ",};
 						int choice = JOptionPane.showOptionDialog(null, 
 								GraphicalInterfaceConstants.LOWER_BOUND_ERROR_MESSAGE, 
@@ -3088,8 +3111,10 @@ public class GraphicalInterface extends JFrame {
 						if (choice == JOptionPane.NO_OPTION) {
 							reactionUpdateValid = false;
 							reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
-						}	
+						}
+						setFindReplaceAlwaysOnTop(true);
 					} else if (lowerBound > upperBound) {
+						setFindReplaceAlwaysOnTop(false);
 						Object[] options = {"    Yes    ", "    No    ",};
 						int choice = JOptionPane.showOptionDialog(null, 
 								GraphicalInterfaceConstants.LOWER_BOUND_ERROR_MESSAGE2, 
@@ -3103,7 +3128,8 @@ public class GraphicalInterface extends JFrame {
 						if (choice == JOptionPane.NO_OPTION) {
 							reactionUpdateValid = false;
 							reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
-						}							
+						}
+						setFindReplaceAlwaysOnTop(true);
 					} else {
 						reactionsTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
 					}
@@ -3112,6 +3138,7 @@ public class GraphicalInterface extends JFrame {
 					Double lowerBound = Double.valueOf((String) (reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));
 					Double upperBound = Double.valueOf(newValue);
 					if (upperBound < lowerBound) {
+						setFindReplaceAlwaysOnTop(false);
 						Object[] options = {"    Yes    ", "    No    ",};
 						int choice = JOptionPane.showOptionDialog(null, 
 								GraphicalInterfaceConstants.UPPER_BOUND_ERROR_MESSAGE, 
@@ -3125,7 +3152,8 @@ public class GraphicalInterface extends JFrame {
 						if (choice == JOptionPane.NO_OPTION) {
 							reactionUpdateValid = false;
 							reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN);
-						}							
+						}	
+						setFindReplaceAlwaysOnTop(true);
 					} else {
 						reactionsTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN);
 					}
@@ -3153,6 +3181,7 @@ public class GraphicalInterface extends JFrame {
 		if (colIndex == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) { 
 			// entry is duplicate
 			if (LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(newValue)) {			
+				setFindReplaceAlwaysOnTop(false);
 				Object[] options = {"    Yes    ", "    No    ",};
 				int choice = JOptionPane.showOptionDialog(null, 
 						GraphicalInterfaceConstants.DUPLICATE_METABOLITE_MESSAGE, 
@@ -3170,7 +3199,8 @@ public class GraphicalInterface extends JFrame {
 				if (choice == JOptionPane.NO_OPTION) {
 					metaboliteUpdateValid = false;
 					metabolitesTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
-				}				
+				}
+				setFindReplaceAlwaysOnTop(true);
 			// duplicate entry changed
 			} else if (LocalConfig.getInstance().getDuplicateIds().contains(id)) {
 				if (oldValue != newValue) {
@@ -3196,10 +3226,12 @@ public class GraphicalInterface extends JFrame {
 		} else if (colIndex == GraphicalInterfaceConstants.CHARGE_COLUMN) {
 			if (!validator.isNumber(newValue)) {
 				if (!replaceAllMode) {
+					setFindReplaceAlwaysOnTop(false);
 					JOptionPane.showMessageDialog(null,                
 							GraphicalInterfaceConstants.NUMERIC_VALUE_ERROR_TITLE,                
 							GraphicalInterfaceConstants.NUMERIC_VALUE_ERROR_MESSAGE,                               
 							JOptionPane.ERROR_MESSAGE);
+					setFindReplaceAlwaysOnTop(true);
 				}				
 				metaboliteUpdateValid = false;
 				metabolitesTable.getModel().setValueAt(oldValue, rowIndex, colIndex);
@@ -3213,10 +3245,12 @@ public class GraphicalInterface extends JFrame {
 				metabolitesTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[0], rowIndex, GraphicalInterfaceConstants.BOUNDARY_COLUMN);
 			} else if (newValue != null) {				
 				if (!replaceAllMode) {
+					setFindReplaceAlwaysOnTop(false);
 					JOptionPane.showMessageDialog(null,                
 							GraphicalInterfaceConstants.BOOLEAN_VALUE_ERROR_MESSAGE,                
 							GraphicalInterfaceConstants.BOOLEAN_VALUE_ERROR_TITLE,                                
 							JOptionPane.ERROR_MESSAGE);
+					setFindReplaceAlwaysOnTop(true);
 				}	
 				metaboliteUpdateValid = false;
 				metabolitesTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.BOUNDARY_COLUMN);
@@ -3729,8 +3763,8 @@ public class GraphicalInterface extends JFrame {
 			}					
 		}
     }
-    
-	// saves sort column and order so it is preserved when table is refreshed
+	
+    // saves sort column and order so it is preserved when table is refreshed
 	// after editing and updating database
     class ReactionsColumnHeaderListener extends MouseAdapter {
 		  public void mouseClicked(MouseEvent evt) {
@@ -3751,6 +3785,24 @@ public class GraphicalInterface extends JFrame {
 			  setReactionsSortOrder(reactionsTable.getSortOrder(reactionsTable.getSortedColumnIndex()));
 		  }
 	}	  
+	
+    HighlightPredicate reactionsSelectedAreaPredicate = new HighlightPredicate() {
+		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
+			if (findMode) {
+				if (searchSelectedArea) {
+					if (findButtonReactionsClicked) {
+						if (adapter.row >= selectedReactionsRowStartIndex && adapter.row < selectedReactionsRowEndIndex && adapter.column >= selectedReactionsColumnStartIndex && adapter.column < selectedReactionsColumnEndIndex) {
+							return true;
+						}
+					}					
+				}
+			}
+																				
+			return false;
+		}
+	};
+	
+	ColorHighlighter reactionsSelectedArea = new ColorHighlighter(reactionsSelectedAreaPredicate, GraphicalInterfaceConstants.SELECTED_AREA_COLOR, null);
 	
 	HighlightPredicate reactionFindAllPredicate = new HighlightPredicate() {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
@@ -3819,7 +3871,8 @@ public class GraphicalInterface extends JFrame {
 		
 		reactionsTable.addHighlighter(participating);
 		reactionsTable.addHighlighter(invalidReaction);
-		reactionsTable.addHighlighter(reactionFindAll);
+		reactionsTable.addHighlighter(reactionsSelectedArea);
+		reactionsTable.addHighlighter(reactionFindAll);		
 		
 		// these columns have names that are too long to fit in cell and need tooltips
 		// also KO has Knockout as tooltip
@@ -3842,10 +3895,10 @@ public class GraphicalInterface extends JFrame {
 				tips.setToolTip(col, GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.GENE_ASSOCIATIONS_COLUMN]);
 			}
 		}
-		reactionsTable.getTableHeader().addMouseMotionListener(tips);	
+		reactionsTable.getTableHeader().addMouseMotionListener(tips);
 		reactionsTable.getTableHeader().addMouseListener(new ReactionsColumnHeaderListener());
-		reactionsTable.getTableHeader().addMouseListener(new ReactionsHeaderPopupListener());
-			
+		reactionsTable.getTableHeader().addMouseListener(new ReactionsHeaderPopupListener());	
+		
 		//from http://www.java2s.com/Tutorial/Java/0240__Swing/thelastcolumnismovedtothefirstposition.htm
 		// columns cannot be rearranged by dragging
 		reactionsTable.getTableHeader().setReorderingAllowed(false);  
@@ -4243,6 +4296,24 @@ public class GraphicalInterface extends JFrame {
 	
 	ColorHighlighter duplicateMetab = new ColorHighlighter(duplicateMetabPredicate, Color.ORANGE, null);
 	
+	HighlightPredicate metabolitesSelectedAreaPredicate = new HighlightPredicate() {
+		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
+			if (findMode) {
+				if (searchSelectedArea) {
+					if (findButtonMetabolitesClicked) {
+						if (adapter.row >= selectedMetabolitesRowStartIndex && adapter.row < selectedMetabolitesRowEndIndex && adapter.column >= selectedMetabolitesColumnStartIndex && adapter.column < selectedMetabolitesColumnEndIndex) {
+							return true;
+						}
+					}					
+				}
+			}
+																				
+			return false;
+		}
+	};
+	
+	ColorHighlighter metabolitesSelectedArea = new ColorHighlighter(metabolitesSelectedAreaPredicate, GraphicalInterfaceConstants.SELECTED_AREA_COLOR, null);
+	
 	HighlightPredicate metaboliteFindAllPredicate = new HighlightPredicate() {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
 			if (findMode) {
@@ -4279,6 +4350,7 @@ public class GraphicalInterface extends JFrame {
 		metabolitesTable.addHighlighter(unused);
 		metabolitesTable.addHighlighter(duplicateMetab);
 		metabolitesTable.addHighlighter(suspicious);
+		metabolitesTable.addHighlighter(metabolitesSelectedArea);
 		metabolitesTable.addHighlighter(metaboliteFindAll);
 		
 		ColumnHeaderToolTips tips = new ColumnHeaderToolTips();		
@@ -6735,10 +6807,10 @@ public class GraphicalInterface extends JFrame {
 		
 		findReplace.setIconImages(icons);
 		findReplace.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-		findReplace.setAlwaysOnTop(true);
-        findReplace.setVisible(true);
+		findReplace.setAlwaysOnTop(true);        
         //TODO: calculate x location based on screen size so find does not table obscure scroll bar
         findReplace.setLocation(x + 420, y);
+        findReplace.setVisible(true);
         findReplace.addWindowListener(new WindowAdapter() {
 	        public void windowClosing(WindowEvent evt) {
 	        	findReplaceCloseAction();
@@ -6766,50 +6838,61 @@ public class GraphicalInterface extends JFrame {
 			if (reactionsTable.getSelectedRow() > -1 && reactionsTable.getSelectedColumn() > -1) {
 				int row = reactionsTable.getSelectedRow();
 				int col = reactionsTable.getSelectedColumn();
-				boolean sameCell = false;
-				boolean sameRow = false;
-				boolean rowGreater = false;	
-				for (int i = 0; i < getReactionsFindLocationsList().size(); i++) {					
-					if (getReactionsFindLocationsList().get(i).get(0) == row) { 
-						if (getReactionsFindLocationsList().get(i).get(1) == col) {
-							sameCell = true;
-						}
-						if (getReactionsFindLocationsList().get(i).get(1) > col) {	
-							if (!sameRow) {
-								startIndex = i;
-							}
-							sameRow = true;
-						}
-					} else if (!sameRow && getReactionsFindLocationsList().get(i).get(0) > row) { 
-						if (!rowGreater) {
-							startIndex = i;
-						}
-						rowGreater = true;
-					} 
-				}			
-				if (rowGreater || sameRow) {
-					
-				// if string not found after selected cell
-				} else {
-					if (wrapAround) {
-					    startIndex = 0;
-					} else {
-						startIndex = -1;
-					}				
+				startIndex = findStartIndex(row, col, getReactionsFindLocationsList());
+			}				
+		} else {
+			if (searchBackwards) {
+				startIndex = getReactionsFindLocationsList().size() - 1;
+			} 		
+		}
+		return startIndex;
+		
+	}
+	
+	public int findStartIndex(int row, int col, ArrayList<ArrayList<Integer>> locationList) {
+		int startIndex = 0;
+		boolean sameCell = false;
+		boolean sameRow = false;
+		boolean rowGreater = false;			
+		for (int i = 0; i < locationList.size(); i++) {					
+			if (locationList.get(i).get(0) == row) { 
+				if (locationList.get(i).get(1) == col) {
+					sameCell = true;
 				}
-				// if search backwards, index will be 1 before than selected cell not 1 after
-				if (searchBackwards) {
-					if (sameCell) {
-						startIndex -= 2;
-					} else {
-						startIndex -= 1;
-					}				
+				if (locationList.get(i).get(1) > col) {	
+					if (!sameRow) {
+						startIndex = i;
+					}
+					sameRow = true;
 				}
-				if (startIndex == -1 && wrapAround) {
-					startIndex = getReactionsFindLocationsList().size() - 1;
-				}		
+			} else if (!sameRow && locationList.get(i).get(0) > row) { 
+				if (!rowGreater) {
+					startIndex = i;
+				}
+				rowGreater = true;
+			} 
+		}			
+		if (rowGreater || sameRow) {
+			
+		// if string not found after selected cell
+		} else {
+			if (wrapAround) {
+			    startIndex = 0;
+			} else {
+				startIndex = -1;
 			}				
 		}
+		// if search backwards, index will be 1 before than selected cell not 1 after
+		if (searchBackwards) {
+			if (sameCell) {
+				startIndex -= 2;
+			} else {
+				startIndex -= 1;
+			}				
+		}
+		if (startIndex == -1 && wrapAround) {
+			startIndex = locationList.size() - 1;
+		}		
 		return startIndex;
 		
 	}
@@ -6817,58 +6900,89 @@ public class GraphicalInterface extends JFrame {
 	ActionListener findReactionsButtonActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			if (tabbedPane.getSelectedIndex() == 0) {
-				reactionsFindAll = false;
-				reactionsTable.repaint();
-				ArrayList<ArrayList<Integer>> locationList = reactionsLocationsList();
-				setReactionsFindLocationsList(locationList);
-				// uses window listener for focus event and row column change to reset button
-				// to not clicked if user changes selected cell.
-				// for first click of find button, find starts from first cell after (or before when backwards)
-				// that contains string, after this first click, find just iterates through list				
-				if (!findButtonReactionsClicked) {
-					if (reactionsFindStartIndex() > -1) {
-						LocalConfig.getInstance().setReactionsLocationsListCount(reactionsFindStartIndex());
-						reactionsFindNext();
-					} else {
-						findReplaceDialog.setVisible(false);
-						JOptionPane.showMessageDialog(null,                
-								"String Not Found.",                
-								"Find Error",                                
-								JOptionPane.ERROR_MESSAGE); 
-						findReplaceDialog.setVisible(true);
-						if (wrapAround) {
-							if (searchBackwards) {
-								LocalConfig.getInstance().setReactionsLocationsListCount(getReactionsFindLocationsList().size() - 1);
-							} else {
-								LocalConfig.getInstance().setReactionsLocationsListCount(0);
-							}
-						}
-					}					
-				} else {
-					reactionsFindNext();
-				}
+				reactionsFindAction();
 			}
 			findButtonReactionsClicked = true;
 		}
 	};
+	
+	ActionListener replaceFindReactionsButtonActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			if (tabbedPane.getSelectedIndex() == 0) {
+				reactionsFindAll = false;
+				reactionsReplace();				
+				reactionsFindNext();
+			}
+			// button works but even with this line of code, Find/Replace
+			// does not regain focus after updating table.
+			getFindReplaceDialog().requestFocus();
+		}
+	};
+	
+	public void reactionsFindAction() {
+		reactionsFindAll = false;
+		reactionsTable.repaint();
+		ArrayList<ArrayList<Integer>> locationList = reactionsLocationsList();
+		setReactionsFindLocationsList(locationList);
+		// uses window listener for focus event and row column change to reset button
+		// to not clicked if user changes selected cell.
+		// for first click of find button, find starts from first cell after (or before when backwards)
+		// that contains string, after this first click, find just iterates through list				
+		if (!findButtonReactionsClicked) {
+			if (reactionsFindStartIndex() > -1) {
+				LocalConfig.getInstance().setReactionsLocationsListCount(reactionsFindStartIndex());
+				reactionsFindNext();
+			} else {
+				notFoundAction();	
+				if (wrapAround) {
+					if (searchBackwards) {
+						LocalConfig.getInstance().setReactionsLocationsListCount(getReactionsFindLocationsList().size() - 1);
+					} else {
+						LocalConfig.getInstance().setReactionsLocationsListCount(0);
+					}
+				}
+			}					
+		} else {
+			reactionsFindNext();
+		}
+	}
+	
+	public void notFoundAction() {
+		getFindReplaceDialog().setAlwaysOnTop(false);
+		Object[] options = {"    Yes    ", "    No    ",};
+		int choice = JOptionPane.showOptionDialog(null, 
+				"MOST has not found the item you are searching for.\nDo you want to start over from the beginning?", 
+				"Item Not Found", 
+				JOptionPane.YES_NO_OPTION, 
+				JOptionPane.QUESTION_MESSAGE, 
+				null, options, options[0]);
+		if (choice == JOptionPane.YES_OPTION) {
+			wrapAround = true; 
+			getFindReplaceDialog().wrapCheckBox.setSelected(true);
+			if (searchBackwards) {
+				LocalConfig.getInstance().setReactionsLocationsListCount(getReactionsFindLocationsList().size() - 1);
+			} else {
+				LocalConfig.getInstance().setReactionsLocationsListCount(0);
+			}
+		}
+		if (choice == JOptionPane.NO_OPTION) {
+
+		}
+		getFindReplaceDialog().setAlwaysOnTop(true);
+	}
 	
 	public void reactionsFindNext() {
 		//reactionsFindAll = false;
 		reactionsTable.repaint();
 		ArrayList<ArrayList<Integer>> locationList = reactionsLocationsList();
 		if (locationList.size() == 0) {
-			findReplaceDialog.setVisible(false);
-			JOptionPane.showMessageDialog(null,                
-					"String Not Found.",                
-					"Find Error",                                
-					JOptionPane.ERROR_MESSAGE); 
-			findReplaceDialog.setVisible(true);
+			notFoundAction();
 			LocalConfig.getInstance().setReactionsLocationsListCount(0);
 		} else {
 			try {
 				// set focus to an invisible cell to give appearance that find cell is 
 				// only cell selected
-				reactionsTable.changeSelection(0, 0, false, false);	
+				reactionsTable.changeSelection(locationList.get(LocalConfig.getInstance().getReactionsLocationsListCount()).get(0), 0, false, false);
 				changeReactionFindSelection = false;
 				setReactionsReplaceLocation(locationList.get(LocalConfig.getInstance().getReactionsLocationsListCount()));			
 				reactionsTable.requestFocus();
@@ -6886,11 +7000,7 @@ public class GraphicalInterface extends JFrame {
 							LocalConfig.getInstance().setReactionsLocationsListCount(count);							
 						} else {							
 							if (throwNotFoundError) {															
-								JOptionPane.showMessageDialog(null,                
-										"String Not Found.",                
-										"Find Error",                                
-										JOptionPane.ERROR_MESSAGE); 
-								findReplaceDialog.setVisible(true);
+								notFoundAction();
 								throwNotFoundError = false;
 							}
 							throwNotFoundError = true;
@@ -6906,11 +7016,7 @@ public class GraphicalInterface extends JFrame {
 							LocalConfig.getInstance().setReactionsLocationsListCount(count);							
 						} else {							
 							if (throwNotFoundError) {															
-								JOptionPane.showMessageDialog(null,                
-										"String Not Found.",                
-										"Find Error",                                
-										JOptionPane.ERROR_MESSAGE); 
-								findReplaceDialog.setVisible(true);
+								notFoundAction();
 								throwNotFoundError = false;
 							}
 							throwNotFoundError = true;
@@ -6928,7 +7034,8 @@ public class GraphicalInterface extends JFrame {
 					}					
 				}				
 			}										
-		}			
+		}
+		getFindReplaceDialog().requestFocus();
 	}
 	
 	ActionListener findAllReactionsButtonActionListener = new ActionListener() {
@@ -6937,12 +7044,7 @@ public class GraphicalInterface extends JFrame {
 				ArrayList<ArrayList<Integer>> locationList = reactionsLocationsList();
 				setReactionsFindLocationsList(locationList);
 				if (locationList.size() == 0) {
-					findReplaceDialog.setVisible(false);
-					JOptionPane.showMessageDialog(null,                
-							"String Not Found.",                
-							"Find Error",                                
-							JOptionPane.ERROR_MESSAGE); 
-					findReplaceDialog.setVisible(true);					
+					notFoundAction();				
 				} else {
 					// set focus to first found item
 					reactionsTable.changeSelection(locationList.get(0).get(0), locationList.get(0).get(1), false, false);
@@ -6958,29 +7060,41 @@ public class GraphicalInterface extends JFrame {
 		}
 	};
 	
-	public ArrayList<ArrayList<Integer>> reactionsLocationsList() {
+	public ArrayList<ArrayList<Integer>> reactionsLocationsList() {		
 		int rowStartIndex = 0;
 		int rowEndIndex = reactionsTable.getRowCount();
 		// start with 1 to avoid including hidden id column
 		int colStartIndex = 1;
 		int colEndIndex = reactionsTable.getColumnCount();
 		if (searchSelectedArea) {
-			int numcols=reactionsTable.getSelectedColumnCount(); 
-			int numrows=reactionsTable.getSelectedRowCount(); 
-			int[] rowsselected=reactionsTable.getSelectedRows(); 
-			int[] colsselected=reactionsTable.getSelectedColumns();
-			if (numrows > 0 && getSelectionMode() != 1) {
-				rowStartIndex = rowsselected[0];
-				rowEndIndex = rowsselected[0] + numrows;
-			}			
-			if (numcols > 0 && getSelectionMode() != 2) {
-				colStartIndex = colsselected[0];
-				colEndIndex = colsselected[0] + numcols;
-			}			
-		}		
+			if (!findButtonReactionsClicked) {
+				int numcols=reactionsTable.getSelectedColumnCount(); 
+				int numrows=reactionsTable.getSelectedRowCount(); 
+				int[] rowsselected=reactionsTable.getSelectedRows(); 
+				int[] colsselected=reactionsTable.getSelectedColumns();
+				if (numrows > 0 && getSelectionMode() != 1) {
+					rowStartIndex = rowsselected[0];
+					rowEndIndex = rowsselected[0] + numrows;
+					selectedReactionsRowStartIndex = rowsselected[0];
+					selectedReactionsRowEndIndex = rowsselected[0] + numrows;
+				}			
+				if (numcols > 0 && getSelectionMode() != 2) {
+					colStartIndex = colsselected[0];
+					colEndIndex = colsselected[0] + numcols;
+					selectedReactionsColumnStartIndex = colsselected[0];
+					selectedReactionsColumnEndIndex = colsselected[0] + numcols;
+				}	
+			}					
+		} else {
+			selectedReactionsRowStartIndex = 0;
+			selectedReactionsRowEndIndex = reactionsTable.getRowCount();
+			// start with 1 to avoid including hidden id column
+			selectedReactionsColumnStartIndex = 1;
+			selectedReactionsColumnEndIndex = reactionsTable.getColumnCount();
+		}
 		ArrayList<ArrayList<Integer>> reactionsLocationsList = new ArrayList<ArrayList<Integer>>();
-		for (int r = rowStartIndex; r < rowEndIndex; r++) {				
-			for (int c = colStartIndex; c < colEndIndex; c++) {				
+		for (int r = selectedReactionsRowStartIndex; r < selectedReactionsRowEndIndex; r++) {					
+			for (int c = selectedReactionsColumnStartIndex; c < selectedReactionsColumnEndIndex; c++) {					
 				int viewRow = reactionsTable.convertRowIndexToModel(r);
 				if (reactionsTable.getModel().getValueAt(viewRow, c) != null) {
 					String cellValue = (String) reactionsTable.getModel().getValueAt(viewRow, c);
@@ -7108,10 +7222,12 @@ public class GraphicalInterface extends JFrame {
 					setUpReactionsUndo(undoItem);
 				} else {
 					if (showErrorMessage = true) {
+						setFindReplaceAlwaysOnTop(false);
 						JOptionPane.showMessageDialog(null,                
 								getReplaceAllError(),                
 								GraphicalInterfaceConstants.REPLACE_ALL_ERROR_TITLE,                                
 								JOptionPane.ERROR_MESSAGE);
+						setFindReplaceAlwaysOnTop(true);
 					}	
 					deleteReactionsPasteUndoItem();
 					validPaste = true;
@@ -7131,19 +7247,6 @@ public class GraphicalInterface extends JFrame {
 		}
 	};
 	
-	ActionListener replaceFindReactionsButtonActionListener = new ActionListener() {
-		public void actionPerformed(ActionEvent ae) {
-			if (tabbedPane.getSelectedIndex() == 0) {
-				reactionsFindAll = false;
-				reactionsReplace();
-				ArrayList<ArrayList<Integer>> locationList = reactionsLocationsList();
-				setReactionsFindLocationsList(locationList);				
-				reactionsFindNext();
-			}
-			getFindReplaceDialog().requestFocus();
-		}
-	};
-	
     // end reactions find replace
 	
 	/***********************************************************************************/
@@ -7158,49 +7261,12 @@ public class GraphicalInterface extends JFrame {
 			if (metabolitesTable.getSelectedRow() > -1 && metabolitesTable.getSelectedColumn() > -1) {
 				int row = metabolitesTable.getSelectedRow();
 				int col = metabolitesTable.getSelectedColumn();
-				boolean sameCell = false;
-				boolean sameRow = false;
-				boolean rowGreater = false;
-				for (int i = 0; i < getMetabolitesFindLocationsList().size(); i++) {					
-					if (getMetabolitesFindLocationsList().get(i).get(0) == row) { 
-						if (getMetabolitesFindLocationsList().get(i).get(1) == col) {
-							sameCell = true;
-						}
-						if (getMetabolitesFindLocationsList().get(i).get(1) > col) {	
-							if (!sameRow) {
-								startIndex = i;
-							}
-							sameRow = true;
-						}
-					} else if (!sameRow && getMetabolitesFindLocationsList().get(i).get(0) > row) { 
-						if (!rowGreater) {
-							startIndex = i;
-						}
-						rowGreater = true;
-					} 
-				}			
-				if (rowGreater || sameRow) {
-					
-				// if string not found after selected cell
-				} else {
-					if (wrapAround) {
-					    startIndex = 0;
-					} else {
-						startIndex = -1;
-					}				
-				}
-				// if search backwards, index will be 1 before than selected cell not 1 after
-				if (searchBackwards) {
-					if (sameCell) {
-						startIndex -= 2;
-					} else {
-						startIndex -= 1;
-					}
-				}
-				if (startIndex == -1 && wrapAround) {
-					startIndex = getMetabolitesFindLocationsList().size() - 1;
-				}		
-			}			
+				startIndex = findStartIndex(row, col, getMetabolitesFindLocationsList());
+			}				
+		} else {
+			if (searchBackwards) {
+				startIndex = getMetabolitesFindLocationsList().size() - 1;
+			} 		
 		}
 		return startIndex;
 		
@@ -7209,58 +7275,65 @@ public class GraphicalInterface extends JFrame {
 	ActionListener findMetabolitesButtonActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			if (tabbedPane.getSelectedIndex() == 1) {
-				metabolitesFindAll = false;
-				metabolitesTable.repaint();
-				ArrayList<ArrayList<Integer>> locationList = metabolitesLocationsList();
-				setMetabolitesFindLocationsList(locationList);
-				// uses window listener for focus event and row column change to reset button
-				// to not clicked if user changes selected cell.
-				// for first click of find button, find starts from first cell after (or before when backwards)
-				// that contains string, after this first click, find just iterates through list				
-				if (!findButtonMetabolitesClicked) {
-					if (metabolitesFindStartIndex() > -1) {
-						LocalConfig.getInstance().setMetabolitesLocationsListCount(metabolitesFindStartIndex());
-						metabolitesFindNext();
-					} else {
-						findReplaceDialog.setVisible(false);
-						JOptionPane.showMessageDialog(null,                
-								"String Not Found.",                
-								"Find Error",                                
-								JOptionPane.ERROR_MESSAGE); 
-						findReplaceDialog.setVisible(true);
-						if (wrapAround) {
-							if (searchBackwards) {
-								LocalConfig.getInstance().setMetabolitesLocationsListCount(getMetabolitesFindLocationsList().size() - 1);
-							} else {
-								LocalConfig.getInstance().setMetabolitesLocationsListCount(0);
-							}
-						}
-					}					
-				} else {
-					metabolitesFindNext();
-				}
+				metabolitesFindAction();
 			}			
 			findButtonMetabolitesClicked = true;				
 		}
 	};
+	
+	ActionListener replaceFindMetabolitesButtonActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			if (tabbedPane.getSelectedIndex() == 1) {
+				metabolitesFindAll = false;
+				metabolitesReplace();				
+				metabolitesFindNext();
+			}
+			// button works but even with this line of code, Find/Replace
+			// does not regain focus after updating table.
+			getFindReplaceDialog().requestFocus();
+		}
+	};
+	
+	public void metabolitesFindAction() {
+		metabolitesFindAll = false;
+		metabolitesTable.repaint();
+		ArrayList<ArrayList<Integer>> locationList = metabolitesLocationsList();
+		setMetabolitesFindLocationsList(locationList);
+		// uses window listener for focus event and row column change to reset button
+		// to not clicked if user changes selected cell.
+		// for first click of find button, find starts from first cell after (or before when backwards)
+		// that contains string, after this first click, find just iterates through list				
+		if (!findButtonMetabolitesClicked) {
+			if (metabolitesFindStartIndex() > -1) {
+				LocalConfig.getInstance().setMetabolitesLocationsListCount(metabolitesFindStartIndex());
+				metabolitesFindNext();
+			} else {
+				notFoundAction();
+				if (wrapAround) {
+					if (searchBackwards) {
+						LocalConfig.getInstance().setMetabolitesLocationsListCount(getMetabolitesFindLocationsList().size() - 1);
+					} else {
+						LocalConfig.getInstance().setMetabolitesLocationsListCount(0);
+					}
+				}
+			}					
+		} else {
+			metabolitesFindNext();
+		}
+	}
 	
 	public void metabolitesFindNext() {
 		//metabolitesFindAll = false;
 		metabolitesTable.repaint();
 		ArrayList<ArrayList<Integer>> locationList = metabolitesLocationsList();
 		if (locationList.size() == 0) {
-			findReplaceDialog.setVisible(false);
-			JOptionPane.showMessageDialog(null,                
-					"String Not Found.",                
-					"Find Error",                                
-					JOptionPane.ERROR_MESSAGE); 
-			findReplaceDialog.setVisible(true);
+			notFoundAction();
 			LocalConfig.getInstance().setMetabolitesLocationsListCount(0);
 		} else {
 			try {
 				// set focus to an invisible cell to give appearance that find cell is 
 				// only cell selected
-				metabolitesTable.changeSelection(0, 0, false, false);
+				metabolitesTable.changeSelection(locationList.get(LocalConfig.getInstance().getMetabolitesLocationsListCount()).get(0), 0, false, false);
 				changeMetaboliteFindSelection = false;
 				setMetabolitesReplaceLocation(locationList.get(LocalConfig.getInstance().getMetabolitesLocationsListCount()));
 				metabolitesTable.requestFocus();
@@ -7278,11 +7351,7 @@ public class GraphicalInterface extends JFrame {
 							LocalConfig.getInstance().setMetabolitesLocationsListCount(count);							
 						} else {							
 							if (throwNotFoundError) {															
-								JOptionPane.showMessageDialog(null,                
-										"String Not Found.",                
-										"Find Error",                                
-										JOptionPane.ERROR_MESSAGE); 
-								findReplaceDialog.setVisible(true);
+								notFoundAction();
 								throwNotFoundError = false;
 							}
 							throwNotFoundError = true;
@@ -7298,11 +7367,7 @@ public class GraphicalInterface extends JFrame {
 							LocalConfig.getInstance().setMetabolitesLocationsListCount(count);							
 						} else {							
 							if (throwNotFoundError) {															
-								JOptionPane.showMessageDialog(null,                
-										"String Not Found.",                
-										"Find Error",                                
-										JOptionPane.ERROR_MESSAGE); 
-								findReplaceDialog.setVisible(true);
+								notFoundAction();
 								throwNotFoundError = false;
 							}
 							throwNotFoundError = true;
@@ -7327,12 +7392,7 @@ public class GraphicalInterface extends JFrame {
 				ArrayList<ArrayList<Integer>> locationList = metabolitesLocationsList();
 				setMetabolitesFindLocationsList(locationList);
 				if (locationList.size() == 0) {
-					findReplaceDialog.setVisible(false);
-					JOptionPane.showMessageDialog(null,                
-							"String Not Found.",                
-							"Find Error",                                
-							JOptionPane.ERROR_MESSAGE); 
-					findReplaceDialog.setVisible(true);					
+					notFoundAction();				
 				} else {
 					// set focus to first found item
 					metabolitesTable.changeSelection(locationList.get(0).get(0), locationList.get(0).get(1), false, false);
@@ -7348,43 +7408,55 @@ public class GraphicalInterface extends JFrame {
 		}
 	};
 	
-	public ArrayList<ArrayList<Integer>> metabolitesLocationsList() {
+	public ArrayList<ArrayList<Integer>> metabolitesLocationsList() {		
 		int rowStartIndex = 0;
 		int rowEndIndex = metabolitesTable.getRowCount();
 		// start with 1 to avoid including hidden id column
 		int colStartIndex = 1;
 		int colEndIndex = metabolitesTable.getColumnCount();
 		if (searchSelectedArea) {
-			int numcols=metabolitesTable.getSelectedColumnCount(); 
-			int numrows=metabolitesTable.getSelectedRowCount(); 
-			int[] rowsselected=metabolitesTable.getSelectedRows(); 
-			int[] colsselected=metabolitesTable.getSelectedColumns();
-			if (numrows > 0 && getSelectionMode() != 1) {
-				rowStartIndex = rowsselected[0];
-				rowEndIndex = rowsselected[0] + numrows;
-			}			
-			if (numcols > 0 && getSelectionMode() != 2) {
-				colStartIndex = colsselected[0];
-				colEndIndex = colsselected[0] + numcols;
-			}			
-		}		
+			if (!findButtonMetabolitesClicked) {
+				int numcols=metabolitesTable.getSelectedColumnCount(); 
+				int numrows=metabolitesTable.getSelectedRowCount(); 
+				int[] rowsselected=metabolitesTable.getSelectedRows(); 
+				int[] colsselected=metabolitesTable.getSelectedColumns();
+				if (numrows > 0 && getSelectionMode() != 1) {
+					rowStartIndex = rowsselected[0];
+					rowEndIndex = rowsselected[0] + numrows;
+					selectedMetabolitesRowStartIndex = rowsselected[0];
+					selectedMetabolitesRowEndIndex = rowsselected[0] + numrows;
+				}			
+				if (numcols > 0 && getSelectionMode() != 2) {
+					colStartIndex = colsselected[0];
+					colEndIndex = colsselected[0] + numcols;
+					selectedMetabolitesColumnStartIndex = colsselected[0];
+					selectedMetabolitesColumnEndIndex = colsselected[0] + numcols;
+				}	
+			}					
+		} else {
+			selectedMetabolitesRowStartIndex = 0;
+			selectedMetabolitesRowEndIndex = metabolitesTable.getRowCount();
+			// start with 1 to avoid including hidden id column
+			selectedMetabolitesColumnStartIndex = 1;
+			selectedMetabolitesColumnEndIndex = metabolitesTable.getColumnCount();
+		}
 		ArrayList<ArrayList<Integer>> metabolitesLocationsList = new ArrayList<ArrayList<Integer>>();
-		for (int r = rowStartIndex; r < rowEndIndex; r++) {				
-			for (int c = colStartIndex; c < colEndIndex; c++) {					
+		for (int r = selectedMetabolitesRowStartIndex; r < selectedMetabolitesRowEndIndex; r++) {					
+			for (int c = selectedMetabolitesColumnStartIndex; c < selectedMetabolitesColumnEndIndex; c++) {					
 				int viewRow = metabolitesTable.convertRowIndexToModel(r);
 				if (metabolitesTable.getModel().getValueAt(viewRow, c) != null) {
 					String cellValue = (String) metabolitesTable.getModel().getValueAt(viewRow, c);
 					String findValue = findReplaceDialog.getFindText();
 					if (!matchCase) {
 						cellValue = cellValue.toLowerCase();
-						findValue = findValue.toLowerCase();
+						findValue = findValue.toLowerCase();						
 					}
 					if (cellValue.contains(findValue) && getVisibleMetabolitesColumns().contains(c)) {
 						ArrayList<Integer> rowColumnList = new ArrayList<Integer>();
 						rowColumnList.add(r);
 						rowColumnList.add(c);
 						metabolitesLocationsList.add(rowColumnList);
-					}
+					}					
 				}
 			}
 		}
@@ -7525,10 +7597,12 @@ public class GraphicalInterface extends JFrame {
 					setUpMetabolitesUndo(undoItem);
 				} else {
 					if (showErrorMessage = true) {
+						setFindReplaceAlwaysOnTop(false);
 						JOptionPane.showMessageDialog(null,                
 								getReplaceAllError(),                
 								GraphicalInterfaceConstants.REPLACE_ALL_ERROR_TITLE,                                
 								JOptionPane.ERROR_MESSAGE);
+						setFindReplaceAlwaysOnTop(true);
 					}
 					deleteMetabolitesPasteUndoItem();
 					validPaste = true;
@@ -7544,19 +7618,6 @@ public class GraphicalInterface extends JFrame {
 			// reset boolean values to default
 			LocalConfig.getInstance().yesToAllButtonClicked = false;
 			replaceAllMode = false;
-			getFindReplaceDialog().requestFocus();
-		}
-	};
-	
-	ActionListener replaceFindMetabolitesButtonActionListener = new ActionListener() {
-		public void actionPerformed(ActionEvent ae) {
-			if (tabbedPane.getSelectedIndex() == 1) {
-				metabolitesFindAll = false;
-				metabolitesReplace();
-				ArrayList<ArrayList<Integer>> locationList = metabolitesLocationsList();
-				setMetabolitesFindLocationsList(locationList);				
-				metabolitesFindNext();
-			}
 			getFindReplaceDialog().requestFocus();
 		}
 	};
@@ -7677,6 +7738,13 @@ public class GraphicalInterface extends JFrame {
 		metabolitesTable.repaint();	
 		findReplaceItem.setEnabled(true);
 		findbutton.setEnabled(true);
+	}
+	
+	// This avoids conflicts with error messages being on top of component
+	public void setFindReplaceAlwaysOnTop(boolean state) {
+		if (getFindReplaceDialog() != null) {
+			getFindReplaceDialog().setAlwaysOnTop(state);
+		}
 	}
 	
 	/*******************************************************************************/
