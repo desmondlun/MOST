@@ -6811,8 +6811,9 @@ public class GraphicalInterface extends JFrame {
 		findReplace.setIconImages(icons);
 		findReplace.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		findReplace.setAlwaysOnTop(true);        
-        //TODO: calculate x location based on screen size so find does not table obscure scroll bar
-        findReplace.setLocation(x + 420, y);
+		//findReplace.setLocation(x + 420, y);
+		// Find/Replace positioned at far right on screen so it does not obscure scroll bar
+        findReplace.setLocation((screenSize.width - findReplace.getSize().width) - 10, y);
         findReplace.setVisible(true);
         findReplace.addWindowListener(new WindowAdapter() {
 	        public void windowClosing(WindowEvent evt) {

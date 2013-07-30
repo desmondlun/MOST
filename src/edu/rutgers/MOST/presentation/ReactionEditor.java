@@ -19,7 +19,7 @@ import edu.rutgers.MOST.data.MetaboliteFactory;
 import edu.rutgers.MOST.data.ReactionFactory;
 import edu.rutgers.MOST.logic.ReactionParser;
 
-public class ReactionEditor extends JDialog {
+public class ReactionEditor extends JFrame {
 
 	public JButton okButton = new JButton("   OK   ");
 	public JButton cancelButton = new JButton("Cancel");
