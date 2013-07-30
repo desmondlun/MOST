@@ -31,7 +31,7 @@ import edu.rutgers.MOST.data.DatabaseCreator;
 import edu.rutgers.MOST.data.ReactionsMetaColumnManager;
 import edu.rutgers.MOST.data.TextReactionsModelReader;
 
-public class ReactionColumnNameInterface  extends JFrame {
+public class ReactionColumnNameInterface  extends JDialog {
 
 	public JComboBox<String> cbKnockout = new JComboBox<String>();
 	public JComboBox<String> cbFluxValue = new JComboBox<String>();

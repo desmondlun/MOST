@@ -30,7 +30,7 @@ import edu.rutgers.MOST.data.SettingsFactory;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterface.XMLFileFilter;
 
-public class CSVLoadInterface  extends JFrame {
+public class CSVLoadInterface  extends JDialog {
 
 	public JTextField columnNameField = new JTextField();
 	public static JButton metabFileButton = new JButton(GraphicalInterfaceConstants.CSV_FILE_LOAD_METAB_BUTTON);

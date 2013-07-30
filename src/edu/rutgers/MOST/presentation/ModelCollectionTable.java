@@ -74,6 +74,7 @@ class ModelCollectionTable
 		table.setColumnSelectionAllowed(false);
 		table.setRowSelectionAllowed(true); 
 		table.getSelectionModel().addListSelectionListener(new RowListener());
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);  
 
 		// Create a panel to hold all other components
 		topPanel = new JPanel();
@@ -166,8 +167,8 @@ class ModelCollectionTable
 		
 		ActionListener okButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				setVisible(false);
-				dispose();				
+				//setVisible(false);
+				//dispose();				
 			}
 		};
 

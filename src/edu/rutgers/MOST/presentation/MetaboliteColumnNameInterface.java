@@ -32,7 +32,7 @@ import edu.rutgers.MOST.data.DatabaseCreator;
 import edu.rutgers.MOST.data.MetabolitesMetaColumnManager;
 import edu.rutgers.MOST.data.TextMetabolitesModelReader;
 
-public class MetaboliteColumnNameInterface  extends JFrame {
+public class MetaboliteColumnNameInterface  extends JDialog {
 
 	public JComboBox<String> cbMetaboliteAbbreviation = new JComboBox<String>();
 	public JComboBox<String> cbMetaboliteName = new JComboBox<String>();
