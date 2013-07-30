@@ -957,7 +957,7 @@ public class GraphicalInterface extends JFrame {
 		});
 			
 	   */		
-			
+		
 		DynamicTreeDemo.treePanel.saveAsCSVItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 
 				saveOptFile = true;	
@@ -1120,7 +1120,8 @@ public class GraphicalInterface extends JFrame {
 				//fileList.setSelectedIndex(listModel.size() - 1);
 			
 //				String solutionName = GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1);
-				DynamicTreeDemo.treePanel.addObject(new Solution(GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1)));			
+				DynamicTreeDemo.treePanel.addObject(new Solution(GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1)));
+				DynamicTreeDemo.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 				
 				// Begin optimization
 
@@ -1816,6 +1817,8 @@ public class GraphicalInterface extends JFrame {
 		setTableCellFocused(0, 1, metabolitesTable);
 		setTableCellFocused(0, 1, reactionsTable);
 		formulaBar.setText((String) reactionsTable.getModel().getValueAt(0, 1));     			
+		
+		DynamicTreeDemo.treePanel.setNodeSelected(0);
 		
 		/************************************************************************/
 		//end set up tables
@@ -6623,6 +6626,7 @@ public class GraphicalInterface extends JFrame {
 			
 			DynamicTreeDemo.treePanel.addObject((DefaultMutableTreeNode)DynamicTreeDemo.treePanel.getRootNode().getChildAt(DynamicTreeDemo.treePanel.getRootNode().getChildCount() - 1), solution, true);
 			GraphicalInterface.outputTextArea.append("\n\n" + model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions, " + model.getNumGeneAssociations() + " unique gene associations\n" + "Maximum synthetic objective: " + objectiveValue + "\nKnockouts:" + kString);
+			DynamicTreeDemo.treePanel.setNodeSelected(DynamicTreeDemo.treePanel.getRootNode().getChildCount() - 1);
         }
         
         @Override
@@ -6701,6 +6705,7 @@ public class GraphicalInterface extends JFrame {
 					modelCollectionOKButtonClicked = false;
 					DynamicTreeDemo.treePanel.clear();
 					DynamicTreeDemo.treePanel.addObject(new Solution(GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1), getDatabaseName()));
+					DynamicTreeDemo.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 					progressBar.setVisible(false);
 				}				
 				timer.stop();

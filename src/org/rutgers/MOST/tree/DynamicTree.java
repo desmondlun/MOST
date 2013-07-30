@@ -350,4 +350,10 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
 		
 	}
 	
+	public void setNodeSelected(int id) {
+		javax.swing.tree.TreePath path = this.tree.getPathForRow(id);//pass the selected id here  
+		tree.setSelectionPath(path);  
+		tree.scrollPathToVisible(path);
+	}
+	
 }
