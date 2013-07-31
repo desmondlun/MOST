@@ -486,7 +486,12 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem addReacColumnItem = new JMenuItem("Add Column to Reactions Table");
 	public final JMenuItem addMetabColumnItem = new JMenuItem("Add Column to Metabolites Table"); 
 	public final JMenuItem editorMenu = new JMenuItem("Launch Reaction Editor");
+
+	public final JMenuItem formulaBarCutItem = new JMenuItem("Cut");
+	public final JMenuItem formulaBarCopyItem = new JMenuItem("Copy");
 	public final JMenuItem formulaBarPasteItem = new JMenuItem("Paste");
+	public final JMenuItem formulaBarDeleteItem = new JMenuItem("Delete");
+	public final JMenuItem formulaBarSelectAllItem = new JMenuItem("Select All");
 	
 	/*****************************************************************************/
 	// end menu items
@@ -1915,15 +1920,41 @@ public class GraphicalInterface extends JFrame {
 		});
 			
 		final JPopupMenu formulaBarPopupMenu = new JPopupMenu(); 
+		formulaBarPopupMenu.add(formulaBarCutItem);
+		formulaBarPopupMenu.add(formulaBarCopyItem);
 		formulaBarPopupMenu.add(formulaBarPasteItem);
+		formulaBarPopupMenu.add(formulaBarDeleteItem);
+		formulaBarPopupMenu.addSeparator();
+		formulaBarPopupMenu.add(formulaBarSelectAllItem);
 		if (reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REVERSIBLE_COLUMN || reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
 			formulaBarPasteItem.setEnabled(false);
 		} else {
 			formulaBarPasteItem.setEnabled(true);
 		}
+		formulaBarCutItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 
+				setClipboardContents(formulaBar.getText());
+				formulaBar.setText("");				
+			}
+		});
+		formulaBarCopyItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 	
+				setClipboardContents(formulaBar.getText());
+			}
+		});
 		formulaBarPasteItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 	
 				formulaBar.setText(getClipboardContents(GraphicalInterface.this));
+			}
+		});
+		formulaBarDeleteItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 	
+				formulaBar.setText("");
+			}
+		});
+		formulaBarSelectAllItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 	
+				formulaBar.selectAll();
 			}
 		});
 		
@@ -5542,10 +5573,10 @@ public class GraphicalInterface extends JFrame {
 	}
 	
 	private static void setClipboardContents(String s) {
-	      StringSelection selection = new StringSelection(s);
-	      Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
-	            selection, selection);
-	   }
+		StringSelection selection = new StringSelection(s);
+		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
+				selection, selection);
+	}
 
 	/*****************************************************************************/
 	//end clipboard
