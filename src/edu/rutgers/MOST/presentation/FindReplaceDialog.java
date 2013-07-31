@@ -3,9 +3,11 @@ package edu.rutgers.MOST.presentation;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -23,15 +25,15 @@ public class FindReplaceDialog extends JDialog {
 	public static JButton replaceFindButton = new JButton("Replace/Find");
 	public static JButton doneButton = new JButton("Done");
 	public static JLabel findLabel = new JLabel("Find What:");
-	public static JLabel replaceLabel = new JLabel("Replace:");
-	public static final JTextField findField = new JTextField();
-	public static final JTextField replaceField = new JTextField();
+	public static JLabel replaceLabel = new JLabel("Replace With:");
+	public static final SizedComboBox findBox = new SizedComboBox();
+	public static final SizedComboBox replaceBox = new SizedComboBox();
 	public static final JCheckBox caseCheckBox = new JCheckBox("Match Case");//1
 	public static final JCheckBox wrapCheckBox = new JCheckBox("Wrap Around");
 	public static final JCheckBox selectedAreaCheckBox = new JCheckBox("Selected Area  ");
 	public static final JCheckBox backwardsCheckBox = new JCheckBox("Backwards");
-	//public static final SizedComboBox tableColumns = new SizedComboBox();
-	//public static final JComboBox<String> tableColumns = new JComboBox<String>(); 
+	//public static final SizedComboBox cb = new SizedComboBox();
+	//public static final JComboBox<String> cb = new JComboBox<String>();
 		
 	private String findText;
 
@@ -63,10 +65,16 @@ public class FindReplaceDialog extends JDialog {
         JLabel searchLabel = new JLabel("Search:"); 
         JLabel placeholder = new JLabel(""); 
         
-        //populateTableColumns();
+        populateComboBox(findBox, LocalConfig.getInstance().getFindEntryList());
+        populateComboBox(replaceBox, LocalConfig.getInstance().getReplaceEntryList());
          
-        findField.setText("");
-        replaceField.setText("");
+        findBox.setSelectedIndex(-1);
+        findBox.setEditable(true);
+        final JTextField findField = (JTextField)findBox.getEditor().getEditorComponent();
+        
+        replaceBox.setSelectedIndex(-1);
+        replaceBox.setEditable(true);
+        final JTextField replaceField = (JTextField)replaceBox.getEditor().getEditorComponent();
         
         caseCheckBox.setSelected(false);
     	wrapCheckBox.setSelected(false);
@@ -74,9 +82,9 @@ public class FindReplaceDialog extends JDialog {
         backwardsCheckBox.setSelected(false);
         
         findLabel.setDisplayedMnemonic('F');
-        findLabel.setLabelFor(findField);
+        findLabel.setLabelFor(findBox);
         replaceLabel.setDisplayedMnemonic('E');
-        replaceLabel.setLabelFor(replaceField);
+        replaceLabel.setLabelFor(replaceBox);
         findButton.setMnemonic(KeyEvent.VK_N);
         findAllButton.setMnemonic(KeyEvent.VK_L);
         replaceButton.setMnemonic(KeyEvent.VK_R);
@@ -120,8 +128,8 @@ public class FindReplaceDialog extends JDialog {
         				.addComponent(findAllButton, getButtonWidth(), getButtonWidth(), getButtonWidth())
         				.addComponent(replaceFindButton, getButtonWidth(), getButtonWidth(), getButtonWidth()))
         		.addGroup(layout.createParallelGroup(LEADING)
-                    .addComponent(findField, getTextAreaWidth(), getTextAreaWidth(), getTextAreaWidth())
-                    .addComponent(replaceField, getTextAreaWidth(), getTextAreaWidth(), getTextAreaWidth())
+                    .addComponent(findBox, getTextAreaWidth(), getTextAreaWidth(), getTextAreaWidth())
+                    .addComponent(replaceBox, getTextAreaWidth(), getTextAreaWidth(), getTextAreaWidth())
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(LEADING)
                         		.addComponent(wrapCheckBox) 
@@ -136,10 +144,10 @@ public class FindReplaceDialog extends JDialog {
             layout.setVerticalGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(BASELINE)
                     .addComponent(findLabel)
-                    .addComponent(findField, getTextAreaHeight(), getTextAreaHeight(), getTextAreaHeight()))
+                    .addComponent(findBox, getTextAreaHeight(), getTextAreaHeight(), getTextAreaHeight()))
                 .addGroup(layout.createParallelGroup(BASELINE)
                     .addComponent(replaceLabel)
-                    .addComponent(replaceField, getTextAreaHeight(), getTextAreaHeight(), getTextAreaHeight()))
+                    .addComponent(replaceBox, getTextAreaHeight(), getTextAreaHeight(), getTextAreaHeight()))
                 .addGap(10)
                 .addGroup(layout.createParallelGroup(LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -201,7 +209,7 @@ public class FindReplaceDialog extends JDialog {
 				}
 			}
 		});
-		    
+        
         replaceField.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
 				enableReplaceButtons();
@@ -228,6 +236,7 @@ public class FindReplaceDialog extends JDialog {
         			replaceFindButton.setEnabled(true);
     			} 
     			replaceAllButton.setEnabled(false);
+    			updateComboBox(findBox, LocalConfig.getInstance().getFindEntryList(), findField.getText()); 
     		}
     	};
 
@@ -241,6 +250,7 @@ public class FindReplaceDialog extends JDialog {
     				replaceAllButton.setEnabled(true);
     			}    			
     			replaceFindButton.setEnabled(false);
+    			updateComboBox(findBox, LocalConfig.getInstance().getFindEntryList(), findField.getText()); 
     		}
     	};
 
@@ -248,7 +258,8 @@ public class FindReplaceDialog extends JDialog {
         
     	ActionListener replaceButtonActionListener = new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
-    			setReplaceText(replaceField.getText());	
+    			setReplaceText(replaceField.getText());
+    			updateComboBox(replaceBox, LocalConfig.getInstance().getReplaceEntryList(), replaceField.getText());  
     		}
     	};
 
@@ -256,7 +267,8 @@ public class FindReplaceDialog extends JDialog {
         
         ActionListener replaceAllButtonActionListener = new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
-    			setReplaceText(replaceField.getText());		
+    			setReplaceText(replaceField.getText());	
+    			updateComboBox(replaceBox, LocalConfig.getInstance().getReplaceEntryList(), replaceField.getText());  
     		}
     	};
 
@@ -271,6 +283,8 @@ public class FindReplaceDialog extends JDialog {
         			replaceFindButton.setEnabled(true);
     			}
     			replaceAllButton.setEnabled(false);
+    			updateComboBox(findBox, LocalConfig.getInstance().getFindEntryList(), findField.getText());  
+    			updateComboBox(replaceBox, LocalConfig.getInstance().getReplaceEntryList(), replaceField.getText()); 
     		}
     	};
 
@@ -287,7 +301,7 @@ public class FindReplaceDialog extends JDialog {
     	
     	ActionListener searchBackwardsActionListener = new ActionListener() {
     		public void actionPerformed(ActionEvent actionEvent) {
-    			setFindText(findField.getText());								
+    			//setFindText(findField.getText());								
     		}
     	};
     	
@@ -327,6 +341,20 @@ public class FindReplaceDialog extends JDialog {
     { 
         return 25; 
     }
+    
+    public void populateComboBox(SizedComboBox cb, ArrayList<String> list) {
+    	cb.removeAllItems();
+        for (int i = 0; i < list.size(); i++) {
+            cb.addItem(list.get(i));
+        }
+    }
+
+    public void updateComboBox(SizedComboBox cb, ArrayList<String> list, String entry) {    	
+    	if (!list.contains(entry)) {
+    		cb.addItem(entry);
+    		list.add(entry);
+    	}        
+	}
     
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {

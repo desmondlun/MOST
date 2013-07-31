@@ -503,6 +503,26 @@ public class LocalConfig {
 		this.hiddenMetabolitesColumns = hiddenMetabolitesColumns;
 	}
 	
+	private static  ArrayList<String> findEntryList = new ArrayList<String>();
+	
+	public static ArrayList<String> getFindEntryList() {
+		return findEntryList;
+	}
+
+	public static void setFindEntryList(ArrayList<String> findEntryList) {
+		LocalConfig.findEntryList = findEntryList;
+	}
+
+	private static  ArrayList<String> replaceEntryList = new ArrayList<String>();
+	
+	public static ArrayList<String> getReplaceEntryList() {
+		return replaceEntryList;
+	}
+
+	public static void setReplaceEntryList(ArrayList<String> replaceEntryList) {
+		LocalConfig.replaceEntryList = replaceEntryList;
+	}
+	
 	/********************************************************************************/
 	// undo/redo
 	/********************************************************************************/
@@ -526,52 +546,6 @@ public class LocalConfig {
 	public static void setRedoItemMap(Map<Object, Object> redoItemMap) {
 		LocalConfig.redoItemMap = redoItemMap;
 	}
-	
-	/*
-	private static Map<Object, Object> reactionUndoItemMap = new HashMap<Object, Object>();	
-
-	public static Map<Object, Object> getReactionUndoItemMap() {
-		return reactionUndoItemMap;
-	}
-
-	public static void setReactionUndoItemMap(
-			Map<Object, Object> reactionUndoItemMap) {
-		LocalConfig.reactionUndoItemMap = reactionUndoItemMap;
-	}
-
-	private static Map<Object, Object> metaboliteUndoItemMap = new HashMap<Object, Object>();
-	
-	public static Map<Object, Object> getMetaboliteUndoItemMap() {
-		return metaboliteUndoItemMap;
-	}
-
-	public static void setMetaboliteUndoItemMap(
-			Map<Object, Object> metaboliteUndoItemMap) {
-		LocalConfig.metaboliteUndoItemMap = metaboliteUndoItemMap;
-	}
-	
-	private static Map<Object, Object> reactionRedoItemMap = new HashMap<Object, Object>();	
-
-	public static Map<Object, Object> getReactionRedoItemMap() {
-		return reactionRedoItemMap;
-	}
-
-	public static void setReactionRedoItemMap(
-			Map<Object, Object> reactionRedoItemMap) {
-		LocalConfig.reactionRedoItemMap = reactionRedoItemMap;
-	}
-
-	private static Map<Object, Object> metaboliteRedoItemMap = new HashMap<Object, Object>();
-	
-	public static Map<Object, Object> getMetaboliteRedoItemMap() {
-		return metaboliteRedoItemMap;
-	}
-
-	public static void setMetaboliteRedoItemMap(
-			Map<Object, Object> metaboliteUndoItemMap) {
-		LocalConfig.metaboliteRedoItemMap = metaboliteRedoItemMap;
-	}
-	*/
 	
 	private Integer undoMenuIndex;
 

@@ -220,25 +220,8 @@ public class ReactionUndoItem implements UndoItem {
 			.prepareStatement("update reactions set " + dbReactionsColumnNameFromIndex(this.getColumn()) + "=? where id=?;");
 			prep.setString(1, this.oldValue);
 			prep.setInt(2, this.getId());
-			conn.setAutoCommit(true);
+			conn.setAutoCommit(true);			
 			prep.executeUpdate();
-			
-			/*
-			System.out.println("undo added" + this.addedMetabolites);
-			for (int i = 0; i < this.addedMetabolites.size(); i++) {
-				String abbrev = (String) getKeyFromValue(LocalConfig.getInstance().getMetaboliteIdNameMap(), this.addedMetabolites.get(i)); 
-				LocalConfig.getInstance().getMetaboliteIdNameMap().remove(abbrev);
-				LocalConfig.getInstance().getMetaboliteUsedMap().remove(abbrev);
-				int maxId = LocalConfig.getInstance().getMaxMetaboliteId();
-				maxId -= 1;
-				LocalConfig.getInstance().setMaxMetaboliteId(maxId);
-				PreparedStatement prep2 = conn
-				.prepareStatement("update metabolites set metabolite_abbreviation='' where id=?;");
-				prep2.setInt(1, this.addedMetabolites.get(i));
-				conn.setAutoCommit(true);
-				prep2.executeUpdate();
-			}
-			*/
 			
 			if (this.column.equals(GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN)) {
 				//System.out.println("undo added" + this.addedMetabolites);
