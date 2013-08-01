@@ -112,18 +112,28 @@ public class FindReplaceDialog extends JDialog {
         
         findCutItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 
-				setClipboardContents(findField.getText());
-				findField.setText("");				
+				setClipboardContents(findField.getSelectedText());
+				String selection = findField.getSelectedText();	             
+	            if(selection==null){
+	                return;
+	            }
+	            findField.replaceSelection("");				
 			}
 		});
 		findCopyItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 	
-				setClipboardContents(findField.getText());
+				setClipboardContents(findField.getSelectedText());
 			}
 		});
 		findPasteItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 	
-				findField.setText(getClipboardContents(FindReplaceDialog.this));
+	            try{
+	                String clip_string = getClipboardContents(FindReplaceDialog.this);
+	                findField.replaceSelection(clip_string);
+	                 
+	            }catch(Exception excpt){
+	                 
+	            }
 			}
 		});
 		findDeleteItem.addActionListener(new ActionListener() {
@@ -163,18 +173,28 @@ public class FindReplaceDialog extends JDialog {
         
         replaceCutItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 
-				setClipboardContents(replaceField.getText());
-				replaceField.setText("");				
+				setClipboardContents(replaceField.getSelectedText());
+				String selection = replaceField.getSelectedText();	             
+	            if(selection==null){
+	                return;
+	            }
+	            replaceField.replaceSelection("");
 			}
 		});
 		replaceCopyItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 	
-				setClipboardContents(replaceField.getText());
+				setClipboardContents(replaceField.getSelectedText());
 			}
 		});
 		replacePasteItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 	
-				replaceField.setText(getClipboardContents(FindReplaceDialog.this));
+				try{
+	                String clip_string = getClipboardContents(FindReplaceDialog.this);
+	                replaceField.replaceSelection(clip_string);
+	                 
+	            }catch(Exception excpt){
+	                 
+	            }
 			}
 		});
 		replaceDeleteItem.addActionListener(new ActionListener() {
@@ -223,6 +243,15 @@ public class FindReplaceDialog extends JDialog {
         backwardsCheckBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         selectedAreaCheckBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
  
+        findCutItem.setEnabled(false);
+		findCopyItem.setEnabled(false);
+		findDeleteItem.setEnabled(false);
+		findSelectAllItem.setEnabled(false);
+		replaceCutItem.setEnabled(false);
+		replaceCopyItem.setEnabled(false);
+		replaceDeleteItem.setEnabled(false);
+		replaceSelectAllItem.setEnabled(false);
+        
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setAutoCreateGaps(true);
@@ -296,12 +325,15 @@ public class FindReplaceDialog extends JDialog {
         findField.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
 				enableFindButtons();
+				fieldChangeAction();
 			}
 			public void removeUpdate(DocumentEvent e) {
 				enableFindButtons();
+				fieldChangeAction();
 			}
 			public void insertUpdate(DocumentEvent e) {
 				enableFindButtons();
+				fieldChangeAction();
 			}
 
 			public void enableFindButtons() {
@@ -320,22 +352,51 @@ public class FindReplaceDialog extends JDialog {
 					backwardsCheckBox.setEnabled(false);
 				}
 			}
+			public void fieldChangeAction() {
+				if (findField.getText().length() > 0) {
+					findCutItem.setEnabled(true);
+					findCopyItem.setEnabled(true);
+					findDeleteItem.setEnabled(true);
+					findSelectAllItem.setEnabled(true);
+				} else {
+					findCutItem.setEnabled(false);
+					findCopyItem.setEnabled(false);
+					findDeleteItem.setEnabled(false);
+					findSelectAllItem.setEnabled(false);
+				}
+			}
 		});
         
         replaceField.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
 				enableReplaceButtons();
+				fieldChangeAction();
 			}
 			public void removeUpdate(DocumentEvent e) {
 				enableReplaceButtons();
+				fieldChangeAction();
 			}
 			public void insertUpdate(DocumentEvent e) {
 				enableReplaceButtons();
+				fieldChangeAction();
 			}
 
 			public void enableReplaceButtons() {
 				if (replaceField.getText() != null && replaceField.getText().trim().length() > 0) {
 					LocalConfig.getInstance().replaceFieldChanged = true;
+				}
+			}
+			public void fieldChangeAction() {
+				if (replaceField.getText().length() > 0) {
+					replaceCutItem.setEnabled(true);
+					replaceCopyItem.setEnabled(true);
+					replaceDeleteItem.setEnabled(true);
+					replaceSelectAllItem.setEnabled(true);
+				} else {
+					replaceCutItem.setEnabled(false);
+					replaceCopyItem.setEnabled(false);
+					replaceDeleteItem.setEnabled(false);
+					replaceSelectAllItem.setEnabled(false);
 				}
 			}
 		});

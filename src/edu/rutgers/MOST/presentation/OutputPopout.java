@@ -1,8 +1,15 @@
 package edu.rutgers.MOST.presentation;
 
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
+
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import edu.rutgers.MOST.config.LocalConfig;
 
@@ -13,6 +20,8 @@ public class OutputPopout extends JFrame {
 
 	private static JTextArea    textArea;
 	private JFileChooser fileChooser = new JFileChooser(new java.io.File("."));
+	private final JMenuItem outputCopyItem = new JMenuItem("Copy");
+	private final JMenuItem outputSelectAllItem = new JMenuItem("Select All");
 
 	public OutputPopout() {
 		//... Create scrollable text area.
@@ -51,6 +60,55 @@ public class OutputPopout extends JFrame {
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
+		
+		final JPopupMenu outputPopupMenu = new JPopupMenu(); 
+		outputPopupMenu.add(outputCopyItem);
+		outputCopyItem.setEnabled(false);
+		outputCopyItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 	
+				setClipboardContents(textArea.getSelectedText());							
+			}
+		});
+		outputPopupMenu.add(outputSelectAllItem);
+		outputSelectAllItem.setEnabled(false);
+		outputSelectAllItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 
+				textArea.selectAll();							
+			}
+		});
+		
+		textArea.addMouseListener(new MouseAdapter() {
+
+			public void mousePressed(MouseEvent e)  {check(e);}
+			public void mouseReleased(MouseEvent e) {check(e);}
+
+			public void check(MouseEvent e) {
+				if (e.isPopupTrigger()) { //if the event shows the menu
+					outputPopupMenu.show(textArea, e.getX(), e.getY()); 
+				}
+			}
+		});	
+
+		textArea.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				fieldChangeAction();
+			}
+			public void removeUpdate(DocumentEvent e) {
+				fieldChangeAction();
+			}
+			public void insertUpdate(DocumentEvent e) {
+				fieldChangeAction();
+			}
+			public void fieldChangeAction() {
+				if (textArea.getText().length() > 0) {
+					outputCopyItem.setEnabled(true);
+					outputSelectAllItem.setEnabled(true);
+				} else {
+					outputCopyItem.setEnabled(false);
+					outputSelectAllItem.setEnabled(false);
+				}
+			}
+		});
 	}
 
 	class OpenAction implements ActionListener {
@@ -161,6 +219,47 @@ public class OutputPopout extends JFrame {
 		}
 	}
 
+	//from http://www.javakb.com/Uwe/Forum.aspx/java-programmer/21291/popupmenu-for-a-cell-in-a-JXTable
+	private static String getClipboardContents(Object requestor) {
+		Transferable t = Toolkit.getDefaultToolkit()
+		.getSystemClipboard().getContents(requestor);
+		if (t != null) {
+			DataFlavor df = DataFlavor.stringFlavor;
+			if (df != null) {
+				try {
+					Reader r = df.getReaderForText(t);
+					char[] charBuf = new char[512];
+					StringBuffer buf = new StringBuffer();
+					int n;
+					while ((n = r.read(charBuf, 0, charBuf.length)) > 0) {
+						buf.append(charBuf, 0, n);
+					}
+					r.close();
+					return (buf.toString());
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				} catch (UnsupportedFlavorException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+		return null;
+	}
+
+	private static boolean isClipboardContainingText(Object requestor) {
+		Transferable t = Toolkit.getDefaultToolkit()
+		.getSystemClipboard().getContents(requestor);
+		return t != null
+		&& (t.isDataFlavorSupported(DataFlavor.stringFlavor) || t
+				.isDataFlavorSupported(DataFlavor.plainTextFlavor));
+	}
+	
+	private static void setClipboardContents(String s) {
+	      StringSelection selection = new StringSelection(s);
+	      Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
+	            selection, selection);
+	}
+	
 	public static void main(String[] args) {
 		new OutputPopout();
 		//loadOutputPane("C://CMakeCache.txt");
