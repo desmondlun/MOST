@@ -26,37 +26,38 @@ public class Utilities {
 
 		// Make sure the file or directory exists and isn't write protected
 		if (!f.exists())
-			System.out.println("Delete: no such file or directory: " + fileName);
+			//System.out.println("Delete: no such file or directory: " + fileName);
 
 		if (!f.canRead())
-			System.out.println("Delete: can't read: "+ fileName);
+			//System.out.println("Delete: can't read: "+ fileName);
 		
 		if (!f.canWrite())
-			System.out.println("Delete: write protected: "+ fileName);
+			//System.out.println("Delete: write protected: "+ fileName);
 
 		if (!f.canExecute())
-			System.out.println("Delete: can't execute: "+ fileName);
+			//System.out.println("Delete: can't execute: "+ fileName);
 		
 		// If it is a directory, make sure it is empty
 		if (f.isDirectory()) {
 			String[] files = f.list();
-			if (files.length > 0)
-				System.out.println("Delete: directory not empty: " + fileName);
+			if (files.length > 0) {
+				//System.out.println("Delete: directory not empty: " + fileName);
+			}				
 		}
 		
         // Attempt to delete it
         boolean success = f.delete();
         if (success)
-        	System.out.println(fileName + " deletion succeeded");
-	    if (!success)
-			System.out.println(fileName + " deletion failed");
-	 
+        	//System.out.println(fileName + " deletion succeeded");
+	    if (!success) {
+	    	//System.out.println(fileName + " deletion failed");
+	    }	 
 	}
 	
 	public void deleteFileIfExists(String filename) {
 		File f = new File(filename);
 		if (f.exists()) {
-			System.out.println(filename);
+			//System.out.println(filename);
 			delete(filename);						
 		}
 	}
@@ -68,7 +69,7 @@ public class Utilities {
 
         if (!toBeRenamed.exists() || toBeRenamed.isDirectory()) {
 
-            System.out.println("File does not exist: " + file);
+            //System.out.println("File does not exist: " + file);
             return;
         }
 
@@ -76,9 +77,9 @@ public class Utilities {
 
         //Rename
         if (toBeRenamed.renameTo(newFile)) {
-            System.out.println("File has been renamed.");
+            //System.out.println("File has been renamed.");
         } else {
-            System.out.println("Error renmaing file");
+            //System.out.println("Error renmaing file");
         }
     }
 	

@@ -163,20 +163,20 @@ public class SettingsFactory {
 					currentElementValue = element.getName().toString();
 
 
-					System.out.println("Start Element: " + element.getName());
+					//System.out.println("Start Element: " + element.getName());
 
 					Iterator iterator = element.getAttributes();
 					while (iterator.hasNext()) {
 						Attribute attribute = (Attribute) iterator.next();
 						QName name = attribute.getName();
 						String value = attribute.getValue();
-						System.out.println("Attribute name/value: " + name + "/" + value);
+						//System.out.println("Attribute name/value: " + name + "/" + value);
 					}
 				}
 
 				if (event.isEndElement()) {
 					EndElement element = (EndElement) event;
-					System.out.println("End element:" + element.getName());
+					//System.out.println("End element:" + element.getName());
 				}
 
 				if (event.isCharacters()) {
@@ -187,7 +187,7 @@ public class SettingsFactory {
 					}
 					currentElementValue = "";
 
-					System.out.println("Text: " + characters.getData());
+					//System.out.println("Text: " + characters.getData());
 				}
 			}
 		} catch (FileNotFoundException e ) {

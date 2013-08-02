@@ -95,7 +95,6 @@ public class ReactionFactory {
 			}
 			Connection conn;
 			try {
-				System.out.println(databaseName);
 				conn = DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db"); // TODO:
 				PreparedStatement prep = conn
 				.prepareStatement("select id, knockout, reaction_abbreviation, reaction_name, "
@@ -315,7 +314,7 @@ public class ReactionFactory {
 				Statement stat = conn.createStatement();
 				ResultSet rs = stat.executeQuery("select distinct gene_associations from reactions where length(reaction_abbreviation) > 0;");
 
-				System.out.println(rs.getRow());
+				//System.out.println(rs.getRow());
 				
 				while (rs.next()) {
 					geneAssociations.add(rs.getString("gene_associations")); 
@@ -349,8 +348,7 @@ public class ReactionFactory {
 
 				Statement stat = conn.createStatement();
 				ResultSet rs = stat.executeQuery("select synthetic_objective from reactions;");
-				System.out.println("ReactionFactory, columnName = "
-						+ columnName);
+				//System.out.println("ReactionFactory, columnName = " + columnName);
 //				ResultSet rs = stat.executeQuery("select " + columnName + " from reactions;");
 
 				while (rs.next()) {

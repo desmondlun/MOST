@@ -134,7 +134,6 @@ public class OptionComponent extends JPanel {
         	if (isEnabled()) {
         		if(e.getX() <= left) {
         			buttonClicked = true;
-        			//System.out.println("button clicked");
         		} else {
         			buttonClicked = false;
         			getPopupMenu().setBackground(new Color(190, 190, 190));

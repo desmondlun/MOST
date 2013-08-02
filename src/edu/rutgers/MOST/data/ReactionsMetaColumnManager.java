@@ -168,7 +168,7 @@ public class ReactionsMetaColumnManager {
 
 	public void changeColumnName(String databaseName, String columnName, int id) {
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
-		System.out.println("name " + columnName + "id " + id);
+		//System.out.println("name " + columnName + "id " + id);
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {

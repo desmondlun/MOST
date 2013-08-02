@@ -65,6 +65,6 @@ public class SolverFactory {
 		
 		double obj = solver.optimize();
 		
-		System.out.println(obj);
+		//System.out.println(obj);
 	}
 }

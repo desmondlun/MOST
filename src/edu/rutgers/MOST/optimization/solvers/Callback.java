@@ -34,8 +34,10 @@ public class Callback extends GRBCallback {
 			}
 		}
 		catch (GRBException e) {
+			/*
 			System.out.println("Error code: " + e.getErrorCode() + ". " +
 			          e.getMessage());
+			          */
 			      e.printStackTrace();
 		}
 	}

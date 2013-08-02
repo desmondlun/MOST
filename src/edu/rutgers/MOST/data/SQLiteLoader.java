@@ -210,11 +210,11 @@ public class SQLiteLoader {
 			ResultSet rs = stat.executeQuery("select metabolite_abbreviation from metabolites;");
 			while (rs.next()) {		
 				String abbrev = rs.getString("metabolite_abbreviation");
-				System.out.println(abbrev);
+				//System.out.println(abbrev);
 				Integer id = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(abbrev);	
-				System.out.println(id);
+				//System.out.println(id);
 				if (parser.isSuspicious(abbrev)) {
-					System.out.println("susp " + abbrev);
+					//System.out.println("susp " + abbrev);
 					if (!suspiciousMetabolites.contains(id)) {
 						suspiciousMetabolites.add(id);
 					}							

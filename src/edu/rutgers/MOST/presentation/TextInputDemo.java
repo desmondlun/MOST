@@ -74,7 +74,7 @@ public class TextInputDemo extends JDialog
 	private int count;
 	private JLabel counter;
 	private JFormattedTextField threadNum;
-	private JComboBox<String> columnList;
+	//private JComboBox<String> columnList;
 
     public TextInputDemo(GraphicalInterface parent) {
 //        setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
@@ -97,7 +97,7 @@ public class TextInputDemo extends JDialog
         leftHalf.setLayout(new BoxLayout(leftHalf,
                                          BoxLayout.PAGE_AXIS));
         leftHalf.add(createEntryFields());
-        leftHalf.add(createComboBox());
+        //leftHalf.add(createComboBox());
         leftHalf.add(createButtons());
         leftHalf.add(createTimer());
 
@@ -111,6 +111,7 @@ public class TextInputDemo extends JDialog
 //        timer.start();
     }
 
+    /*
     private Component createComboBox() {
 		// TODO Auto-generated method stub
     	JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -119,6 +120,7 @@ public class TextInputDemo extends JDialog
     	panel.add(columnList);
 		return panel;
 	}
+	*/
     
     private JComponent createTimer() {
     	JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -170,8 +172,8 @@ public class TextInputDemo extends JDialog
             stopButton.setEnabled(true);
             
             // database
-        	System.out.println("comboBox, LocalConfig.getInstance().getLoadedDatabase() = " + LocalConfig.getInstance().getLoadedDatabase());
-        	System.out.println("comboBox, LocalConfig.getInstance().getOptimizationFilesList() = " + LocalConfig.getInstance().getOptimizationFilesList().get(LocalConfig.getInstance().getOptimizationFilesList().size() - 1));
+        	//System.out.println("comboBox, LocalConfig.getInstance().getLoadedDatabase() = " + LocalConfig.getInstance().getLoadedDatabase());
+        	//System.out.println("comboBox, LocalConfig.getInstance().getOptimizationFilesList() = " + LocalConfig.getInstance().getOptimizationFilesList().get(LocalConfig.getInstance().getOptimizationFilesList().size() - 1));
         	
         	String solutionName = GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1);
 			DynamicTreeDemo.treePanel.addObject(new Solution(solutionName, solutionName));
@@ -190,12 +192,15 @@ public class TextInputDemo extends JDialog
         	gi.gdbbTask.getModel().setThreadNum((new Integer(threadNum.getText())).intValue());
         	
         	// select column
+        	/*
         	System.out.println("columnList.getSelectedIndex() = "
 					+ columnList.getSelectedIndex());
-        	
-        	ReactionFactory.setColumnName("meta_" + (columnList.getSelectedIndex() + 1));
+        	*/
+        	//ReactionFactory.setColumnName("meta_" + (columnList.getSelectedIndex() + 1));
+        	/*
         	System.out.println("ReactionFactory.getColumnName = "
 					+ ReactionFactory.getColumnName());
+					*/
         	gi.gdbbTask.execute();
         	this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         }
@@ -385,10 +390,12 @@ public class TextInputDemo extends JDialog
 		// TODO Auto-generated method stub
 		ReactionsMetaColumnManager manager = new ReactionsMetaColumnManager();
     	ArrayList<String> columnNames = manager.getColumnNames(loadedDatabase);
-    	System.out.println("columnNames = " + columnNames);
-    	columnList.removeAllItems();
+    	//System.out.println("columnNames = " + columnNames);
+    	//columnList.removeAllItems();
+    	/*
     	for(int i = 0; i < columnNames.size(); i++) {
     		columnList.addItem(columnNames.get(i));
     	}
+    	*/
 	}
 }

@@ -506,8 +506,8 @@ public class FindReplaceDialog extends JDialog {
     } 
     
     private int getTextAreaWidth() 
-    { 
-        return 120; 
+    {  
+        return 120;
     }
     
     private int getTextAreaHeight() 

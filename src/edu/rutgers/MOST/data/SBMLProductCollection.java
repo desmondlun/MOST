@@ -137,7 +137,7 @@ public class SBMLProductCollection implements ModelProductCollection {
 		 
 		while(iterator.hasNext()){
 			SBMLProduct aProduct = (SBMLProduct)iterator.next();
-			System.out.print("\nabbr" + aProduct.toString());
+			//System.out.print("\nabbr" + aProduct.toString());
 		}
 	}
 

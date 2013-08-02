@@ -2995,7 +2995,7 @@ public class GraphicalInterface extends JFrame {
 				if (LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {				
 					for (int i = 0; i < LocalConfig.getInstance().getOptimizationFilesList().size(); i++) {
 						// TODO: determine where and how to display these messages
-						System.out.println(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".db will be saved.");
+						//System.out.println(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".db will be saved.");
 					}
 				}
 				LocalConfig.getInstance().getOptimizationFilesList().clear();
@@ -6537,7 +6537,7 @@ public class GraphicalInterface extends JFrame {
 							JOptionPane.ERROR_MESSAGE);
 				}
 				// may want to print to output pane if used as console
-				System.out.println(key + " cannot be deleted since it participates in one or more reactions.");
+				//System.out.println(key + " cannot be deleted since it participates in one or more reactions.");
 				// participating metabolite in selected rows
 				participant = true; // prevents message from being displayed multiple times
 			} else {
@@ -7307,7 +7307,7 @@ public class GraphicalInterface extends JFrame {
 			
 		} else {
 			//TODO: Display an error message here in the unlikely event that there is an error
-			System.out.println("String not found");
+			//System.out.println("String not found");
 		}
 		getFindReplaceDialog().requestFocus();
 	}
@@ -7658,7 +7658,7 @@ public class GraphicalInterface extends JFrame {
 			
 		} else {
 			//TODO: Display an error message here in the unlikely event that there is an error
-			System.out.println("String not found");
+			//System.out.println("String not found");
 		}
 		getFindReplaceDialog().requestFocus();
 	}
@@ -7939,7 +7939,7 @@ public class GraphicalInterface extends JFrame {
 		if (LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {
 			for (int i = 0; i < LocalConfig.getInstance().getOptimizationFilesList().size(); i++) {
 				// TODO: determine where and how to display these messages, and actually delete these files
-				System.out.println(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".db will be deleted.");
+				//System.out.println(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".db will be deleted.");
 				u.delete(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".db");
 				File f = new File(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".log");
 				if (f.exists()) {
@@ -8712,10 +8712,12 @@ public class GraphicalInterface extends JFrame {
 				JOptionPane.QUESTION_MESSAGE, 
 				null, options, options[0]);
 		if (choice == JOptionPane.YES_OPTION) {//here
+			/*
 			System.out.println("database name: "
 					+ LocalConfig.getInstance()
 							.getOptimizationFilesList()
 							.get(DynamicTree.getRow() - 1) + ".db");
+							*/
 			u.delete(LocalConfig.getInstance().getOptimizationFilesList().get(DynamicTree.getRow() - 1) + ".db");
 			File f = new File(LocalConfig.getInstance().getOptimizationFilesList().get(DynamicTree.getRow() - 1) + ".log");
 			if (f.exists()) {

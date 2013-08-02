@@ -702,6 +702,7 @@ public class MetaboliteUndoItem implements UndoItem {
 	}
 	
 	public static void main(String[] args) {
+		/*
 		MetaboliteUndoItem m = new MetaboliteUndoItem();
 		m.setDatabaseName("untitled");
 		m.setColumn(1);
@@ -719,6 +720,7 @@ public class MetaboliteUndoItem implements UndoItem {
 		System.out.println(m.createUndoDescription());
 		System.out.println(m.toString());
 		m.undo();
+		*/
 	}
 	
 }

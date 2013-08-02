@@ -51,7 +51,7 @@ public class ReactionsUpdater {
 					}
 				}
 			}
-			System.out.println("ru upd rxn old " + LocalConfig.getInstance().getMetaboliteUsedMap());
+			//System.out.println("ru upd rxn old " + LocalConfig.getInstance().getMetaboliteUsedMap());
 		}		
 		
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
@@ -136,7 +136,7 @@ public class ReactionsUpdater {
 								}
 								
 							}
-							System.out.println("ru upd rxn new " + LocalConfig.getInstance().getMetaboliteUsedMap());													
+							//System.out.println("ru upd rxn new " + LocalConfig.getInstance().getMetaboliteUsedMap());													
 						} else {
 							reactionEqunAbbr = " ";
 						}
@@ -299,8 +299,8 @@ public class ReactionsUpdater {
 			//update for old reaction
 			if (oldEquation != null && parser.isValid(oldEquation)) {
 				ArrayList<ArrayList<ArrayList<String>>> oldReactionList = parser.reactionList(oldEquation);
-				System.out.println(oldEquation);
-				System.out.println("old " + oldReactionList);
+				//System.out.println(oldEquation);
+				//System.out.println("old " + oldReactionList);
 				
 				//remove old species from used map
 				for (int x = 0; x < oldReactionList.size(); x++) {
@@ -317,7 +317,7 @@ public class ReactionsUpdater {
 						}					
 					}
 				}
-				System.out.println("ru ure old used " + LocalConfig.getInstance().getMetaboliteUsedMap());
+				//System.out.println("ru ure old used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 			}
 
 			try {
@@ -568,7 +568,7 @@ public class ReactionsUpdater {
 					//Invalid reaction
 					valid = false;
 				}
-				System.out.println("ru ure new used " + LocalConfig.getInstance().getMetaboliteUsedMap());
+				//System.out.println("ru ure new used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 				
 				if (!valid) {
 					String deleteReac = "delete from reaction_reactants where reaction_id=" + id + ";";
@@ -577,7 +577,7 @@ public class ReactionsUpdater {
 					stat.executeUpdate(deleteProd);
 					if (newEquation != null && newEquation.trim().length() > 0) {
 						LocalConfig.getInstance().getInvalidReactions().add(newEquation);
-						System.out.println("invalid " + LocalConfig.getInstance().getInvalidReactions());
+						//System.out.println("invalid " + LocalConfig.getInstance().getInvalidReactions());
 					}	
 				}
 				parser.invalidSyntax = false;
@@ -652,7 +652,7 @@ public class ReactionsUpdater {
 				}
 			}			
 		}
-		System.out.println("del used map" + LocalConfig.getInstance().getMetaboliteUsedMap());		
+		//System.out.println("del used map" + LocalConfig.getInstance().getMetaboliteUsedMap());		
 	}
 	
 	// methods used if "No" button is pressed in order to reconstruct reaction equation with species omitted

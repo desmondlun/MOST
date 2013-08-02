@@ -158,12 +158,12 @@ public class GurobiSolver extends Solver {
 			Double value = (Double) m.getValue();
 			GRBVar var = this.vars.get(key);
 			expr.addTerm(value, var);
-			System.out.println("key = " + key + " value = " + value);
-			System.out.println("objType: " + this.objType);
+			//System.out.println("key = " + key + " value = " + value);
+			//System.out.println("objType: " + this.objType);
 		}
 
 		try {
-			System.out.println(expr);
+			//System.out.println(expr);
 			model.setObjective(expr, getGRBObjType(this.objType));
 			//DEGEN: Debugging to see model
 			

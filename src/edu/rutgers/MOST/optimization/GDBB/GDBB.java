@@ -200,7 +200,7 @@ public class GDBB extends Thread {
 		
 		sw.stop();
 		long setVars_time = sw.getNanoTime();
-		System.out.println("setVars time: " + setVars_time + " ns");
+		//System.out.println("setVars time: " + setVars_time + " ns");
 			
 //		System.out.println("**** End setting problem variables ****");
 	}
@@ -212,7 +212,7 @@ public class GDBB extends Thread {
 	
 	private void setConstraints(Vector<ModelReaction> reactions, ConType conType, double bValue) {
 		
-		System.out.println("**** Start problem construction ****");
+		//System.out.println("**** Start problem construction ****");
 		
 		int rowsE = sMatrix.size() + reactions.size() + 1;	//	m + n + 1
 		E = new ArrayList<Map<Integer, Double>>(rowsE);
@@ -390,7 +390,7 @@ public class GDBB extends Thread {
 		
 		GDBB.getSolver().addConstraint(Mb.get(reactions_2), ConType.LESS_EQUAL, this.model.getC());
 		
-		System.out.println("**** End problem construction ****");
+		//System.out.println("**** End problem construction ****");
 	}
 	
 	//	Setting Synthetic Objective Function
@@ -453,16 +453,18 @@ public class GDBB extends Thread {
 		ArrayList<Double> variables = gdbb.getSolution();
 		
 		try {
-			System.out.println("Main Thread");
+			//System.out.println("Main Thread");
 			gdbb.join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
+		/*
 		System.out.println("Max objective: " + gdbb.getMaxObj());
 		System.out.println("Variables:");
 		System.out.println(variables);
+		*/
 	}
 	
 	public void stopGDBB() {

@@ -167,7 +167,7 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
 				if (getRow() > 0) {
 					String item = GraphicalInterface.listModel.getElementAt(getRow());
 					LocalConfig.getInstance().getOptimizationFilesList().remove(item);	
-					System.out.println(LocalConfig.getInstance().getOptimizationFilesList());
+					//System.out.println(LocalConfig.getInstance().getOptimizationFilesList());
 				}				
 			}
 		});
@@ -179,7 +179,7 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
 				if (getRow() > 0) {
 					String item = GraphicalInterface.listModel.getElementAt(getRow());
 					LocalConfig.getInstance().getOptimizationFilesList().remove(item);	
-					System.out.println(LocalConfig.getInstance().getOptimizationFilesList());				
+					//System.out.println(LocalConfig.getInstance().getOptimizationFilesList());				
 				}				
 			}
 		});
@@ -191,7 +191,7 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
 				if (getRow() > 0) {
 					String item = GraphicalInterface.listModel.getElementAt(getRow());
 					LocalConfig.getInstance().getOptimizationFilesList().remove(item);	
-					System.out.println(LocalConfig.getInstance().getOptimizationFilesList());				
+					//System.out.println(LocalConfig.getInstance().getOptimizationFilesList());				
 				}				
 			}
 		});
@@ -211,7 +211,7 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
 //					GraphicalInterface.fileList.setModel(GraphicalInterface.listModel);
 //					GraphicalInterface.fileList.setSelectedIndex(0);
 //					GraphicalInterface.fileListPane.repaint();
-					System.out.println(LocalConfig.getInstance().getOptimizationFilesList());				
+					//System.out.println(LocalConfig.getInstance().getOptimizationFilesList());				
 				}				
 			}
 		});
@@ -228,7 +228,7 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
 				clearButFirst();
 				GraphicalInterface.outputTextArea.setText("");
 				LocalConfig.getInstance().getOptimizationFilesList().clear();
-				System.out.println(LocalConfig.getInstance().getOptimizationFilesList());
+				//System.out.println(LocalConfig.getInstance().getOptimizationFilesList());
 //				setSelectedIndex(0);
 			}
 		});
@@ -322,8 +322,8 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
                 int index = e.getChildIndices()[0];
                 node = (DefaultMutableTreeNode)(node.getChildAt(index));
 
-            System.out.println("The user has finished editing the node.");
-            System.out.println("New value: " + node.getUserObject());
+            //System.out.println("The user has finished editing the node.");
+            //System.out.println("New value: " + node.getUserObject());
         }
         public void treeNodesInserted(TreeModelEvent e) {
         }

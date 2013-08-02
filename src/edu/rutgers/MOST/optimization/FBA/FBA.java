@@ -50,7 +50,7 @@ public class FBA {
 	}	
 	
 	private void setConstraints(Vector<ModelReaction> reactions, ConType conType, double bValue) {
-		System.out.println(model);
+		//System.out.println(model);
 		ArrayList<Map<Integer, Double>> sMatrix = this.model.getSMatrix();
 		for (int i = 0; i < sMatrix.size(); i++) {
 			FBA.getSolver().addConstraint(sMatrix.get(i), conType, bValue);
@@ -61,7 +61,7 @@ public class FBA {
 		FBA.getSolver().setObjType(ObjType.Maximize);
 		Vector<Double> objective = this.model.getObjective();
 
-		System.out.println(this.model.getObjective());
+		//System.out.println(this.model.getObjective());
 		
 		Map<Integer, Double> map = new HashMap<Integer, Double>();
 		for (int i = 0; i < objective.size(); i++) {
@@ -104,7 +104,7 @@ public class FBA {
 		 
 		fba.run();		
 		
-		System.out.println("Max objective: " + fba.getMaxObj());
+		//System.out.println("Max objective: " + fba.getMaxObj());
 	}
 	
 	public static Solver getSolver() {

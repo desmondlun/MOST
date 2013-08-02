@@ -438,6 +438,7 @@ public class ReactionUndoItem implements UndoItem {
 	}
 	
 	public static void main(String[] args) {
+		/*
 		ReactionUndoItem m = new ReactionUndoItem();
 		m.setDatabaseName("untitled");
 		m.setColumn(1);
@@ -455,6 +456,7 @@ public class ReactionUndoItem implements UndoItem {
 		System.out.println(m.createUndoDescription());
 		System.out.println(m.toString());
 		m.undo();
+		*/
 	}
 	
 }

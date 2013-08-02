@@ -134,7 +134,7 @@ public class SBMLReactantCollection implements ModelReactantCollection {
 		 
 		while(iterator.hasNext()){
 			SBMLReactant aReactant = (SBMLReactant)iterator.next();
-			System.out.print("\nabbr" + aReactant.toString());
+			//System.out.print("\nabbr" + aReactant.toString());
 		}
 	}
 
