@@ -811,6 +811,8 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().setMaxMetaboliteId(0);
 		LocalConfig.getInstance().setReactionsLocationsListCount(0);
 		LocalConfig.getInstance().setMetabolitesLocationsListCount(0);
+		LocalConfig.getInstance().setNumberCopiedRows(1);
+		LocalConfig.getInstance().setNumberCopiedColumns(1);
 					
 		outputTextArea.setEditable(false);
 		
@@ -2433,7 +2435,7 @@ public class GraphicalInterface extends JFrame {
 	
 	class LoadExistingItemAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
-			File f = new File("ModelCollection1.csv");
+			File f = new File("ModelCollection.csv");
 			ModelCollectionTable mcTable = new ModelCollectionTable(f);
 			mcTable.setIconImages(icons);
 			mcTable.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
