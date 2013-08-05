@@ -11,7 +11,7 @@ import java.util.Vector;
 public class ReactionsDatabaseTableModel extends DefaultTableModel {	
 	@Override 
 	public boolean isCellEditable(int row, int col) {
-		if (col == GraphicalInterfaceConstants.DB_REACTIONS_ID_COLUMN || col == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
+		if (col == GraphicalInterfaceConstants.DB_REACTIONS_ID_COLUMN || col == GraphicalInterfaceConstants.REVERSIBLE_COLUMN || col == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
 			return false; 
 		} else if (!GraphicalInterface.isRoot) {
 		//} else if (GraphicalInterface.fileList.getSelectedIndex() > 0) {

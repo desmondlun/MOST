@@ -496,6 +496,8 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem outputCopyItem = new JMenuItem("Copy");
 	public final JMenuItem outputSelectAllItem = new JMenuItem("Select All");
 	
+	public final JMenuItem unhighlightMenu = new JMenuItem("Unhighlight Participating Reactions");
+	
 	/*****************************************************************************/
 	// end menu items
 	/*****************************************************************************/	
@@ -4268,6 +4270,7 @@ public class GraphicalInterface extends JFrame {
 
 	private class MetabolitesRowListener implements ListSelectionListener {
 		public void valueChanged(ListSelectionEvent event) {
+			highlightParticipatingRxns = false;
 			if (LocalConfig.getInstance().findReplaceFocusLost) {
 				findButtonMetabolitesClicked = false;
 				throwNotFoundError = false;
@@ -5193,7 +5196,18 @@ public class GraphicalInterface extends JFrame {
 			}
 		});
 		contextMenu.add(deleteRowMenu);	
+		
+		contextMenu.addSeparator();
+		
+		unhighlightMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				highlightParticipatingRxns = false;
+				reactionsTable.repaint();
+			}
+		});
 
+		contextMenu.add(unhighlightMenu);	
+		
 		return contextMenu;
 	}  
 
