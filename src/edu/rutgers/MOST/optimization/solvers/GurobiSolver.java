@@ -22,7 +22,6 @@ public class GurobiSolver extends Solver {
 	private GRBModel model;
 	private ArrayList<GRBVar> vars = new ArrayList<GRBVar>();
 	private Callback callback;
-	private boolean hasValidation;
 
 	public GurobiSolver(String logName) {
 		try {
@@ -44,7 +43,6 @@ public class GurobiSolver extends Solver {
 			GraphicalInterface.getTextInput().setVisible(false);
 			LocalConfig.getInstance().hasValidGurobiKey = false;
 			GraphicalInterface.outputTextArea.setText("ERROR: No validation file - run 'grbgetkey' to refresh it.");
-			System.out.println("G");
 			Object[] options = {"    OK    "};
 			int choice = JOptionPane.showOptionDialog(null, 
 					"ERROR: No validation file - run 'grbgetkey' to refresh it.", 

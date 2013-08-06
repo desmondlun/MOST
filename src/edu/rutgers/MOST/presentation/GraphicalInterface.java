@@ -1220,8 +1220,7 @@ public class GraphicalInterface extends JFrame {
 						File file = new File(optimizePath + ".log");
 						writer = new BufferedWriter(new FileWriter(file));
 						writer.write(outputText.toString());
-						System.out.println("write");
-
+						
 					} catch (FileNotFoundException e) {
 						e.printStackTrace();
 					} catch (IOException e) {
