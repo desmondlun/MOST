@@ -170,7 +170,15 @@ public class GraphicalInterface extends JFrame {
 	public final ProgressBar progressBar = new ProgressBar();	
 	javax.swing.Timer timer = new javax.swing.Timer(100, new TimeListener());
 	
-	private TextInputDemo textInput;
+	private static TextInputDemo textInput;
+
+	public static TextInputDemo getTextInput() {
+		return textInput;
+	}
+
+	public void setTextInput(TextInputDemo textInput) {
+		this.textInput = textInput;
+	}
 
 	/*****************************************************************************/
 	// boolean values
@@ -762,6 +770,7 @@ public class GraphicalInterface extends JFrame {
         textInput.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         textInput.setLocationRelativeTo(null);
         textInput.setAlwaysOnTop(true);
+        setTextInput(textInput);
         
 		//System.out.println("max memory " + java.lang.Runtime.getRuntime().maxMemory());
 
@@ -6692,47 +6701,47 @@ public class GraphicalInterface extends JFrame {
         @Override
         protected Void doInBackground() {
         	copier = new DatabaseCopier();
-//        	copier = new MemoryDatabaseCopier();
+        	//            	copier = new MemoryDatabaseCopier();
         	rFactory = new ReactionFactory("SBML", getOptimizePath());
-			uniqueGeneAssociations = rFactory.getUniqueGeneAssociations();
-			
-			outputText = new StringBuffer();
-			
-//			log.debug("create an optimize");
-			gdbb = new GDBB();
-			GDBB.intermediateSolution.clear();
-			
-			gdbb.setGDBBModel(model);
-			gdbb.start();
-			
-			knockoutOffset = 4*model.getNumReactions() + model.getNumMetabolites();
-			
-			soln = new ArrayList<Double>();
-			Format formatter;
-			formatter = new SimpleDateFormat("_yyMMdd_HHmmss");
-			Solution solution;
-			
-//			String oldOptimizaePath = getDatabaseName();
-//			copier.copyDatabase(oldOptimizaePath, optimizePath, true);
-			
-	        while (gdbb.isAlive() || GDBB.intermediateSolution.size() > 0) {
-	            if (GDBB.intermediateSolution.size() > 0) {
-					dateTimeStamp = formatter.format(new Date());
-					optimizePath = GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + getDatabaseName() + dateTimeStamp;
-					copier.copyDatabase(getDatabaseName(), optimizePath);
-//					copier.copyDatabase(getDatabaseName(), optimizePath, false);
-					listModel.addElement(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
-							+ (getDatabaseName().substring(getDatabaseName().lastIndexOf("\\") + 1) + dateTimeStamp));				
-					LocalConfig.getInstance().getOptimizationFilesList().add(optimizePath);
-//					setOptimizePath(optimizePath);
-					
-					// need to lock if process is busy
-					solution = GDBB.intermediateSolution.poll();
-					solution.setDatabaseName(optimizePath);
-	            	publish(solution);
-	            }
-	        }
-            return null;
+        	uniqueGeneAssociations = rFactory.getUniqueGeneAssociations();
+
+        	outputText = new StringBuffer();
+
+        	//    			log.debug("create an optimize");
+        	gdbb = new GDBB();
+        	GDBB.intermediateSolution.clear();
+
+        	gdbb.setGDBBModel(model);
+        	gdbb.start();
+
+        	knockoutOffset = 4*model.getNumReactions() + model.getNumMetabolites();
+
+        	soln = new ArrayList<Double>();
+        	Format formatter;
+        	formatter = new SimpleDateFormat("_yyMMdd_HHmmss");
+        	Solution solution;
+
+        	//    			String oldOptimizaePath = getDatabaseName();
+        	//    			copier.copyDatabase(oldOptimizaePath, optimizePath, true);
+
+        	while (gdbb.isAlive() || GDBB.intermediateSolution.size() > 0) {
+        		if (GDBB.intermediateSolution.size() > 0) {
+        			dateTimeStamp = formatter.format(new Date());
+        			optimizePath = GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + getDatabaseName() + dateTimeStamp;
+        			copier.copyDatabase(getDatabaseName(), optimizePath);
+        			//    					copier.copyDatabase(getDatabaseName(), optimizePath, false);
+        			listModel.addElement(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
+        					+ (getDatabaseName().substring(getDatabaseName().lastIndexOf("\\") + 1) + dateTimeStamp));				
+        			LocalConfig.getInstance().getOptimizationFilesList().add(optimizePath);
+        			//    					setOptimizePath(optimizePath);
+
+        			// need to lock if process is busy
+        			solution = GDBB.intermediateSolution.poll();
+        			solution.setDatabaseName(optimizePath);
+        			publish(solution);
+        		}       	
+        	}
+        	return null;
         }
 
         public GDBB getGdbb() {
