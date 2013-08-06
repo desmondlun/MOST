@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 
+import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
@@ -41,7 +42,9 @@ public class GurobiSolver extends Solver {
 
 		} catch (Exception e) {
 			GraphicalInterface.getTextInput().setVisible(false);
-			Object[] options = {"    OK    ", "   Cancel   ",};
+			LocalConfig.getInstance().hasValidGurobiKey = false;
+			GraphicalInterface.outputTextArea.setText("ERROR: No validation file - run 'grbgetkey' to refresh it.");
+			Object[] options = {"    OK    "};
 			int choice = JOptionPane.showOptionDialog(null, 
 					"ERROR: No validation file - run 'grbgetkey' to refresh it.", 
 					GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE, 
@@ -56,10 +59,11 @@ public class GurobiSolver extends Solver {
 				}catch(Exception e1){}
 
 			}
-
+            /*
 			if (choice == JOptionPane.NO_OPTION) {
 
 			}
+			*/
 			//log.error("Error code: " + e.getMessage() + ". "
 					//+ e.getMessage());
 		}

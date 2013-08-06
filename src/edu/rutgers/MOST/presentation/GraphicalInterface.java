@@ -1174,15 +1174,15 @@ public class GraphicalInterface extends JFrame {
 				// TODO: should be in the try/catch since if optimization fails
 				// item should not be added to fileList
 				copier.copyDatabase(getDatabaseName(), optimizePath);
-				listModel.addElement(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
-						+ (getDatabaseName().substring(getDatabaseName().lastIndexOf("\\") + 1) + dateTimeStamp));				
+				//listModel.addElement(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
+				//		+ (getDatabaseName().substring(getDatabaseName().lastIndexOf("\\") + 1) + dateTimeStamp));				
 				LocalConfig.getInstance().getOptimizationFilesList().add(optimizePath);
 				setOptimizePath(optimizePath);
 				//fileList.setSelectedIndex(listModel.size() - 1);
 			
 //				String solutionName = GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1);
-				DynamicTreeDemo.treePanel.addObject(new Solution(GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1)));
-				DynamicTreeDemo.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
+				//DynamicTreeDemo.treePanel.addObject(new Solution(GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1)));
+				//DynamicTreeDemo.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 				
 				// Begin optimization
 
@@ -1202,53 +1202,65 @@ public class GraphicalInterface extends JFrame {
 				ReactionFactory rFactory = new ReactionFactory("SBML", getOptimizePath());
 				rFactory.setFluxes(soln);
 
-				Writer writer = null;
-				try {
-					StringBuffer outputText = new StringBuffer();
-					outputText.append("FBA\n");
-					outputText.append(getDatabaseName() + "\n");
-					outputText.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions\n");
-					outputText.append("Maximum objective: "	+ fba.getMaxObj() + "\n");
-					
-					File file = new File(optimizePath + ".log");
-					writer = new BufferedWriter(new FileWriter(file));
-					writer.write(outputText.toString());
+				//Writer writer = null;
+				if (LocalConfig.getInstance().hasValidGurobiKey) {
+					Writer writer = null;
+					listModel.addElement(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
+							+ (getDatabaseName().substring(getDatabaseName().lastIndexOf("\\") + 1) + dateTimeStamp));				
 
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} finally {
+					DynamicTreeDemo.treePanel.addObject(new Solution(GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1)));
+					DynamicTreeDemo.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 					try {
-						if (writer != null) {
-							writer.close();
-						}
+						StringBuffer outputText = new StringBuffer();
+						outputText.append("FBA\n");
+						outputText.append(getDatabaseName() + "\n");
+						outputText.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions\n");
+						outputText.append("Maximum objective: "	+ fba.getMaxObj() + "\n");
+						
+						File file = new File(optimizePath + ".log");
+						writer = new BufferedWriter(new FileWriter(file));
+						writer.write(outputText.toString());
+						System.out.println("write");
+
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
 					} catch (IOException e) {
 						e.printStackTrace();
+					} finally {
+						try {
+							if (writer != null) {
+								writer.close();
+							}
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
 					}
+					loadOutputPane(getOptimizePath() + ".log");
+					if (getPopout() != null) {
+						getPopout().load(getOptimizePath() + ".log");
+					}
+					closeConnection();
+					String fileString = "jdbc:sqlite:" + getOptimizePath() + ".db";
+					LocalConfig.getInstance().setLoadedDatabase(getOptimizePath());
+					try {
+						Class.forName("org.sqlite.JDBC");
+						Connection con = DriverManager.getConnection(fileString);
+						LocalConfig.getInstance().setCurrentConnection(con);
+						setUpMetabolitesTable(con);
+						setUpReactionsTable(con);
+						setTitle(GraphicalInterfaceConstants.TITLE + " - " + getOptimizePath());
+					} catch (ClassNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (SQLException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+					//fileList.setSelectedIndex(listModel.size() - 1);
+				} else {
+					DynamicTreeDemo.treePanel.setNodeSelected(0);
 				}
-				loadOutputPane(getOptimizePath() + ".log");
-				if (getPopout() != null) {
-					getPopout().load(getOptimizePath() + ".log");
-				}
-				closeConnection();
-				String fileString = "jdbc:sqlite:" + getOptimizePath() + ".db";
-				LocalConfig.getInstance().setLoadedDatabase(getOptimizePath());
-				try {
-					Class.forName("org.sqlite.JDBC");
-					Connection con = DriverManager.getConnection(fileString);
-					LocalConfig.getInstance().setCurrentConnection(con);
-					setUpMetabolitesTable(con);
-					setUpReactionsTable(con);
-					setTitle(GraphicalInterfaceConstants.TITLE + " - " + getOptimizePath());
-				} catch (ClassNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (SQLException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				}
-				//fileList.setSelectedIndex(listModel.size() - 1);
+				LocalConfig.getInstance().hasValidGurobiKey = true;
 			}
 			
 		});
@@ -3589,6 +3601,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().addColumnInterfaceVisible = false;
 		reactionCancelLoad = false;
 		isRoot = true;
+		LocalConfig.getInstance().hasValidGurobiKey = true;
 	}
 	
 	public void clearConfigLists() {

@@ -452,6 +452,8 @@ public class LocalConfig {
 	public boolean loadExistingVisible;
 	public boolean addColumnInterfaceVisible;
 	
+	public boolean hasValidGurobiKey;
+	
 	private static Integer reactionsLocationsListCount;
 	
 	public void setReactionsLocationsListCount(Integer reactionsLocationsListCount) {
