@@ -1789,7 +1789,7 @@ public class GraphicalInterface extends JFrame {
 		findReplaceDialog.findAllButton.addActionListener(findAllReactionsButtonActionListener);
 		findReplaceDialog.replaceButton.addActionListener(replaceReactionsButtonActionListener);
 		findReplaceDialog.replaceAllButton.addActionListener(replaceAllReactionsButtonActionListener);
-		findReplaceDialog.replaceFindButton.addActionListener(replaceFindReactionsButtonActionListener);
+		//findReplaceDialog.replaceFindButton.addActionListener(replaceFindReactionsButtonActionListener);
 		findReplaceDialog.doneButton.addActionListener(findDoneButtonActionListener);
 		findReplaceDialog.caseCheckBox.addActionListener(matchCaseActionListener);
 		findReplaceDialog.wrapCheckBox.addActionListener(wrapAroundActionListener);
@@ -1864,7 +1864,7 @@ public class GraphicalInterface extends JFrame {
 		findReplaceDialog.findAllButton.addActionListener(findAllMetabolitesButtonActionListener);
 		findReplaceDialog.replaceButton.addActionListener(replaceMetabolitesButtonActionListener);
 		findReplaceDialog.replaceAllButton.addActionListener(replaceAllMetabolitesButtonActionListener);
-		findReplaceDialog.replaceFindButton.addActionListener(replaceFindMetabolitesButtonActionListener);
+		//findReplaceDialog.replaceFindButton.addActionListener(replaceFindMetabolitesButtonActionListener);
 		findReplaceDialog.doneButton.addActionListener(findDoneButtonActionListener);
 		findReplaceDialog.caseCheckBox.addActionListener(matchCaseActionListener);
 		findReplaceDialog.wrapCheckBox.addActionListener(wrapAroundActionListener);
@@ -3820,7 +3820,7 @@ public class GraphicalInterface extends JFrame {
 				if (getFindReplaceDialog() != null && !LocalConfig.getInstance().addReactantPromptShown) {
 					getFindReplaceDialog().replaceButton.setEnabled(false);
 					getFindReplaceDialog().replaceAllButton.setEnabled(false);
-					getFindReplaceDialog().replaceFindButton.setEnabled(false);
+					//getFindReplaceDialog().replaceFindButton.setEnabled(false);
 				}
 			}
     		String reactionRow = Integer.toString((reactionsTable.getSelectedRow() + 1));
@@ -3865,7 +3865,7 @@ public class GraphicalInterface extends JFrame {
 				if (getFindReplaceDialog() != null && !LocalConfig.getInstance().addReactantPromptShown) {
 					getFindReplaceDialog().replaceButton.setEnabled(false);
 					getFindReplaceDialog().replaceAllButton.setEnabled(false);
-					getFindReplaceDialog().replaceFindButton.setEnabled(false);
+					//getFindReplaceDialog().replaceFindButton.setEnabled(false);
 				}				
 			}
 			if (reactionsTable.getSelectedRow() > -1 && reactionsTable.getSelectedColumn() > -1 && tabbedPane.getSelectedIndex() == 0) {
@@ -4299,7 +4299,7 @@ public class GraphicalInterface extends JFrame {
 				if (getFindReplaceDialog() != null && !LocalConfig.getInstance().addReactantPromptShown) {
 					getFindReplaceDialog().replaceButton.setEnabled(false);
 					getFindReplaceDialog().replaceAllButton.setEnabled(false);
-					getFindReplaceDialog().replaceFindButton.setEnabled(false);
+					//getFindReplaceDialog().replaceFindButton.setEnabled(false);
 				}				
 			}
 			String metaboliteRow = Integer.toString((metabolitesTable.getSelectedRow() + 1));
@@ -4347,7 +4347,7 @@ public class GraphicalInterface extends JFrame {
 				if (getFindReplaceDialog() != null && !LocalConfig.getInstance().addReactantPromptShown) {
 					getFindReplaceDialog().replaceButton.setEnabled(false);
 					getFindReplaceDialog().replaceAllButton.setEnabled(false);
-					getFindReplaceDialog().replaceFindButton.setEnabled(false);
+					//getFindReplaceDialog().replaceFindButton.setEnabled(false);
 				}				
 			}
 			if (metabolitesTable.getSelectedRow() > -1 && metabolitesTable.getSelectedColumn() > -1 && tabbedPane.getSelectedIndex() == 1) {				
@@ -7085,6 +7085,7 @@ public class GraphicalInterface extends JFrame {
 		}
 	};
 	
+	/*
 	ActionListener replaceFindReactionsButtonActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			if (tabbedPane.getSelectedIndex() == 0) {
@@ -7097,6 +7098,7 @@ public class GraphicalInterface extends JFrame {
 			getFindReplaceDialog().requestFocus();
 		}
 	};
+	*/
 	
 	public void reactionsFindAction() {
 		reactionsFindAll = false;
@@ -7462,6 +7464,7 @@ public class GraphicalInterface extends JFrame {
 		}
 	};
 	
+	/*
 	ActionListener replaceFindMetabolitesButtonActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			if (tabbedPane.getSelectedIndex() == 1) {
@@ -7474,6 +7477,7 @@ public class GraphicalInterface extends JFrame {
 			getFindReplaceDialog().requestFocus();
 		}
 	};
+	*/
 	
 	public void metabolitesFindAction() {
 		metabolitesFindAll = false;
@@ -7829,7 +7833,7 @@ public class GraphicalInterface extends JFrame {
 			replaceValue = oldValue.substring(0, replaceLocation) + findReplaceDialog.getReplaceText() + replaceEnd;
 		} catch (Throwable t) {
 			getFindReplaceDialog().replaceButton.setEnabled(false);
-			getFindReplaceDialog().replaceFindButton.setEnabled(false);
+			//getFindReplaceDialog().replaceFindButton.setEnabled(false);
 			return "";
 		}
 		
@@ -8852,7 +8856,7 @@ public class GraphicalInterface extends JFrame {
 		editorMenu.setEnabled(false);
 		getFindReplaceDialog().replaceButton.setEnabled(false);
 		getFindReplaceDialog().replaceAllButton.setEnabled(false);
-		getFindReplaceDialog().replaceFindButton.setEnabled(false);
+		//getFindReplaceDialog().replaceFindButton.setEnabled(false);
 	}
     
 	public void loadOptimization() {

@@ -30,7 +30,7 @@ public class FindReplaceDialog extends JDialog {
 	public static JButton findAllButton = new JButton("Find All");
 	public static JButton replaceButton = new JButton("Replace"); 
 	public static JButton replaceAllButton = new JButton("Replace All");
-	public static JButton replaceFindButton = new JButton("Replace/Find");
+	//public static JButton replaceFindButton = new JButton("Replace/Find");
 	public static JButton doneButton = new JButton("Done");
 	public static JLabel findLabel = new JLabel("Find What:");
 	public static JLabel replaceLabel = new JLabel("Replace With:");
@@ -50,6 +50,7 @@ public class FindReplaceDialog extends JDialog {
 	public static final JMenuItem replacePasteItem = new JMenuItem("Paste");
 	public static final JMenuItem replaceDeleteItem = new JMenuItem("Delete");
 	public static final JMenuItem replaceSelectAllItem = new JMenuItem("Select All");
+	public static final JLabel placeholder = new JLabel("     ");
 	//public static final SizedComboBox cb = new SizedComboBox();
 	//public static final JComboBox<String> cb = new JComboBox<String>();
 		
@@ -221,7 +222,7 @@ public class FindReplaceDialog extends JDialog {
         findAllButton.setMnemonic(KeyEvent.VK_L);
         replaceButton.setMnemonic(KeyEvent.VK_R);
         replaceAllButton.setMnemonic(KeyEvent.VK_P);
-        replaceFindButton.setMnemonic(KeyEvent.VK_I);
+        //replaceFindButton.setMnemonic(KeyEvent.VK_I);
         doneButton.setMnemonic(KeyEvent.VK_D);
         
         caseCheckBox.setMnemonic(KeyEvent.VK_M);
@@ -233,7 +234,7 @@ public class FindReplaceDialog extends JDialog {
         findAllButton.setEnabled(false);
         replaceButton.setEnabled(false); 
         replaceAllButton.setEnabled(false);
-        replaceFindButton.setEnabled(false);
+        //replaceFindButton.setEnabled(false);
         backwardsCheckBox.setEnabled(false);
         
         // remove redundant default border of check boxes - they would hinder
@@ -267,7 +268,7 @@ public class FindReplaceDialog extends JDialog {
         				.addComponent(backwardsCheckBox)
         				.addComponent(findButton, getButtonWidth(), getButtonWidth(), getButtonWidth())
         				.addComponent(findAllButton, getButtonWidth(), getButtonWidth(), getButtonWidth())
-        				.addComponent(replaceFindButton, getButtonWidth(), getButtonWidth(), getButtonWidth()))
+        				.addComponent(placeholder, getButtonWidth(), getButtonWidth(), getButtonWidth()))
         		.addGroup(layout.createParallelGroup(LEADING)
                     .addComponent(findBox, getTextAreaWidth(), getTextAreaWidth(), getTextAreaWidth())
                     .addComponent(replaceBox, getTextAreaWidth(), getTextAreaWidth(), getTextAreaWidth())
@@ -311,7 +312,7 @@ public class FindReplaceDialog extends JDialog {
                         		.addComponent(findAllButton)
                         		.addComponent(replaceAllButton))
                         .addGroup(layout.createParallelGroup(BASELINE)
-                        		.addComponent(replaceFindButton)
+                        		.addComponent(placeholder)
                         		.addComponent(doneButton))))
                         .addGap(15)
             );
@@ -348,7 +349,7 @@ public class FindReplaceDialog extends JDialog {
 					findAllButton.setEnabled(false);
 					replaceButton.setEnabled(false);
 					replaceAllButton.setEnabled(false);
-					replaceFindButton.setEnabled(false);
+					//replaceFindButton.setEnabled(false);
 					backwardsCheckBox.setEnabled(false);
 				}
 			}
@@ -406,7 +407,7 @@ public class FindReplaceDialog extends JDialog {
     			setFindText(findField.getText());
     			if (GraphicalInterface.isRoot) {
     				replaceButton.setEnabled(true);
-        			replaceFindButton.setEnabled(true);
+        			//replaceFindButton.setEnabled(true);
     			} 
     			replaceAllButton.setEnabled(false);
     			updateComboBox(findBox, LocalConfig.getInstance().getFindEntryList(), findField.getText()); 
@@ -422,7 +423,7 @@ public class FindReplaceDialog extends JDialog {
     			if (GraphicalInterface.isRoot) {
     				replaceAllButton.setEnabled(true);
     			}    			
-    			replaceFindButton.setEnabled(false);
+    			//replaceFindButton.setEnabled(false);
     			updateComboBox(findBox, LocalConfig.getInstance().getFindEntryList(), findField.getText()); 
     		}
     	};
@@ -453,7 +454,7 @@ public class FindReplaceDialog extends JDialog {
     			setFindText(findField.getText());
     			if (GraphicalInterface.isRoot) {
     				replaceButton.setEnabled(true);
-        			replaceFindButton.setEnabled(true);
+        			//replaceFindButton.setEnabled(true);
     			}
     			replaceAllButton.setEnabled(false);
     			updateComboBox(findBox, LocalConfig.getInstance().getFindEntryList(), findField.getText());  
@@ -461,7 +462,7 @@ public class FindReplaceDialog extends JDialog {
     		}
     	};
 
-    	replaceFindButton.addActionListener(replaceFindButtonActionListener);
+    	//replaceFindButton.addActionListener(replaceFindButtonActionListener);
     	
         ActionListener doneButtonActionListener = new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
