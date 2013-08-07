@@ -231,6 +231,9 @@ public class GraphicalInterface extends JFrame {
 	public static boolean reactionCancelLoad;
 	public static boolean isRoot;
 	public static boolean hasGurobiPath;
+	public static boolean setGurobiPathClicked;
+	public static boolean gurobiPathSelected;
+	public static boolean gurobiPathErrorShown;
 	// close
 	public static boolean exit;
 	public static boolean saveDatabaseFile;
@@ -401,6 +404,16 @@ public class GraphicalInterface extends JFrame {
 		return extension;
 	}
 	
+	public static String gurobiPath;
+	
+	public static String getGurobiPath() {
+		return gurobiPath;
+	}
+
+	public static void setGurobiPath(String gurobiPath) {
+		GraphicalInterface.gurobiPath = gurobiPath;
+	}
+
 	public static String optimizePath;
 
 	public void setOptimizePath(String optimizePath) {
@@ -715,6 +728,8 @@ public class GraphicalInterface extends JFrame {
 		gi = this;
 		
 		isRoot = true;
+		gurobiPathSelected = false;
+		gurobiPathErrorShown = false;
 		
 		// Tree Panel
 		newContentPane = new DynamicTreeDemo(new DynamicTree() {
@@ -1670,6 +1685,23 @@ public class GraphicalInterface extends JFrame {
 		metaboliteColAddRenameInterface.cancelButton.addActionListener(addMetabColCancelButtonActionListener);
 		
 		menuBar.add(editMenu);
+		
+		JMenu optionsMenu = new JMenu("Options");
+		optionsMenu.setMnemonic(KeyEvent.VK_O);
+		
+		JMenuItem setGurobiPath = new JMenuItem("Set Gurobi Path");
+		optionsMenu.add(setGurobiPath);
+		setGurobiPath.setMnemonic(KeyEvent.VK_G);
+		setGurobiPath.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) {
+				//if (!setGurobiPathClicked) {
+					loadGurobiPathInterface();
+				//}
+				//setGurobiPathClicked = true;
+			}    	     
+		});
+		
+		menuBar.add(optionsMenu);
 		
 		JMenu helpMenu = new JMenu("Help");
 		helpMenu.setMnemonic(KeyEvent.VK_H);
@@ -9000,26 +9032,66 @@ public class GraphicalInterface extends JFrame {
 	}
 	
 	public static void loadGurobiPathInterface() {
-		String lastGurobi_path = curSettings.get("LastGurobi");
-		if (lastGurobi_path == null) {
-			GurobiPathInterface gpi = new GurobiPathInterface();
-			setGurobiPathInterface(gpi);
-			gpi.setIconImages(icons);					
-			gpi.setSize(600, 150);
-			gpi.setResizable(false);
-			gpi.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-			gpi.setLocationRelativeTo(null);		
-			gpi.setAlwaysOnTop(true);	
-			gpi.setModal(true);
-			gpi.cancelButton.addActionListener(gpiCancelActionListener);
-			gpi.addWindowListener(new WindowAdapter() {
-		        public void windowClosing(WindowEvent evt) {
-		        	gpiCloseAction();	        	
-		        }
-			});	
-			gpi.setVisible(true);
-		}
+		GurobiPathInterface gpi = new GurobiPathInterface();
+		setGurobiPathInterface(gpi);
+		gpi.setIconImages(icons);					
+		gpi.setSize(600, 150);
+		gpi.setResizable(false);
+		gpi.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		gpi.setLocationRelativeTo(null);		
+		gpi.setAlwaysOnTop(true);	
+		gpi.setModal(true);
+		gpi.fileButton.addActionListener(fileButtonActionListener);
+		gpi.okButton.addActionListener(gpiOKActionListener);
+		gpi.cancelButton.addActionListener(gpiCancelActionListener);
+		gpi.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent evt) {
+				gpiCloseAction();	        	
+			}
+		});	
+		gpi.setVisible(true);
+		gurobiPathErrorShown = false;
 	}
+	
+	static ActionListener fileButtonActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			getGurobiPathInterface().setAlwaysOnTop(false);
+			if (!gurobiPathSelected) {
+				JTextArea output = null;
+				JFileChooser fileChooser = new JFileChooser(); 
+				fileChooser.setDialogTitle("Browse For Gurobi Path");
+				fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);				
+				
+				fileChooser.setCurrentDirectory(new File("C:\\"));
+				
+				//... Open a file dialog.
+				int retval = fileChooser.showOpenDialog(output);
+				if (retval == JFileChooser.APPROVE_OPTION) {
+					//... The user selected a file, get it, use it.          	
+					File file = fileChooser.getSelectedFile();
+					String rawPathName = file.getAbsolutePath();
+					getGurobiPathInterface().textField.setText(rawPathName);	
+					setGurobiPath(rawPathName);
+					gurobiPathSelected = true;
+				}			
+			}
+			getGurobiPathInterface().setAlwaysOnTop(true);
+		}
+	};
+	
+	static ActionListener gpiOKActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			String lastGurobi_path = curSettings.get("LastGurobi");
+			if (lastGurobi_path == null) {
+				lastGurobi_path = ".";
+			}
+			curSettings.add("LastGurobi", getGurobiPath());
+			hasGurobiPath = true;
+			gurobiPathSelected = false;
+			getGurobiPathInterface().setVisible(false);
+			getGurobiPathInterface().dispose();
+		}
+	};
 	
 	static ActionListener gpiCancelActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
@@ -9029,10 +9101,13 @@ public class GraphicalInterface extends JFrame {
 	
 	public static void gpiCloseAction() {
 		getGurobiPathInterface().setAlwaysOnTop(false);
-		JOptionPane.showMessageDialog(null,                
-				GraphicalInterfaceConstants.NO_GUROBI_PATH_ERROR,                
-				"No Gurobi Path",                                
-				JOptionPane.ERROR_MESSAGE);
+		if (!gurobiPathErrorShown) {
+			JOptionPane.showMessageDialog(null,                
+					GraphicalInterfaceConstants.NO_GUROBI_PATH_ERROR,                
+					"No Gurobi Path",                                
+					JOptionPane.ERROR_MESSAGE);	
+		}
+		gurobiPathErrorShown = true;	
 		hasGurobiPath = false;
 		getGurobiPathInterface().setVisible(false);
 		getGurobiPathInterface().dispose();
@@ -9058,8 +9133,11 @@ public class GraphicalInterface extends JFrame {
 		icons.add(new ImageIcon("etc/most32.jpg").getImage());
 
 		hasGurobiPath = true;
-		loadGurobiPathInterface();
-		
+		String lastGurobi_path = curSettings.get("LastGurobi");
+		if (lastGurobi_path == null) {
+			loadGurobiPathInterface();
+		}
+				
 		final GraphicalInterface frame = new GraphicalInterface(con);	   
 
 		frame.setIconImages(icons);

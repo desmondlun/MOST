@@ -143,11 +143,12 @@ public class GurobiPathInterface  extends JDialog {
 		
 		ActionListener fileButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
+				/*
+				setAlwaysOnTop(false);
 				if (!fileSelected) {
 					JTextArea output = null;
 					JFileChooser fileChooser = new JFileChooser(); 
 					fileChooser.setDialogTitle("Browse For Gurobi Path");
-					fileChooser.setFileFilter(new CSVFileFilter());
 					fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);				
 					
 					fileChooser.setCurrentDirectory(new File("C:\\"));
@@ -162,12 +163,15 @@ public class GurobiPathInterface  extends JDialog {
 						setPath(rawPathName);
 						fileSelected = true;
 					}			
-				}					
+				}
+				setAlwaysOnTop(true);
+				*/
 			}
 		};
 		
 		ActionListener okButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
+				/*
 				String lastGurobi_path = GraphicalInterface.curSettings.get("LastGurobi");
 				if (lastGurobi_path == null) {
 					lastGurobi_path = ".";
@@ -175,6 +179,7 @@ public class GurobiPathInterface  extends JDialog {
 				GraphicalInterface.curSettings.add("LastGurobi", getPath());
 				setVisible(false);
 				dispose();
+				*/
 			}
 		};
 		
