@@ -504,6 +504,7 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem outputCopyItem = new JMenuItem("Copy");
 	public final JMenuItem outputSelectAllItem = new JMenuItem("Select All");
 	
+	public final JMenuItem unhighlightParticipatingReactionsMenu = new JMenuItem("Unhighlight Participating Reactions");
 	public final JMenuItem unhighlightMenu = new JMenuItem("Unhighlight Participating Reactions");
 	
 	/*****************************************************************************/
@@ -5220,6 +5221,11 @@ public class GraphicalInterface extends JFrame {
 		
 		contextMenu.addSeparator();
 		
+		if (highlightParticipatingRxns) {
+			unhighlightMenu.setEnabled(true);
+		} else {
+			unhighlightMenu.setEnabled(false);
+		}
 		unhighlightMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				highlightParticipatingRxns = false;
@@ -5421,17 +5427,18 @@ public class GraphicalInterface extends JFrame {
 		//TODO: replace these two menu items below with radio buttons
 		final JMenuItem participatingReactionsMenu = new JMenuItem("Highlight Participating Reactions");
 		if (columnIndex == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
-			if (metabAbbrev == null || !LocalConfig.getMetaboliteUsedMap().containsKey(metabAbbrev)) {
+			if (metabAbbrev == null || !LocalConfig.getMetaboliteUsedMap().containsKey(metabAbbrev) || highlightParticipatingRxns) {
 				participatingReactionsMenu.setEnabled(false);
 			}
 		} else if (columnIndex == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
-			if (metabName == null || !LocalConfig.getMetaboliteUsedMap().containsKey(metabAbbrev)) {
+			if (metabName == null || !LocalConfig.getMetaboliteUsedMap().containsKey(metabAbbrev) || highlightParticipatingRxns) {
 				participatingReactionsMenu.setEnabled(false);
 			}
 		}		
 		participatingReactionsMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				highlightParticipatingRxns = true;
+				unhighlightParticipatingReactionsMenu.setEnabled(true);
 				MetaboliteFactory aFactory = new MetaboliteFactory("SBML", LocalConfig.getInstance().getLoadedDatabase());	
 				setParticipatingMetabolite(metabAbbrev);
 				LocalConfig.getInstance().setParticipatingReactions(aFactory.participatingReactions(metabAbbrev));
@@ -5458,8 +5465,8 @@ public class GraphicalInterface extends JFrame {
 		});
 		contextMenu.add(participatingReactionsMenu);
 
-		final JMenuItem unhighlightParticipatingReactionsMenu = new JMenuItem("Unhighlight Participating Reactions");
-		if (metabAbbrev == null || !LocalConfig.getMetaboliteUsedMap().containsKey(metabAbbrev)) {
+		//final JMenuItem unhighlightParticipatingReactionsMenu = new JMenuItem("Unhighlight Participating Reactions");
+		if (metabAbbrev == null || !LocalConfig.getMetaboliteUsedMap().containsKey(metabAbbrev) || !highlightParticipatingRxns) {
 			unhighlightParticipatingReactionsMenu.setEnabled(false);
 		}
 		unhighlightParticipatingReactionsMenu.addActionListener(new ActionListener() {
