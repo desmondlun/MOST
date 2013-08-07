@@ -256,6 +256,8 @@ public class GraphicalInterface extends JFrame {
 		return findReplaceDialog;
 	}
 	
+	public final GurobiPathInterface gurobiPathInterface = new GurobiPathInterface();
+	
     public static MetaboliteColAddRenameInterface metaboliteColAddRenameInterface;   
 	
 	public void setMetaboliteColAddRenameInterface(MetaboliteColAddRenameInterface metaboliteColAddRenameInterface) {
@@ -8982,7 +8984,7 @@ public class GraphicalInterface extends JFrame {
 	
 	public static void main(String[] args) throws Exception {
 		curSettings = new SettingsFactory();
-		
+				
 		Class.forName("org.sqlite.JDBC");       
 		DatabaseCreator databaseCreator = new DatabaseCreator();
 		setDatabaseName(ConfigConstants.DEFAULT_DATABASE_NAME);
@@ -8998,7 +9000,6 @@ public class GraphicalInterface extends JFrame {
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
 		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
 		icons.add(new ImageIcon("etc/most32.jpg").getImage());
-
 
 		final GraphicalInterface frame = new GraphicalInterface(con);	   
 
