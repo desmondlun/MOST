@@ -230,6 +230,7 @@ public class GraphicalInterface extends JFrame {
 	public static boolean modelCollectionOKButtonClicked;
 	public static boolean reactionCancelLoad;
 	public static boolean isRoot;
+	public static boolean hasGurobiPath;
 	// close
 	public static boolean exit;
 	public static boolean saveDatabaseFile;
@@ -256,9 +257,18 @@ public class GraphicalInterface extends JFrame {
 		return findReplaceDialog;
 	}
 	
-	public final GurobiPathInterface gurobiPathInterface = new GurobiPathInterface();
-	
-    public static MetaboliteColAddRenameInterface metaboliteColAddRenameInterface;   
+	public static GurobiPathInterface gurobiPathInterface;
+
+	public static GurobiPathInterface getGurobiPathInterface() {
+		return gurobiPathInterface;
+	}
+
+	public static void setGurobiPathInterface(
+			GurobiPathInterface gurobiPathInterface) {
+		GraphicalInterface.gurobiPathInterface = gurobiPathInterface;
+	}
+
+	public static MetaboliteColAddRenameInterface metaboliteColAddRenameInterface;   
 	
 	public void setMetaboliteColAddRenameInterface(MetaboliteColAddRenameInterface metaboliteColAddRenameInterface) {
 		GraphicalInterface.metaboliteColAddRenameInterface = metaboliteColAddRenameInterface;
@@ -485,8 +495,8 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem saveCSVReactionsItem = new JMenuItem("Save As CSV Reactions");
 	public final JMenuItem saveSQLiteItem = new JMenuItem("Save As SQLite");
 	public final JMenuItem clearItem = new JMenuItem("Clear");
-	public final JMenuItem fbaItem = new JMenuItem("FBA");
-	public final JMenuItem gdbbItem = new JMenuItem("GDBB");
+	public final static JMenuItem fbaItem = new JMenuItem("FBA");
+	public final static JMenuItem gdbbItem = new JMenuItem("GDBB");
 	public final JCheckBoxMenuItem highlightUnusedMetabolitesItem = new JCheckBoxMenuItem("Highlight Unused Metabolites");
 	public final JMenuItem deleteUnusedItem = new JMenuItem("Delete All Unused Metabolites");
 	public final JMenuItem findSuspiciousItem = new JMenuItem("Find Suspicious Metabolites");
@@ -776,7 +786,7 @@ public class GraphicalInterface extends JFrame {
         setTextInput(textInput);
         
 		//System.out.println("max memory " + java.lang.Runtime.getRuntime().maxMemory());
-
+        
 		LocalConfig.getInstance().setProgress(0);
 		progressBar.pack();
 		progressBar.setIconImages(icons);
@@ -1145,6 +1155,9 @@ public class GraphicalInterface extends JFrame {
 		analysisMenu.setMnemonic(KeyEvent.VK_A);
 		
 		analysisMenu.add(fbaItem);
+		if (!hasGurobiPath) {
+			fbaItem.setEnabled(false);
+		}
 		fbaItem.setMnemonic(KeyEvent.VK_F);
 		
 		fbaItem.addActionListener(new ActionListener() {
@@ -1270,7 +1283,9 @@ public class GraphicalInterface extends JFrame {
 		menuBar.add(analysisMenu);
 
 		analysisMenu.add(gdbbItem);
-		
+		if (!hasGurobiPath) {
+			gdbbItem.setEnabled(false);
+		}
 		gdbbItem.setMnemonic(KeyEvent.VK_G);
 
 //		TODO Optimization using GDBB
@@ -8826,8 +8841,10 @@ public class GraphicalInterface extends JFrame {
 		saveCSVReactionsItem.setEnabled(true);
 		saveSQLiteItem.setEnabled(true);
 		clearItem.setEnabled(true);
-		fbaItem.setEnabled(true);
-		gdbbItem.setEnabled(true);
+		if (hasGurobiPath) {
+			fbaItem.setEnabled(true);
+			gdbbItem.setEnabled(true);
+		}		
 		addReacRowItem.setEnabled(true);
 		addMetabRowItem.setEnabled(true);
 		addReacColumnItem.setEnabled(true);
@@ -8982,6 +8999,45 @@ public class GraphicalInterface extends JFrame {
         scrollToLocation(table, row, col);
 	}
 	
+	public static void loadGurobiPathInterface() {
+		String lastGurobi_path = curSettings.get("LastGurobi");
+		if (lastGurobi_path == null) {
+			GurobiPathInterface gpi = new GurobiPathInterface();
+			setGurobiPathInterface(gpi);
+			gpi.setIconImages(icons);					
+			gpi.setSize(600, 150);
+			gpi.setResizable(false);
+			gpi.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+			gpi.setLocationRelativeTo(null);		
+			gpi.setAlwaysOnTop(true);	
+			gpi.setModal(true);
+			gpi.cancelButton.addActionListener(gpiCancelActionListener);
+			gpi.addWindowListener(new WindowAdapter() {
+		        public void windowClosing(WindowEvent evt) {
+		        	gpiCloseAction();	        	
+		        }
+			});	
+			gpi.setVisible(true);
+		}
+	}
+	
+	static ActionListener gpiCancelActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			gpiCloseAction();
+		}
+	};
+	
+	public static void gpiCloseAction() {
+		getGurobiPathInterface().setAlwaysOnTop(false);
+		JOptionPane.showMessageDialog(null,                
+				GraphicalInterfaceConstants.NO_GUROBI_PATH_ERROR,                
+				"No Gurobi Path",                                
+				JOptionPane.ERROR_MESSAGE);
+		hasGurobiPath = false;
+		getGurobiPathInterface().setVisible(false);
+		getGurobiPathInterface().dispose();
+	}
+	
 	public static void main(String[] args) throws Exception {
 		curSettings = new SettingsFactory();
 				
@@ -9001,6 +9057,9 @@ public class GraphicalInterface extends JFrame {
 		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
 		icons.add(new ImageIcon("etc/most32.jpg").getImage());
 
+		hasGurobiPath = true;
+		loadGurobiPathInterface();
+		
 		final GraphicalInterface frame = new GraphicalInterface(con);	   
 
 		frame.setIconImages(icons);

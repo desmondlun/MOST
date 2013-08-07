@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -47,6 +48,8 @@ public class GurobiPathInterface  extends JDialog {
 		return path;
 	}
 
+	public boolean fileSelected;
+	
 	public GurobiPathInterface() {
 
 		setTitle(GraphicalInterfaceConstants.GUROBI_PATH_INTERFACE_TITLE);		
@@ -55,9 +58,8 @@ public class GurobiPathInterface  extends JDialog {
 		getRootPane().setDefaultButton(okButton);
 		
 		textField.setText("");
-		
-		LocalConfig.getInstance().hasMetabolitesFile = false;
-		LocalConfig.getInstance().hasReactionsFile = false;
+
+	    fileSelected = false;
 		
 		//box layout
 		Box vb = Box.createVerticalBox();
@@ -141,33 +143,36 @@ public class GurobiPathInterface  extends JDialog {
 		
 		ActionListener fileButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
-				JTextArea output = null;
-				JFileChooser fileChooser = new JFileChooser(); 
-				fileChooser.setDialogTitle("Browse For Gurobi Path");
-				fileChooser.setFileFilter(new CSVFileFilter());
-				fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);				
-				
-				fileChooser.setCurrentDirectory(new File("C:\\"));
-				
-				//... Open a file dialog.
-				int retval = fileChooser.showOpenDialog(output);
-				if (retval == JFileChooser.APPROVE_OPTION) {
-					//... The user selected a file, get it, use it.          	
-					File file = fileChooser.getSelectedFile();
-					String rawPathName = file.getAbsolutePath();
-					textField.setText(rawPathName);	
-					setPath(rawPathName);
-				}				
+				if (!fileSelected) {
+					JTextArea output = null;
+					JFileChooser fileChooser = new JFileChooser(); 
+					fileChooser.setDialogTitle("Browse For Gurobi Path");
+					fileChooser.setFileFilter(new CSVFileFilter());
+					fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);				
+					
+					fileChooser.setCurrentDirectory(new File("C:\\"));
+					
+					//... Open a file dialog.
+					int retval = fileChooser.showOpenDialog(output);
+					if (retval == JFileChooser.APPROVE_OPTION) {
+						//... The user selected a file, get it, use it.          	
+						File file = fileChooser.getSelectedFile();
+						String rawPathName = file.getAbsolutePath();
+						textField.setText(rawPathName);	
+						setPath(rawPathName);
+						fileSelected = true;
+					}			
+				}					
 			}
 		};
 		
 		ActionListener okButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
-				String lastGurobi_path = curSettings.get("LastGurobi");
+				String lastGurobi_path = GraphicalInterface.curSettings.get("LastGurobi");
 				if (lastGurobi_path == null) {
 					lastGurobi_path = ".";
 				}
-				curSettings.add("LastGurobi", getPath());
+				GraphicalInterface.curSettings.add("LastGurobi", getPath());
 				setVisible(false);
 				dispose();
 			}
@@ -175,8 +180,14 @@ public class GurobiPathInterface  extends JDialog {
 		
 		ActionListener cancelButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
+				/*
+				JOptionPane.showMessageDialog(null,                
+						GraphicalInterfaceConstants.NO_GUROBI_PATH_ERROR,                
+						"No Gurobi Path",                                
+						JOptionPane.ERROR_MESSAGE);
 				setVisible(false);
 				dispose();
+				*/
 			}
 		}; 
 		

@@ -399,6 +399,7 @@ public class GraphicalInterfaceConstants {
     
     public static final String GUROBI_PATH_INTERFACE_TITLE = "Gurobi Path Locator";
     public static final String GUROBI_PATH_BUTTON = "Load Gurobi Path";
+    public static final String NO_GUROBI_PATH_ERROR = "There is no Gurobi path set.\n FBA and GDBB will not function";
     
     public static final String GUROBI_KEY_ERROR_TITLE = "Gurobi Key Error";
     public static final String GUROBI_KEY_ERROR = "Gurobi Key Error";
