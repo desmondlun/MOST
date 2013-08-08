@@ -30,6 +30,8 @@ import edu.rutgers.MOST.data.DatabaseCreator;
 import edu.rutgers.MOST.data.FBAModel;
 import edu.rutgers.MOST.data.GDBBModel;
 import edu.rutgers.MOST.data.JSBMLWriter;
+import edu.rutgers.MOST.data.JavaFinder;
+import edu.rutgers.MOST.data.JavaInfo;
 import edu.rutgers.MOST.data.MetaboliteFactory;
 import edu.rutgers.MOST.data.MetaboliteUndoItem;
 import edu.rutgers.MOST.data.MetabolitesMetaColumnManager;
@@ -9154,6 +9156,17 @@ public class GraphicalInterface extends JFrame {
 		
 		// selected row default at first
 		statusBar.setText("Row 1");
+		
+		System.out.println(System.getProperty("java.version"));
+		System.out.println(System.getProperty("java.class.path"));
+		System.out.println(System.getProperty("os.name"));
+		if (System.getProperty("os.name").contains("Windows")) {
+			JavaFinder jf = new JavaFinder();
+			List<JavaInfo> javas = jf.findJavas();
+	        for (int i = 0; i < javas.size(); i++) {
+	            System.out.println("\n" + javas.get(i));
+	        }
+		}
 
 	}
 }
