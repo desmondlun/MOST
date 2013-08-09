@@ -234,6 +234,7 @@ public class GraphicalInterface extends JFrame {
 	public static boolean setGurobiPathClicked;
 	public static boolean gurobiPathSelected;
 	public static boolean gurobiPathErrorShown;
+	public static boolean openFileChooser;
 	// close
 	public static boolean exit;
 	public static boolean saveDatabaseFile;
@@ -2284,77 +2285,81 @@ public class GraphicalInterface extends JFrame {
 	class LoadSBMLAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) { 
 			SaveChangesPrompt();
-			progressBar.progress.setValue(0);
-			LocalConfig.getInstance().setProgress(0);	  
-			JTextArea output = null;
-			JFileChooser fileChooser = new JFileChooser();
-			fileChooser.setDialogTitle("Load SBML File"); 
-			fileChooser.setFileFilter(new SBMLFileFilter());
-			fileChooser.setFileFilter(new XMLFileFilter());
-			fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);			
-			//TODO: test the possibility of a global FileChooser
-			
-			String lastSBML_path = curSettings.get("LastSBML");
-			if (lastSBML_path == null) {
-				lastSBML_path = ".";
-			}
-			fileChooser.setCurrentDirectory(new File(lastSBML_path));
-			
-			//... Open a file dialog.
-			int retval = fileChooser.showOpenDialog(output);
-			if (retval == JFileChooser.APPROVE_OPTION) {
-				loadSetUp();
-				//... The user selected a file, get it, use it.
-				File file = fileChooser.getSelectedFile();          	
-				String rawPathName = file.getAbsolutePath();
-				curSettings.add("LastSBML", rawPathName);
+			if (openFileChooser) {
+				progressBar.progress.setValue(0);
+				LocalConfig.getInstance().setProgress(0);	  
+				JTextArea output = null;
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setDialogTitle("Load SBML File"); 
+				fileChooser.setFileFilter(new SBMLFileFilter());
+				fileChooser.setFileFilter(new XMLFileFilter());
+				fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);			
+				//TODO: test the possibility of a global FileChooser
 				
-				String rawFilename = file.getName();				
-				if (!rawFilename.endsWith(".xml") && !rawFilename.endsWith(".sbml")) {
-					JOptionPane.showMessageDialog(null,                
-							"Not a Valid SBML File.",                
-							"Invalid SBML File",                                
-							JOptionPane.ERROR_MESSAGE);
-					validFile = false;
-				} else {
-					//fileList.setSelectedIndex(-1);
-					listModel.clear();
-					//fileList.setModel(listModel);
-					
-					DynamicTreeDemo.treePanel.clear();
-					
-					String filename;
-					if (rawFilename.endsWith(".xml")) {
-						filename = rawFilename.substring(0, rawFilename.length() - 4);
-					} else {
-						filename = rawFilename.substring(0, rawFilename.length() - 5);
-					}
-					setSBMLFile(file);
-					setDatabaseName(filename); 
-					LocalConfig.getInstance().setLoadedDatabase(filename);
-					LocalConfig.getInstance().setProgress(0);
-					progressBar.setVisible(true);
-
-					timer.start();
-
-					task = new Task();
-					task.execute();
+				String lastSBML_path = curSettings.get("LastSBML");
+				if (lastSBML_path == null) {
+					lastSBML_path = ".";
 				}
-			}
+				fileChooser.setCurrentDirectory(new File(lastSBML_path));
+				
+				//... Open a file dialog.
+				int retval = fileChooser.showOpenDialog(output);
+				if (retval == JFileChooser.APPROVE_OPTION) {
+					loadSetUp();
+					//... The user selected a file, get it, use it.
+					File file = fileChooser.getSelectedFile();          	
+					String rawPathName = file.getAbsolutePath();
+					curSettings.add("LastSBML", rawPathName);
+					
+					String rawFilename = file.getName();				
+					if (!rawFilename.endsWith(".xml") && !rawFilename.endsWith(".sbml")) {
+						JOptionPane.showMessageDialog(null,                
+								"Not a Valid SBML File.",                
+								"Invalid SBML File",                                
+								JOptionPane.ERROR_MESSAGE);
+						validFile = false;
+					} else {
+						//fileList.setSelectedIndex(-1);
+						listModel.clear();
+						//fileList.setModel(listModel);
+						
+						DynamicTreeDemo.treePanel.clear();
+						
+						String filename;
+						if (rawFilename.endsWith(".xml")) {
+							filename = rawFilename.substring(0, rawFilename.length() - 4);
+						} else {
+							filename = rawFilename.substring(0, rawFilename.length() - 5);
+						}
+						setSBMLFile(file);
+						setDatabaseName(filename); 
+						LocalConfig.getInstance().setLoadedDatabase(filename);
+						LocalConfig.getInstance().setProgress(0);
+						progressBar.setVisible(true);
+
+						timer.start();
+
+						task = new Task();
+						task.execute();
+					}
+				}
+			}			
 		}
 	}
 
 	class LoadCSVAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			SaveChangesPrompt();
-			setExtension(".csv");	
-			csvLoadInterface.textMetabField.setText("");
-			csvLoadInterface.textReacField.setText("");
-			LocalConfig.getInstance().setMetabolitesCSVFile(null);
-			LocalConfig.getInstance().hasMetabolitesFile = false;
-			LocalConfig.getInstance().hasReactionsFile = false;
-			csvLoadInterface.okButton.setEnabled(false);
-			csvLoadInterface.setVisible(true);	
+			if (openFileChooser) {
+				setExtension(".csv");	
+				csvLoadInterface.textMetabField.setText("");
+				csvLoadInterface.textReacField.setText("");
+				LocalConfig.getInstance().setMetabolitesCSVFile(null);
+				LocalConfig.getInstance().hasMetabolitesFile = false;
+				LocalConfig.getInstance().hasReactionsFile = false;
+				csvLoadInterface.okButton.setEnabled(false);
+				csvLoadInterface.setVisible(true);
+			}				
 		}
 	}
 	
@@ -2440,68 +2445,70 @@ public class GraphicalInterface extends JFrame {
 	class LoadSQLiteItemAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			SaveChangesPrompt();
-			loadSetUp();
-			DynamicTreeDemo.treePanel.clear();
-			JTextArea output = null;
-			JFileChooser fileChooser = new JFileChooser();
-			fileChooser.setDialogTitle("Load SQLite Database File");
-			fileChooser.setFileFilter(new SQLiteFileFilter());
-			fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-			
-			String lastSQL_path = curSettings.get("LastSQL");
-			if (lastSQL_path == null) {
-				lastSQL_path = ".";
-			}
-			fileChooser.setCurrentDirectory(new File(lastSQL_path));
-			
-			//... Open a file dialog.
-			int retval = fileChooser.showOpenDialog(output);
-			if (retval == JFileChooser.APPROVE_OPTION) {
-				//... The user selected a file, get it, use it.
-				String rawFilename = fileChooser.getSelectedFile().getName();
-				String rawPathName = fileChooser.getSelectedFile().getAbsolutePath();
-				curSettings.add("LastSQL", rawPathName);
-				if (!rawFilename.endsWith(".db")) {
-					JOptionPane.showMessageDialog(null,                
-							"Not a Valid Database File.",                
-							"Invalid Database File",                                
-							JOptionPane.ERROR_MESSAGE);
-				} else {
-					//fileList.setSelectedIndex(-1);
-					listModel.clear();
-					//fileList.setModel(listModel);
-					//String filename = rawFilename.substring(0, rawFilename.length() - 3);
-					String rawPath = fileChooser.getSelectedFile().getPath();
-					String path = rawPath.substring(0, rawPath.length() - 3);
-					setDatabaseName(path);
-					DatabaseCopier copier = new DatabaseCopier();
-					copier.copyDatabase(path, path + GraphicalInterfaceConstants.DB_COPIER_SUFFIX);
-					LocalConfig.getInstance().setLoadedDatabase(path);
-					setUpTables();
-					DatabaseCreator creator = new DatabaseCreator();
-					creator.copyTables(LocalConfig.getInstance().getLoadedDatabase(), tableCopySuffix(0));
-					// check for invalid reactions and add to invalid list
-					SQLiteLoader loader = new SQLiteLoader();
-					ArrayList<String> invalidReactions = loader.invalidReactions(path);
-					LocalConfig.getInstance().setInvalidReactions(invalidReactions);
-									
-					Map<String, Object> metaboliteIdNameMap = loader.metaboliteIdNameMap(path);
-					LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
-					
-					Map<String, Object> metaboliteUsedNameMap = loader.metaboliteUsedMap(path);
-					LocalConfig.getInstance().setMetaboliteUsedMap(metaboliteUsedNameMap);
-					
-					ArrayList<Integer> suspiciousMetabolites = loader.suspiciousMetabolites(path);
-					LocalConfig.getInstance().setSuspiciousMetabolites(suspiciousMetabolites);
-					if (suspiciousMetabolites.size() > 0) {
-						setLoadErrorMessage("Model contains suspicious metabolites.");
-						statusBar.setText("Row 1                   " + getLoadErrorMessage());
-						findSuspiciousItem.setEnabled(true);
-					} else {
-						statusBar.setText("Row 1");
-					}					
+			if (openFileChooser) {
+				loadSetUp();
+				DynamicTreeDemo.treePanel.clear();
+				JTextArea output = null;
+				JFileChooser fileChooser = new JFileChooser();
+				fileChooser.setDialogTitle("Load SQLite Database File");
+				fileChooser.setFileFilter(new SQLiteFileFilter());
+				fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+				
+				String lastSQL_path = curSettings.get("LastSQL");
+				if (lastSQL_path == null) {
+					lastSQL_path = ".";
 				}
-			}
+				fileChooser.setCurrentDirectory(new File(lastSQL_path));
+				
+				//... Open a file dialog.
+				int retval = fileChooser.showOpenDialog(output);
+				if (retval == JFileChooser.APPROVE_OPTION) {
+					//... The user selected a file, get it, use it.
+					String rawFilename = fileChooser.getSelectedFile().getName();
+					String rawPathName = fileChooser.getSelectedFile().getAbsolutePath();
+					curSettings.add("LastSQL", rawPathName);
+					if (!rawFilename.endsWith(".db")) {
+						JOptionPane.showMessageDialog(null,                
+								"Not a Valid Database File.",                
+								"Invalid Database File",                                
+								JOptionPane.ERROR_MESSAGE);
+					} else {
+						//fileList.setSelectedIndex(-1);
+						listModel.clear();
+						//fileList.setModel(listModel);
+						//String filename = rawFilename.substring(0, rawFilename.length() - 3);
+						String rawPath = fileChooser.getSelectedFile().getPath();
+						String path = rawPath.substring(0, rawPath.length() - 3);
+						setDatabaseName(path);
+						DatabaseCopier copier = new DatabaseCopier();
+						copier.copyDatabase(path, path + GraphicalInterfaceConstants.DB_COPIER_SUFFIX);
+						LocalConfig.getInstance().setLoadedDatabase(path);
+						setUpTables();
+						DatabaseCreator creator = new DatabaseCreator();
+						creator.copyTables(LocalConfig.getInstance().getLoadedDatabase(), tableCopySuffix(0));
+						// check for invalid reactions and add to invalid list
+						SQLiteLoader loader = new SQLiteLoader();
+						ArrayList<String> invalidReactions = loader.invalidReactions(path);
+						LocalConfig.getInstance().setInvalidReactions(invalidReactions);
+										
+						Map<String, Object> metaboliteIdNameMap = loader.metaboliteIdNameMap(path);
+						LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
+						
+						Map<String, Object> metaboliteUsedNameMap = loader.metaboliteUsedMap(path);
+						LocalConfig.getInstance().setMetaboliteUsedMap(metaboliteUsedNameMap);
+						
+						ArrayList<Integer> suspiciousMetabolites = loader.suspiciousMetabolites(path);
+						LocalConfig.getInstance().setSuspiciousMetabolites(suspiciousMetabolites);
+						if (suspiciousMetabolites.size() > 0) {
+							setLoadErrorMessage("Model contains suspicious metabolites.");
+							statusBar.setText("Row 1                   " + getLoadErrorMessage());
+							findSuspiciousItem.setEnabled(true);
+						} else {
+							statusBar.setText("Row 1");
+						}					
+					}
+				}
+			}			
 		}
 	} 
 	
@@ -2532,23 +2539,25 @@ public class GraphicalInterface extends JFrame {
 		public void actionPerformed(ActionEvent ae) {			
 			if (!modelCollectionOKButtonClicked) {
 				SaveChangesPrompt();
-				loadSetUp();
-				progressBar.progress.setValue(0);
-				LocalConfig.getInstance().setProgress(0);	
-				String path = getModelCollectionTable().getPath();
-				File file = new File(path);
-				setSBMLFile(file);
-				setDatabaseName(getModelCollectionTable().getFileName()); 
-				LocalConfig.getInstance().setLoadedDatabase(getModelCollectionTable().getFileName());
-				//loadExistingItem.setEnabled(true);
-				LocalConfig.getInstance().setProgress(0);
-				progressBar.setVisible(true);
-				getModelCollectionTable().setExtendedState(getModelCollectionTable().ICONIFIED);
-				timer.start();
+				if (openFileChooser) {
+					loadSetUp();
+					progressBar.progress.setValue(0);
+					LocalConfig.getInstance().setProgress(0);	
+					String path = getModelCollectionTable().getPath();
+					File file = new File(path);
+					setSBMLFile(file);
+					setDatabaseName(getModelCollectionTable().getFileName()); 
+					LocalConfig.getInstance().setLoadedDatabase(getModelCollectionTable().getFileName());
+					//loadExistingItem.setEnabled(true);
+					LocalConfig.getInstance().setProgress(0);
+					progressBar.setVisible(true);
+					getModelCollectionTable().setExtendedState(getModelCollectionTable().ICONIFIED);
+					timer.start();
 
-				task = new Task();
-				task.execute();
-				modelCollectionOKButtonClicked = true;
+					task = new Task();
+					task.execute();
+					modelCollectionOKButtonClicked = true;
+				}				
 			}			
 		}
 	};
@@ -3029,6 +3038,7 @@ public class GraphicalInterface extends JFrame {
 	public void SaveChangesPrompt() {
 		Utilities util = new Utilities();
 		boolean saveChanges = true;
+		openFileChooser = true;
 		if (LocalConfig.getInstance().metabolitesTableChanged || LocalConfig.getInstance().reactionsTableChanged || LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {
 			Object[] options = {"  Yes  ", "   No   ", "Cancel"};
 			String message = "";
@@ -3087,6 +3097,7 @@ public class GraphicalInterface extends JFrame {
 			}
 			if (choice == JOptionPane.CANCEL_OPTION) {
 				exit = false;
+				openFileChooser = false;
 			}
 		}
 		
@@ -3651,6 +3662,7 @@ public class GraphicalInterface extends JFrame {
 		reactionCancelLoad = false;
 		isRoot = true;
 		LocalConfig.getInstance().hasValidGurobiKey = true;
+		openFileChooser = true;
 	}
 	
 	public void clearConfigLists() {
