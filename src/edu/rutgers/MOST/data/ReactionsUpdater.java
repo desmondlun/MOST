@@ -421,7 +421,8 @@ public class ReactionsUpdater {
 											LocalConfig.getInstance().getMetaboliteIdNameMap().put(reactant, (maxMetabId + 1));
 											LocalConfig.getInstance().getAddedMetabolites().add((maxMetabId + 1));
 											maxMetabId += 1;
-										}											
+										}
+										//System.out.println(reactant);
 									}										
 									
 									Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(reactant);									
