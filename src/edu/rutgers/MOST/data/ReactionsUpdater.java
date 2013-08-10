@@ -22,6 +22,7 @@ public class ReactionsUpdater {
 	public boolean noProducts;      // type r ==>
 	// used if no button is hit, for building new equation with species not included
 	public String reactionEqunAbbr = "";
+	public String reactionEqunNames = "";
 	
 	public void updateReactionRows(ArrayList<Integer> rowList, ArrayList<Integer> reacIdList, ArrayList<String> oldReactionsList, String databaseName) {
 			
@@ -98,7 +99,8 @@ public class ReactionsUpdater {
 						reactionName = " ";
 					}
 					String reactionEqunAbbr = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
-					String reactionEqunNames = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
+					reactionEqunNames = "test";
+					//String reactionEqunNames = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 					String reversible = GraphicalInterfaceConstants.REVERSIBLE_DEFAULT;
 					
 					if (LocalConfig.getInstance().includesReactions) {
@@ -290,6 +292,10 @@ public class ReactionsUpdater {
 		DatabaseCreator creator = new DatabaseCreator();
 
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
+		
+		StringBuffer reacNamesBfr = new StringBuffer();
+		StringBuffer prodNamesBfr = new StringBuffer();
+		StringBuffer rxnNamesBfr = new StringBuffer();
 
 		try{
 			Connection conn =
@@ -343,7 +349,8 @@ public class ReactionsUpdater {
 					maxMetabId = idList.get(i);
 				}
 			}
-			
+			PreparedStatement reacNamePrep = conn.prepareStatement("SELECT metabolite_name from metabolites where id=?;");
+			PreparedStatement reversiblePrep = conn.prepareStatement("SELECT reversible from reactions where id=?;");
 			//update for new reaction
 			try {
 				boolean valid = true;
@@ -422,10 +429,47 @@ public class ReactionsUpdater {
 											LocalConfig.getInstance().getAddedMetabolites().add((maxMetabId + 1));
 											maxMetabId += 1;
 										}
-										//System.out.println(reactant);
 									}										
 									
 									Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(reactant);									
+									String metabName = "";
+									reacNamePrep.setInt(1, metabId);
+									ResultSet rs = reacNamePrep.executeQuery();
+									while (rs.next()) {
+										metabName = rs.getString("metabolite_name");
+									}
+									rs.close();
+									if (r == 0) {
+										if (stoicStr.length() == 0 || Double.valueOf(stoicStr) == 1.0) {
+											if (metabName != null && metabName.trim().length() > 0) {
+												reacNamesBfr.append(metabName);
+											} else {
+												reacNamesBfr.append(reactant);
+											}									
+										} else {
+											if (metabName != null && metabName.trim().length() > 0) {
+												reacNamesBfr.append(stoicStr + " " + metabName);
+											} else {
+												reacNamesBfr.append(stoicStr + " " + reactant);
+											}									
+										}
+
+									} else {
+										if (stoicStr.length() == 0 || Double.valueOf(stoicStr) == 1.0) {
+											if (metabName != null && metabName.trim().length() > 0) {
+												reacNamesBfr.append(" + " + metabName);
+											} else {
+												reacNamesBfr.append(" + " + reactant);
+											}
+											
+										} else {
+											if (metabName != null && metabName.trim().length() > 0) {
+												reacNamesBfr.append(" + " + stoicStr + " " + metabName);
+											} else {
+												reacNamesBfr.append(" + " + stoicStr + " " + reactant);
+											}
+										}				
+									}			
 									if (!newMetabolite || LocalConfig.getInstance().addMetaboliteOption) {
 										String insert = "INSERT INTO reaction_reactants(reaction_id, stoic, metabolite_id) values (" + id + ", " + stoicStr + ", " + metabId + ");";
 										stat.executeUpdate(insert);
@@ -443,7 +487,6 @@ public class ReactionsUpdater {
 											}	
 										}						
 									}								
-									
 								} else {
 									//Invalid reaction
 									valid = false;
@@ -519,6 +562,45 @@ public class ReactionsUpdater {
 									}
 									
 									Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(product);									
+									String metabName = "";
+									reacNamePrep.setInt(1, metabId);
+									ResultSet rs = reacNamePrep.executeQuery();
+									while (rs.next()) {
+										metabName = rs.getString("metabolite_name");
+									}
+									rs.close();
+									if (p == 0) {
+										if (stoicStr.length() == 0 || Double.valueOf(stoicStr) == 1.0) {
+											if (metabName != null && metabName.trim().length() > 0) {
+												prodNamesBfr.append(metabName);
+											} else {
+												prodNamesBfr.append(product);
+											}									
+										} else {
+											if (metabName != null && metabName.trim().length() > 0) {
+												prodNamesBfr.append(stoicStr + " " + metabName);
+											} else {
+												prodNamesBfr.append(stoicStr + " " + product);
+											}									
+										}
+
+									} else {
+										if (stoicStr.length() == 0 || Double.valueOf(stoicStr) == 1.0) {
+											if (metabName != null && metabName.trim().length() > 0) {
+												prodNamesBfr.append(" + " + metabName);
+											} else {
+												prodNamesBfr.append(" + " + product);
+											}
+											
+										} else {
+											if (metabName != null && metabName.trim().length() > 0) {
+												prodNamesBfr.append(" + " + stoicStr + " " + metabName);
+											} else {
+												prodNamesBfr.append(" + " + stoicStr + " " + product);
+											}
+										}				
+									}			
+									
 									if (!newMetabolite || LocalConfig.getInstance().addMetaboliteOption) {
 										String insert = "INSERT INTO reaction_products(reaction_id, stoic, metabolite_id) values (" + id + ", " + stoicStr + ", " + metabId + ");";
 										stat.executeUpdate(insert);	
@@ -536,7 +618,6 @@ public class ReactionsUpdater {
 											}
 										}				
 									}								
-									
 								} else {
 									//Invalid reaction
 									valid = false;
@@ -585,6 +666,21 @@ public class ReactionsUpdater {
 			} catch (Throwable t) {
 				
 			}
+			
+			String reversible = "";
+			reversiblePrep.setInt(1, id);
+			ResultSet rs = reversiblePrep.executeQuery();
+			while (rs.next()) {
+				reversible = rs.getString("reversible");
+			}
+			rs.close();
+			if (reversible == "false") {
+				rxnNamesBfr.append(reacNamesBfr).append(" --> ").append(prodNamesBfr);
+			} else {
+				rxnNamesBfr.append(reacNamesBfr).append(" <==> ").append(prodNamesBfr);
+			}
+
+			reactionEqunNames = rxnNamesBfr.toString().trim();
 			
 			conn.close();
 			
