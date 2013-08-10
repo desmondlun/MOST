@@ -3142,14 +3142,13 @@ public class GraphicalInterface extends JFrame {
 		
 			if (tcl.getOldValue() != tcl.getNewValue()) {
 				int id = Integer.parseInt((String) (reactionsTable.getModel().getValueAt(tcl.getRow(), 0)));
-				int viewRow = reactionsTable.convertRowIndexToModel(tcl.getRow());
 				ReactionUndoItem undoItem = createReactionUndoItem(tcl.getOldValue(), tcl.getNewValue(), reactionsTable.getSelectedRow(), tcl.getColumn(), id, UndoConstants.TYPING, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 				LocalConfig.getInstance().reactionsTableChanged = true;
 				updateReactionsCellIfValid(tcl.getOldValue(), tcl.getNewValue(), tcl.getRow(), tcl.getColumn());
 				if (reactionUpdateValid) {
 					if (undoItem.getColumn() == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-						undoItem.setNewValue(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN).toString());
-						undoItem.setEquationNames(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN).toString());
+						undoItem.setNewValue(reactionsTable.getModel().getValueAt(tcl.getRow(), GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN).toString());
+						undoItem.setEquationNames(reactionsTable.getModel().getValueAt(tcl.getRow(), GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN).toString());
 					}
 					setUpReactionsUndo(undoItem);
 				}
@@ -5091,9 +5090,7 @@ public class GraphicalInterface extends JFrame {
 			updateReactionsDatabaseRow(viewRow, Integer.parseInt((String) (reactionsTable.getModel().getValueAt(viewRow, 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase());
 			
 			ReactionsUpdater updater = new ReactionsUpdater();
-			updater.updateReactionEquations(id, reactionEditor.getOldReaction(), reactionEditor.getReactionEquation(), LocalConfig.getInstance().getLoadedDatabase());
-			setUpReactionsUndo(undoItem);
-			//TODO: change to Cancel button, only 2 buttons: Yes, Cancel, Cancel button runs undo
+			updater.updateReactionEquations(id, reactionEditor.getOldReaction(), reactionEditor.getReactionEquation(), LocalConfig.getInstance().getLoadedDatabase());			
 			if (LocalConfig.getInstance().noButtonClicked) {
 				reactionsTable.getModel().setValueAt(updater.reactionEqunAbbr, viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 				updateReactionsDatabaseRow(viewRow, Integer.parseInt((String) (reactionsTable.getModel().getValueAt(viewRow, 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase());				
@@ -5101,8 +5098,14 @@ public class GraphicalInterface extends JFrame {
 			
 			closeConnection();
 			LocalConfig.getInstance().setLoadedDatabase(getDatabaseName());
-			reloadTables(getDatabaseName());			
-			
+			reloadTables(getDatabaseName());
+			// TODO: ReactionEditor should store arrow string so that reaction created by editor has same arrow as previous
+			// so undo item not created when reaction not changed but arrow changed and for uniformity
+			if (!reactionEditor.getOldReaction().equals((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN))) {
+				undoItem.setNewValue((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN));
+				undoItem.setEquationNames((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN));
+				setUpReactionsUndo(undoItem);
+			}			
 			if (highlightParticipatingRxns) {
 				scrollFirstParticipatingRxnToView();
 			}

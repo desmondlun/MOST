@@ -131,7 +131,7 @@ public class ReactionEditor extends JFrame {
 		}
 		setDatabaseName(LocalConfig.getInstance().getLoadedDatabase());
 
-		getRootPane().setDefaultButton(okButton);
+		//getRootPane().setDefaultButton(okButton);
 
 		//100 an arbitrary number, should be large enough to accommodate the large reaction
 		setNumReactantFields(100);
