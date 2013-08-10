@@ -2247,6 +2247,10 @@ public class GraphicalInterface extends JFrame {
 		ReactionUndoItem undoItem = createReactionUndoItem(getTableCellOldValue(), newValue, reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), viewRow + 1, UndoConstants.TYPING, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 		updateReactionsCellIfValid(getTableCellOldValue(), newValue, viewRow, reactionsTable.getSelectedColumn());
 		if (reactionUpdateValid) {
+			if (undoItem.getColumn() == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+				undoItem.setNewValue(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN).toString());
+				undoItem.setEquationNames(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN).toString());
+			}
 			setUpReactionsUndo(undoItem);
 		}
 	}
@@ -3138,10 +3142,15 @@ public class GraphicalInterface extends JFrame {
 		
 			if (tcl.getOldValue() != tcl.getNewValue()) {
 				int id = Integer.parseInt((String) (reactionsTable.getModel().getValueAt(tcl.getRow(), 0)));
+				int viewRow = reactionsTable.convertRowIndexToModel(tcl.getRow());
 				ReactionUndoItem undoItem = createReactionUndoItem(tcl.getOldValue(), tcl.getNewValue(), reactionsTable.getSelectedRow(), tcl.getColumn(), id, UndoConstants.TYPING, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 				LocalConfig.getInstance().reactionsTableChanged = true;
 				updateReactionsCellIfValid(tcl.getOldValue(), tcl.getNewValue(), tcl.getRow(), tcl.getColumn());
 				if (reactionUpdateValid) {
+					if (undoItem.getColumn() == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+						undoItem.setNewValue(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN).toString());
+						undoItem.setEquationNames(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN).toString());
+					}
 					setUpReactionsUndo(undoItem);
 				}
 			}

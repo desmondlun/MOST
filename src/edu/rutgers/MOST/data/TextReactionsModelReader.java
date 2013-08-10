@@ -273,7 +273,7 @@ public class TextReactionsModelReader {
 							//ReactionParser parser = new ReactionParser();
 							boolean valid = true;
 							
-							ArrayList<ArrayList<ArrayList<String>>> reactionList = parser.reactionList(reactionEqunAbbr.trim());
+							//ArrayList<ArrayList<ArrayList<String>>> reactionList = parser.reactionList(reactionEqunAbbr.trim());
 							if (parser.isValid(reactionEqunAbbr)) {
 								noReactants = false;
 								noProducts = false;
@@ -296,8 +296,7 @@ public class TextReactionsModelReader {
 													Object[] options = {"Yes",
 															"Yes to All",
 													"No"};
-
-													
+					
 													int choice = JOptionPane.showOptionDialog(null, 
 															"The metabolite " + reactant + " does not exist. Do you wish to add it?", 
 															"Add Metabolite?", 
@@ -337,8 +336,7 @@ public class TextReactionsModelReader {
 													maxMetabId += 1;
 													LocalConfig.getInstance().getMetaboliteIdNameMap().put(reactant, new Integer(maxMetabId));
 												}											
-											}										
-											
+											}																
 											Integer id = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(reactant);				
 											String metabName = "";
 											reacNamePrep.setInt(1, id);

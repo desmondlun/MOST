@@ -23,6 +23,7 @@ public class ReactionUndoItem implements UndoItem {
 	private String newValue;
 	private String undoType;
 	private String undoItemType;
+	private String equationNames;
 	public int oldSortColumnIndex;
 	public int newSortColumnIndex;
 	public SortOrder oldSortOrder;
@@ -79,6 +80,12 @@ public class ReactionUndoItem implements UndoItem {
 	}
 	public void setUndoItemType(String undoItemType) {
 		this.undoItemType = undoItemType;
+	}
+	public String getEquationNames() {
+		return equationNames;
+	}
+	public void setEquationNames(String equationNames) {
+		this.equationNames = equationNames;
 	}
 	public int getOldSortColumnIndex() {
 		return oldSortColumnIndex;
