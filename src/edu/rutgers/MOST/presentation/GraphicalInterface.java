@@ -134,7 +134,7 @@ public class GraphicalInterface extends JFrame {
 			int id = 0;
 			if (column == GraphicalInterfaceConstants.DB_METABOLITE_ID_COLUMN) {				
 				return false;
-			} else if (fileList.getSelectedIndex() > 0) {
+			} else if (!isRoot) {	
 				return false;					
 			} else if (column == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN && o != null && LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(s)) {
 				id = Integer.valueOf((String) getValueAt(row, GraphicalInterfaceConstants.DB_METABOLITE_ID_COLUMN));
@@ -760,7 +760,7 @@ public class GraphicalInterface extends JFrame {
 							//gets the full path of optimize since it may not be in MOST directory
 							String optimizePath = getOptimizePath();
 							if (optimizePath.contains("\\")) {
-								optimizePath = optimizePath.substring(0, optimizePath.lastIndexOf("\\") + 1) + fileList.getSelectedValue().toString();
+								optimizePath = optimizePath.substring(0, optimizePath.lastIndexOf("\\") + 1) + node.getUserObject().toString();
 							} else {
 								optimizePath = node.getUserObject().toString();
 							}
@@ -2776,6 +2776,9 @@ public class GraphicalInterface extends JFrame {
 			//... Open a file dialog.
 			File file = null;
 			if (saveOptFile) {
+				//System.out.println(DynamicTreeDemo.treePanel.getTree().getLastSelectedPathComponent());
+				//file = new File(DynamicTreeDemo.treePanel.getTree().getLastSelectedPathComponent());
+				//file = new File(DynamicTreeDemo.treePanel.getTree().getLastSelectedPathComponent().toString());
 				file = new File(listModel.getElementAt(fileList.getSelectedIndex()));
 				fileChooser.setSelectedFile(file);
 			}
