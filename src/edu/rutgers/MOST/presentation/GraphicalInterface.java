@@ -2551,8 +2551,9 @@ public class GraphicalInterface extends JFrame {
 				SaveChangesPrompt();
 				if (openFileChooser) {
 					loadSetUp();
-					progressBar.progress.setValue(0);
-					LocalConfig.getInstance().setProgress(0);	
+					LocalConfig.getInstance().setProgress(0);
+					listModel.clear();
+					DynamicTreeDemo.treePanel.clear();
 					String path = getModelCollectionTable().getPath();
 					File file = new File(path);
 					setSBMLFile(file);
@@ -2561,7 +2562,6 @@ public class GraphicalInterface extends JFrame {
 					loadExistingItem.setEnabled(true);
 					LocalConfig.getInstance().setProgress(0);
 					progressBar.setVisible(true);
-					//getModelCollectionTable().setExtendedState(getModelCollectionTable().ICONIFIED);
 					timer.start();
 
 					modelCollectionOKButtonClicked = true;
