@@ -5135,7 +5135,9 @@ public class GraphicalInterface extends JFrame {
 				setLoadErrorMessage("Model contains suspicious metabolites.");
 				statusBar.setText("Row 1" + "                   " + getLoadErrorMessage());
 			}
-			
+			// update reaction equation - metabolite names
+			reactionsTable.getModel().setValueAt(updater.reactionEqunNames, viewRow, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
+			updateReactionsDatabaseRow(viewRow, Integer.parseInt((String) (reactionsTable.getModel().getValueAt(viewRow, 0))), "SBML", LocalConfig.getInstance().getLoadedDatabase());
 			if (okToClose) {
 				reactionEditor.setVisible(false);
 				reactionEditor.dispose();
