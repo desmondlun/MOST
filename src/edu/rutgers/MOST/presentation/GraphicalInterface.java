@@ -9142,6 +9142,8 @@ public class GraphicalInterface extends JFrame {
 			curSettings.add("LastGurobi", getGurobiPath());
 			hasGurobiPath = true;
 			gurobiPathSelected = false;
+			fbaItem.setEnabled(true);
+			gdbbItem.setEnabled(true);
 			getGurobiPathInterface().setVisible(false);
 			getGurobiPathInterface().dispose();
 		}
