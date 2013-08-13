@@ -2528,7 +2528,7 @@ public class GraphicalInterface extends JFrame {
 			ModelCollectionTable mcTable = new ModelCollectionTable(f);
 			mcTable.setIconImages(icons);
 			mcTable.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-			//mcTable.setAlwaysOnTop(true);
+			mcTable.setAlwaysOnTop(true);
 			mcTable.setVisible(true);
 			mcTable.setLocationRelativeTo(null);
 			setModelCollectionTable(mcTable);
@@ -2558,15 +2558,15 @@ public class GraphicalInterface extends JFrame {
 					setSBMLFile(file);
 					setDatabaseName(getModelCollectionTable().getFileName()); 
 					LocalConfig.getInstance().setLoadedDatabase(getModelCollectionTable().getFileName());
-					//loadExistingItem.setEnabled(true);
+					loadExistingItem.setEnabled(true);
 					LocalConfig.getInstance().setProgress(0);
 					progressBar.setVisible(true);
-					getModelCollectionTable().setExtendedState(getModelCollectionTable().ICONIFIED);
+					//getModelCollectionTable().setExtendedState(getModelCollectionTable().ICONIFIED);
 					timer.start();
 
-					task = new Task();
-					task.execute();
 					modelCollectionOKButtonClicked = true;
+					task = new Task();
+					task.execute();					
 				}				
 			}			
 		}
@@ -2776,10 +2776,7 @@ public class GraphicalInterface extends JFrame {
 			//... Open a file dialog.
 			File file = null;
 			if (saveOptFile) {
-				//System.out.println(DynamicTreeDemo.treePanel.getTree().getLastSelectedPathComponent());
-				//file = new File(DynamicTreeDemo.treePanel.getTree().getLastSelectedPathComponent());
-				//file = new File(DynamicTreeDemo.treePanel.getTree().getLastSelectedPathComponent().toString());
-				file = new File(listModel.getElementAt(fileList.getSelectedIndex()));
+				file = new File(DynamicTreeDemo.treePanel.getTree().getLastSelectedPathComponent().toString());
 				fileChooser.setSelectedFile(file);
 			}
 			int retval = fileChooser.showSaveDialog(output);

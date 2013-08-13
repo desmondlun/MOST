@@ -106,9 +106,9 @@ public class GurobiPathInterface  extends JDialog {
 			public void enableOKButton() {
 				if (textField.getText() != null && textField.getText().length() > 0) {
 					okButton.setEnabled(true);
-					LocalConfig.getInstance().hasMetabolitesFile = true;
+					//LocalConfig.getInstance().hasMetabolitesFile = true;
 				} else {
-					LocalConfig.getInstance().hasMetabolitesFile = false;
+					//LocalConfig.getInstance().hasMetabolitesFile = false;
 				}
 			}
 		});

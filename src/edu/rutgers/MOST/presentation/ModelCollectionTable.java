@@ -167,8 +167,8 @@ class ModelCollectionTable
 		
 		ActionListener okButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				//setVisible(false);
-				//dispose();				
+				setVisible(false);
+				dispose();				
 			}
 		};
 
