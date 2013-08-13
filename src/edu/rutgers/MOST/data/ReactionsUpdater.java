@@ -667,6 +667,8 @@ public class ReactionsUpdater {
 				
 			}
 			
+			rxnNamesBfr.append(reacNamesBfr).append(" " + parser.splitString(newEquation)).append(prodNamesBfr);
+			/*
 			String reversible = "";
 			reversiblePrep.setInt(1, id);
 			ResultSet rs = reversiblePrep.executeQuery();
@@ -679,6 +681,8 @@ public class ReactionsUpdater {
 			} else {
 				rxnNamesBfr.append(reacNamesBfr).append(" <==> ").append(prodNamesBfr);
 			}
+			*/
+
 
 			reactionEqunNames = rxnNamesBfr.toString().trim();
 			
@@ -929,5 +933,33 @@ public class ReactionsUpdater {
 			}
 		}
 		return null;
+	}
+	
+	public String getMetaboliteName(String metaboliteAbbreviation, String databaseName) {
+		// This method cannot be used if metabolite id is null
+		String metaboliteName = "";
+		
+		String queryString = "jdbc:sqlite:" + databaseName + ".db";
+				
+		try{
+			Connection conn =
+				DriverManager.getConnection(queryString);
+			PreparedStatement reacNamePrep = conn.prepareStatement("SELECT metabolite_name from metabolites where id=?;");
+
+			Integer metabId = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(metaboliteAbbreviation);									
+			reacNamePrep.setInt(1, metabId);
+			ResultSet rs = reacNamePrep.executeQuery();
+			while (rs.next()) {
+				metaboliteName = rs.getString("metabolite_name");
+			}
+			rs.close();
+			
+			conn.close();
+			
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		
+		return metaboliteName;
 	}
 }
