@@ -129,7 +129,20 @@ public class GraphicalInterface extends JFrame {
 	// Excel calls this a formula bar
 	public static JTextField formulaBar = new JTextField();
 	
-	public static JXTable reactionsTable = new JXTable();	
+	public static JXTable reactionsTable = new JXTable(){  
+		public Component prepareEditor(
+				TableCellEditor editor, int row, int column)
+		{
+			Component c = super.prepareEditor(editor, row, column);
+
+			if (c instanceof JTextComponent)
+			{
+				((JTextField)c).selectAll();
+			}
+
+			return c;
+		}		
+	};  	
 	// based on http://www.coderanch.com/t/345041/GUI/java/Disabling-cell-JTable
 	public static JXTable metabolitesTable = new JXTable(){  
 		public boolean isCellEditable(int row, int column){	    	  
@@ -149,6 +162,19 @@ public class GraphicalInterface extends JFrame {
 				}				  
 			}
 			return true;  
+		}
+		
+		public Component prepareEditor(
+				TableCellEditor editor, int row, int column)
+		{
+			Component c = super.prepareEditor(editor, row, column);
+
+			if (c instanceof JTextComponent)
+			{
+				((JTextField)c).selectAll();
+			}
+
+			return c;
 		}		
 	};  
 	
