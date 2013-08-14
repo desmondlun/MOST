@@ -651,6 +651,16 @@ public class GraphicalInterface extends JFrame {
 		return selectionMode;
 	}
 	
+	public static String tableCellNewValue;
+
+	public void setTableCellNewValue(String tableCellNewValue) {
+		GraphicalInterface.tableCellNewValue = tableCellNewValue;
+	}
+
+	public static String getTableCellNewValue() {
+		return tableCellNewValue;
+	} 
+	
 	public static String tableCellOldValue;
 
 	public void setTableCellOldValue(String tableCellOldValue) {
@@ -2058,13 +2068,6 @@ public class GraphicalInterface extends JFrame {
 				if (c instanceof JTextField) {
 		            ((JTextField)c).selectAll();
 		        }
-		        /*
-				if (c instanceof JFormattedTextField) {
-		            selectItLater(c);
-		        } else if (c instanceof JTextField) {
-		            ((JTextField)c).selectAll();
-		        }
-		        */
 				if (tabbedPane.getSelectedIndex() == 0 && reactionsTable.getSelectedRow() > - 1) {
 					int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
 					if (reactionsTable.getModel().getValueAt(viewRow, reactionsTable.getSelectedColumn()) != null) {
@@ -2072,6 +2075,8 @@ public class GraphicalInterface extends JFrame {
 					} else {
 						setTableCellOldValue("");
 					}
+					setCurrentRow(reactionsTable.getSelectedRow());
+					setCurrentColumn(reactionsTable.getSelectedColumn());
 				} else if (tabbedPane.getSelectedIndex() == 1 && metabolitesTable.getSelectedRow() > - 1) {
 					int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
 					if (metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn()) != null) {
@@ -2079,6 +2084,8 @@ public class GraphicalInterface extends JFrame {
 					} else {
 						setTableCellOldValue("");
 					}
+					setCurrentRow(metabolitesTable.getSelectedRow());
+					setCurrentColumn(metabolitesTable.getSelectedColumn());
 				}
 				
 				formulaBarFocusGained = true;				
@@ -2088,6 +2095,23 @@ public class GraphicalInterface extends JFrame {
 			public void focusLost(FocusEvent arg0) {
 				formulaBarFocusGained = false;
 				selectedCellChanged = true;	
+				if (getCurrentRow() > -1 && getCurrentColumn() > 0) {
+					if (tabbedPane.getSelectedIndex() == 0) {
+						int viewRow = reactionsTable.convertRowIndexToModel(getCurrentRow());
+						if (reactionsTable.getModel().getValueAt(viewRow, getCurrentColumn()) != null) {
+							updateReactionsCellIfValid(getTableCellOldValue(), (String) reactionsTable.getModel().getValueAt(viewRow, getCurrentColumn()), viewRow, getCurrentColumn());
+						} else {
+							updateReactionsCellIfValid(getTableCellOldValue(), "", viewRow, getCurrentColumn());
+						}						
+					} else if (tabbedPane.getSelectedIndex() == 1) {
+						int viewRow = metabolitesTable.convertRowIndexToModel(getCurrentRow());
+						if (metabolitesTable.getModel().getValueAt(viewRow, getCurrentColumn()) != null) {
+							updateMetabolitesCellIfValid(getTableCellOldValue(), (String) metabolitesTable.getModel().getValueAt(viewRow, getCurrentColumn()), viewRow, getCurrentColumn());
+						} else {
+							updateMetabolitesCellIfValid(getTableCellOldValue(), "", viewRow, getCurrentColumn());
+						}						
+					}
+				}				
 			}
 		});
 		
@@ -9131,18 +9155,6 @@ public class GraphicalInterface extends JFrame {
         }
         scrollToLocation(table, row, col);        
 	}
-	
-	//Workaround for formatted text field focus side effects.
-    protected void selectItLater(Component c) {
-        if (c instanceof JFormattedTextField) {
-            final JFormattedTextField ftf = (JFormattedTextField)c;
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    ftf.selectAll();
-                }
-            });
-        }
-    }
 	
 	public static void loadGurobiPathInterface() {
 		GurobiPathInterface gpi = new GurobiPathInterface();

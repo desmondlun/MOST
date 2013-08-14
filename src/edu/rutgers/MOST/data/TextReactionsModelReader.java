@@ -523,7 +523,6 @@ public class TextReactionsModelReader {
 										}
 									}							
 								}
-								System.out.println(LocalConfig.getInstance().noButtonClicked);
 								// revise reaction equation if "No" button clicked
 								if (valid && LocalConfig.getInstance().noButtonClicked) {
 									System.out.println("no");
