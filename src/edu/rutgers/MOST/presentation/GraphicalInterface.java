@@ -2098,18 +2098,41 @@ public class GraphicalInterface extends JFrame {
 				if (getCurrentRow() > -1 && getCurrentColumn() > 0) {
 					if (tabbedPane.getSelectedIndex() == 0) {
 						int viewRow = reactionsTable.convertRowIndexToModel(getCurrentRow());
+                        String newValue = "";                        
 						if (reactionsTable.getModel().getValueAt(viewRow, getCurrentColumn()) != null) {
-							updateReactionsCellIfValid(getTableCellOldValue(), (String) reactionsTable.getModel().getValueAt(viewRow, getCurrentColumn()), viewRow, getCurrentColumn());
-						} else {
-							updateReactionsCellIfValid(getTableCellOldValue(), "", viewRow, getCurrentColumn());
-						}						
+							newValue = (String) reactionsTable.getModel().getValueAt(viewRow, getCurrentColumn());
+							//System.out.println(newValue);
+						} 						
+						ReactionUndoItem undoItem = createReactionUndoItem(getTableCellOldValue(), newValue, getCurrentRow(), getCurrentColumn(), viewRow + 1, UndoConstants.TYPING, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+						updateReactionsCellIfValid(getTableCellOldValue(), newValue, viewRow, getCurrentColumn());
+						//System.out.println(reactionUpdateValid);
+						if (reactionUpdateValid) {
+							if (undoItem.getColumn() == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+								if (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) != null) {
+									undoItem.setNewValue(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN).toString());
+								}				
+								if (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) != null) {
+									undoItem.setEquationNames(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN).toString());
+								} else {
+									undoItem.setEquationNames("");
+								}				
+							}
+							setUpReactionsUndo(undoItem);
+						}
 					} else if (tabbedPane.getSelectedIndex() == 1) {
 						int viewRow = metabolitesTable.convertRowIndexToModel(getCurrentRow());
+						String newValue = "";                        
 						if (metabolitesTable.getModel().getValueAt(viewRow, getCurrentColumn()) != null) {
-							updateMetabolitesCellIfValid(getTableCellOldValue(), (String) metabolitesTable.getModel().getValueAt(viewRow, getCurrentColumn()), viewRow, getCurrentColumn());
-						} else {
-							updateMetabolitesCellIfValid(getTableCellOldValue(), "", viewRow, getCurrentColumn());
-						}						
+							newValue = (String) metabolitesTable.getModel().getValueAt(viewRow, getCurrentColumn());
+							System.out.println(newValue);
+						}
+						MetaboliteUndoItem undoItem = createMetaboliteUndoItem(getTableCellOldValue(), newValue, getCurrentRow(), getCurrentColumn(), viewRow + 1, UndoConstants.TYPING, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+						setUndoOldCollections(undoItem);
+						updateMetabolitesCellIfValid(getTableCellOldValue(), newValue, viewRow, getCurrentColumn());	
+						reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+						if (metaboliteUpdateValid) {
+							setUpMetabolitesUndo(undoItem);
+						}
 					}
 				}				
 			}
