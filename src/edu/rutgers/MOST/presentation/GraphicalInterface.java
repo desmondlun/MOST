@@ -9,7 +9,9 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
+import javax.swing.text.JTextComponent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.xml.stream.XMLStreamException;
@@ -54,6 +56,7 @@ import edu.rutgers.MOST.logic.ReactionParser;
 import edu.rutgers.MOST.optimization.FBA.FBA;
 import edu.rutgers.MOST.optimization.GDBB.GDBB;
 
+import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -61,6 +64,7 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
@@ -145,7 +149,7 @@ public class GraphicalInterface extends JFrame {
 				}				  
 			}
 			return true;  
-		}  
+		}		
 	};  
 	
 	public static JTextArea outputTextArea = new JTextArea();
@@ -9084,7 +9088,11 @@ public class GraphicalInterface extends JFrame {
                 row = (row == table.getRowCount()-1) ? 0 : row+1;
             }  
         }
-        scrollToLocation(table, row, col);
+        TableCellEditor editor = table.getCellEditor();
+        if (editor != null) {
+          editor.stopCellEditing();
+        }
+        scrollToLocation(table, row, col);        
 	}
 	
 	public static void loadGurobiPathInterface() {
