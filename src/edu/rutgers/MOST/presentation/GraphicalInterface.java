@@ -2053,7 +2053,18 @@ public class GraphicalInterface extends JFrame {
 		formulaBar.addFocusListener(new FocusListener() {
 
 			@Override
-			public void focusGained(FocusEvent arg0) {			
+			public void focusGained(FocusEvent e) {	
+				Component c = e.getComponent();
+				if (c instanceof JTextField) {
+		            ((JTextField)c).selectAll();
+		        }
+		        /*
+				if (c instanceof JFormattedTextField) {
+		            selectItLater(c);
+		        } else if (c instanceof JTextField) {
+		            ((JTextField)c).selectAll();
+		        }
+		        */
 				if (tabbedPane.getSelectedIndex() == 0 && reactionsTable.getSelectedRow() > - 1) {
 					int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
 					if (reactionsTable.getModel().getValueAt(viewRow, reactionsTable.getSelectedColumn()) != null) {
@@ -2079,7 +2090,7 @@ public class GraphicalInterface extends JFrame {
 				selectedCellChanged = true;	
 			}
 		});
-			
+		
 		final JPopupMenu formulaBarPopupMenu = new JPopupMenu(); 
 		formulaBarPopupMenu.add(formulaBarCutItem);
 		formulaBarPopupMenu.add(formulaBarCopyItem);
@@ -9120,6 +9131,18 @@ public class GraphicalInterface extends JFrame {
         }
         scrollToLocation(table, row, col);        
 	}
+	
+	//Workaround for formatted text field focus side effects.
+    protected void selectItLater(Component c) {
+        if (c instanceof JFormattedTextField) {
+            final JFormattedTextField ftf = (JFormattedTextField)c;
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    ftf.selectAll();
+                }
+            });
+        }
+    }
 	
 	public static void loadGurobiPathInterface() {
 		GurobiPathInterface gpi = new GurobiPathInterface();
