@@ -1,5 +1,6 @@
 package edu.rutgers.MOST.presentation;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
@@ -8,6 +9,8 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -21,6 +24,9 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import edu.rutgers.MOST.config.LocalConfig;
+import edu.rutgers.MOST.data.MetaboliteUndoItem;
+import edu.rutgers.MOST.data.ReactionUndoItem;
+import edu.rutgers.MOST.data.UndoConstants;
 
 import static javax.swing.GroupLayout.Alignment.*;
  
@@ -148,6 +154,21 @@ public class FindReplaceDialog extends JDialog {
 			}
 		});
         
+		findField.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent e) {	
+				Component c = e.getComponent();
+				if (c instanceof JTextField) {
+		            ((JTextField)c).selectAll();
+		        }				
+			}
+
+			@Override
+			public void focusLost(FocusEvent arg0) {				
+			}
+		});
+		
         replaceBox.setSelectedIndex(-1);
         replaceBox.setEditable(true);
         final JTextField replaceField = (JTextField)replaceBox.getEditor().getEditorComponent();
@@ -209,6 +230,21 @@ public class FindReplaceDialog extends JDialog {
 			}
 		});
         
+		replaceField.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent e) {	
+				Component c = e.getComponent();
+				if (c instanceof JTextField) {
+		            ((JTextField)c).selectAll();
+		        }				
+			}
+
+			@Override
+			public void focusLost(FocusEvent arg0) {				
+			}
+		});
+		
         caseCheckBox.setSelected(false);
     	wrapCheckBox.setSelected(false);
     	selectedAreaCheckBox.setSelected(false);
@@ -530,7 +566,7 @@ public class FindReplaceDialog extends JDialog {
     	}        
 	}
     
-  //from http://www.javakb.com/Uwe/Forum.aspx/java-programmer/21291/popupmenu-for-a-cell-in-a-JXTable
+    //from http://www.javakb.com/Uwe/Forum.aspx/java-programmer/21291/popupmenu-for-a-cell-in-a-JXTable
 	private static String getClipboardContents(Object requestor) {
 		Transferable t = Toolkit.getDefaultToolkit()
 		.getSystemClipboard().getContents(requestor);
