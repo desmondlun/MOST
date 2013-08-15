@@ -1427,10 +1427,9 @@ public class GraphicalInterface extends JFrame {
 		editMenu.addSeparator(); 
 		
 		editMenu.add(undoItem);
-		// accelerator refuses to work correctly
 		undoItem.setMnemonic(KeyEvent.VK_U);
-		//undoItem.setAccelerator(KeyStroke.getKeyStroke(
-		        //KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+		undoItem.setAccelerator(KeyStroke.getKeyStroke(
+		        KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
 		undoItem.setEnabled(false);
 		
 		undoItem.addActionListener(new ActionListener() {
@@ -1440,10 +1439,9 @@ public class GraphicalInterface extends JFrame {
 		});
 		
 		editMenu.add(redoItem);
-		// accelerator refuses to work correctly
 		redoItem.setMnemonic(KeyEvent.VK_E);
-		//redoItem.setAccelerator(KeyStroke.getKeyStroke(
-		        //KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
+		redoItem.setAccelerator(KeyStroke.getKeyStroke(
+		        KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
 		redoItem.setEnabled(false);
 		
 		redoItem.addActionListener(new ActionListener() {
@@ -1851,6 +1849,22 @@ public class GraphicalInterface extends JFrame {
 			}
 		};
 		
+		ActionListener reactionsUndoActionListener = new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				if (undoItem.isEnabled()) {
+					undoButtonAction();
+				}				
+			}
+		};
+		
+		ActionListener reactionsRedoActionListener = new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				if (redoItem.isEnabled()) {
+					redoButtonAction();
+				}				
+			}
+		};
+		
 		findReplaceDialog.findButton.addActionListener(findReactionsButtonActionListener);
 		findReplaceDialog.findAllButton.addActionListener(findAllReactionsButtonActionListener);
 		findReplaceDialog.replaceButton.addActionListener(replaceReactionsButtonActionListener);
@@ -1866,6 +1880,8 @@ public class GraphicalInterface extends JFrame {
 		KeyStroke reacPaste = KeyStroke.getKeyStroke(KeyEvent.VK_V,ActionEvent.CTRL_MASK,false); 		
 		KeyStroke reacClear = KeyStroke.getKeyStroke(KeyEvent.VK_E,ActionEvent.CTRL_MASK,false); 
 		KeyStroke reacFind = KeyStroke.getKeyStroke(KeyEvent.VK_F,ActionEvent.CTRL_MASK,false); 
+		KeyStroke reacUndo = KeyStroke.getKeyStroke(KeyEvent.VK_Z,ActionEvent.CTRL_MASK,false); 
+		KeyStroke reacRedo = KeyStroke.getKeyStroke(KeyEvent.VK_Y,ActionEvent.CTRL_MASK,false); 
 		
 		setUpReactionsTable(con);
 		TableCellListener tcl = new TableCellListener(reactionsTable, reacAction);
@@ -1877,6 +1893,10 @@ public class GraphicalInterface extends JFrame {
 		reactionsTable.registerKeyboardAction(reactionsClearActionListener,reacClear,JComponent.WHEN_FOCUSED); 
 		reactionsTable.registerKeyboardAction(reactionsFindActionListener,reacFind,JComponent.WHEN_IN_FOCUSED_WINDOW); 
 		reactionsTable.registerKeyboardAction(reactionsFindActionListener,reacFind,JComponent.WHEN_FOCUSED); 
+		reactionsTable.registerKeyboardAction(reactionsUndoActionListener,reacUndo,JComponent.WHEN_IN_FOCUSED_WINDOW); 
+		reactionsTable.registerKeyboardAction(reactionsUndoActionListener,reacUndo,JComponent.WHEN_FOCUSED); 
+		reactionsTable.registerKeyboardAction(reactionsRedoActionListener,reacRedo,JComponent.WHEN_IN_FOCUSED_WINDOW); 
+		reactionsTable.registerKeyboardAction(reactionsRedoActionListener,reacRedo,JComponent.WHEN_FOCUSED); 
 		
 		// from http://www.java.net/node/651087
 		// need tab to skip hidden columns		
@@ -1926,6 +1946,22 @@ public class GraphicalInterface extends JFrame {
 			}
 		};
 		
+		ActionListener metabolitesUndoActionListener = new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				if (undoItem.isEnabled()) {
+					undoButtonAction();
+				}
+			}
+		};
+		
+		ActionListener metabolitesRedoActionListener = new ActionListener() {
+			public void actionPerformed(ActionEvent actionEvent) {
+				if (redoItem.isEnabled()) {
+					redoButtonAction();
+				}
+			}
+		};
+		
 		findReplaceDialog.findButton.addActionListener(findMetabolitesButtonActionListener);
 		findReplaceDialog.findAllButton.addActionListener(findAllMetabolitesButtonActionListener);
 		findReplaceDialog.replaceButton.addActionListener(replaceMetabolitesButtonActionListener);
@@ -1941,6 +1977,8 @@ public class GraphicalInterface extends JFrame {
 		KeyStroke metabPaste = KeyStroke.getKeyStroke(KeyEvent.VK_V,ActionEvent.CTRL_MASK,false);
 		KeyStroke metabClear = KeyStroke.getKeyStroke(KeyEvent.VK_E,ActionEvent.CTRL_MASK,false);
 		KeyStroke metabFind = KeyStroke.getKeyStroke(KeyEvent.VK_F,ActionEvent.CTRL_MASK,false);
+		KeyStroke metabUndo = KeyStroke.getKeyStroke(KeyEvent.VK_Z,ActionEvent.CTRL_MASK,false);
+		KeyStroke metabRedo = KeyStroke.getKeyStroke(KeyEvent.VK_Y,ActionEvent.CTRL_MASK,false);
 		
 		setUpMetabolitesTable(con);
 		TableCellListener mtcl = new TableCellListener(metabolitesTable, metabAction);
@@ -1952,6 +1990,10 @@ public class GraphicalInterface extends JFrame {
 		metabolitesTable.registerKeyboardAction(metabolitesClearActionListener,metabClear,JComponent.WHEN_FOCUSED);
 		metabolitesTable.registerKeyboardAction(metabolitesFindActionListener,metabFind,JComponent.WHEN_IN_FOCUSED_WINDOW);
 		metabolitesTable.registerKeyboardAction(metabolitesFindActionListener,metabFind,JComponent.WHEN_FOCUSED);
+		metabolitesTable.registerKeyboardAction(metabolitesUndoActionListener,metabUndo,JComponent.WHEN_IN_FOCUSED_WINDOW);
+		metabolitesTable.registerKeyboardAction(metabolitesUndoActionListener,metabUndo,JComponent.WHEN_FOCUSED);
+		metabolitesTable.registerKeyboardAction(metabolitesRedoActionListener,metabRedo,JComponent.WHEN_IN_FOCUSED_WINDOW);
+		metabolitesTable.registerKeyboardAction(metabolitesRedoActionListener,metabRedo,JComponent.WHEN_FOCUSED);
 
 		setTableCellFocused(0, 1, metabolitesTable);
 		setTableCellFocused(0, 1, reactionsTable);
