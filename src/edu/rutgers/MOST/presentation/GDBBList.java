@@ -87,9 +87,7 @@ class GDBBList extends JList<DynamicTree> {
 			public void actionPerformed(ActionEvent a) { 
 				if (getRow() > 0) {
 					LocalConfig.getInstance().setLoadedDatabase(LocalConfig.getInstance().getDatabaseName());
-					GraphicalInterface.listModel.remove(getRow());
-					GraphicalInterface.fileList.setModel(GraphicalInterface.listModel);
-					GraphicalInterface.fileListPane.repaint();					
+					GraphicalInterface.listModel.remove(getRow());				
 				}				
 			}
 		});
@@ -101,8 +99,6 @@ class GDBBList extends JList<DynamicTree> {
 				LocalConfig.getInstance().setLoadedDatabase(LocalConfig.getInstance().getDatabaseName());
 				GraphicalInterface.listModel.clear();
 				GraphicalInterface.listModel.addElement(GraphicalInterface.getDatabaseName());
-				GraphicalInterface.fileList.setModel(GraphicalInterface.listModel);
-				GraphicalInterface.fileListPane.repaint();
 				GraphicalInterface.outputTextArea.setText("");
 			}
 		});

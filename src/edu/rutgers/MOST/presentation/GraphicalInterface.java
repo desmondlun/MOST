@@ -189,8 +189,6 @@ public class GraphicalInterface extends JFrame {
 	public static SettingsFactory curSettings;
 	
 	public static DefaultListModel<String> listModel = new DefaultListModel();
-	public static FileList fileList = new FileList();
-	static JScrollPane fileListPane = new JScrollPane(fileList);	
 
 	protected GDBBTask gdbbTask;
 
@@ -256,7 +254,7 @@ public class GraphicalInterface extends JFrame {
 	public static boolean addMetabColumn;             // used to scroll added column to visible
 	public static boolean duplicatePromptShown;		  // ensures "Duplicate Metabolite" prompt displayed once per event
 	public static boolean renameMetabolite;           // if Rename menu action determines used, is set to true to for OK button action          
-	public static boolean reactionsTableEditable;	  // if fileList item index > 0, is false
+	public static boolean reactionsTableEditable;	  
 	public static boolean modelCollectionOKButtonClicked;
 	public static boolean reactionCancelLoad;
 	public static boolean isRoot;
@@ -986,72 +984,6 @@ public class GraphicalInterface extends JFrame {
 		ArrayList<Integer> addedMetabolites = new ArrayList<Integer>();
 		LocalConfig.getInstance().setAddedMetabolites(addedMetabolites);
 		
-		/**************************************************************************/
-		//set up fileList
-		/**************************************************************************/
-
-		/* 
-		fileList.setModel(listModel);
-		fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
-		fileList.setSelectedIndex(0);
-
-		fileList.addListSelectionListener(new ListSelectionListener() 
-		{ 
-			public void valueChanged(ListSelectionEvent e) 
-			{  
-				fileList.saveItem.setEnabled(false);
-				fileList.saveAsCSVItem.setEnabled(false);
-				fileList.saveAsSBMLItem.setEnabled(false);
-				//fileList.saveAllItem.setEnabled(false);
-				fileList.deleteItem.setEnabled(false);
-				fileList.clearItem.setEnabled(false);
-				if(fileList.getSelectedIndex() == 0) {
-					enableMenuItems();
-					clearOutputPane();
-					if (getPopout() != null) {
-						getPopout().clear();
-					}	
-					closeConnection();
-					LocalConfig.getInstance().setLoadedDatabase(getDatabaseName());
-					reloadTables(getDatabaseName());
-				} else if (fileList.getSelectedIndex() == -1) {
-					fileList.setSelectedIndex(0);
-				} else {
-					disableMenuItems();
-					if (fileList.getSelectedValue() != null) {
-						loadOptimization();
-					}
-				}        	  
-			} 
-		});   
-
-		fileList.saveAsCSVItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent a) { 
-				saveOptFile = true;	
-				saveReactionsTextFileChooser();
-			}
-		});
-			
-		fileList.saveAsSBMLItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent a) { 
-				// Add action here when save SBML works	
-			}
-		});
-		
-		fileList.deleteItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent a) {
-				deleteItemFromFileList();		
-			}
-		});
-
-		fileList.clearItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent a) {
-				deleteAllItemsFromFileList();			
-			}
-		});
-			
-	   */		
-		
 		DynamicTreeDemo.treePanel.saveAsCSVItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 
 				saveOptFile = true;	
@@ -1077,6 +1009,10 @@ public class GraphicalInterface extends JFrame {
 			}
 		});
 
+		/**************************************************************************/
+		// set up output popout
+		/**************************************************************************/		
+				
 		final JPopupMenu outputPopupMenu = new JPopupMenu(); 
 		outputPopupMenu.add(outputCopyItem);
 		outputCopyItem.setEnabled(false);
@@ -1221,7 +1157,6 @@ public class GraphicalInterface extends JFrame {
 				Utilities u = new Utilities();
 				closeConnection();
                 //load original db into tables
-				//fileList.removeSelectionInterval(0, listModel.size());
 				LocalConfig.getInstance().setLoadedDatabase(getDatabaseName());
 
 				reloadTables(getDatabaseName());
@@ -1243,14 +1178,9 @@ public class GraphicalInterface extends JFrame {
 					+ getDatabaseName() + dateTimeStamp;
 				}
 
-				// TODO: should be in the try/catch since if optimization fails
-				// item should not be added to fileList
 				copier.copyDatabase(getDatabaseName(), optimizePath);
-				//listModel.addElement(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
-				//		+ (getDatabaseName().substring(getDatabaseName().lastIndexOf("\\") + 1) + dateTimeStamp));				
 				LocalConfig.getInstance().getOptimizationFilesList().add(optimizePath);
 				setOptimizePath(optimizePath);
-				//fileList.setSelectedIndex(listModel.size() - 1);
 			
 //				String solutionName = GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1);
 				//DynamicTreeDemo.treePanel.addObject(new Solution(GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1)));
@@ -1260,9 +1190,6 @@ public class GraphicalInterface extends JFrame {
 
 				FBAModel model = new FBAModel(getDatabaseName());
 
-				// TODO should this be in a try/catch loop? so if it fails
-				// error message can be displayed
-				// also for Gurobi get key error, dialog instead of console printout
 				log.debug("create an optimize");
 				FBA fba = new FBA();
 				fba.setFBAModel(model);
@@ -1327,7 +1254,6 @@ public class GraphicalInterface extends JFrame {
 						// TODO Auto-generated catch block
 						e2.printStackTrace();
 					}
-					//fileList.setSelectedIndex(listModel.size() - 1);
 				} else {
 					DynamicTreeDemo.treePanel.setNodeSelected(0);
 				}
@@ -1350,9 +1276,6 @@ public class GraphicalInterface extends JFrame {
 			public void actionPerformed(ActionEvent a) {
 				Utilities u = new Utilities();
 				//load original db into tables
-		        
-				//fileList.removeSelectionInterval(0, listModel.size());
-				//String fileString1 = "jdbc:sqlite:" + getDatabaseName() + ".db";
 				closeConnection();
 				reloadTables(getDatabaseName());
 				highlightUnusedMetabolites = false;
@@ -2417,10 +2340,7 @@ public class GraphicalInterface extends JFrame {
 								JOptionPane.ERROR_MESSAGE);
 						validFile = false;
 					} else {
-						//fileList.setSelectedIndex(-1);
-						listModel.clear();
-						//fileList.setModel(listModel);
-						
+						listModel.clear();						
 						DynamicTreeDemo.treePanel.clear();
 						
 						String filename;
@@ -2486,9 +2406,7 @@ public class GraphicalInterface extends JFrame {
 	
 	public void loadCSV() {	
 		DynamicTreeDemo.treePanel.clear();
-		//fileList.setSelectedIndex(-1);
 		listModel.clear();
-		//fileList.setModel(listModel); 
 		closeConnection();
 		try {			
 			Class.forName("org.sqlite.JDBC");
@@ -2571,10 +2489,7 @@ public class GraphicalInterface extends JFrame {
 								"Invalid Database File",                                
 								JOptionPane.ERROR_MESSAGE);
 					} else {
-						//fileList.setSelectedIndex(-1);
 						listModel.clear();
-						//fileList.setModel(listModel);
-						//String filename = rawFilename.substring(0, rawFilename.length() - 3);
 						String rawPath = fileChooser.getSelectedFile().getPath();
 						String path = rawPath.substring(0, rawPath.length() - 3);
 						setDatabaseName(path);
@@ -2666,14 +2581,6 @@ public class GraphicalInterface extends JFrame {
 		}
 	};
 	
-	/*
-	public void clearFileList() {
-		fileList.setSelectedIndex(-1);
-		listModel.clear();
-		fileList.setModel(listModel);
-	} 
-	*/
-	
 	/*******************************************************************************/
 	//end load methods and actions
 	/*******************************************************************************/
@@ -2708,8 +2615,7 @@ public class GraphicalInterface extends JFrame {
 		TextMetabolitesWriter writer = new TextMetabolitesWriter();
 		writer.write(path, LocalConfig.getInstance().getLoadedDatabase());				    		
 		setTitle(GraphicalInterfaceConstants.TITLE + " - " + filename);
-		//fileList.setSelectedIndex(-1);
-		//list holds dateTime stamps from items in old fileList
+		//list holds dateTime stamps from items in old tree
 		ArrayList<String> suffixList = new ArrayList();
 		for (int i = 1; i < listModel.size(); i++) {
 			//length of dateTime stamp is 14
@@ -2720,15 +2626,14 @@ public class GraphicalInterface extends JFrame {
 		listModel.addElement(filename);
 		DatabaseCopier copier = new DatabaseCopier();
 		//copies files and assigns new names based on name of saved file to
-		//refresh fileList with new names
+		//refresh tree with new names
 		for (int i = 0; i < suffixList.size(); i++) {
 			listModel.addElement(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + filename + suffixList.get(i));
 			DynamicTreeDemo.treePanel.addObject(new Solution(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + filename + suffixList.get(i)));
 			copier.copyDatabase(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + oldName + suffixList.get(i), GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + filename + suffixList.get(i));
 			copier.copyLogFile(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + oldName + suffixList.get(i), GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + filename + suffixList.get(i));
 		}
-
-		//fileList.setModel(listModel);
+		
 		clearOutputPane();
 	}
 
@@ -2822,9 +2727,8 @@ public class GraphicalInterface extends JFrame {
 		writer.write(path, LocalConfig.getInstance().getLoadedDatabase());				    
 		setTitle(GraphicalInterfaceConstants.TITLE + " - " + filename);	
 		if (!saveOptFile) {
-			//fileList.setSelectedIndex(-1);
-			//list holds dateTime stamps from items in old fileList
-			ArrayList<String> suffixList = new ArrayList();
+			//list holds dateTime stamps from items in old tree
+			ArrayList<String> suffixList = new ArrayList<String>();
 			for (int i = 1; i < listModel.size(); i++) {
 				//length of dateTime stamp is 14
 				String suffix = listModel.get(i).substring(listModel.get(i).length() - 14);
@@ -2839,7 +2743,6 @@ public class GraphicalInterface extends JFrame {
 				copier.copyLogFile(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + oldName + suffixList.get(i), GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + filename + suffixList.get(i));
 			}
 
-			//fileList.setModel(listModel);
 			DynamicTreeDemo.treePanel.addObject(new Solution(GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1)));
 			clearOutputPane();
 		}	
@@ -2929,8 +2832,7 @@ public class GraphicalInterface extends JFrame {
 		copier.copyDatabase(getDatabaseName(), getDBPath() + GraphicalInterfaceConstants.DB_COPIER_SUFFIX);
 		closeConnection();
 		reloadTables(getDatabaseName());
-		//fileList.setSelectedIndex(-1);
-		//list holds dateTime stamps from items in old fileList
+		//list holds dateTime stamps from items in old tree
 		ArrayList<String> suffixList = new ArrayList();
 		for (int i = 1; i < listModel.size(); i++) {
 			//length of dateTime stamp is 14
@@ -2945,7 +2847,6 @@ public class GraphicalInterface extends JFrame {
 			copier.copyLogFile(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + oldName + suffixList.get(i), GraphicalInterfaceConstants.OPTIMIZATION_PREFIX + filename + suffixList.get(i));
 		}
 
-		//fileList.setModel(listModel);
 		clearOutputPane();
 
 	}
@@ -3109,8 +3010,6 @@ public class GraphicalInterface extends JFrame {
 			listModel.addElement(ConfigConstants.DEFAULT_DATABASE_NAME);
 			DynamicTreeDemo.treePanel.clear();
 			DynamicTreeDemo.treePanel.addObject(new Solution(GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1), ConfigConstants.DEFAULT_DATABASE_NAME));			
-			//fileList.setModel(listModel);
-			//fileList.setSelectedIndex(0);
 			setTableCellFocused(0, 1, metabolitesTable);
 			setTableCellFocused(0, 1, reactionsTable);
 		} catch (ClassNotFoundException e) {
@@ -3666,8 +3565,6 @@ public class GraphicalInterface extends JFrame {
 		DatabaseCreator databaseCreator = new DatabaseCreator();
 		databaseCreator.copyTables(LocalConfig.getInstance().getDatabaseName(), tableCopySuffix(0));
 		listModel.addElement(titleName);
-		//fileList.setModel(listModel);
-		//fileList.setSelectedIndex(0);
 		setSortDefault();
 		//set focus to top left
 		setTableCellFocused(0, 1, reactionsTable);
@@ -6790,7 +6687,7 @@ public class GraphicalInterface extends JFrame {
 	/**************************************************************************/
 	
 	/*******************************************************************************/
-	//fileList methods
+	//output pane methods
 	/*******************************************************************************/
 	
 	//based on http://www.java2s.com/Code/Java/File-Input-Output/Textfileviewer.htm
@@ -6829,7 +6726,7 @@ public class GraphicalInterface extends JFrame {
 	}
 
 	/*******************************************************************************/
-	//end fileList methods
+	//end output pane methods
 	/*******************************************************************************/
 	
 	/*******************************************************************************/
@@ -7042,7 +6939,6 @@ public class GraphicalInterface extends JFrame {
 				e2.printStackTrace();
 			}
 			*/
-			//fileList.setSelectedIndex(listModel.size() - 1);
 			//	Reset GDBB Dialog
         }   
     }
@@ -7070,9 +6966,7 @@ public class GraphicalInterface extends JFrame {
 				if (isCSVFile && LocalConfig.getInstance().hasReactionsFile) {
 					LocalConfig.getInstance().setProgress(0);
 					progressBar.progress.setIndeterminate(true);
-					//fileList.setSelectedIndex(-1);
-					listModel.clear();
-					//fileList.setModel(listModel);  					
+					listModel.clear();  					
 					closeConnection();
 					String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
 					String filename = LocalConfig.getInstance().getDatabaseName();
@@ -7117,7 +7011,6 @@ public class GraphicalInterface extends JFrame {
 					        } else {
 								listModel.clear();
 								listModel.addElement(filename);
-						        //fileList.setModel(listModel);
 						        LocalConfig.getInstance().setDatabaseName(filename);
 						        LocalConfig.getInstance().setLoadedDatabase(filename);
 						        reloadTables(filename);
@@ -9052,89 +8945,6 @@ public class GraphicalInterface extends JFrame {
 		getFindReplaceDialog().replaceButton.setEnabled(false);
 		getFindReplaceDialog().replaceAllButton.setEnabled(false);
 		//getFindReplaceDialog().replaceFindButton.setEnabled(false);
-	}
-    
-	public void loadOptimization() {
-		//gets the full path of optimize
-		String optimizePath = getOptimizePath();
-		if (optimizePath.contains("\\")) {
-			optimizePath = optimizePath.substring(0, optimizePath.lastIndexOf("\\") + 1) + fileList.getSelectedValue().toString();
-		} else {
-			optimizePath = fileList.getSelectedValue().toString();
-		}
-		setOptimizePath(optimizePath);
-		if (getOptimizePath().endsWith(fileList.getSelectedValue().toString())) {
-			loadOutputPane(getOptimizePath() + ".log");
-			if (getPopout() != null) {
-				getPopout().load(getOptimizePath() + ".log");
-			}	
-
-			closeConnection();
-			LocalConfig.getInstance().setLoadedDatabase(getOptimizePath());
-			reloadTables(getOptimizePath());
-		} 
-	}
-	
-	public void deleteItemFromFileList() {
-		Utilities u = new Utilities();
-		closeConnection();
-		Object[] options = {"    Yes    ", "    No    ",};
-		int choice = JOptionPane.showOptionDialog(null, 
-				GraphicalInterfaceConstants.DELETE_ASSOCIATED_FILES, 
-				GraphicalInterfaceConstants.DELETE_ASSOCIATED_FILES_TITLE, 
-				JOptionPane.YES_NO_OPTION, 
-				JOptionPane.QUESTION_MESSAGE, 
-				null, options, options[0]);
-		if (choice == JOptionPane.YES_OPTION) {
-			u.delete(LocalConfig.getInstance().getOptimizationFilesList().get(fileList.getSelectedIndex() - 1) + ".db");
-			File f = new File(LocalConfig.getInstance().getOptimizationFilesList().get(fileList.getSelectedIndex() - 1) + ".log");
-			if (f.exists()) {
-				u.delete(LocalConfig.getInstance().getOptimizationFilesList().get(fileList.getSelectedIndex() - 1) + ".log");
-			}
-			// TODO: Determine why MIP Files do not usually delete. (???)
-			File f1 = new File(LocalConfig.getInstance().getOptimizationFilesList().get(fileList.getSelectedIndex() - 1).substring(4) + "_MIP.log");						
-			if (f1.exists()) {
-				u.delete(LocalConfig.getInstance().getOptimizationFilesList().get(fileList.getSelectedIndex() - 1).substring(4) + "_MIP.log");						
-			}
-		}
-		if (choice == JOptionPane.NO_OPTION) {
-
-		}
-		String fileString = "jdbc:sqlite:" + getDatabaseName() + ".db";
-		LocalConfig.getInstance().setLoadedDatabase(getDatabaseName());
-		try {
-			Class.forName("org.sqlite.JDBC");
-			Connection con = DriverManager.getConnection(fileString);
-			LocalConfig.getInstance().setCurrentConnection(con);
-			setUpMetabolitesTable(con);
-			setUpReactionsTable(con);
-			setTitle(GraphicalInterfaceConstants.TITLE + " - " + getDatabaseName());
-			clearOutputPane();
-		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (SQLException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}			
-	}
-	
-	public void deleteAllItemsFromFileList() {
-		closeConnection();
-		Object[] options = {"    Yes    ", "    No    ",};
-		int choice = JOptionPane.showOptionDialog(null, 
-				GraphicalInterfaceConstants.DELETE_ASSOCIATED_FILES, 
-				GraphicalInterfaceConstants.DELETE_ASSOCIATED_FILES_TITLE, 
-				JOptionPane.YES_NO_OPTION, 
-				JOptionPane.QUESTION_MESSAGE, 
-				null, options, options[0]);
-		if (choice == JOptionPane.YES_OPTION) {				
-			deleteAllOptimizationFiles();
-		}
-		if (choice == JOptionPane.NO_OPTION) {
-
-		}
-		setUpTables();	
 	}
 	
 	public void addReactionColumnCloseAction() {
