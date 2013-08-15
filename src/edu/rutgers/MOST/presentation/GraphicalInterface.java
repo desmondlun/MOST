@@ -1530,28 +1530,39 @@ public class GraphicalInterface extends JFrame {
 				// allows table to scroll to make added column visible
 				addReacColumn = true;
 				try {
-					getReactionColAddRenameInterface().addColumnToMeta(LocalConfig.getInstance().getLoadedDatabase());
-					getReactionColAddRenameInterface().textField.setText("");
-					getReactionColAddRenameInterface().setVisible(false);
-					getReactionColAddRenameInterface().dispose();
-					Class.forName("org.sqlite.JDBC");
-					Connection con = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getLoadedDatabase()));
-					LocalConfig.getInstance().setCurrentConnection(con);
-					setUpReactionsTable(con);
-					ReactionUndoItem undoItem = createReactionUndoItem("", "", getCurrentRow(), getCurrentColumn(), 1, UndoConstants.ADD_COLUMN, UndoConstants.REACTION_UNDO_ITEM_TYPE);
-					ReactionsMetaColumnManager reactionsMetaColumnManager = new ReactionsMetaColumnManager();
-					int metaColumnCount = reactionsMetaColumnManager.getMetaColumnCount(LocalConfig.getInstance().getDatabaseName());
-					undoItem.setAddedColumnIndex(metaColumnCount + GraphicalInterfaceConstants.REACTIONS_DB_COLUMN_NAMES.length - 1);
-					setUpReactionsUndo(undoItem);
+					if (getReactionColAddRenameInterface().isColumnDuplicate(LocalConfig.getInstance().getLoadedDatabase())) {
+						reactionColAddRenameInterface.setAlwaysOnTop(false);
+						reactionColAddRenameInterface.setModal(false);
+						JOptionPane.showMessageDialog(null,                
+								"Column Name Already Exists.",                
+								"Duplicate ColumnName",                                
+								JOptionPane.ERROR_MESSAGE);
+						reactionColAddRenameInterface.setAlwaysOnTop(true);
+						reactionColAddRenameInterface.setModal(true);
+					} else {
+						getReactionColAddRenameInterface().addColumnToMeta(LocalConfig.getInstance().getLoadedDatabase());
+						getReactionColAddRenameInterface().textField.setText("");
+						getReactionColAddRenameInterface().setVisible(false);
+						getReactionColAddRenameInterface().dispose();
+						Class.forName("org.sqlite.JDBC");
+						Connection con = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getLoadedDatabase()));
+						LocalConfig.getInstance().setCurrentConnection(con);
+						setUpReactionsTable(con);
+						ReactionUndoItem undoItem = createReactionUndoItem("", "", getCurrentRow(), getCurrentColumn(), 1, UndoConstants.ADD_COLUMN, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+						ReactionsMetaColumnManager reactionsMetaColumnManager = new ReactionsMetaColumnManager();
+						int metaColumnCount = reactionsMetaColumnManager.getMetaColumnCount(LocalConfig.getInstance().getDatabaseName());
+						undoItem.setAddedColumnIndex(metaColumnCount + GraphicalInterfaceConstants.REACTIONS_DB_COLUMN_NAMES.length - 1);
+						setUpReactionsUndo(undoItem);
+						addReacColumn = false;
+						addReactionColumnCloseAction();
+					}					
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}
-				addReacColumn = false;
-				addReactionColumnCloseAction();
+				}				
 			}
 		};
 		
@@ -1613,19 +1624,32 @@ public class GraphicalInterface extends JFrame {
 				// allows table to scroll to make added column visible
 				addMetabColumn = true;
 				try {
-					getMetaboliteColAddRenameInterface().addColumnToMeta(LocalConfig.getInstance().getLoadedDatabase());
-					getMetaboliteColAddRenameInterface().textField.setText("");
-					getMetaboliteColAddRenameInterface().setVisible(false);
-					getMetaboliteColAddRenameInterface().dispose();
-					Class.forName("org.sqlite.JDBC");
-					Connection con = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getLoadedDatabase()));
-					LocalConfig.getInstance().setCurrentConnection(con);
-					setUpMetabolitesTable(con);
-					MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", getCurrentRow(), getCurrentColumn(), 1, UndoConstants.ADD_COLUMN, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);		
-					MetabolitesMetaColumnManager metabolitesMetaColumnManager = new MetabolitesMetaColumnManager();
-					int metaColumnCount = metabolitesMetaColumnManager.getMetaColumnCount(LocalConfig.getInstance().getDatabaseName());
-					undoItem.setAddedColumnIndex(metaColumnCount + GraphicalInterfaceConstants.METABOLITES_DB_COLUMN_NAMES.length - 1);
-					setUpMetabolitesUndo(undoItem);
+					if (getMetaboliteColAddRenameInterface().isColumnDuplicate(LocalConfig.getInstance().getLoadedDatabase())) {
+						metaboliteColAddRenameInterface.setAlwaysOnTop(false);
+						metaboliteColAddRenameInterface.setModal(false);
+						JOptionPane.showMessageDialog(null,                
+								"Column Name Already Exists.",                
+								"Duplicate ColumnName",                                
+								JOptionPane.ERROR_MESSAGE);
+						metaboliteColAddRenameInterface.setAlwaysOnTop(true);
+						metaboliteColAddRenameInterface.setModal(true);
+					} else {
+						getMetaboliteColAddRenameInterface().addColumnToMeta(LocalConfig.getInstance().getLoadedDatabase());
+						getMetaboliteColAddRenameInterface().textField.setText("");
+						getMetaboliteColAddRenameInterface().setVisible(false);
+						getMetaboliteColAddRenameInterface().dispose();
+						Class.forName("org.sqlite.JDBC");
+						Connection con = DriverManager.getConnection(createConnectionStatement(LocalConfig.getInstance().getLoadedDatabase()));
+						LocalConfig.getInstance().setCurrentConnection(con);
+						setUpMetabolitesTable(con);
+						MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", getCurrentRow(), getCurrentColumn(), 1, UndoConstants.ADD_COLUMN, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);		
+						MetabolitesMetaColumnManager metabolitesMetaColumnManager = new MetabolitesMetaColumnManager();
+						int metaColumnCount = metabolitesMetaColumnManager.getMetaColumnCount(LocalConfig.getInstance().getDatabaseName());
+						undoItem.setAddedColumnIndex(metaColumnCount + GraphicalInterfaceConstants.METABOLITES_DB_COLUMN_NAMES.length - 1);
+						setUpMetabolitesUndo(undoItem);
+						addMetabColumn = false;
+						addMetaboliteColumnCloseAction();
+					}					
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -1633,8 +1657,7 @@ public class GraphicalInterface extends JFrame {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				addMetabColumn = false;
-				addMetaboliteColumnCloseAction();
+				
 			}
 		};
 		
@@ -8951,6 +8974,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().addColumnInterfaceVisible = false;
     	addReacColumnItem.setEnabled(true);
     	addMetabColumnItem.setEnabled(true);
+    	getReactionColAddRenameInterface().textField.setText("");
     	getReactionColAddRenameInterface().setVisible(false);
     	getReactionColAddRenameInterface().dispose();
 	}
@@ -8959,6 +8983,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().addColumnInterfaceVisible = false;
     	addReacColumnItem.setEnabled(true);
     	addMetabColumnItem.setEnabled(true);
+    	getMetaboliteColAddRenameInterface().textField.setText("");
     	getMetaboliteColAddRenameInterface().setVisible(false);
     	getMetaboliteColAddRenameInterface().dispose();
 	}

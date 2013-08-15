@@ -1,6 +1,5 @@
 package edu.rutgers.MOST.data;
 
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -8,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Vector;
 
 public class ReactionsMetaColumnManager {
 
@@ -136,7 +134,7 @@ public class ReactionsMetaColumnManager {
 		return columnNames;
 
 	}
-
+	
 	public void addColumnName(String databaseName, String columnName) {
 		String queryString = "jdbc:sqlite:" + databaseName + ".db";
 		try {
