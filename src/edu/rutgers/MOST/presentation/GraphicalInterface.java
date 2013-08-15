@@ -536,13 +536,15 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem saveCSVMetabolitesItem = new JMenuItem("Save As CSV Metabolites");
 	public final JMenuItem saveCSVReactionsItem = new JMenuItem("Save As CSV Reactions");
 	public final JMenuItem saveSQLiteItem = new JMenuItem("Save As SQLite");
-	public final JMenuItem clearItem = new JMenuItem("Clear");
+	public final JMenuItem clearItem = new JMenuItem("Clear Tables");
 	public final static JMenuItem fbaItem = new JMenuItem("FBA");
 	public final static JMenuItem gdbbItem = new JMenuItem("GDBB");
 	public final JCheckBoxMenuItem highlightUnusedMetabolitesItem = new JCheckBoxMenuItem("Highlight Unused Metabolites");
 	public final JMenuItem deleteUnusedItem = new JMenuItem("Delete All Unused Metabolites");
 	public final JMenuItem findSuspiciousItem = new JMenuItem("Find Suspicious Metabolites");
-	public final JMenuItem findReplaceItem = new JMenuItem("Find/Replace");
+	public final JMenuItem undoItem = new JMenuItem("Undo");
+	public final JMenuItem redoItem = new JMenuItem("Redo");
+	public final JMenuItem findReplaceItem = new JMenuItem("Find/Replace");	
 	public final JMenuItem addReacRowItem = new JMenuItem("Add Row to Reactions Table");
 	public final JMenuItem addMetabRowItem = new JMenuItem("Add Row to Metabolites Table");
 	public final JMenuItem addReacColumnItem = new JMenuItem("Add Column to Reactions Table");
@@ -1424,8 +1426,36 @@ public class GraphicalInterface extends JFrame {
 		
 		editMenu.addSeparator(); 
 		
+		editMenu.add(undoItem);
+		// accelerator refuses to work correctly
+		undoItem.setMnemonic(KeyEvent.VK_U);
+		//undoItem.setAccelerator(KeyStroke.getKeyStroke(
+		        //KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+		undoItem.setEnabled(false);
+		
+		undoItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) {				
+				undoButtonAction();
+			}    	     
+		});
+		
+		editMenu.add(redoItem);
+		// accelerator refuses to work correctly
+		redoItem.setMnemonic(KeyEvent.VK_E);
+		//redoItem.setAccelerator(KeyStroke.getKeyStroke(
+		        //KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
+		redoItem.setEnabled(false);
+		
+		redoItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) {
+				redoButtonAction();			
+			}    	     
+		});
+		
 		editMenu.add(findReplaceItem);
 		findReplaceItem.setMnemonic(KeyEvent.VK_F);
+		findReplaceItem.setAccelerator(KeyStroke.getKeyStroke(
+		        KeyEvent.VK_F, ActionEvent.CTRL_MASK));
 		findReplaceItem.setEnabled(true);
 		
 		findReplaceItem.addActionListener(new ActionListener() {
@@ -1764,14 +1794,14 @@ public class GraphicalInterface extends JFrame {
 		
 		addImage(undoSplitButton, undoLabel);
 		addImage(undoSplitButton, undoGrayedLabel);
-		undoSplitButton.setToolTipText("Undo");	
+		undoSplitButton.setToolTipText("Can't Undo (Ctrl+Z)");	
 		undoSplitButton.addMouseListener(undoButtonMouseListener);
 		disableOptionComponent(undoSplitButton, undoLabel, undoGrayedLabel);
 		toolbar.add(undoSplitButton);
 		
 		addImage(redoSplitButton, redoLabel);
 		addImage(redoSplitButton, redoGrayedLabel);
-		redoSplitButton.setToolTipText("Redo");
+		redoSplitButton.setToolTipText("Can't Redo (Ctrl+Y)");	
 		redoSplitButton.addMouseListener(redoButtonMouseListener);
 		disableOptionComponent(redoSplitButton, redoLabel, redoGrayedLabel);
 		toolbar.add(redoSplitButton);		
@@ -3614,8 +3644,8 @@ public class GraphicalInterface extends JFrame {
 		}
 		setBooleanDefaults();
 		clearConfigLists();
-		undoSplitButton.setToolTipText("Undo");
-		redoSplitButton.setToolTipText("Redo");
+		undoSplitButton.setToolTipText("Can't Undo (Ctrl+Z)");
+		redoSplitButton.setToolTipText("Can't Redo (Ctrl+Y)");
 		disableOptionComponent(undoSplitButton, undoLabel, undoGrayedLabel);
 		disableOptionComponent(redoSplitButton, undoLabel, undoGrayedLabel);
 		undoCount = 1;
@@ -8320,15 +8350,17 @@ public class GraphicalInterface extends JFrame {
     	addMenuItems(LocalConfig.getInstance().getUndoItemMap(), "undo");
 		if (undoCount > 0) {
 			enableOptionComponent(undoSplitButton, undoLabel, undoGrayedLabel);
+			undoItem.setEnabled(true);
 			Class cls = LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size()).getClass();
 			if ((cls.getName().equals("edu.rutgers.MOST.data.ReactionUndoItem"))) {
-				undoSplitButton.setToolTipText("Undo " + ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).createUndoDescription());
+				undoSplitButton.setToolTipText("Undo " + ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).createUndoDescription() + " (Ctrl+Z)");
 			} else if ((cls.getName().equals("edu.rutgers.MOST.data.MetaboliteUndoItem"))) {
-				undoSplitButton.setToolTipText("Undo " + ((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).createUndoDescription());
+				undoSplitButton.setToolTipText("Undo " + ((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).createUndoDescription() + " (Ctrl+Z)");
 			}			
 		} else {
 			disableOptionComponent(undoSplitButton, undoLabel, undoGrayedLabel);
-			undoSplitButton.setToolTipText("Undo");
+			undoItem.setEnabled(false);
+			undoSplitButton.setToolTipText("Can't Undo (Ctrl+Z)");
 		}		
 		undoCount += 1;	
 	}
@@ -8338,15 +8370,17 @@ public class GraphicalInterface extends JFrame {
 		addMenuItems(LocalConfig.getInstance().getRedoItemMap(), "redo");
 		if (LocalConfig.getInstance().getRedoItemMap().size() > 0) {
 			enableOptionComponent(redoSplitButton, redoLabel, redoGrayedLabel);
+			redoItem.setEnabled(true);
 			Class cls = LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size()).getClass();
 			if ((cls.getName().equals("edu.rutgers.MOST.data.ReactionUndoItem"))) {
-				redoSplitButton.setToolTipText("Redo " + ((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).createUndoDescription());
+				redoSplitButton.setToolTipText("Redo " + ((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).createUndoDescription() + " (Ctrl+Y)");
 			} else if ((cls.getName().equals("edu.rutgers.MOST.data.MetaboliteUndoItem"))) {
-				redoSplitButton.setToolTipText("Redo " + ((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).createUndoDescription());
+				redoSplitButton.setToolTipText("Redo " + ((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).createUndoDescription() + " (Ctrl+Y)");
 			}
 		} else {
 			disableOptionComponent(redoSplitButton, redoLabel, redoGrayedLabel);
-			redoSplitButton.setToolTipText("Redo");
+			redoItem.setEnabled(false);
+			redoSplitButton.setToolTipText("Can't Redo (Ctrl+Y)");
 		}			
 	}
 	
@@ -8543,37 +8577,49 @@ public class GraphicalInterface extends JFrame {
     private MouseListener undoButtonMouseListener = new MouseAdapter() { 
     	public void mousePressed(MouseEvent e) {
     		if (undoSplitButton.buttonClicked) {
-    			Class cls = LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size()).getClass();
-				if ((cls.getName().equals("edu.rutgers.MOST.data.ReactionUndoItem"))) {
-					int row = ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getRow();
-    				int col = ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getColumn();	    				
-    				reactionUndoAction(LocalConfig.getInstance().getUndoItemMap().size());
-    				undoCount -= 1;				
-    				updateUndoButton();
-    				updateRedoButton(); 
-    				reloadTables(LocalConfig.getInstance().getLoadedDatabase());
-    				tabbedPane.setSelectedIndex(0);
-    				if (row > -1 && col > -1) {
-    					scrollToLocation(reactionsTable, row, col);
-    				}			
-    			} else if ((cls.getName().equals("edu.rutgers.MOST.data.MetaboliteUndoItem"))) {
-    				int row = ((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getRow();
-    				int col = ((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getColumn();	    				
-    				metaboliteUndoAction(LocalConfig.getInstance().getUndoItemMap().size());
-    				undoCount -= 1;
-    				updateUndoButton();
-    				updateRedoButton();
-    				reloadTables(LocalConfig.getInstance().getLoadedDatabase());
-    				tabbedPane.setSelectedIndex(1);
-    				if (row > -1 && col > -1) {
-    					scrollToLocation(metabolitesTable, row, col);
-    				}
-    			}				
-    			// used for highlighting menu items, necessary here?
-    			LocalConfig.getInstance().setUndoMenuIndex(0);   
+    			undoButtonAction();
     		}            
     	}
     };
+    
+    public void undoButtonAction() {
+    	Class cls = LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size()).getClass();
+		if ((cls.getName().equals("edu.rutgers.MOST.data.ReactionUndoItem"))) {
+			reactionUndoButtonAction();		
+		} else if ((cls.getName().equals("edu.rutgers.MOST.data.MetaboliteUndoItem"))) {
+			metaboliteUndoButtonAction();
+		}				
+		// used for highlighting menu items, necessary here?
+		LocalConfig.getInstance().setUndoMenuIndex(0);  
+    }
+    
+    public void reactionUndoButtonAction() {
+    	int row = ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getRow();
+		int col = ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getColumn();	    				
+		reactionUndoAction(LocalConfig.getInstance().getUndoItemMap().size());
+		undoCount -= 1;				
+		updateUndoButton();
+		updateRedoButton(); 
+		reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+		tabbedPane.setSelectedIndex(0);
+		if (row > -1 && col > -1) {
+			scrollToLocation(reactionsTable, row, col);
+		}	
+    }
+    
+    public void metaboliteUndoButtonAction() {
+    	int row = ((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getRow();
+		int col = ((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getColumn();	    				
+		metaboliteUndoAction(LocalConfig.getInstance().getUndoItemMap().size());
+		undoCount -= 1;
+		updateUndoButton();
+		updateRedoButton();
+		reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+		tabbedPane.setSelectedIndex(1);
+		if (row > -1 && col > -1) {
+			scrollToLocation(metabolitesTable, row, col);
+		}
+    }
     
     public void metaboliteUndoAction(int index) {
     	((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).undo(); 
@@ -8618,47 +8664,59 @@ public class GraphicalInterface extends JFrame {
     private MouseListener redoButtonMouseListener = new MouseAdapter() { 
     	public void mousePressed(MouseEvent e) {
     		if (redoSplitButton.buttonClicked) {
-    			Class cls = LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size()).getClass();
-				if ((cls.getName().equals("edu.rutgers.MOST.data.ReactionUndoItem"))) {
-					int row = ((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getRow();
-    				int col = ((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getColumn();	    				
-    				if (((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getUndoType().equals(UndoConstants.ADD_ROW)) {
-						row = redoAddRowScrollRow(reactionsTable);
-					}
-    				if (((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getUndoType().equals(UndoConstants.ADD_COLUMN)) {
-    					col = redoAddColumnScrollColumn("reactions");
-					}
-    				reactionRedoAction(LocalConfig.getInstance().getRedoItemMap().size());				
-    				updateUndoButton();
-    				updateRedoButton();  
-    				reloadTables(LocalConfig.getInstance().getLoadedDatabase());
-    				tabbedPane.setSelectedIndex(0);
-    				if (row > -1 && col > -1) {
-    					scrollToLocation(reactionsTable, row, col);  					
-    				}	
-    			} else if ((cls.getName().equals("edu.rutgers.MOST.data.MetaboliteUndoItem"))) {
-    				int row = ((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getRow();
-    				int col = ((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getColumn();	    	
-    				if (((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getUndoType().equals(UndoConstants.ADD_ROW)) {
-						row = redoAddRowScrollRow(metabolitesTable);
-					}
-    				if (((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getUndoType().equals(UndoConstants.ADD_COLUMN)) {
-    					col = redoAddColumnScrollColumn("metabolites");
-					}
-    				metaboliteRedoAction(LocalConfig.getInstance().getRedoItemMap().size());
-    				updateUndoButton();
-    				updateRedoButton();
-    				reloadTables(LocalConfig.getInstance().getLoadedDatabase()); 
-    				tabbedPane.setSelectedIndex(1);
-    				if (row > -1 && col > -1) {
-    					scrollToLocation(metabolitesTable, row, col);				
-    				}
-    			}
-    			// used for highlighting menu items, necessary here?
-    			LocalConfig.getInstance().setUndoMenuIndex(0);  
+    			redoButtonAction();
     		}            
     	}
     };
+    
+    public void redoButtonAction() {
+    	Class cls = LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size()).getClass();
+		if ((cls.getName().equals("edu.rutgers.MOST.data.ReactionUndoItem"))) {
+			reactionRedoButtonAction();
+		} else if ((cls.getName().equals("edu.rutgers.MOST.data.MetaboliteUndoItem"))) {
+			metaboliteRedoButtonAction();
+		}
+		// used for highlighting menu items, necessary here?
+		LocalConfig.getInstance().setUndoMenuIndex(0); 
+    }
+    
+    public void reactionRedoButtonAction() {
+    	int row = ((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getRow();
+		int col = ((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getColumn();	    				
+		if (((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getUndoType().equals(UndoConstants.ADD_ROW)) {
+			row = redoAddRowScrollRow(reactionsTable);
+		}
+		if (((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getUndoType().equals(UndoConstants.ADD_COLUMN)) {
+			col = redoAddColumnScrollColumn("reactions");
+		}
+		reactionRedoAction(LocalConfig.getInstance().getRedoItemMap().size());				
+		updateUndoButton();
+		updateRedoButton();  
+		reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+		tabbedPane.setSelectedIndex(0);
+		if (row > -1 && col > -1) {
+			scrollToLocation(reactionsTable, row, col);  					
+		}	
+    }
+    
+    public void metaboliteRedoButtonAction() {
+    	int row = ((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getRow();
+		int col = ((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getColumn();	    	
+		if (((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getUndoType().equals(UndoConstants.ADD_ROW)) {
+			row = redoAddRowScrollRow(metabolitesTable);
+		}
+		if (((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).getUndoType().equals(UndoConstants.ADD_COLUMN)) {
+			col = redoAddColumnScrollColumn("metabolites");
+		}
+		metaboliteRedoAction(LocalConfig.getInstance().getRedoItemMap().size());
+		updateUndoButton();
+		updateRedoButton();
+		reloadTables(LocalConfig.getInstance().getLoadedDatabase()); 
+		tabbedPane.setSelectedIndex(1);
+		if (row > -1 && col > -1) {
+			scrollToLocation(metabolitesTable, row, col);				
+		}
+    }
     
     public void metaboliteRedoAction(int index) {    	
     	((MetaboliteUndoItem) LocalConfig.getInstance().getRedoItemMap().get(index)).redo();     	
@@ -8742,7 +8800,8 @@ public class GraphicalInterface extends JFrame {
     // any changes in table clears redo button
     public void clearRedoButton() {
     	disableOptionComponent(redoSplitButton, redoLabel, redoGrayedLabel);
-    	redoSplitButton.setToolTipText("Redo");
+    	redoItem.setEnabled(false);
+    	redoSplitButton.setToolTipText("Can't Redo (Ctrl+Y)");
     	redoCount = 1;
     	LocalConfig.getInstance().getRedoItemMap().clear();
     	LocalConfig.getInstance().getReactionsRedoSortColumns().clear();

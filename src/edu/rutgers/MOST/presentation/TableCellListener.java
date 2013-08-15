@@ -113,13 +113,17 @@ public class TableCellListener implements PropertyChangeListener, Runnable
 	{
 		//  A cell has started/stopped editing
 
-		if ("tableCellEditor".equals(e.getPropertyName()))
-		{
-			if (table.isEditing())
-				processEditingStarted();
-			else
-				processEditingStopped();
-		}
+		try {
+			if ("tableCellEditor".equals(e.getPropertyName()))
+			{
+				if (table.isEditing())
+					processEditingStarted();
+				else
+					processEditingStopped();
+			}
+		} catch (Throwable t) {
+			
+		}		
 	}
 
 	/*
@@ -140,10 +144,14 @@ public class TableCellListener implements PropertyChangeListener, Runnable
 	@Override
 	public void run()
 	{
-		row = table.convertRowIndexToModel( table.getEditingRow() );
-		column = table.convertColumnIndexToModel( table.getEditingColumn() );
-		oldValue = (String) table.getModel().getValueAt(row, column);
-		newValue = null;
+		try {
+			row = table.convertRowIndexToModel( table.getEditingRow() );
+			column = table.convertColumnIndexToModel( table.getEditingColumn() );
+			oldValue = (String) table.getModel().getValueAt(row, column);
+			newValue = null;
+		} catch (Throwable t) {
+			
+		}		
 	}
 
 	/*
@@ -155,20 +163,24 @@ public class TableCellListener implements PropertyChangeListener, Runnable
 
 		//  The data has changed, invoke the supplied Action
 
-		if (! newValue.equals(oldValue))
-		{
-			//  Make a copy of the data in case another cell starts editing
-			//  while processing this change
+		try {
+			if (! newValue.equals(oldValue))
+			{
+				//  Make a copy of the data in case another cell starts editing
+				//  while processing this change
 
-			TableCellListener tcl = new TableCellListener(
-					getTable(), getRow(), getColumn(), getOldValue(), getNewValue());
+				TableCellListener tcl = new TableCellListener(
+						getTable(), getRow(), getColumn(), getOldValue(), getNewValue());
 
-			ActionEvent event = new ActionEvent(
-					tcl,
-					ActionEvent.ACTION_PERFORMED,
-			"");
-			action.actionPerformed(event);
-		}
+				ActionEvent event = new ActionEvent(
+						tcl,
+						ActionEvent.ACTION_PERFORMED,
+				"");
+				action.actionPerformed(event);
+			}
+		} catch (Throwable t) {
+			
+		}		
 	}
 }
 
