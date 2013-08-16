@@ -99,8 +99,8 @@ public class ReactionsUpdater {
 						reactionName = " ";
 					}
 					String reactionEqunAbbr = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
-					reactionEqunNames = "test";
-					//String reactionEqunNames = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
+					//reactionEqunNames = "test";
+					String reactionEqunNames = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowList.get(i), GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 					String reversible = GraphicalInterfaceConstants.REVERSIBLE_DEFAULT;
 					
 					if (LocalConfig.getInstance().includesReactions) {
