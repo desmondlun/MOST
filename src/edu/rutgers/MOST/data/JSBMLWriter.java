@@ -50,10 +50,8 @@ import org.sbml.jsbml.xml.XMLAttributes;
 import org.sbml.jsbml.xml.XMLNamespaces;
 import org.sbml.jsbml.xml.XMLNode;
 
-
 import edu.rutgers.MOST.config.ConfigConstants;
 import edu.rutgers.MOST.config.LocalConfig;
-
 
 public class JSBMLWriter implements TreeModelListener{
 	public String sourceType;
@@ -163,12 +161,18 @@ public class JSBMLWriter implements TreeModelListener{
 		chooser.setCurrentDirectory(new File(lastSaveSBML_path));
 		chooser.setApproveButtonText("Save");
 		chooser.setDialogTitle("Save to");
+		chooser.setFileFilter(new XMLFileFilter());
+		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		
 		int option = chooser.showOpenDialog(output); 
 		
 		if(option == JFileChooser.APPROVE_OPTION){  
 			if(chooser.getSelectedFile()!=null)	{  
-				File theFileToSave = chooser.getSelectedFile();
+				String path = chooser.getSelectedFile().getPath();
+				if (!path.endsWith(".xml")) {
+					path = path + ".xml";
+				}
+				File theFileToSave = new File(path);				
 				this.setOutFile(theFileToSave);
 				String rawPathName = chooser.getSelectedFile().getAbsolutePath();
 				curSettings.add("LastSaveSBML", rawPathName);
@@ -817,6 +821,16 @@ public class JSBMLWriter implements TreeModelListener{
 		public void setGeneAssoc(String assoc) {
 			
 		}
+	}
+	
+	class XMLFileFilter extends javax.swing.filechooser.FileFilter {
+	    public boolean accept(File f) {
+	        return f.isDirectory() || f.getName().toLowerCase().endsWith(".xml");
+	    }
+	    
+	    public String getDescription() {
+	        return ".xml files";
+	    }
 	}
 	
 }

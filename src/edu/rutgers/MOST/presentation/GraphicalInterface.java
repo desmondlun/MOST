@@ -2144,7 +2144,7 @@ public class GraphicalInterface extends JFrame {
 						String newValue = "";                        
 						if (metabolitesTable.getModel().getValueAt(viewRow, getCurrentColumn()) != null) {
 							newValue = (String) metabolitesTable.getModel().getValueAt(viewRow, getCurrentColumn());
-							System.out.println(newValue);
+							//System.out.println(newValue);
 						}
 						MetaboliteUndoItem undoItem = createMetaboliteUndoItem(getTableCellOldValue(), newValue, getCurrentRow(), getCurrentColumn(), viewRow + 1, UndoConstants.TYPING, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
 						setUndoOldCollections(undoItem);
@@ -9155,7 +9155,6 @@ public class GraphicalInterface extends JFrame {
 		gurobiPathErrorShown = false;
 		openGurobiPathFilechooser = true;
 		gurobiFileChooserShown = false; 
-		System.out.println(openGurobiPathFilechooser);
 	}
 	
 	static ActionListener fileButtonActionListener = new ActionListener() {
@@ -9351,7 +9350,6 @@ public class GraphicalInterface extends JFrame {
 		String lastGurobi_path = curSettings.get("LastGurobi");
 		if (lastGurobi_path == null) {
 			openGurobiPathFilechooser = true;
-			System.out.println(openGurobiPathFilechooser);
 			loadGurobiPathInterface();
 		}
 				
