@@ -550,6 +550,8 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem addMetabRowItem = new JMenuItem("Add Row to Metabolites Table");
 	public final JMenuItem addReacColumnItem = new JMenuItem("Add Column to Reactions Table");
 	public final JMenuItem addMetabColumnItem = new JMenuItem("Add Column to Metabolites Table"); 
+	public final JMenuItem deleteReactionRowMenu = new JMenuItem("Delete Row(s)");
+	public final JMenuItem deleteMetaboliteRowMenu = new JMenuItem("Delete Row(s)");
 	public final JMenuItem editorMenu = new JMenuItem("Launch Reaction Editor");
 
 	public final JMenuItem formulaBarCutItem = new JMenuItem("Cut");
@@ -5377,6 +5379,11 @@ public class GraphicalInterface extends JFrame {
 		contextMenu.add(pasteMenu);
 		
 		JMenuItem clearMenu = new JMenuItem("Clear Contents");
+		if (isRoot) {
+			clearMenu.setEnabled(true);
+		} else {
+			clearMenu.setEnabled(false);
+		}
 		clearMenu.setAccelerator(KeyStroke.getKeyStroke(
 		        KeyEvent.VK_E, ActionEvent.CTRL_MASK));
 		clearMenu.addActionListener(new ActionListener() {
@@ -5388,14 +5395,18 @@ public class GraphicalInterface extends JFrame {
 		
 		contextMenu.addSeparator();
 		
-		JMenuItem deleteRowMenu = new JMenuItem("Delete Row(s)");
-		deleteRowMenu.addActionListener(new ActionListener() {
+		if (isRoot) {
+			deleteReactionRowMenu.setEnabled(true);
+		} else {
+			deleteReactionRowMenu.setEnabled(false);
+		}
+		deleteReactionRowMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				reactionsDeleteRows();	
 				formulaBar.setText("");
 			}
 		});
-		contextMenu.add(deleteRowMenu);	
+		contextMenu.add(deleteReactionRowMenu);	
 		
 		contextMenu.addSeparator();
 		
@@ -5793,6 +5804,11 @@ public class GraphicalInterface extends JFrame {
 		contextMenu.add(pasteMenu);
 
 		JMenuItem clearMenu = new JMenuItem("Clear Contents");
+		if (isRoot) {
+			clearMenu.setEnabled(true);
+		} else {
+			clearMenu.setEnabled(false);
+		}
 		clearMenu.setAccelerator(KeyStroke.getKeyStroke(
 		        KeyEvent.VK_E, ActionEvent.CTRL_MASK));
 		clearMenu.addActionListener(new ActionListener() {
@@ -5804,26 +5820,28 @@ public class GraphicalInterface extends JFrame {
 		
 		contextMenu.addSeparator();
 
-		JMenuItem deleteRowMenu = new JMenuItem("Delete Row(s)");
-
 		if (metabolitesTable.getSelectedRow() > -1) {
 			int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
 			int id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.DB_METABOLITE_ID_COLUMN));			
 			String metabAbbrev = (String) metabolitesTable.getModel().getValueAt(viewRow, 1);
 			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev) && !LocalConfig.getInstance().getDuplicateIds().contains(id)) {
-				deleteRowMenu.setEnabled(false);
+				deleteMetaboliteRowMenu.setEnabled(false);
 			} else {
-				deleteRowMenu.setEnabled(true);
-				deleteRowMenu.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent ae) {
-						metaboliteDeleteRows();	
-						formulaBar.setText("");
-					}
-				});
+				if (isRoot) {
+					deleteMetaboliteRowMenu.setEnabled(true);
+					deleteMetaboliteRowMenu.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent ae) {
+							metaboliteDeleteRows();	
+							formulaBar.setText("");
+						}
+					});
+				} else {
+					deleteMetaboliteRowMenu.setEnabled(false);
+				}
 			}
 		}
 		
-		contextMenu.add(deleteRowMenu);
+		contextMenu.add(deleteMetaboliteRowMenu);
 		
 		return contextMenu;
 	}  
@@ -9045,7 +9063,7 @@ public class GraphicalInterface extends JFrame {
 		addMetabColumnItem.setEnabled(true);
 		reactionsTableEditable = true;
 		saveOptFile = false;
-		formulaBar.setEditable(true);
+		formulaBar.setEditable(true);		
 		editorMenu.setEnabled(true);
 	}
 	
