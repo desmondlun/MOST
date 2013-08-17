@@ -263,6 +263,8 @@ public class GraphicalInterface extends JFrame {
 	public static boolean setGurobiPathClicked;
 	public static boolean gurobiPathSelected;
 	public static boolean gurobiPathErrorShown;
+	public static boolean openGurobiPathFilechooser;
+	public static boolean gurobiFileChooserShown;
 	public static boolean openFileChooser;
 	// close
 	public static boolean exit;
@@ -1712,10 +1714,7 @@ public class GraphicalInterface extends JFrame {
 		setGurobiPath.setMnemonic(KeyEvent.VK_G);
 		setGurobiPath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
-				//if (!setGurobiPathClicked) {
-					loadGurobiPathInterface();
-				//}
-				//setGurobiPathClicked = true;
+				getGurobiPathInterface().setVisible(true);
 			}    	     
 		});
 		
@@ -9154,19 +9153,22 @@ public class GraphicalInterface extends JFrame {
 		});	
 		gpi.setVisible(true);
 		gurobiPathErrorShown = false;
+		openGurobiPathFilechooser = true;
+		gurobiFileChooserShown = false; 
+		System.out.println(openGurobiPathFilechooser);
 	}
 	
 	static ActionListener fileButtonActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			getGurobiPathInterface().setAlwaysOnTop(false);
-			if (!gurobiPathSelected) {
-				JTextArea output = null;
-				JFileChooser fileChooser = new JFileChooser(); 
-				fileChooser.setDialogTitle("Browse For Gurobi Path");
-				fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);				
-				
-				fileChooser.setCurrentDirectory(new File("C:\\"));
-				
+			JTextArea output = null;
+			JFileChooser fileChooser = new JFileChooser(); 
+			fileChooser.setDialogTitle("Browse For Gurobi Path");
+			fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);				
+
+			fileChooser.setCurrentDirectory(new File("C:\\"));
+			//System.out.println(openGurobiPathFilechooser);
+			if (openGurobiPathFilechooser && !gurobiFileChooserShown) {
 				//... Open a file dialog.
 				int retval = fileChooser.showOpenDialog(output);
 				if (retval == JFileChooser.APPROVE_OPTION) {
@@ -9176,8 +9178,14 @@ public class GraphicalInterface extends JFrame {
 					getGurobiPathInterface().textField.setText(rawPathName);	
 					setGurobiPath(rawPathName);
 					gurobiPathSelected = true;
-				}			
+					gurobiFileChooserShown = true;
+				}
+				if (retval == JFileChooser.APPROVE_OPTION) {
+					gurobiFileChooserShown = true;
+				}
 			}
+			openGurobiPathFilechooser = true;
+			gurobiFileChooserShown = false;
 			getGurobiPathInterface().setAlwaysOnTop(true);
 		}
 	};
@@ -9194,7 +9202,7 @@ public class GraphicalInterface extends JFrame {
 			fbaItem.setEnabled(true);
 			gdbbItem.setEnabled(true);
 			getGurobiPathInterface().setVisible(false);
-			getGurobiPathInterface().dispose();
+			//getGurobiPathInterface().dispose();
 		}
 	};
 	
@@ -9206,16 +9214,17 @@ public class GraphicalInterface extends JFrame {
 	
 	public static void gpiCloseAction() {
 		getGurobiPathInterface().setAlwaysOnTop(false);
-		if (!gurobiPathErrorShown) {
+		String lastGurobi_path = curSettings.get("LastGurobi");
+		if (!gurobiPathErrorShown && lastGurobi_path == null) {
 			JOptionPane.showMessageDialog(null,                
 					GraphicalInterfaceConstants.NO_GUROBI_PATH_ERROR,                
 					"No Gurobi Path",                                
 					JOptionPane.ERROR_MESSAGE);	
 		}
-		gurobiPathErrorShown = true;	
-		hasGurobiPath = false;
+		gurobiPathErrorShown = true;
+	    hasGurobiPath = false;	
 		getGurobiPathInterface().setVisible(false);
-		getGurobiPathInterface().dispose();
+		//getGurobiPathInterface().dispose();
 	}
 	
 	public static void main(String[] args) throws Exception {		
@@ -9341,6 +9350,8 @@ public class GraphicalInterface extends JFrame {
 		hasGurobiPath = true;
 		String lastGurobi_path = curSettings.get("LastGurobi");
 		if (lastGurobi_path == null) {
+			openGurobiPathFilechooser = true;
+			System.out.println(openGurobiPathFilechooser);
 			loadGurobiPathInterface();
 		}
 				
