@@ -398,6 +398,7 @@ public class GraphicalInterfaceConstants {
     public static final Color SELECTED_AREA_COLOR = new Color(190,205,225);
     
     public static final String GUROBI_PATH_INTERFACE_TITLE = "Gurobi Path Locator";
+    public static final String GUROBI_PATH_LABEL = "Gurobi Path";
     public static final String GUROBI_PATH_BUTTON = "Load Gurobi Path";
     public static final String NO_GUROBI_PATH_ERROR = "There is no Gurobi path set.\n FBA and GDBB will not function";
     

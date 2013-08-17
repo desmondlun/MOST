@@ -69,7 +69,7 @@ public class GurobiPathInterface  extends JDialog {
 		Box hbButton = Box.createHorizontalBox();
 
 		JLabel topLabel = new JLabel();
-		topLabel.setText("File Name");
+		topLabel.setText(GraphicalInterfaceConstants.GUROBI_PATH_LABEL);
 		topLabel.setSize(new Dimension(150, 10));
 		//top, left, bottom. right
 		topLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
