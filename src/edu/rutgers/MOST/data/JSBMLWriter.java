@@ -469,7 +469,7 @@ public class JSBMLWriter implements TreeModelListener{
 			for (int i = 1 ; i<= length; i++) {
 				SBMLReaction curReact = (SBMLReaction) rFactory.getReactionById(i);
 				//System.out.println(curReact);
-				allReactions.add(curReact);
+				allReactions.add(curReact);				
 			}
 			
 			

@@ -265,6 +265,7 @@ public class GraphicalInterface extends JFrame {
 	public static boolean gurobiPathErrorShown;
 	public static boolean openGurobiPathFilechooser;
 	public static boolean gurobiFileChooserShown;
+	public static boolean gurobiPathFound;
 	public static boolean openFileChooser;
 	// close
 	public static boolean exit;
@@ -9133,6 +9134,10 @@ public class GraphicalInterface extends JFrame {
         scrollToLocation(table, row, col);        
 	}
 	
+	/******************************************************************************/
+	// Gurobi path methods
+	/******************************************************************************/
+	
 	public static void loadGurobiPathInterface() {
 		GurobiPathInterface gpi = new GurobiPathInterface();
 		setGurobiPathInterface(gpi);
@@ -9143,6 +9148,13 @@ public class GraphicalInterface extends JFrame {
 		gpi.setLocationRelativeTo(null);		
 		gpi.setAlwaysOnTop(true);	
 		gpi.setModal(true);
+		gpi.textField.setText(findGurobiPath());
+		if (gurobiPathFound) {
+			gpi.topLabel.setText(GraphicalInterfaceConstants.GUROBI_PATH_FOUND_LABEL);
+			setGurobiPath(findGurobiPath());
+		} else {
+			gpi.topLabel.setText(GraphicalInterfaceConstants.GUROBI_PATH_NOT_FOUND_LABEL);
+		}
 		gpi.fileButton.addActionListener(fileButtonActionListener);
 		gpi.okButton.addActionListener(gpiOKActionListener);
 		gpi.cancelButton.addActionListener(gpiCancelActionListener);
@@ -9226,6 +9238,125 @@ public class GraphicalInterface extends JFrame {
 		//getGurobiPathInterface().dispose();
 	}
 	
+	public static int largestVersionNumber(int twoDigit, int threeDigit) {
+		int largest = 0;
+		if (twoDigit > 0 && threeDigit > 0) {
+	    	if (threeDigit/10.0 > twoDigit) {
+	    		largest = threeDigit;
+		    } else if (twoDigit > threeDigit/10.0) {
+		    	largest = twoDigit;
+		    } else if (twoDigit == (int)threeDigit/10.0) {
+		    	if (threeDigit >= twoDigit*10) {
+		    		largest = threeDigit;
+		    	}
+		    } else {
+		    	largest = twoDigit;
+		    }
+	    } else if (twoDigit > 0) {
+	    	largest = twoDigit;
+	    } else if (threeDigit > 0) {
+	    	largest = threeDigit;
+	    }
+		
+		return largest;
+	}
+	
+	public static String findGurobiPath() {
+		String gurobiPath = "";
+		gurobiPathFound = false;
+		
+		// try environmental variable first
+		String variable = System.getenv("GUROBI_HOME");  
+		//System.out.println(variable); 
+		if (variable != null) {
+			gurobiPath = variable;
+			gurobiPathFound = true;
+		}
+
+		// in case there is another possible name for Gurobi in environmental variables
+		if (!gurobiPathFound) {
+			Map<String, String> variables = System.getenv();  
+
+			for (Map.Entry<String, String> entry : variables.entrySet())  
+			{  
+				String name = entry.getKey();  
+				String value = entry.getValue();  
+				//System.out.println(name + "=" + value); 
+				if (name.toLowerCase().contains("gurobi")) {
+					//System.out.println(value);
+					gurobiPath = value;
+					gurobiPathFound = true;
+				}
+			}
+		}
+	    // get highest version in C:\ if not set as environmental variable
+		// unsure if this is necessary
+		// only works for Windows
+		if (!gurobiPathFound) {
+			System.out.println(System.getProperty("os.name"));
+		    if (System.getProperty("os.name").contains("Windows")) {
+		    	int largest = 0;
+		    	int largest64Bit = 0;
+			    int twoDigit64Bit = 0;
+			    int threeDigit64Bit = 0;
+			    for (int i = 40; i < 60; i++) {	
+			    	//File f1 = new File("C:\\gurobi" + i);
+				    File f1 = new File("C:\\gurobi" + i + "\\win64\\lib\\gurobi.jar");
+				    if (f1.exists()) {
+				        System.out.println("C:\\gurobi" + i);
+				        twoDigit64Bit = i;
+				    }
+			    }	    
+			    for (int j = 400; j < 600; j++) {
+			    	//File f2 = new File("C:\\gurobi" + j);
+				    File f2 = new File("C:\\gurobi" + j + "\\win64\\lib\\gurobi.jar");
+				    if (f2.exists()) {
+				        System.out.println("C:\\gurobi" + j);
+				        threeDigit64Bit = j;
+				    }
+			    }
+			    System.out.println(largestVersionNumber(twoDigit64Bit, threeDigit64Bit));			    
+			    
+			    int largest32Bit = 0;
+			    int twoDigit32Bit = 0;
+			    int threeDigit32Bit = 0;
+			    for (int i = 40; i < 60; i++) {	
+				    File f1 = new File("C:\\gurobi" + i + "\\win32\\lib\\gurobi.jar");
+				    if (f1.exists()) {
+				        System.out.println("C:\\gurobi" + i);
+				        twoDigit32Bit = i;
+				    }
+			    }
+			    for (int j = 400; j < 600; j++) {	    	
+				    File f2 = new File("C:\\gurobi" + j + "\\win32\\lib\\gurobi.jar");
+				    if (f2.exists()) {
+				        System.out.println("C:\\gurobi" + j);
+				        threeDigit32Bit = j;
+				    }
+			    }	
+			    System.out.println(largestVersionNumber(twoDigit32Bit, threeDigit32Bit));			    
+			    if (largest64Bit > 0) {
+			    	largest = largest64Bit;
+			    	gurobiPathFound = true;
+			    } else if (largest32Bit > 0) {
+			    	largest = largest32Bit;
+			    	gurobiPathFound = true;
+			    }
+			    System.out.println("largest = " + largest);
+			    gurobiPath = "C:\\gurobi" + largest;
+		    }
+		}
+		if (gurobiPathFound) {
+			gurobiPath = gurobiPath.substring(0, gurobiPath.length() - 6);
+		    //System.out.println("path " + gurobiPath);
+		}	
+		return gurobiPath;
+	}
+	
+	/******************************************************************************/
+	// Gurobi path methods
+	/******************************************************************************/
+	
 	public static void main(String[] args) throws Exception {		
 		curSettings = new SettingsFactory();
 				
@@ -9245,107 +9376,7 @@ public class GraphicalInterface extends JFrame {
 		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
 		icons.add(new ImageIcon("etc/most32.jpg").getImage());
 
-	    String variable = System.getenv("GUROBI_HOME");  
-	    System.out.println(variable);  
-	    
-	    Map<String, String> variables = System.getenv();  
-	    
-	    for (Map.Entry<String, String> entry : variables.entrySet())  
-	    {  
-	       String name = entry.getKey();  
-	       String value = entry.getValue();  
-	       //System.out.println(name + "=" + value); 
-	       if (name.toLowerCase().contains("gurobi")) {
-	    	   System.out.println(value);
-	       }
-	    }
-		
-	    System.out.println(System.getProperty("os.name"));
-	    if (System.getProperty("os.name").contains("Windows")) {
-	    	int largest = 0;
-	    	int largest64Bit = 0;
-		    int twoDigit64Bit = 0;
-		    int threeDigit64Bit = 0;
-		    for (int i = 40; i < 60; i++) {	
-		    	//File f1 = new File("C:\\gurobi" + i);
-			    File f1 = new File("C:\\gurobi" + i + "\\win64\\lib\\gurobi.jar");
-			    if (f1.exists()) {
-			        System.out.println("C:\\gurobi" + i);
-			        twoDigit64Bit = i;
-			    }
-		    }	    
-		    for (int j = 400; j < 600; j++) {
-		    	//File f2 = new File("C:\\gurobi" + j);
-			    File f2 = new File("C:\\gurobi" + j + "\\win64\\lib\\gurobi.jar");
-			    if (f2.exists()) {
-			        System.out.println("C:\\gurobi" + j);
-			        threeDigit64Bit = j;
-			    }
-		    }
-		    if (twoDigit64Bit > 0 && threeDigit64Bit > 0) {
-		    	if (threeDigit64Bit/10.0 > twoDigit64Bit) {
-		    		largest64Bit = threeDigit64Bit;
-			    } else if (twoDigit64Bit > threeDigit64Bit/10.0) {
-			    	largest64Bit = twoDigit64Bit;
-			    } else if (twoDigit64Bit == (int)threeDigit64Bit/10.0) {
-			    	if (threeDigit64Bit >= twoDigit64Bit*10) {
-			    		largest64Bit = threeDigit64Bit;
-			    	}
-			    } else {
-			    	largest64Bit = twoDigit64Bit;
-			    }
-		    } else if (twoDigit64Bit > 0) {
-		    	largest64Bit = twoDigit64Bit;
-		    } else if (threeDigit64Bit > 0) {
-		    	largest64Bit = threeDigit64Bit;
-		    }
-		    
-		    System.out.println("largest 64 bit = " + largest64Bit);
-		    
-		    int largest32Bit = 0;
-		    int twoDigit32Bit = 0;
-		    int threeDigit32Bit = 0;
-		    for (int i = 40; i < 60; i++) {	
-			    File f1 = new File("C:\\gurobi" + i + "\\win32\\lib\\gurobi.jar");
-			    if (f1.exists()) {
-			        System.out.println("C:\\gurobi" + i);
-			        twoDigit32Bit = i;
-			    }
-		    }
-		    for (int j = 400; j < 600; j++) {	    	
-			    File f2 = new File("C:\\gurobi" + j + "\\win32\\lib\\gurobi.jar");
-			    if (f2.exists()) {
-			        System.out.println("C:\\gurobi" + j);
-			        threeDigit32Bit = j;
-			    }
-		    }	    	 
-		    if (twoDigit32Bit > 0 && threeDigit32Bit > 0) {
-		    	if (threeDigit32Bit/10.0 > twoDigit32Bit) {
-		    		largest32Bit = threeDigit32Bit;
-			    } else if (twoDigit32Bit > threeDigit32Bit/10.0) {
-			    	largest32Bit = twoDigit32Bit;
-			    } else if (twoDigit32Bit == (int)threeDigit32Bit/10.0) {
-			    	if (threeDigit32Bit >= twoDigit32Bit*10) {
-			    		largest32Bit = threeDigit32Bit;
-			    	}
-			    } else {
-			    	largest32Bit = twoDigit32Bit;
-			    }
-		    } else if (twoDigit32Bit > 0) {
-		    	largest32Bit = twoDigit32Bit;
-		    } else if (threeDigit32Bit > 0) {
-		    	largest32Bit = threeDigit32Bit;
-		    }	    
-		    
-		    System.out.println("largest 32 bit = " + largest32Bit);
-		    if (largest64Bit > 0) {
-		    	largest = largest64Bit;
-		    } else {
-		    	largest = largest32Bit;
-		    }
-		    System.out.println("largest = " + largest);
-	    }
-	    	    
+		gurobiPathFound = false;
 		hasGurobiPath = true;
 		String lastGurobi_path = curSettings.get("LastGurobi");
 		if (lastGurobi_path == null) {

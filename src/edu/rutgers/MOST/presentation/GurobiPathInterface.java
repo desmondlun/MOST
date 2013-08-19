@@ -34,6 +34,7 @@ public class GurobiPathInterface  extends JDialog {
 	public static JButton cancelButton = new JButton("  Cancel  ");
 	public static JButton clearButton = new JButton("Clear");
 	public static final JTextField textField = new JTextField();
+	public static JLabel topLabel = new JLabel();
 	
 	//Methods of saving current directory
 	public static SettingsFactory curSettings;
@@ -57,7 +58,7 @@ public class GurobiPathInterface  extends JDialog {
 
 		getRootPane().setDefaultButton(okButton);
 		
-		textField.setText("");
+		//textField.setText("");
 
 	    fileSelected = false;
 		
@@ -68,8 +69,8 @@ public class GurobiPathInterface  extends JDialog {
 		Box hbMetab = Box.createHorizontalBox();
 		Box hbButton = Box.createHorizontalBox();
 
-		JLabel topLabel = new JLabel();
-		topLabel.setText(GraphicalInterfaceConstants.GUROBI_PATH_LABEL);
+		//JLabel topLabel = new JLabel();
+		//topLabel.setText(GraphicalInterfaceConstants.GUROBI_PATH_LABEL);
 		topLabel.setSize(new Dimension(150, 10));
 		//top, left, bottom. right
 		topLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
