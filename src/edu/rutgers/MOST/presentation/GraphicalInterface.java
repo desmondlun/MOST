@@ -2625,32 +2625,35 @@ public class GraphicalInterface extends JFrame {
 	
 	class LoadExistingItemAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
-			File f = new File("ModelCollection.csv");
-			ModelCollectionTable mcTable = new ModelCollectionTable(f);
-			mcTable.setIconImages(icons);
-			mcTable.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-			mcTable.setAlwaysOnTop(true);
-			mcTable.setVisible(true);
-			mcTable.setLocationRelativeTo(null);
-			setModelCollectionTable(mcTable);
-			mcTable.okButton.addActionListener(modelCollectionOKButtonActionListener);
-			mcTable.cancelButton.addActionListener(modelCollectionCancelButtonActionListener);
-			loadExistingItem.setEnabled(false);
-			mcTable.addWindowListener(new WindowAdapter() {
-		        public void windowClosing(WindowEvent evt) {
-		        	loadExistingItem.setEnabled(true);
-		        	getModelCollectionTable().setVisible(false);
-		        	getModelCollectionTable().dispose();
-		        }
-			});	
+			SaveChangesPrompt();
+			if (openFileChooser) {
+				File f = new File("ModelCollection.csv");
+				ModelCollectionTable mcTable = new ModelCollectionTable(f);
+				mcTable.setIconImages(icons);
+				mcTable.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+				mcTable.setAlwaysOnTop(true);
+				mcTable.setVisible(true);
+				mcTable.setLocationRelativeTo(null);
+				setModelCollectionTable(mcTable);
+				mcTable.okButton.addActionListener(modelCollectionOKButtonActionListener);
+				mcTable.cancelButton.addActionListener(modelCollectionCancelButtonActionListener);
+				loadExistingItem.setEnabled(false);
+				mcTable.addWindowListener(new WindowAdapter() {
+			        public void windowClosing(WindowEvent evt) {
+			        	loadExistingItem.setEnabled(true);
+			        	getModelCollectionTable().setVisible(false);
+			        	getModelCollectionTable().dispose();
+			        }
+				});	
+			}			
 		}
 	}
 		
 	ActionListener modelCollectionOKButtonActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {			
 			if (!modelCollectionOKButtonClicked) {
-				SaveChangesPrompt();
-				if (openFileChooser) {
+				//SaveChangesPrompt();
+				//if (openFileChooser) {
 					loadSetUp();
 					LocalConfig.getInstance().setProgress(0);
 					listModel.clear();
@@ -2668,7 +2671,7 @@ public class GraphicalInterface extends JFrame {
 					modelCollectionOKButtonClicked = true;
 					task = new Task();
 					task.execute();					
-				}				
+				//}				
 			}			
 		}
 	};
