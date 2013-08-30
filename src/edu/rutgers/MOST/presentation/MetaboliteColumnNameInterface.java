@@ -25,7 +25,6 @@ import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import edu.rutgers.MOST.config.ConfigConstants;
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.DatabaseCreator;
 import edu.rutgers.MOST.data.MetabolitesMetaColumnManager;
@@ -33,6 +32,10 @@ import edu.rutgers.MOST.data.TextMetabolitesModelReader;
 
 public class MetaboliteColumnNameInterface  extends JDialog {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public JComboBox<String> cbMetaboliteAbbreviation = new JComboBox<String>();
 	public JComboBox<String> cbMetaboliteName = new JComboBox<String>();
 	public JComboBox<String> cbCharge = new JComboBox<String>();
@@ -134,7 +137,8 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 
 		JTextField fieldBoundary = (JTextField)cbBoundary.getEditor().getEditorComponent();
 		fieldBoundary.addKeyListener(new ComboKeyHandler(cbBoundary));
-        */
+		*/
+
 		//populateNamesFromFileBoxes(columnNamesFromFile);
 		
 		//box layout
@@ -369,9 +373,9 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 				} else {
 					//add metacolumn names to db
 					MetabolitesMetaColumnManager metabolitesMetaColumnManager = new MetabolitesMetaColumnManager();
-					ArrayList<String> metaColumnNames = new ArrayList();
-					ArrayList<Integer> usedIndices = new ArrayList();
-					ArrayList<Integer> metaColumnIndexList = new ArrayList();
+					ArrayList<String> metaColumnNames = new ArrayList<String>();
+					ArrayList<Integer> usedIndices = new ArrayList<Integer>();
+					ArrayList<Integer> metaColumnIndexList = new ArrayList<Integer>();
 
 					if (getColumnNamesFromFile().contains(cbMetaboliteAbbreviation.getSelectedItem())) {
 						LocalConfig.getInstance().setMetaboliteAbbreviationColumnIndex(getColumnNamesFromFile().indexOf(cbMetaboliteAbbreviation.getSelectedItem()));
@@ -581,15 +585,14 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 
 	public static void main(String[] args) throws Exception {
 		Class.forName("org.sqlite.JDBC");       
-		DatabaseCreator databaseCreator = new DatabaseCreator();
 		Connection con = DriverManager.getConnection("jdbc:sqlite:" + "untitled" + ".db");
 
 		//based on code from http:stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
-		icons.add(new ImageIcon("images/most16.jpg").getImage()); 
-		icons.add(new ImageIcon("images/most32.jpg").getImage());
+		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
+		icons.add(new ImageIcon("etc/most32.jpg").getImage());
 
-		ArrayList<String> list = new ArrayList();
+		ArrayList<String> list = new ArrayList<String>();
 		list.add("test1");
 		list.add("test2");
 		list.add("test3");

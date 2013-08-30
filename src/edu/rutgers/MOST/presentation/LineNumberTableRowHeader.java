@@ -13,7 +13,11 @@ import javax.swing.event.TableModelListener;
 
 // from http://www.javarichclient.com/display-line-numbers-jtable/
 public class LineNumberTableRowHeader extends JComponent {
-    private final JTable table;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private final JTable table;
     private final JScrollPane scrollPane;
 
     public LineNumberTableRowHeader(JScrollPane jScrollPane, JTable table) {

@@ -20,11 +20,13 @@ import org.jdesktop.swingx.JXList;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.JXTree;
 
-import com.sun.xml.internal.ws.api.server.Container;
-
 
 // from http://stackoverflow.com/questions/9288350/adding-vertical-scroll-to-a-jpopupmenu
 public class JScrollPopupMenu extends JPopupMenu {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	//protected int maximumVisibleRows = 10;
 	protected int maximumVisibleRows = GraphicalInterfaceConstants.UNDO_MAX_VISIBLE_ROWS;
 

@@ -57,7 +57,7 @@ public class ReactionColumnNameInterface  extends JDialog {
 	}
 
 	public void setColumnNamesFromFile(ArrayList<String> columnNamesFromFile) {
-		this.columnNamesFromFile = columnNamesFromFile;
+		ReactionColumnNameInterface.columnNamesFromFile = columnNamesFromFile;
 	}
 
 	private Task task;
@@ -605,9 +605,9 @@ public class ReactionColumnNameInterface  extends JDialog {
 				} else {
 					//add metacolumn names to db
 					ReactionsMetaColumnManager reactionsMetaColumnManager = new ReactionsMetaColumnManager();
-					ArrayList<String> metaColumnNames = new ArrayList();
-					ArrayList<Integer> usedIndices = new ArrayList();
-					ArrayList<Integer> metaColumnIndexList = new ArrayList();
+					ArrayList<String> metaColumnNames = new ArrayList<String>();
+					ArrayList<Integer> usedIndices = new ArrayList<Integer>();
+					ArrayList<Integer> metaColumnIndexList = new ArrayList<Integer>();
 
 					if (getColumnNamesFromFile().contains(cbReactionAbbreviation.getSelectedItem())) {
 						LocalConfig.getInstance().setReactionAbbreviationColumnIndex(getColumnNamesFromFile().indexOf(cbReactionAbbreviation.getSelectedItem()));
@@ -906,15 +906,14 @@ public class ReactionColumnNameInterface  extends JDialog {
 
 	public static void main(String[] args) throws Exception {
 		Class.forName("org.sqlite.JDBC");       
-		DatabaseCreator databaseCreator = new DatabaseCreator();
 		Connection con = DriverManager.getConnection("jdbc:sqlite:" + "untitled" + ".db");
 
 		//based on code from http:stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
-		icons.add(new ImageIcon("images/most16.jpg").getImage()); 
-		icons.add(new ImageIcon("images/most32.jpg").getImage());
+		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
+		icons.add(new ImageIcon("etc/most32.jpg").getImage());
 
-		ArrayList<String> list = new ArrayList();
+		ArrayList<String> list = new ArrayList<String>();
 		list.add("test");
 		list.add("test");
 		list.add("test");

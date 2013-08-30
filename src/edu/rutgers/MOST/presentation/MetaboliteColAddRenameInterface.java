@@ -24,10 +24,13 @@ import javax.swing.event.DocumentListener;
 
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.MetabolitesMetaColumnManager;
-import edu.rutgers.MOST.data.ReactionsMetaColumnManager;
 
 public class MetaboliteColAddRenameInterface  extends JDialog {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static JButton okButton = new JButton("    OK    ");
 	public static JButton cancelButton = new JButton("  Cancel  ");
 	public static final JTextField textField = new JTextField();
