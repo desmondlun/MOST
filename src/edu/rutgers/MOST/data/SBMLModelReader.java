@@ -443,14 +443,14 @@ public class SBMLModelReader {
 							if (r == 0) {
 								if (stoicStr.length() == 0) {
 									reacBfr.append(reactants.get(r).getSpecies());
-									if (metabName.length() > 0) {
+									if (metabName != null && metabName.trim().length() > 0) {
 										reacNamesBfr.append(metabName);
 									} else {
 										reacNamesBfr.append(reactants.get(r).getSpecies());
 									}									
 								} else {
 									reacBfr.append(stoicStr + " " + reactants.get(r).getSpecies());
-									if (metabName.length() > 0) {
+									if (metabName != null && metabName.trim().length() > 0) {
 										reacNamesBfr.append(stoicStr + " " + metabName);
 									} else {
 										reacNamesBfr.append(stoicStr + " " + reactants.get(r).getSpecies());
@@ -460,7 +460,7 @@ public class SBMLModelReader {
 							} else {
 								if (stoicStr.length() == 0) {
 									reacBfr.append(" + " + reactants.get(r).getSpecies());
-									if (metabName.length() > 0) {
+									if (metabName != null && metabName.trim().length() > 0) {
 										reacNamesBfr.append(" + " + metabName);
 									} else {
 										reacNamesBfr.append(" + " + reactants.get(r).getSpecies());
@@ -468,7 +468,7 @@ public class SBMLModelReader {
 									
 								} else {
 									reacBfr.append(" + " + stoicStr + " " + reactants.get(r).getSpecies());
-									if (metabName.length() > 0) {
+									if (metabName != null && metabName.trim().length() > 0) {
 										reacNamesBfr.append(" + " + stoicStr + " " + metabName);
 									} else {
 										reacNamesBfr.append(" + " + stoicStr + " " + reactants.get(r).getSpecies());
@@ -530,14 +530,14 @@ public class SBMLModelReader {
 							if (p == 0) {
 								if (stoicStr.length() == 0) {
 									prodBfr.append(products.get(p).getSpecies());
-									if (metabName.length() > 0) {
+									if (metabName != null && metabName.trim().length() > 0) {
 										prodNamesBfr.append(metabName);
 									} else {
 										prodNamesBfr.append(products.get(p).getSpecies());
 									}				
 								} else {
 									prodBfr.append(stoicStr + " " + products.get(p).getSpecies());
-									if (metabName.length() > 0) {
+									if (metabName != null && metabName.trim().length() > 0) {
 										prodNamesBfr.append(stoicStr + " " + metabName);
 									} else {
 										prodNamesBfr.append(stoicStr + " " + products.get(p).getSpecies());
@@ -546,14 +546,14 @@ public class SBMLModelReader {
 							} else {
 								if (stoicStr.length() == 0) {
 									prodBfr.append(" + " + products.get(p).getSpecies());
-									if (metabName.length() > 0) {
+									if (metabName != null && metabName.trim().length() > 0) {
 										prodNamesBfr.append(" + " + metabName);
 									} else {
 										prodNamesBfr.append(" + " + products.get(p).getSpecies());
 									}									
 								} else {
 									prodBfr.append(" + " + stoicStr + " " + products.get(p).getSpecies());
-									if (metabName.length() > 0) {
+									if (metabName != null && metabName.trim().length() > 0) {
 										prodNamesBfr.append(" + " + stoicStr + " " + metabName);
 									} else {
 										prodNamesBfr.append(" + " + stoicStr + " " + products.get(p).getSpecies());

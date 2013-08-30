@@ -379,11 +379,18 @@ public class JSBMLWriter implements TreeModelListener{
 		}
 		
 		public String makeValidID(String mAbrv) {
-			if (!isValidID(mAbrv)) {
-				mAbrv = mAbrv.replace("[","");
+			//if (!isValidID(mAbrv)) {
+			if (mAbrv.contains("[") && mAbrv.contains("]")) {
+				mAbrv = mAbrv.replace("[","_");
 				mAbrv = mAbrv.replace("]","");
-				mAbrv = "m_" + mAbrv;
 			}
+				
+				//mAbrv = "m_" + mAbrv;
+				if (!mAbrv.startsWith("M_")) {
+					mAbrv = "M_" + mAbrv;
+				}
+				
+			//}
 			return mAbrv;
 			
 		}
@@ -652,9 +659,12 @@ public class JSBMLWriter implements TreeModelListener{
 						String reactAbbrv = sMReactant.getMetaboliteAbbreviation();
 						//System.out.println(reactAbbrv);
 						//SpeciesReference curSpec = speciesRefMap.get(reactAbbrv);
-						reactAbbrv = reactAbbrv.replace("[","");
+						reactAbbrv = reactAbbrv.replace("[","_");
 						reactAbbrv = reactAbbrv.replace("]","");
-						reactAbbrv = "m" + reactAbbrv;
+						//reactAbbrv = "m" + reactAbbrv;
+						if (!reactAbbrv.startsWith("M_")) {
+							reactAbbrv = "M_" + reactAbbrv;
+						}
 						
 						//reactAbbrv = makeValidID(reactAbbrv);
 						curSpec.setSpecies(reactAbbrv); 
@@ -682,9 +692,12 @@ public class JSBMLWriter implements TreeModelListener{
 						SBMLProduct curP = (SBMLProduct) curProduct;
 						String mAbbrv = curP.getMetaboliteAbbreviation();
 						//SpeciesReference curSpec = speciesRefMap.get(mAbbrv);
-						mAbbrv = mAbbrv.replace("[","");
+						mAbbrv = mAbbrv.replace("[","_");
 						mAbbrv = mAbbrv.replace("]","");
-						mAbbrv = "m" + mAbbrv;
+						//mAbbrv = "m" + mAbbrv;
+						if (!mAbbrv.startsWith("M_")) {
+							mAbbrv = "M_" + mAbbrv;
+						}
 						
 						curSpec.setSpecies(mAbbrv);
 						
