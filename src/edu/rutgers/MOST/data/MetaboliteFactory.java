@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -210,6 +211,40 @@ public class MetaboliteFactory {
 			}
 		
 		return metabolitesList;
+	}
+	
+	public ArrayList<Integer> metaboliteIdList() {
+		ArrayList<Integer> metaboliteIdList = new ArrayList<Integer>();
+		
+		if("SBML".equals(sourceType)){
+			try {
+				Class.forName("org.sqlite.JDBC");
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return metaboliteIdList;
+			}
+			Connection conn;
+			try {
+				conn = DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db"); 
+
+				Statement stat = conn.createStatement();
+				ResultSet rs = stat.executeQuery("select id from metabolites;");
+				
+				while (rs.next()) {
+					metaboliteIdList.add(rs.getInt("id"));
+				}
+				rs.close();
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return metaboliteIdList;
+			}
+		}
+
+		
+		return metaboliteIdList;
 	}
 	
 	public static void main(String[] args) {

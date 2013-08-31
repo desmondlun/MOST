@@ -367,6 +367,40 @@ public class ReactionFactory {
 		return syntheticObjectiveVector;
 	}
 	
+	public ArrayList<Integer> reactionIdList() {
+		ArrayList<Integer> reactionIdList = new ArrayList<Integer>();
+		
+		if("SBML".equals(sourceType)){
+			try {
+				Class.forName("org.sqlite.JDBC");
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return reactionIdList;
+			}
+			Connection conn;
+			try {
+				conn = DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db"); 
+
+				Statement stat = conn.createStatement();
+				ResultSet rs = stat.executeQuery("select id from reactions;");
+				
+				while (rs.next()) {
+					reactionIdList.add(rs.getInt("id"));
+				}
+				rs.close();
+				conn.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return reactionIdList;
+			}
+		}
+
+		
+		return reactionIdList;
+	}
+	
 	public static String getColumnName() {
 		return columnName;
 	}

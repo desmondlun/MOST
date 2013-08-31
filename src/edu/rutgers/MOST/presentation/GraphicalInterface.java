@@ -6340,26 +6340,28 @@ public class GraphicalInterface extends JFrame {
 	public void reactionsDeleteRows() {
 		copyReactionsDatabaseTables();
 		int rowIndexStart = reactionsTable.getSelectedRow();
-		int rowIndexEnd = reactionsTable.getSelectionModel().getMaxSelectionIndex();
-		ArrayList<Integer> deleteIds = new ArrayList<Integer>();
-		ArrayList<String> deleteAbbreviations = new ArrayList<String>();
-		ArrayList<String> deletedReactions = new ArrayList<String>();
-		for (int r = rowIndexStart; r <= rowIndexEnd; r++) {
-			int viewRow = reactionsTable.convertRowIndexToModel(r);
-			int id = (Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.DB_REACTIONS_ID_COLUMN)));
-			deleteIds.add(id);
-			String reactionString = (String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
-			deletedReactions.add(reactionString);			
+		if (reactionsTable.getSelectedRow() > -1) {
+			int rowIndexEnd = reactionsTable.getSelectionModel().getMaxSelectionIndex();
+			ArrayList<Integer> deleteIds = new ArrayList<Integer>();
+			ArrayList<String> deleteAbbreviations = new ArrayList<String>();
+			ArrayList<String> deletedReactions = new ArrayList<String>();
+			for (int r = rowIndexStart; r <= rowIndexEnd; r++) {
+				int viewRow = reactionsTable.convertRowIndexToModel(r);
+				int id = (Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.DB_REACTIONS_ID_COLUMN)));
+				deleteIds.add(id);
+				String reactionString = (String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
+				deletedReactions.add(reactionString);						
+			}
+			ReactionUndoItem undoItem = createReactionUndoItem("", "", rowIndexStart, reactionsTable.getSelectedColumn(), deleteIds.get(0), UndoConstants.DELETE_ROW, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+			undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());
+			ReactionsUpdater updater = new ReactionsUpdater();
+			updater.deleteRows(deleteIds, deletedReactions, LocalConfig.getInstance().getLoadedDatabase());
+			copyReactionsDatabaseTables();
+			setUpReactionsUndo(undoItem);
+			
+			closeConnection();
+			reloadTables(LocalConfig.getInstance().getLoadedDatabase());
 		}
-		ReactionUndoItem undoItem = createReactionUndoItem("", "", rowIndexStart, reactionsTable.getSelectedColumn(), deleteIds.get(0), UndoConstants.DELETE_ROW, UndoConstants.REACTION_UNDO_ITEM_TYPE);
-		undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());
-		ReactionsUpdater updater = new ReactionsUpdater();
-		updater.deleteRows(deleteIds, deletedReactions, LocalConfig.getInstance().getLoadedDatabase());
-		copyReactionsDatabaseTables();
-		setUpReactionsUndo(undoItem);
-		
-		closeConnection();
-		reloadTables(LocalConfig.getInstance().getLoadedDatabase());
 	}
 	
 	/**************************************************************************/
@@ -6764,39 +6766,41 @@ public class GraphicalInterface extends JFrame {
 	public void metaboliteDeleteRows() {
 		copyMetaboliteDatabaseTable();
 		int rowIndexStart = metabolitesTable.getSelectedRow();
-		int rowIndexEnd = metabolitesTable.getSelectionModel().getMaxSelectionIndex();
-		ArrayList<Integer> deleteIds = new ArrayList<Integer>();
-		boolean participant = false;
-		for (int r = rowIndexStart; r <= rowIndexEnd; r++) {
-			int viewRow = metabolitesTable.convertRowIndexToModel(r);
-			String key = (String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
-			int id = (Integer.valueOf((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.DB_METABOLITE_ID_COLUMN)));
-			// TODO use this same method for clear
-			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(key) && !(LocalConfig.getInstance().getDuplicateIds().contains(id))) {
-				if (!participant) {
-					JOptionPane.showMessageDialog(null,                
-							GraphicalInterfaceConstants.PARTICIPATING_METAB_ERROR_MESSAGE,
-							GraphicalInterfaceConstants.PARTICIPATING_METAB_ERROR_TITLE,                                
-							JOptionPane.ERROR_MESSAGE);
+		if (metabolitesTable.getSelectedRow() > -1) {
+			int rowIndexEnd = metabolitesTable.getSelectionModel().getMaxSelectionIndex();
+			ArrayList<Integer> deleteIds = new ArrayList<Integer>();
+			boolean participant = false;
+			for (int r = rowIndexStart; r <= rowIndexEnd; r++) {
+				int viewRow = metabolitesTable.convertRowIndexToModel(r);
+				String key = (String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+				int id = (Integer.valueOf((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.DB_METABOLITE_ID_COLUMN)));
+				// TODO use this same method for clear
+				if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(key) && !(LocalConfig.getInstance().getDuplicateIds().contains(id))) {
+					if (!participant) {
+						JOptionPane.showMessageDialog(null,                
+								GraphicalInterfaceConstants.PARTICIPATING_METAB_ERROR_MESSAGE,
+								GraphicalInterfaceConstants.PARTICIPATING_METAB_ERROR_TITLE,                                
+								JOptionPane.ERROR_MESSAGE);
+					}
+					// may want to print to output pane if used as console
+					//System.out.println(key + " cannot be deleted since it participates in one or more reactions.");
+					// participating metabolite in selected rows
+					participant = true; // prevents message from being displayed multiple times
+				} else {
+					LocalConfig.getInstance().getMetaboliteIdNameMap().remove(key);	
+					deleteIds.add(id);
 				}
-				// may want to print to output pane if used as console
-				//System.out.println(key + " cannot be deleted since it participates in one or more reactions.");
-				// participating metabolite in selected rows
-				participant = true; // prevents message from being displayed multiple times
-			} else {
-				LocalConfig.getInstance().getMetaboliteIdNameMap().remove(key);	
-				deleteIds.add(id);
 			}
-		}
-		MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", rowIndexStart, 1, deleteIds.get(0), UndoConstants.DELETE_ROW, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
-		undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
-		setUndoOldCollections(undoItem);
-		MetabolitesUpdater updater = new MetabolitesUpdater();
-		updater.deleteRows(deleteIds, LocalConfig.getInstance().getLoadedDatabase());
-		copyMetaboliteDatabaseTable(); 
-		setUpMetabolitesUndo(undoItem);
-		closeConnection();
-		reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+			MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", rowIndexStart, 1, deleteIds.get(0), UndoConstants.DELETE_ROW, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+			undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
+			setUndoOldCollections(undoItem);
+			MetabolitesUpdater updater = new MetabolitesUpdater();
+			updater.deleteRows(deleteIds, LocalConfig.getInstance().getLoadedDatabase());
+			copyMetaboliteDatabaseTable(); 
+			setUpMetabolitesUndo(undoItem);
+			closeConnection();
+			reloadTables(LocalConfig.getInstance().getLoadedDatabase());
+		}		
 	} 
 	
 	/**************************************************************************/
