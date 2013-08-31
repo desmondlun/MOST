@@ -21,7 +21,6 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.SwingWorker;
 
 import edu.rutgers.MOST.config.ConfigConstants;
@@ -157,42 +156,6 @@ public class ReactionColumnNameInterface  extends JDialog {
 		
 		populateNamesFromFileBoxes(columnNamesFromFile);
 		
-		/*
-		JTextField fieldReactionAbbreviation = (JTextField)cbReactionAbbreviation.getEditor().getEditorComponent();
-		fieldReactionAbbreviation.addKeyListener(new ComboKeyHandler(cbReactionAbbreviation));
-		
-		JTextField fieldKnockout = (JTextField)cbKnockout.getEditor().getEditorComponent();
-		fieldKnockout.addKeyListener(new ComboKeyHandler(cbKnockout));
-
-		JTextField fieldFluxValue = (JTextField)cbFluxValue.getEditor().getEditorComponent();
-		fieldFluxValue.addKeyListener(new ComboKeyHandler(cbFluxValue));	
-
-		JTextField fieldReactionName = (JTextField)cbReactionName.getEditor().getEditorComponent();
-		fieldReactionName.addKeyListener(new ComboKeyHandler(cbReactionName));
-
-		JTextField fieldReactionEquation = (JTextField)cbReactionEquation.getEditor().getEditorComponent();
-		fieldReactionEquation.addKeyListener(new ComboKeyHandler(cbReactionEquation));
-
-		JTextField fieldReversible = (JTextField)cbReversible.getEditor().getEditorComponent();
-		fieldReversible.addKeyListener(new ComboKeyHandler(cbReversible));
-
-		JTextField fieldLowerBound = (JTextField)cbLowerBound.getEditor().getEditorComponent();
-		fieldLowerBound.addKeyListener(new ComboKeyHandler(cbLowerBound));
-
-		JTextField fieldUpperBound = (JTextField)cbUpperBound.getEditor().getEditorComponent();
-		fieldUpperBound.addKeyListener(new ComboKeyHandler(cbUpperBound));
-
-		JTextField fieldBiologicalObjective = (JTextField)cbBiologicalObjective.getEditor().getEditorComponent();
-		fieldBiologicalObjective.addKeyListener(new ComboKeyHandler(cbBiologicalObjective));
-
-		JTextField fieldSyntheticObjective = (JTextField)cbSyntheticObjective.getEditor().getEditorComponent();
-		fieldSyntheticObjective.addKeyListener(new ComboKeyHandler(cbSyntheticObjective));
-		
-		JTextField fieldGeneAssociation = (JTextField)cbGeneAssociation.getEditor().getEditorComponent();
-		fieldGeneAssociation.addKeyListener(new ComboKeyHandler(cbGeneAssociation));
-		*/
-		//populateNamesFromFileBoxes(columnNamesFromFile);
-
 		//box layout
 		Box vb = Box.createVerticalBox();
 

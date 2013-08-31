@@ -197,7 +197,7 @@ public class GurobiSolver extends Solver {
 				int key = (Integer) m.getKey();
 				Double v = (Double) m.getValue();
 				expr.addTerm(v, this.vars.get(key));
-
+				
 			}
 			model.addConstr(expr, getGRBConType(con), value, null);
 

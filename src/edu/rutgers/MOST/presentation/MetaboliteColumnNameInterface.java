@@ -20,11 +20,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.SwingWorker;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.DatabaseCreator;
 import edu.rutgers.MOST.data.MetabolitesMetaColumnManager;
@@ -121,25 +117,6 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		cbBoundary.setMinimumSize(new Dimension(250, 30));
 
 		populateNamesFromFileBoxes(columnNamesFromFile);
-		
-		/*
-		JTextField fieldMetaboliteAbbreviation = (JTextField)cbMetaboliteAbbreviation.getEditor().getEditorComponent();
-		fieldMetaboliteAbbreviation.addKeyListener(new ComboKeyHandler(cbMetaboliteAbbreviation));
-
-		JTextField fieldMetaboliteName = (JTextField)cbMetaboliteName.getEditor().getEditorComponent();
-		fieldMetaboliteName.addKeyListener(new ComboKeyHandler(cbMetaboliteName));
-
-		JTextField fieldCharge = (JTextField)cbCharge.getEditor().getEditorComponent();
-		fieldCharge.addKeyListener(new ComboKeyHandler(cbCharge));
-
-		JTextField fieldCompartment = (JTextField)cbCompartment.getEditor().getEditorComponent();
-		fieldCompartment.addKeyListener(new ComboKeyHandler(cbCompartment));
-
-		JTextField fieldBoundary = (JTextField)cbBoundary.getEditor().getEditorComponent();
-		fieldBoundary.addKeyListener(new ComboKeyHandler(cbBoundary));
-		*/
-
-		//populateNamesFromFileBoxes(columnNamesFromFile);
 		
 		//box layout
 		Box vb = Box.createVerticalBox();
