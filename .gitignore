@@ -1,10 +1,9 @@
 *.class
-*.db
-*.log
-*.log1
 
 
-log4j.log
+bin/log4j.properties
 log4j.log.1
+.classpath
+untitled.db
+yeast_3.0.db
 log4j.log
-log4j.log.1
