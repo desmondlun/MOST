@@ -24,7 +24,8 @@ public class SolverFactory {
 		formatter = new SimpleDateFormat("_yyMMdd_HHmmss");
 		String dateTimeStamp = formatter.format(date);
 		
-		Solver solver = new GurobiSolver(config.getDatabaseName()+ dateTimeStamp + GraphicalInterfaceConstants.MIP_SUFFIX + ".log");
+		Solver solver = new GurobiSolver();
+		//Solver solver = new GurobiSolver(config.getModelName() + dateTimeStamp + GraphicalInterfaceConstants.MIP_SUFFIX + ".log");
 		return solver;
 	}
 	
@@ -35,7 +36,7 @@ public class SolverFactory {
 		double  []lb       = {0.0, 0.0, 0.0};
 		double  []ub       = {1.0, 1.0, 1.0};
 		
-		solver.setVars(varTypes, lb, ub);
+		//solver.setVars(varTypes, lb, ub);
 //		solver.setVar("0", VarType.BINARY, 0.0, 1.0);
 //		solver.setVar("1", VarType.BINARY, 0.0, 1.0);
 //		solver.setVar("2", VarType.BINARY, 0.0, 1.0);

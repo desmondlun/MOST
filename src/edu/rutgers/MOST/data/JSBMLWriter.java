@@ -1,57 +1,36 @@
 
 package edu.rutgers.MOST.data;
 
-import java.beans.PropertyChangeEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.JFileChooser;
-import javax.swing.JPanel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
-import javax.swing.filechooser.*;
-
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
-import javax.swing.tree.TreeNode;
-import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLStreamException;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.sbml.jsbml.ASTNode;
 import org.sbml.jsbml.Compartment;
-import org.sbml.jsbml.Creator;
-import org.sbml.jsbml.History;
 import org.sbml.jsbml.KineticLaw;
-
 import org.sbml.jsbml.LocalParameter;
 import org.sbml.jsbml.Model;
 import org.sbml.jsbml.Reaction;
 import org.sbml.jsbml.SBMLDocument;
-import org.sbml.jsbml.SBMLException;
 import org.sbml.jsbml.SBMLWriter;
-import org.sbml.jsbml.SBase;
 import org.sbml.jsbml.Species;
 import org.sbml.jsbml.SpeciesReference;
 import org.sbml.jsbml.Unit;
 import org.sbml.jsbml.Unit.Kind;
 import org.sbml.jsbml.UnitDefinition;
-import org.sbml.jsbml.xml.XMLAttributes;
-import org.sbml.jsbml.xml.XMLNamespaces;
-import org.sbml.jsbml.xml.XMLNode;
 
-import edu.rutgers.MOST.config.ConfigConstants;
 import edu.rutgers.MOST.config.LocalConfig;
+import edu.rutgers.MOST.presentation.GraphicalInterface;
+import edu.rutgers.MOST.presentation.Utilities;
 
 public class JSBMLWriter implements TreeModelListener{
 	public String sourceType;
@@ -67,7 +46,17 @@ public class JSBMLWriter implements TreeModelListener{
 	public Map<String,SpeciesReference> speciesRefMap;
 	public File outFile;
 	public SettingsFactory curSettings;
+	public String optFilePath;
+	public boolean load;
 	
+	public String getOptFilePath() {
+		return optFilePath;
+	}
+
+	public void setOptFilePath(String optFilePath) {
+		this.optFilePath = optFilePath;
+	}
+
 	/**
 	 * @param args
 	 */
@@ -106,15 +95,12 @@ public class JSBMLWriter implements TreeModelListener{
 	}
 	
 	public void formConnect(LocalConfig config) throws Exception {
-		//config.setLoadedDatabase(ConfigConstants.DEFAULT_DATABASE_NAME);
-		//System.out.println(config.getDatabaseName());
 		curSettings = new SettingsFactory();
+		load = false;
 		if (setOutFile()) {
-		
+		    load = true;
+		    
 			curConfig = config;
-			
-			databaseName = config.getDatabaseName();
-			
 					
 			sourceType = "SBML";
 			
@@ -122,22 +108,12 @@ public class JSBMLWriter implements TreeModelListener{
 				this.create();
 			}
 		}
-		
-		/*
-		if (LocalConfig.getInstance().getCurrentConnection() != null) {
-        	try {
-				LocalConfig.getInstance().getCurrentConnection().close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-        }
-        */
-		//Connection con = DriverManager.getConnection("jdbc:sqlite:" + config.getDatabaseName() + ".db");
-		//LocalConfig.getInstance().setCurrentConnection(con);
-		//System.out.print(con.getSchema());
 	}
 	
+	public File getOutFile() {
+		return outFile;
+	}
+
 	public JSBMLWriter() {
 		metabolitesMap = new HashMap();
 		speciesMap = new HashMap();
@@ -149,40 +125,89 @@ public class JSBMLWriter implements TreeModelListener{
 		
 	}
 	
-	
 	public boolean setOutFile(){
-		JTextArea output = null;
-		String lastSaveSBML_path = curSettings.get("LastSaveSBML");
-		
-		if (lastSaveSBML_path == null) {
-			lastSaveSBML_path = ".";
-		}
-		JFileChooser chooser = new JFileChooser();
-		chooser.setCurrentDirectory(new File(lastSaveSBML_path));
-		chooser.setApproveButtonText("Save");
-		chooser.setDialogTitle("Save to");
-		chooser.setFileFilter(new XMLFileFilter());
-		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		
-		int option = chooser.showOpenDialog(output); 
-		
-		if(option == JFileChooser.APPROVE_OPTION){  
-			if(chooser.getSelectedFile()!=null)	{  
-				String path = chooser.getSelectedFile().getPath();
-				if (!path.endsWith(".xml")) {
-					path = path + ".xml";
+		if (GraphicalInterface.showJSBMLFileChooser) {
+			JTextArea output = null;
+			String lastSBML_path = curSettings.get("LastSBML");
+			
+			Utilities u = new Utilities();
+			JFileChooser chooser = new JFileChooser();
+			// if path is null or does not exist, default used, else last path used
+			chooser.setCurrentDirectory(new File(u.lastPath(lastSBML_path, chooser)));					
+			
+			chooser.setApproveButtonText("Save");
+			chooser.setDialogTitle("Save to");
+			chooser.setFileFilter(new XMLFileFilter());
+			chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+			
+			if (GraphicalInterface.saveOptFile) {	
+				String path = getOptFilePath();
+				File theFileToSave = new File(path);
+				chooser.setSelectedFile(theFileToSave);
+			} 		
+			
+			boolean done = false;
+			boolean cancel = false;
+			while (!done) {
+				//... Open a file dialog.
+				int option = chooser.showOpenDialog(output); 
+				if(option == JFileChooser.CANCEL_OPTION) {
+					cancel = true;
+					done = true;
+					// this should only be false if opt file ?
+//					if (GraphicalInterface.saveOptFile) {
+//						GraphicalInterface.exit = false;
+//					}
 				}
-				File theFileToSave = new File(path);				
-				this.setOutFile(theFileToSave);
-				String rawPathName = chooser.getSelectedFile().getAbsolutePath();
-				curSettings.add("LastSaveSBML", rawPathName);
-				return true;
+				if(option == JFileChooser.APPROVE_OPTION){  
+					if(chooser.getSelectedFile()!=null)	{  
+						String path = chooser.getSelectedFile().getPath();
+						if (!path.endsWith(".xml")) {
+							path = path + ".xml";
+						}
+						File theFileToSave = new File(path);
+						if (theFileToSave.exists()) {
+							int confirmDialog = JOptionPane.showConfirmDialog(chooser, "Replace existing file?");
+							if (confirmDialog == JOptionPane.YES_OPTION) {
+								done = true;
+								this.setOutFile(theFileToSave);
+
+								String rawPathName = chooser.getSelectedFile().getAbsolutePath();
+								if (!rawPathName.endsWith(".xml")) {
+									rawPathName = rawPathName + ".xml";
+								}
+								curSettings.add("LastSBML", rawPathName);
+							} else if (confirmDialog == JOptionPane.NO_OPTION) {        		    	  
+								done = false;
+							} else if (confirmDialog == JOptionPane.CANCEL_OPTION) { 
+								cancel = true;
+								done = true;							
+							}       		    	  
+						} else {
+							done = true;
+							this.setOutFile(theFileToSave);
+
+							String rawPathName = chooser.getSelectedFile().getAbsolutePath();
+							if (!rawPathName.endsWith(".xml")) {
+								rawPathName = rawPathName + ".xml";
+							}
+							curSettings.add("LastSBML", rawPathName);
+						}
+					}
+				}			
 			}
 			
+			if (done && !cancel) {
+				return true;
+			}
+		} else {
+			File theFileToSave = GraphicalInterface.getSBMLFile();
+			this.setOutFile(theFileToSave);
+			return true;
 		}
+		
 		return false;
 	}
-	
 	
 	public void setOutFile(File toFile) {
 		outFile = toFile;
@@ -204,13 +229,13 @@ public class JSBMLWriter implements TreeModelListener{
 		
 		// Create a new SBML model, and add a compartment to it.
 		//System.out.println(databaseName);
-		String dbN = databaseName.replace("Model", "");
+		//String dbN = databaseName.replace("Model", "");
 		
 
-		dbN = dbN.replace(" ", "");
+		//dbN = dbN.replace(" ", "");
 		
 		//Replace the following with something proper (see issue # ):
-		dbN = "someModel";
+		String dbN = "someModel";
 		
 		Model model = doc.createModel(dbN + "1");
 		UnitDefinition mmolgh = new UnitDefinition();
@@ -322,29 +347,38 @@ public class JSBMLWriter implements TreeModelListener{
 		}
 		
 		public void parseAllMetabolites() {
-			MetaboliteFactory mFactory = new MetaboliteFactory(sourceType, databaseName);
-			int length = mFactory.maximumId();
+			MetaboliteFactory mFactory = new MetaboliteFactory(sourceType);
+			// TODO: change to size of collection
+			int length = GraphicalInterface.metabolitesTable.getRowCount();
 			//mFactory.getMetaboliteById(metaboliteId, sourceType, databaseName);
 			/*
 			System.out.print("Currently of size: ");
 			System.out.print(length);
 			System.out.print("\n");
 			*/
+			int metabRow = 0;
+			int blankMetabAbbrCount = 1;
 			compartments = new HashMap();
-			for (int i=1; i <= length; i++) {
-				SBMLMetabolite curMeta = (SBMLMetabolite) mFactory.getMetaboliteById(i);
-				//System.out.println(curMeta);
-				
-				String comp = curMeta.getCompartment();
-				
-				if (!compartments.containsKey(comp)) {
-					Compartment temp = model.createCompartment(comp);
-					compartments.put(comp,temp);
+			for (int i=0; i < length; i++) {
+				SBMLMetabolite curMeta = (SBMLMetabolite) mFactory.getMetaboliteByRow(i);
+				//SBMLMetabolite curMeta = (SBMLMetabolite) mFactory.getMetaboliteById(i);
+				if (curMeta.getMetaboliteAbbreviation() == null || curMeta.getMetaboliteAbbreviation().trim().length() == 0) {
+					curMeta.setMetaboliteAbbreviation(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + "_" + blankMetabAbbrCount);
+					blankMetabAbbrCount += 1;
 				}
-				
+				JSBMLValidator validator = new JSBMLValidator();
+				String abbr = validator.makeValidID(curMeta.getMetaboliteAbbreviation());
+				curMeta.setMetaboliteAbbreviation(abbr);
+				String comp = validator.replaceInvalidSBMLCharacters(curMeta.getCompartment());
+				String compTrim = comp.trim();
+				if (!compartments.containsKey(compTrim)) {
+					Compartment temp = model.createCompartment(compTrim);
+					compartments.put(compTrim,temp);
+				}
+
 				this.allMetabolites.add(curMeta);	
-				metabolitesMap.put(i, curMeta);
-				
+				metabolitesMap.put(metabRow, curMeta);
+				metabRow += 1;		
 			}
 			
 			if (this.model != null) {
@@ -362,63 +396,24 @@ public class JSBMLWriter implements TreeModelListener{
 			return match;	
 		}
 		
-		public boolean isNoNumberAtBeginning(String s){
-		    return s.matches("^[^\\d].*");
-		  }
-		
-		public boolean isValidID(String mAbrv) {
-			if (!isNoNumberAtBeginning(mAbrv)) {
-			    return false; //prints /{item}/
-			} 
-			
-			if (mAbrv.startsWith("[")) {
-				return false;
-			}
-			
-			return true;
-		}
-		
-		public String makeValidID(String mAbrv) {
-			//if (!isValidID(mAbrv)) {
-			if (mAbrv.contains("[") && mAbrv.contains("]")) {
-				mAbrv = mAbrv.replace("[","_");
-				mAbrv = mAbrv.replace("]","");
-			}
-				
-				//mAbrv = "m_" + mAbrv;
-				if (!mAbrv.startsWith("M_")) {
-					mAbrv = "M_" + mAbrv;
-				}
-				
-			//}
-			return mAbrv;
-			
-		}
-		
 		public void devModel() {
 			Vector<Species> curSpecies;
 			
 			int count = 0;
-			
-			
-			
+						
 			String comp;
 			Compartment curComp;
 			for (SBMLMetabolite cur : allMetabolites) {
 				comp = cur.getCompartment();
-				
-				
-				
+								
 				Compartment compartment = compartments.get(comp);
 				String bound = cur.getBoundary();
 				String mAbrv = cur.getMetaboliteAbbreviation();
 				
-				mAbrv = this.makeValidID(mAbrv);
+				JSBMLValidator validator = new JSBMLValidator();
+				mAbrv = validator.makeValidID(mAbrv);
 				
-				String mName = cur.getMetaboliteName();
-				if (null != cur) { 
-					//int charge = Integer.getInteger(cur.getCharge());
-				}
+				String mName = validator.replaceInvalidSBMLCharacters(cur.getMetaboliteName());
 				
 				try {
 				Species curSpec = model.createSpecies(mAbrv, compartment);
@@ -426,11 +421,32 @@ public class JSBMLWriter implements TreeModelListener{
 				if (null != mName) {
 					curSpec.setName(mName);
 				}
-				//curSpec.setCharge(charge);
+				
 				if (null != bound) {
-					curSpec.setBoundaryCondition(Boolean.getBoolean(bound));
+					boolean b = false;
+					if (bound.equals("true")) {
+						b = true;
+					} else if (bound.equals("false")) {
+						b = false;
+					}
+					//curSpec.setBoundaryCondition(Boolean.getBoolean(bound));
+					curSpec.setBoundaryCondition(b);
 				}
-				//curSpec.setCharge(charge);
+				
+				// write notes
+
+				curSpec.addNamespace("html:p");
+
+				String charge = "CHARGE:" + " " + cur.getCharge();
+				curSpec.appendNotes(charge);
+				for (int n = 0; n < LocalConfig.getInstance().getMetabolitesMetaColumnNames().size(); n++) {
+					String value = "";
+					if (cur.getMetaValues().get(n) != null) {
+						value = validator.replaceInvalidSBMLCharacters(cur.getMetaValues().get(n));
+					}			
+					String note = LocalConfig.getInstance().getMetabolitesMetaColumnNames().get(n) + ": " + value;
+					curSpec.appendNotes(note);
+				}
 				
 				allSpecies.add(curSpec);
 				speciesMap.put(mName, curSpec);
@@ -468,14 +484,21 @@ public class JSBMLWriter implements TreeModelListener{
 		}
 		
 		public void parseAllReactions() {
-			ReactionFactory rFactory = new ReactionFactory(sourceType, databaseName);
+			ReactionFactory rFactory = new ReactionFactory(sourceType);
 			
 			int length = rFactory.getAllReactions().size();
 			
-			
-			for (int i = 1 ; i<= length; i++) {
-				SBMLReaction curReact = (SBMLReaction) rFactory.getReactionById(i);
-				//System.out.println(curReact);
+			int reacCount = 0;
+			int blankReacAbbrCount = 1;
+			int duplCount = 1;
+			for (int i = 0 ; i< length; i++) {
+				SBMLReaction curReact = (SBMLReaction) rFactory.getReactionByRow(i);
+				//SBMLReaction curReact = (SBMLReaction) rFactory.getReactionById(i);
+				if (curReact.getReactionAbbreviation() == null || curReact.getReactionAbbreviation().trim().length() == 0) {
+					curReact.setReactionAbbreviation(SBMLConstants.REACTION_ABBREVIATION_PREFIX + "_" + blankReacAbbrCount);
+					blankReacAbbrCount += 1;
+				}
+								
 				allReactions.add(curReact);				
 			}
 			
@@ -503,12 +526,9 @@ public class JSBMLWriter implements TreeModelListener{
 			//System.out.println();
 			//model.addNamespace("html");
 			//model.addNamespace("html:p");
-			MetaboliteFactory mFactory = new MetaboliteFactory(sourceType, databaseName);
-			ReactantFactory reFactory = new ReactantFactory(sourceType, databaseName);
-			ProductFactory prFactory = new ProductFactory(sourceType, databaseName);
-			
-			
-			
+			MetaboliteFactory mFactory = new MetaboliteFactory(sourceType);
+			ReactantFactory reFactory = new ReactantFactory(sourceType);
+			ProductFactory prFactory = new ProductFactory(sourceType);			
 			
 			/*LocalParameter lParaml = new LocalParameter("LOWER_BOUND");
 			LocalParameter uParaml = new LocalParameter("UPPER_BOUND");
@@ -557,17 +577,14 @@ public class JSBMLWriter implements TreeModelListener{
 			ASTNode math = new ASTNode();
 			//math.setName("FLUX_VALUE");
 			int curReacCount = 0;
-			
+			ArrayList<String> abbrList = new ArrayList<String>();
+			JSBMLValidator validator = new JSBMLValidator();
 			for (SBMLReaction cur : allReactions) {
 				
 				String id = cur.getReactionAbbreviation();
-				String name = cur.getReactionName();
+				String name = validator.replaceInvalidSBMLCharacters(cur.getReactionName());
 				//ArrayList<SBMLReactant> curReactants = cur.getReactantsList();
-				
-				
-				
-				
-				
+								
 				//System.out.println("Reactants [Size]: " + String.valueOf(cur.getReactantsList().size()));
 				
 				//curReactants.addAll(cur.getReactantsList());
@@ -599,74 +616,60 @@ public class JSBMLWriter implements TreeModelListener{
 				law.addLocalParameter(curParam.get(objStr));
 				law.addLocalParameter(curParam.get(fluxStr));
 				law.addLocalParameter(curParam.get(redStr));
-				
-								
-				
-				
+						
 				//law.addDeclaredNamespace("FLUX_VALUE", "http://www.w3.org/1998/Math/MathML");
 				
-								
-				
-				Reaction curReact = model.createReaction(id);
+				String validId = validator.makeValidReactionID(id);
+				if (!abbrList.contains(validId)) {
+					abbrList.add(validId);
+				} else {
+					validId = validId + validator.duplicateSuffix(validId, abbrList);
+					abbrList.add(validId);
+				}
+				Reaction curReact = model.createReaction(validId);
 				curReact.setName(name);
 				curReact.setReversible(reversible);
 				
-				String geneAssoc = cur.getMeta1();
-				String proteinAssoc = cur.getMeta2();
-				String subSystem = cur.getMeta3();
-				String proteinClass = cur.getMeta4();
+				// write notes
 				
-				XMLNode gAssoc = new XMLNode();
-				XMLNode pAssoc = new XMLNode();
-				XMLAttributes gAssocA = new XMLAttributes();
-				gAssocA.add("GENE_ASSOCIATION:", geneAssoc);
-				//XMLNamespaces nSpace = new XMLNameSpaces();
-				//nSpace.add(uri, prefix)
-				//gAssoc.setNamespaces("html:p");
+				curReact.addNamespace("html:p");
+				String ga = validator.replaceInvalidSBMLCharacters(cur.getGeneAssociation());
+				String gAssoc = "GENE_ASSOCIATION:" + " " + ga;
+				curReact.appendNotes(gAssoc);
 				
-				gAssoc.setAttributes(gAssocA);
+				String pa = validator.replaceInvalidSBMLCharacters(cur.getProteinAssociation());
+				String pAssoc = "PROTEIN_ASSOCIATION:" + " " + pa;
+				curReact.appendNotes(pAssoc);
 				
-				//curReact.setNotes(gAssoc);
+				//System.out.println(cur.getSubsystem());
+				String sb = validator.replaceInvalidSBMLCharacters(cur.getSubsystem());
+				String subsys = "SUBSYSTEM:" + " " + sb;
+				curReact.appendNotes(subsys);
 				
+				String pc = validator.replaceInvalidSBMLCharacters(cur.getProteinClass());
+				String pClass = "PROTEIN_CLASS:" + " " + pc;
+				curReact.appendNotes(pClass);
 				
-				
-				
-				
-				//node.clearAttributes();
-				//gAssoc.addAttr("GENE_ASSOCIATION", geneAssoc);
-				//curReact.setNotes(gAssoc);
-				
-				//pAssoc.addAttr("PROTEIN_ASSOCIATION", proteinAssoc);
-				//curReact.appendNotes(pAssoc);
-				//node.addAttr("SUBSYSTEM",subSystem);
-				//node.addAttr("PROTEIN_CLASS",proteinClass);
-				
-				
-				Notes attr = new Notes(cur);
-				
-								
-				ArrayList<ModelReactant> curReactants = reFactory.getReactantsByReactionId(cur.getId());
-				
-				ArrayList<ModelProduct> curProducts = prFactory.getProductsByReactionId(cur.getId());
-				
-				for (ModelReactant curReactant : curReactants) {
-					try {
-						SpeciesReference curSpec = new SpeciesReference(); //TODO: Figure spec
-						SBMLReactant curR = (SBMLReactant) curReactant;
+				for (int n = 0; n < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); n++) {
+					String value = "";
+					if (cur.getMetaValues().get(n) != null) {
+						value = validator.replaceInvalidSBMLCharacters(cur.getMetaValues().get(n));
+					}
+					String note = LocalConfig.getInstance().getReactionsMetaColumnNames().get(n) + ": " + value;
+					curReact.appendNotes(note);
+				}
 						
+				if (LocalConfig.getInstance().getReactionEquationMap().get(cur.getId()) != null) {
+					for (int r = 0; r < ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).reactants.size(); r++) {
+						SpeciesReference curSpec = new SpeciesReference(); //TODO: Figure spec
+						SBMLReactant curR = ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).reactants.get(r);
 						int inId = curR.getMetaboliteId();
 						SBMLMetabolite sMReactant = (SBMLMetabolite) mFactory.getMetaboliteById(inId);
-						String reactAbbrv = sMReactant.getMetaboliteAbbreviation();
-						//System.out.println(reactAbbrv);
-						//SpeciesReference curSpec = speciesRefMap.get(reactAbbrv);
-						reactAbbrv = reactAbbrv.replace("[","_");
-						reactAbbrv = reactAbbrv.replace("]","");
-						//reactAbbrv = "m" + reactAbbrv;
-						if (!reactAbbrv.startsWith("M_")) {
-							reactAbbrv = "M_" + reactAbbrv;
-						}
-						
-						//reactAbbrv = makeValidID(reactAbbrv);
+						String reactAbbrv = curR.getMetaboliteAbbreviation();
+				
+						//Utilities u = new Utilities();
+						String abbr = validator.makeValidID(reactAbbrv);
+						reactAbbrv = abbr;
 						curSpec.setSpecies(reactAbbrv); 
 						//curSpec.setName(reactAbbrv);
 											
@@ -675,47 +678,36 @@ public class JSBMLWriter implements TreeModelListener{
 						
 						curSpec.setLevel(level);
 						curSpec.setVersion(version);
-						//curReact.setLevel(level);
-						//curReact.setVersion(version);
 						
 						curReact.addReactant(curSpec);
 					}
-					catch (Exception e) {
-						//System.out.println("Error: " + e.getMessage());
+					
+					for (int p = 0; p < ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).products.size(); p++) {
+						SpeciesReference curSpec = new SpeciesReference(); //TODO: Figure spec
+						SBMLProduct curP = ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).products.get(p);
+						int inId = curP.getMetaboliteId();
+						SBMLMetabolite sMReactant = (SBMLMetabolite) mFactory.getMetaboliteById(inId);
+						String reactAbbrv = curP.getMetaboliteAbbreviation();
 						
-					}
-				}
-				
-				for (ModelProduct curProduct : curProducts) {
-					try {
-						SpeciesReference curSpec = new SpeciesReference();
-						SBMLProduct curP = (SBMLProduct) curProduct;
-						String mAbbrv = curP.getMetaboliteAbbreviation();
-						//SpeciesReference curSpec = speciesRefMap.get(mAbbrv);
-						mAbbrv = mAbbrv.replace("[","_");
-						mAbbrv = mAbbrv.replace("]","");
-						//mAbbrv = "m" + mAbbrv;
-						if (!mAbbrv.startsWith("M_")) {
-							mAbbrv = "M_" + mAbbrv;
-						}
+						//Utilities u = new Utilities();
+						String abbr = validator.makeValidID(reactAbbrv);
+						reactAbbrv = abbr;
 						
-						curSpec.setSpecies(mAbbrv);
-						
-						//curSpec.setName(mAbbrv);
+						curSpec.setSpecies(reactAbbrv); 
+						//curSpec.setName(reactAbbrv);
+											
+						//curSpec.setId(reactAbbrv);
 						curSpec.setStoichiometry(curP.getStoic());
+						
 						curSpec.setLevel(level);
 						curSpec.setVersion(version);
 						
 						curReact.addProduct(curSpec);
 					}
-					catch (Exception e) {
-						//System.out.println(e.getMessage());
-					
-					}
 				}
-				
-				//curReact.addNamespace("html:p");
-				//curReact.appendNotes(attr);
+			
+//				curReact.addNamespace("html:p");
+//				curReact.appendNotes(attr);
 				
 				law.setMath(math);
 				curReact.setKineticLaw(law);
@@ -770,71 +762,72 @@ public class JSBMLWriter implements TreeModelListener{
 	}
 	
 	
-	public class Notes {
-		public String geneAssoc;
-		public String proteinAssoc;
-		public String subSystem;
-		public String proteinClass;
-		
-		public Notes(SBMLReaction react) {
-			geneAssoc = react.getMeta1();
-			proteinAssoc = react.getMeta2();
-			subSystem = react.getMeta3();
-			proteinClass = react.getMeta4();
-		}
-		
-		public String[] getNotes() {
-			String[] lines = new String[4];
-			
-			String[] keys = this.getKeys();
-			String[] values = this.getValues();
-			
-			for (int i=0 ; i<4; i++) {
-				lines[i] = this.toNode(keys[i],values[i]);
-			} 
-			return lines;
-		}
-		
-		@Override
-		public String toString() {
-			String curStr = "";
-			String[] keys = this.getKeys();
-			String[] values = this.getValues();
-			for (int i=0 ; i<4; i++) {
-				curStr += this.toNode(keys[i],values[i]);
-			}
-			return curStr;
-		}
-		
-		public String[] getKeys() {
-			String[] keys = new String[4];
-			keys[0] = "GENE_ASSOCIATION";
-			keys[1] = "PROTEIN_ASSOCIATION";
-			keys[2] = "SUBSYSTEM";
-			keys[3] = "PROTEIN_CLASS";
-			return keys;
-		}
-		
-		public String[] getValues() {
-			String[] values = new String[4];
-			values[0] = geneAssoc;
-			values[1] = proteinAssoc;
-			values[2] = subSystem;
-			values[3] = proteinClass;
-			return values;
-		}
-		
-		public String toNode(String key, String value) {
-			String curStr = "<html:p>";
-			curStr += key + ": " + value + "</html:p>\n";
-			return curStr;
-			
-		}
-		
-		public void setGeneAssoc(String assoc) {
-			
-		}
-	}
+//	public class Notes {
+//		public String geneAssoc;
+//		public String proteinAssoc;
+//		public String subSystem;
+//		public String proteinClass;
+//		
+//		public Notes(SBMLReaction react) {
+//			geneAssoc = react.getGeneAssociation();
+//			proteinAssoc = react.getProteinAssociation();
+//			subSystem = react.getSubsystem();
+//			proteinClass = react.getProteinClass();
+//		}
+//		
+//		public String[] getNotes() {
+//			String[] lines = new String[4];
+//			
+//			String[] keys = this.getKeys();
+//			String[] values = this.getValues();
+//			
+//			for (int i=0 ; i<4; i++) {
+//				lines[i] = this.toNode(keys[i],values[i]);
+//			} 
+//			return lines;
+//		}
+//		
+//		@Override
+//		public String toString() {
+//			String curStr = "";
+//			String[] keys = this.getKeys();
+//			String[] values = this.getValues();
+//			for (int i=0 ; i<4; i++) {
+//				curStr += this.toNode(keys[i],values[i]);
+//			}
+//			return curStr;
+//		}
+//		
+//		public String[] getKeys() {
+//			String[] keys = new String[4];
+//			keys[0] = "GENE_ASSOCIATION";
+//			keys[1] = "PROTEIN_ASSOCIATION";
+//			keys[2] = "SUBSYSTEM";
+//			keys[3] = "PROTEIN_CLASS";
+//			return keys;
+//		}
+//		
+//		public String[] getValues() {
+//			String[] values = new String[4];
+//			values[0] = geneAssoc;
+//			values[1] = proteinAssoc;
+//			values[2] = subSystem;
+//			values[3] = proteinClass;
+//			return values;
+//		}
+//		
+//		public String toNode(String key, String value) {
+//			String curStr = "<html:p>";
+//			curStr += key + ": " + value + "</html:p>\n";
+//			return curStr;
+//			
+//		}
+//		
+//		public void setGeneAssoc(String assoc) {
+//			
+//		}
+//	}
+	
 	
 	class XMLFileFilter extends javax.swing.filechooser.FileFilter {
 	    public boolean accept(File f) {

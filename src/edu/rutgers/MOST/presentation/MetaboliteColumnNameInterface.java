@@ -5,9 +5,6 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -20,10 +17,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.SwingWorker;
 import edu.rutgers.MOST.config.LocalConfig;
-import edu.rutgers.MOST.data.DatabaseCreator;
-import edu.rutgers.MOST.data.MetabolitesMetaColumnManager;
 import edu.rutgers.MOST.data.TextMetabolitesModelReader;
 
 public class MetaboliteColumnNameInterface  extends JDialog {
@@ -44,24 +38,19 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 	public JButton nextRowButton = new JButton(" Next Row ");
 	public JLabel rowLabel = new JLabel();
 	
-	public static ArrayList<String> columnNamesFromFile;
+	private static ArrayList<String> columnNamesFromFile;
+	
+	public boolean validColumns;
 
 	public static ArrayList<String> getColumnNamesFromFile() {
 		return columnNamesFromFile;
 	}
 
 	public void setColumnNamesFromFile(ArrayList<String> columnNamesFromFile) {
-		this.columnNamesFromFile = columnNamesFromFile;
+		MetaboliteColumnNameInterface.columnNamesFromFile = columnNamesFromFile;
 	}
-
-	private Task task;
-
-	public final ProgressBar progressBar = new ProgressBar();
-
-	javax.swing.Timer timer = new javax.swing.Timer(100, new TimeListener());
-
-	public MetaboliteColumnNameInterface(final Connection con, ArrayList<String> columnNamesFromFile)
-	throws SQLException {
+	
+	public MetaboliteColumnNameInterface(ArrayList<String> columnNamesFromFile) {
 
 		prevRowButton.setEnabled(false);
 		LocalConfig.getInstance().setMetabolitesNextRowCorrection(0);
@@ -73,15 +62,6 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		
 		getRootPane().setDefaultButton(okButton);
 
-		LocalConfig.getInstance().setProgress(0);
-		progressBar.pack();
-		progressBar.setIconImages(icons);
-		progressBar.setSize(GraphicalInterfaceConstants.PROGRESS_BAR_WIDTH, GraphicalInterfaceConstants.PROGRESS_BAR_HEIGHT);
-		//progressBar.setSize(200, 75);
-		progressBar.setTitle("Loading...");
-		progressBar.setLocationRelativeTo(null);
-		progressBar.setVisible(false);
-
 		setColumnNamesFromFile(columnNamesFromFile);
 
 		setTitle(ColumnInterfaceConstants.METABOLITES_COLUMN_NAME_INTERFACE_TITLE);
@@ -90,31 +70,33 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 
 		LocalConfig.getInstance().setMetabolitesNextRowCorrection(0);
 
+		validColumns = true;
+		
 		cbMetaboliteAbbreviation.setEditable(true);	
 		cbMetaboliteName.setEditable(true);
 		cbCharge.setEditable(true);	
 		cbCompartment.setEditable(true);
 		cbBoundary.setEditable(true);
 
-		cbMetaboliteAbbreviation.setPreferredSize(new Dimension(250, 30));
-		cbMetaboliteAbbreviation.setMaximumSize(new Dimension(250, 30));
-		cbMetaboliteAbbreviation.setMinimumSize(new Dimension(250, 30));
+		cbMetaboliteAbbreviation.setPreferredSize(new Dimension(250, 25));
+		cbMetaboliteAbbreviation.setMaximumSize(new Dimension(250, 25));
+		cbMetaboliteAbbreviation.setMinimumSize(new Dimension(250, 25));
 
-		cbMetaboliteName.setPreferredSize(new Dimension(250, 30));
-		cbMetaboliteName.setMaximumSize(new Dimension(250, 30));
-		cbMetaboliteName.setMinimumSize(new Dimension(250, 30));
+		cbMetaboliteName.setPreferredSize(new Dimension(250, 25));
+		cbMetaboliteName.setMaximumSize(new Dimension(250, 25));
+		cbMetaboliteName.setMinimumSize(new Dimension(250, 25));
 
-		cbCharge.setPreferredSize(new Dimension(250, 30));
-		cbCharge.setMaximumSize(new Dimension(250, 30));
-		cbCharge.setMinimumSize(new Dimension(250, 30));
+		cbCharge.setPreferredSize(new Dimension(250, 25));
+		cbCharge.setMaximumSize(new Dimension(250, 25));
+		cbCharge.setMinimumSize(new Dimension(250, 25));
 
-		cbCompartment.setPreferredSize(new Dimension(250, 30));
-		cbCompartment.setMaximumSize(new Dimension(250, 30));
-		cbCompartment.setMinimumSize(new Dimension(250, 30));
+		cbCompartment.setPreferredSize(new Dimension(250, 25));
+		cbCompartment.setMaximumSize(new Dimension(250, 25));
+		cbCompartment.setMinimumSize(new Dimension(250, 25));
 
-		cbBoundary.setPreferredSize(new Dimension(250, 30));
-		cbBoundary.setMaximumSize(new Dimension(250, 30));
-		cbBoundary.setMinimumSize(new Dimension(250, 30));
+		cbBoundary.setPreferredSize(new Dimension(250, 25));
+		cbBoundary.setMaximumSize(new Dimension(250, 25));
+		cbBoundary.setMinimumSize(new Dimension(250, 25));
 
 		populateNamesFromFileBoxes(columnNamesFromFile);
 		
@@ -122,12 +104,6 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		Box vb = Box.createVerticalBox();
 
 		Box hbLabels = Box.createHorizontalBox();
-		Box hb1 = Box.createHorizontalBox();
-		Box hb2 = Box.createHorizontalBox();
-		Box hb3 = Box.createHorizontalBox();
-		Box hb4 = Box.createHorizontalBox();
-		Box hb5 = Box.createHorizontalBox();
-
 		Box hbTop = Box.createHorizontalBox();	    	    
 		Box hbMetaboliteAbbreviationLabel = Box.createHorizontalBox();	    
 		Box hbMetaboliteAbbreviation = Box.createHorizontalBox();
@@ -139,7 +115,11 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		Box hbCompartment = Box.createHorizontalBox();
 		Box hbBoundaryLabel = Box.createHorizontalBox();	    
 		Box hbBoundary = Box.createHorizontalBox();
+		
+		Box vbLabels = Box.createVerticalBox();
+		Box vbCombos = Box.createVerticalBox();
 
+		Box hbLabeledCombos = Box.createHorizontalBox();
 		Box hbRequiredLabel = Box.createHorizontalBox();
 		Box hbButton = Box.createHorizontalBox();
 
@@ -159,9 +139,10 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		//metabolite Abbreviation Label and combo
 		JLabel metaboliteAbbreviationLabel = new JLabel();
 		metaboliteAbbreviationLabel.setText(ColumnInterfaceConstants.METABOLITE_ABBREVIATION_LABEL);
-		metaboliteAbbreviationLabel.setSize(new Dimension(250, 20));
-		metaboliteAbbreviationLabel.setMinimumSize(new Dimension(250, 20));
-		metaboliteAbbreviationLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,80));
+		metaboliteAbbreviationLabel.setPreferredSize(new Dimension(250, 25));
+		metaboliteAbbreviationLabel.setMaximumSize(new Dimension(250, 25));
+		metaboliteAbbreviationLabel.setMinimumSize(new Dimension(250, 25));
+		metaboliteAbbreviationLabel.setBorder(BorderFactory.createEmptyBorder(10,0,ColumnInterfaceConstants.LABEL_BOTTOM_BORDER_SIZE,10));
 		metaboliteAbbreviationLabel.setAlignmentX(LEFT_ALIGNMENT);
 		//metaboliteAbbreviationLabel.setAlignmentY(TOP_ALIGNMENT);	    	    
 
@@ -182,15 +163,18 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		hbMetaboliteAbbreviation.add(panelMetaboliteAbbreviation);
 		hbMetaboliteAbbreviation.setAlignmentX(RIGHT_ALIGNMENT);
 
-		hb1.add(hbMetaboliteAbbreviationLabel);
-		hb1.add(hbMetaboliteAbbreviation);
+		vbLabels.add(hbMetaboliteAbbreviationLabel);
+		JLabel blankLabel1 = new JLabel("");
+		vbLabels.add(blankLabel1);
+		vbCombos.add(hbMetaboliteAbbreviation);
 
 		//metabolite Name Label and combo
 		JLabel metaboliteNameLabel = new JLabel();
 		metaboliteNameLabel.setText(ColumnInterfaceConstants.METABOLITE_NAME_LABEL);
-		metaboliteNameLabel.setSize(new Dimension(250, 20));	
-		metaboliteNameLabel.setMinimumSize(new Dimension(250, 20));
-		metaboliteNameLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,80));
+		metaboliteNameLabel.setPreferredSize(new Dimension(250, 25));
+		metaboliteNameLabel.setMaximumSize(new Dimension(250, 25));
+		metaboliteNameLabel.setMinimumSize(new Dimension(250, 25));
+		metaboliteNameLabel.setBorder(BorderFactory.createEmptyBorder(ColumnInterfaceConstants.LABEL_TOP_BORDER_SIZE,0,ColumnInterfaceConstants.LABEL_BOTTOM_BORDER_SIZE,10));
 		metaboliteNameLabel.setAlignmentX(LEFT_ALIGNMENT);
 
 		JPanel panelMetaboliteNameLabel = new JPanel();
@@ -210,15 +194,18 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		hbMetabolite.add(panelMetaboliteName);
 		hbMetabolite.setAlignmentX(RIGHT_ALIGNMENT);
 
-		hb2.add(hbMetaboliteNameLabel);
-		hb2.add(hbMetabolite);
+		vbLabels.add(hbMetaboliteNameLabel);
+		JLabel blankLabel2 = new JLabel("");
+		vbLabels.add(blankLabel2);
+		vbCombos.add(hbMetabolite);
 
 		//charge label and combo
 		JLabel chargeLabel = new JLabel();
 		chargeLabel.setText(ColumnInterfaceConstants.CHARGE_LABEL);
-		chargeLabel.setSize(new Dimension(250, 20));
-		chargeLabel.setMinimumSize(new Dimension(250, 20));
-		chargeLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,80));
+		chargeLabel.setPreferredSize(new Dimension(250, 25));
+		chargeLabel.setMaximumSize(new Dimension(250, 25));
+		chargeLabel.setMinimumSize(new Dimension(250, 25));
+		chargeLabel.setBorder(BorderFactory.createEmptyBorder(ColumnInterfaceConstants.LABEL_TOP_BORDER_SIZE,0,ColumnInterfaceConstants.LABEL_BOTTOM_BORDER_SIZE,10));
 		chargeLabel.setAlignmentX(LEFT_ALIGNMENT);
 
 		JPanel panelChargeLabel = new JPanel();
@@ -238,15 +225,18 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		hbCharge.add(panelCharge);
 		hbCharge.setAlignmentX(RIGHT_ALIGNMENT);
 
-		hb3.add(hbChargeLabel);
-		hb3.add(hbCharge);
+		vbLabels.add(hbChargeLabel);
+		JLabel blankLabel3 = new JLabel("");
+		vbLabels.add(blankLabel3);
+		vbCombos.add(hbCharge);
 
 		//compartment label and combo
 		JLabel compartmentLabel = new JLabel();
 		compartmentLabel.setText(ColumnInterfaceConstants.COMPARTMENT_LABEL);
-		compartmentLabel.setSize(new Dimension(250, 20));
-		compartmentLabel.setMinimumSize(new Dimension(250, 20));
-		compartmentLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,80));
+		compartmentLabel.setPreferredSize(new Dimension(250, 25));
+		compartmentLabel.setMaximumSize(new Dimension(250, 25));
+		compartmentLabel.setMinimumSize(new Dimension(250, 25));
+		compartmentLabel.setBorder(BorderFactory.createEmptyBorder(ColumnInterfaceConstants.LABEL_TOP_BORDER_SIZE,0,ColumnInterfaceConstants.LABEL_BOTTOM_BORDER_SIZE,10));
 		compartmentLabel.setAlignmentX(LEFT_ALIGNMENT);
 
 		JPanel panelCompartmentLabel = new JPanel();
@@ -266,15 +256,18 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		hbCompartment.add(panelCompartment);
 		hbCompartment.setAlignmentX(RIGHT_ALIGNMENT);
 
-		hb4.add(hbCompartmentLabel);
-		hb4.add(hbCompartment);
+		vbLabels.add(hbCompartmentLabel);
+		JLabel blankLabel4 = new JLabel("");
+		vbLabels.add(blankLabel4);
+		vbCombos.add(hbCompartment);
 
 		//boundary label and combo
 		JLabel boundaryLabel = new JLabel();
 		boundaryLabel.setText(ColumnInterfaceConstants.BOUNDARY_LABEL);
-		boundaryLabel.setSize(new Dimension(250, 20));	
-		boundaryLabel.setMinimumSize(new Dimension(250, 20));
-		boundaryLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,80));
+		boundaryLabel.setPreferredSize(new Dimension(250, 25));
+		boundaryLabel.setMaximumSize(new Dimension(250, 25));
+		boundaryLabel.setMinimumSize(new Dimension(250, 25));
+		boundaryLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,10));
 		boundaryLabel.setAlignmentX(LEFT_ALIGNMENT);
 
 		JPanel panelBoundaryLabel = new JPanel();
@@ -294,8 +287,8 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		hbBoundary.add(panelBoundary);
 		hbBoundary.setAlignmentX(RIGHT_ALIGNMENT);
 
-		hb5.add(hbBoundaryLabel);
-		hb5.add(hbBoundary);
+		vbLabels.add(hbBoundaryLabel);
+		vbCombos.add(hbBoundary);
 
 		JLabel required = new JLabel(ColumnInterfaceConstants.REQUIRED_LABEL);
 		hbRequiredLabel.add(required);
@@ -323,84 +316,17 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		hbButton.add(buttonPanel);
 
 		vb.add(hbLabels);
-		vb.add(hb1);
-		vb.add(hb2);
-		vb.add(hb3);
-		vb.add(hb4);
-		vb.add(hb5);
+		hbLabeledCombos.add(vbLabels);
+		hbLabeledCombos.add(vbCombos);
+		vb.add(hbLabeledCombos);
 		vb.add(hbRequiredLabel);
 		vb.add(hbButton);
 
 		add(vb);
-
+		
 		ActionListener okButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
-				if (cbMetaboliteAbbreviation.getSelectedIndex() == -1) {
-					JOptionPane.showMessageDialog(null,                
-							ColumnInterfaceConstants.BLANK_METABOLITE_FIELDS_ERROR_MESSAGE,
-							ColumnInterfaceConstants.BLANK_METABOLITE_FIELDS_ERROR_TITLE,                                
-							JOptionPane.ERROR_MESSAGE);
-				} else if (cbMetaboliteAbbreviation.getSelectedItem().toString().toLowerCase().equals(GraphicalInterfaceConstants.METAB_ABBREVIATION_NOT_FILTER[0]) ||
-						cbMetaboliteAbbreviation.getSelectedItem().toString().toLowerCase().equals(GraphicalInterfaceConstants.METAB_ABBREVIATION_NOT_FILTER[1]) ||
-						cbMetaboliteAbbreviation.getSelectedItem().toString().toLowerCase().equals(GraphicalInterfaceConstants.METAB_ABBREVIATION_NOT_FILTER[2])) {
-					JOptionPane.showMessageDialog(null,                
-							"Invalid name for Metabolite Abbreviation column.",
-							"Column Name Error",                                
-							JOptionPane.ERROR_MESSAGE);
-				} else {
-					//add metacolumn names to db
-					MetabolitesMetaColumnManager metabolitesMetaColumnManager = new MetabolitesMetaColumnManager();
-					ArrayList<String> metaColumnNames = new ArrayList<String>();
-					ArrayList<Integer> usedIndices = new ArrayList<Integer>();
-					ArrayList<Integer> metaColumnIndexList = new ArrayList<Integer>();
-
-					if (getColumnNamesFromFile().contains(cbMetaboliteAbbreviation.getSelectedItem())) {
-						LocalConfig.getInstance().setMetaboliteAbbreviationColumnIndex(getColumnNamesFromFile().indexOf(cbMetaboliteAbbreviation.getSelectedItem()));
-						usedIndices.add(getColumnNamesFromFile().indexOf(cbMetaboliteAbbreviation.getSelectedItem()));
-					}
-					if (cbMetaboliteName.getSelectedIndex() == -1) {
-						LocalConfig.getInstance().getHiddenMetabolitesColumns().add(GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN);
-					} else if (getColumnNamesFromFile().contains(cbMetaboliteName.getSelectedItem())) {
-						LocalConfig.getInstance().setMetaboliteNameColumnIndex(getColumnNamesFromFile().indexOf(cbMetaboliteName.getSelectedItem()));
-						usedIndices.add(getColumnNamesFromFile().indexOf(cbMetaboliteName.getSelectedItem()));
-					}
-					if (cbCharge.getSelectedIndex() == -1) {
-						LocalConfig.getInstance().getHiddenMetabolitesColumns().add(GraphicalInterfaceConstants.CHARGE_COLUMN);
-					} else if (getColumnNamesFromFile().contains(cbCharge.getSelectedItem())) {
-						LocalConfig.getInstance().setChargeColumnIndex(getColumnNamesFromFile().indexOf(cbCharge.getSelectedItem()));
-						usedIndices.add(getColumnNamesFromFile().indexOf(cbCharge.getSelectedItem()));
-					}
-					if (cbCompartment.getSelectedIndex() == -1) {
-						LocalConfig.getInstance().getHiddenMetabolitesColumns().add(GraphicalInterfaceConstants.COMPARTMENT_COLUMN);
-					} else if (getColumnNamesFromFile().contains(cbCompartment.getSelectedItem())) {
-						LocalConfig.getInstance().setCompartmentColumnIndex(getColumnNamesFromFile().indexOf(cbCompartment.getSelectedItem()));
-						usedIndices.add(getColumnNamesFromFile().indexOf(cbCompartment.getSelectedItem()));
-					}
-					if (getColumnNamesFromFile().contains(cbBoundary.getSelectedItem())) {
-						LocalConfig.getInstance().setBoundaryColumnIndex(getColumnNamesFromFile().indexOf(cbBoundary.getSelectedItem()));
-						usedIndices.add(getColumnNamesFromFile().indexOf(cbBoundary.getSelectedItem()));
-					}
-					for (int i = 0; i < getColumnNamesFromFile().size(); i++) {
-						if (!usedIndices.contains(i)) {
-							metaColumnNames.add(getColumnNamesFromFile().get(i));
-							metaColumnIndexList.add(getColumnNamesFromFile().indexOf(getColumnNamesFromFile().get(i)));
-						} 
-					}
-					DatabaseCreator creator = new DatabaseCreator();
-					creator.createDatabase(LocalConfig.getInstance().getDatabaseName());
-					metabolitesMetaColumnManager.addColumnNames(LocalConfig.getInstance().getDatabaseName(), metaColumnNames);
-					LocalConfig.getInstance().setMetabolitesMetaColumnIndexList(metaColumnIndexList);
-
-					setVisible(false);
-					dispose();
-
-					progressBar.setVisible(true);
-
-					timer.start();
-
-					task = new Task();
-					task.execute();
-				}				
+				
 			}
 		};
 
@@ -410,32 +336,6 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 			public void actionPerformed(ActionEvent prodActionEvent) {
 				setVisible(false);
 				dispose();
-				/*				
-				//this is a hack, same as clear method in gui
-				if (LocalConfig.getInstance().getCurrentConnection() != null) {
-					try {
-						LocalConfig.getInstance().getCurrentConnection().close();
-					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				}
-				try {
-					Class.forName("org.sqlite.JDBC");       
-					DatabaseCreator databaseCreator = new DatabaseCreator();
-					LocalConfig.getInstance().setDatabaseName(ConfigConstants.DEFAULT_DATABASE_NAME);
-					Connection con = DriverManager.getConnection("jdbc:sqlite:" + ConfigConstants.DEFAULT_DATABASE_NAME + ".db");
-					LocalConfig.getInstance().setCurrentConnection(con);
-					databaseCreator.createDatabase(LocalConfig.getInstance().getDatabaseName());
-					databaseCreator.addRows(LocalConfig.getInstance().getDatabaseName(), GraphicalInterfaceConstants.BLANK_DB_METABOLITE_ROW_COUNT, GraphicalInterfaceConstants.BLANK_DB_REACTION_ROW_COUNT);
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				*/
 			}
 		};
 
@@ -525,45 +425,59 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		LocalConfig.getInstance().setMetaboliteNameColumnIndex(1);
 	}
 
-	class Task extends SwingWorker<Void, Void> {
+	public void getColumnIndices() {
+		if (cbMetaboliteAbbreviation.getSelectedIndex() == -1) {
+			JOptionPane.showMessageDialog(null,                
+					ColumnInterfaceConstants.BLANK_METABOLITE_FIELDS_ERROR_MESSAGE,
+					ColumnInterfaceConstants.BLANK_METABOLITE_FIELDS_ERROR_TITLE,                                
+					JOptionPane.ERROR_MESSAGE);
+			validColumns = false;
+		} else if (cbMetaboliteAbbreviation.getSelectedItem().toString().toLowerCase().equals(GraphicalInterfaceConstants.METAB_ABBREVIATION_NOT_FILTER[0]) ||
+				cbMetaboliteAbbreviation.getSelectedItem().toString().toLowerCase().equals(GraphicalInterfaceConstants.METAB_ABBREVIATION_NOT_FILTER[1]) ||
+				cbMetaboliteAbbreviation.getSelectedItem().toString().toLowerCase().equals(GraphicalInterfaceConstants.METAB_ABBREVIATION_NOT_FILTER[2])) {
+			JOptionPane.showMessageDialog(null,                
+					"Invalid name for Metabolite Abbreviation column.",
+					"Column Name Error",                                
+					JOptionPane.ERROR_MESSAGE);
+			validColumns = false;
+		} else {
+			validColumns = true;
+			ArrayList<String> metaColumnNames = new ArrayList<String>();
+			ArrayList<Integer> usedIndices = new ArrayList<Integer>();
+			ArrayList<Integer> metaColumnIndexList = new ArrayList<Integer>();
 
-		@Override
-		public void done() {
-
-		}
-
-		@Override
-		protected Void doInBackground() throws Exception {
-			int progress = 0;
-			TextMetabolitesModelReader reader = new TextMetabolitesModelReader();
-			reader.load(LocalConfig.getInstance().getMetabolitesCSVFile(), LocalConfig.getInstance().getDatabaseName());	
-			while (progress < 100) {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException ignore) {
-				}			
+			if (getColumnNamesFromFile().contains(cbMetaboliteAbbreviation.getSelectedItem())) {
+				LocalConfig.getInstance().setMetaboliteAbbreviationColumnIndex(getColumnNamesFromFile().indexOf(cbMetaboliteAbbreviation.getSelectedItem()));
+				usedIndices.add(getColumnNamesFromFile().indexOf(cbMetaboliteAbbreviation.getSelectedItem()));
 			}
-			timer.stop();
-			return null;
-		}
-	}
-
-	class TimeListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {
-			progressBar.progress.setValue(LocalConfig.getInstance().getProgress());
-			progressBar.progress.repaint();
-			if (LocalConfig.getInstance().getProgress() == 100) {
-				progressBar.setVisible(false);
-				progressBar.dispose();
-				timer.stop();
+			if (getColumnNamesFromFile().contains(cbMetaboliteName.getSelectedItem())) {
+				LocalConfig.getInstance().setMetaboliteNameColumnIndex(getColumnNamesFromFile().indexOf(cbMetaboliteName.getSelectedItem()));
+				usedIndices.add(getColumnNamesFromFile().indexOf(cbMetaboliteName.getSelectedItem()));
 			}
-		}
+			if (getColumnNamesFromFile().contains(cbCharge.getSelectedItem())) {
+				LocalConfig.getInstance().setChargeColumnIndex(getColumnNamesFromFile().indexOf(cbCharge.getSelectedItem()));
+				usedIndices.add(getColumnNamesFromFile().indexOf(cbCharge.getSelectedItem()));
+			}
+			if (getColumnNamesFromFile().contains(cbCompartment.getSelectedItem())) {
+				LocalConfig.getInstance().setCompartmentColumnIndex(getColumnNamesFromFile().indexOf(cbCompartment.getSelectedItem()));
+				usedIndices.add(getColumnNamesFromFile().indexOf(cbCompartment.getSelectedItem()));
+			}
+			if (getColumnNamesFromFile().contains(cbBoundary.getSelectedItem())) {
+				LocalConfig.getInstance().setBoundaryColumnIndex(getColumnNamesFromFile().indexOf(cbBoundary.getSelectedItem()));
+				usedIndices.add(getColumnNamesFromFile().indexOf(cbBoundary.getSelectedItem()));
+			}
+			for (int i = 0; i < getColumnNamesFromFile().size(); i++) {
+				if (!usedIndices.contains(i)) {
+					metaColumnNames.add(getColumnNamesFromFile().get(i));
+					metaColumnIndexList.add(getColumnNamesFromFile().indexOf(getColumnNamesFromFile().get(i)));
+				} 
+			}
+			LocalConfig.getInstance().setMetabolitesMetaColumnNames(metaColumnNames);
+			LocalConfig.getInstance().setMetabolitesMetaColumnIndexList(metaColumnIndexList);
+		}				
 	}
-
+	
 	public static void main(String[] args) throws Exception {
-		Class.forName("org.sqlite.JDBC");       
-		Connection con = DriverManager.getConnection("jdbc:sqlite:" + "untitled" + ".db");
-
 		//based on code from http:stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
 		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
@@ -574,10 +488,10 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 		list.add("test2");
 		list.add("test3");
 
-		MetaboliteColumnNameInterface frame = new MetaboliteColumnNameInterface(con, list);
+		MetaboliteColumnNameInterface frame = new MetaboliteColumnNameInterface(list);
 
 		frame.setIconImages(icons);
-		frame.setSize(600, 360);
+		frame.setSize(600, 330);
 		frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);

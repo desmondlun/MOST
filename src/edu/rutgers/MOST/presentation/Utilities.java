@@ -1,12 +1,15 @@
 package edu.rutgers.MOST.presentation;
 
+import java.awt.Image;
 import java.io.File;
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
-import edu.rutgers.MOST.data.MetabolitesMetaColumnManager;
-import edu.rutgers.MOST.data.ReactionsMetaColumnManager;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileSystemView;
 
 public class Utilities {
 
@@ -83,46 +86,57 @@ public class Utilities {
         }
     }
 	
-	public String displayReactionsColumnNameFromIndex(String databaseName, int columnIndex) {
-		String columnName = "";
-		if (columnIndex > GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length - 1) {
-			ReactionsMetaColumnManager reactionsMetaColumnManager = new ReactionsMetaColumnManager();
-			columnName = reactionsMetaColumnManager.getColumnName(databaseName, columnIndex - GraphicalInterfaceConstants.REACTIONS_DB_COLUMN_NAMES.length + 1);
+	public String lastPath(String path, JFileChooser fileChooser) {
+		// based on http://stackoverflow.com/questions/1503555/how-to-find-my-documents-folder
+		// works for Windows XP and Windows 7
+		FileSystemView fsv = fileChooser.getFileSystemView();
+		String defaultPath = fsv.getDefaultDirectory().getPath();
+		// if username is preferable this works
+		//String defaultPath = System.getenv("USERPROFILE") ;
+		if (path == null) {
+			return defaultPath;
 		} else {
-			columnName = GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[columnIndex];
+			File f = new File(path);
+			if (f.exists()) {
+				return path;
+			} else {
+				return defaultPath;
+			}
 		}
-		return columnName;
 	}
 	
-	public String dbReactionsColumnNameFromIndex(String databaseName, int columnIndex) {
-		String dbColumnName = "";
-		if (columnIndex > GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length - 1) {
-			dbColumnName = "meta_" + (columnIndex - GraphicalInterfaceConstants.REACTIONS_DB_COLUMN_NAMES.length + 1);
+	public String createLogFileName(String name) {
+		String fileName = "";
+		if (System.getProperty("os.name").equals("Windows 7")) {
+			File destDir = new File(GraphicalInterfaceConstants.SETTINGS_PATH_PREFIX_WINDOWS_7 + System.getProperty("user.name") + GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_7 + GraphicalInterfaceConstants.FOLDER_NAME);
+			if (!destDir.exists()) {
+				destDir.mkdir();				
+			}
+			fileName = GraphicalInterfaceConstants.SETTINGS_PATH_PREFIX_WINDOWS_7 + System.getProperty("user.name") + GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_7 + GraphicalInterfaceConstants.FOLDER_NAME + name;
+		} else if (System.getProperty("os.name").equals("Windows XP")) {
+			File destDir = new File(GraphicalInterfaceConstants.SETTINGS_PATH_PREFIX_WINDOWS_XP + System.getProperty("user.name") + GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_XP + GraphicalInterfaceConstants.FOLDER_NAME);
+			if (!destDir.exists()) {
+				destDir.mkdir();				
+			}
+			fileName = GraphicalInterfaceConstants.SETTINGS_PATH_PREFIX_WINDOWS_XP + System.getProperty("user.name") + GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_XP + GraphicalInterfaceConstants.FOLDER_NAME + name;
 		} else {
-			dbColumnName = GraphicalInterfaceConstants.REACTIONS_DB_COLUMN_NAMES[columnIndex];
+			fileName = name;
 		}
-		return dbColumnName;
+		
+		return fileName;
+		
 	}
 	
-	public String displayMetabolitesColumnNameFromIndex(String databaseName, int columnIndex) {
-		String columnName = "";
-		if (columnIndex > GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length - 1) {
-			MetabolitesMetaColumnManager metabolitesMetaColumnManager = new MetabolitesMetaColumnManager();
-			columnName = metabolitesMetaColumnManager.getColumnName(databaseName, columnIndex - GraphicalInterfaceConstants.METABOLITES_DB_COLUMN_NAMES.length + 1);
-		} else {
-			columnName = GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES[columnIndex];
-		}
-		return columnName;
-	}
-	
-	public String dbMetabolitesColumnNameFromIndex(String databaseName, int columnIndex) {
-		String dbColumnName = "";
-		if (columnIndex > GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length - 1) {
-			dbColumnName = "meta_" + (columnIndex - GraphicalInterfaceConstants.METABOLITES_DB_COLUMN_NAMES.length + 1);
-		} else {
-			dbColumnName = GraphicalInterfaceConstants.METABOLITES_DB_COLUMN_NAMES[columnIndex];
-		}
-		return dbColumnName;
+	public void showResizableDialog(String errorTitle, String errorDescription, String errorMessage) {
+		final ArrayList<Image> icons = new ArrayList<Image>(); 
+		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
+		icons.add(new ImageIcon("etc/most32.jpg").getImage());
+		
+		ResizableDialog r = new ResizableDialog(errorTitle, errorDescription, errorMessage);
+		
+		r.setIconImages(icons);
+    	r.setLocationRelativeTo(null);
+    	r.setVisible(true);
 	}
 	
 }

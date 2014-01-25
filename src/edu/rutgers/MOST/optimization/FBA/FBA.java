@@ -34,7 +34,8 @@ public class FBA {
 		Vector<ModelReaction> reactions = this.model.getReactions();
 		for (int i = 0; i < reactions.size(); i++) {
 			SBMLReaction reac = (SBMLReaction) (reactions.elementAt(i));
-			String varName = Integer.toString(reac.getId());
+			String varName = Integer.toString((Integer)this.model.getReactionsIdPositionMap().get(reac.getId()));
+			//String varName = Integer.toString(reac.getId());
 			double lb = reac.getLowerBound();
 			double ub = reac.getUpperBound();
 
@@ -50,7 +51,6 @@ public class FBA {
 	}	
 	
 	private void setConstraints(Vector<ModelReaction> reactions, ConType conType, double bValue) {
-		//System.out.println(model);
 		ArrayList<Map<Integer, Double>> sMatrix = this.model.getSMatrix();
 		for (int i = 0; i < sMatrix.size(); i++) {
 			FBA.getSolver().addConstraint(sMatrix.get(i), conType, bValue);
@@ -60,9 +60,6 @@ public class FBA {
 	private void setObjective() {
 		FBA.getSolver().setObjType(ObjType.Maximize);
 		Vector<Double> objective = this.model.getObjective();
-
-		//System.out.println(this.model.getObjective());
-		
 		Map<Integer, Double> map = new HashMap<Integer, Double>();
 		for (int i = 0; i < objective.size(); i++) {
 			if (objective.elementAt(i) != 0.0) {
@@ -70,7 +67,6 @@ public class FBA {
 			}
 		}
 		FBA.getSolver().setObj(map);
-		
 	}
 
 	public void setFBAModel(FBAModel m) {
@@ -95,16 +91,7 @@ public class FBA {
 	}
 
 	public static void main(String[] argv) {
-		String databaseName = "Ec_iAF1260_anaerobic_glc10_acetate";
-				
-		FBA fba = new FBA();
 		
-		FBAModel model = new FBAModel(databaseName);	
-		fba.setFBAModel(model);
-		 
-		fba.run();		
-		
-		//System.out.println("Max objective: " + fba.getMaxObj());
 	}
 	
 	public static Solver getSolver() {

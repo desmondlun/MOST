@@ -1,21 +1,20 @@
 package edu.rutgers.MOST.data;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.SortOrder;
+import javax.swing.table.DefaultTableModel;
 
 import edu.rutgers.MOST.config.LocalConfig;
+import edu.rutgers.MOST.presentation.EntryValidator;
+import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 public class ReactionUndoItem implements UndoItem {
-
-	private String databaseName;	
+	
 	private Integer id;
 	private Integer row;
 	private Integer column;
@@ -24,21 +23,29 @@ public class ReactionUndoItem implements UndoItem {
 	private String undoType;
 	private String undoItemType;
 	private String equationNames;
-	public int oldSortColumnIndex;
-	public int newSortColumnIndex;
-	public SortOrder oldSortOrder;
-	public SortOrder newSortOrder;
-	public int addedColumnIndex;
-	public int deletedColumnIndex;
-	public ArrayList<Integer> addedMetabolites;
-	public int tableCopyIndex;
+	private int oldSortColumnIndex;
+	private int newSortColumnIndex;
+	private SortOrder oldSortOrder;
+	private SortOrder newSortOrder;
+	private int addedColumnIndex;
+	private int deletedColumnIndex;
+	private ArrayList<Integer> addedMetabolites;
+	private ArrayList<String> addedMetaboliteAbbr;
+	private int tableCopyIndex;
+	private ArrayList<String> oldMetaColumnNames;
+	private ArrayList<String> newMetaColumnNames;
+	private String columnName;
+	private SBMLReactionEquation equn;
+	private int maxMetab;
+	private int maxMetabId;
+	private ArrayList<String> pasteIds;
+	private String oldLowerBound;
+	private String newLowerBound;
+	private String oldUpperBound;
+	private String newUpperBound;
+	private Map<String, Object> oldMetaboliteUsedMap;
+	private Map<String, Object> newMetaboliteUsedMap;
 	
-	public String getDatabaseName() {
-		return databaseName;
-	}
-	public void setDatabaseName(String databaseName) {
-		this.databaseName = databaseName;
-	}
 	public Integer getId() {
 		return id;
 	}
@@ -129,18 +136,102 @@ public class ReactionUndoItem implements UndoItem {
 	public void setAddedMetabolites(ArrayList<Integer> addedMetabolites) {
 		this.addedMetabolites = addedMetabolites;
 	}	
+	public ArrayList<String> getAddedMetaboliteAbbr() {
+		return addedMetaboliteAbbr;
+	}
+	public void setAddedMetaboliteAbbr(ArrayList<String> addedMetaboliteAbbr) {
+		this.addedMetaboliteAbbr = addedMetaboliteAbbr;
+	}
 	public int getTableCopyIndex() {
 		return tableCopyIndex;
 	}
 	public void setTableCopyIndex(int tableCopyIndex) {
 		this.tableCopyIndex = tableCopyIndex;
+	}	
+	public ArrayList<String> getOldMetaColumnNames() {
+		return oldMetaColumnNames;
+	}
+	public void setOldMetaColumnNames(ArrayList<String> oldMetaColumnNames) {
+		this.oldMetaColumnNames = oldMetaColumnNames;
+	}
+	public ArrayList<String> getNewMetaColumnNames() {
+		return newMetaColumnNames;
+	}
+	public void setNewMetaColumnNames(ArrayList<String> newMetaColumnNames) {
+		this.newMetaColumnNames = newMetaColumnNames;
+	}
+	public String getColumnName() {
+		return columnName;
+	}
+	public void setColumnName(String columnName) {
+		this.columnName = columnName;
+	}	
+	public SBMLReactionEquation getEqun() {
+		return equn;
+	}
+	public void setEqun(SBMLReactionEquation equn) {
+		this.equn = equn;
+	}	
+	public int getMaxMetab() {
+		return maxMetab;
+	}
+	public void setMaxMetab(int maxMetab) {
+		this.maxMetab = maxMetab;
+	}
+	public int getMaxMetabId() {
+		return maxMetabId;
+	}
+	public void setMaxMetabId(int maxMetabId) {
+		this.maxMetabId = maxMetabId;
+	}	
+	public ArrayList<String> getPasteIds() {
+		return pasteIds;
+	}
+	public void setPasteIds(ArrayList<String> pasteIds) {
+		this.pasteIds = pasteIds;
+	}		
+	public String getOldLowerBound() {
+		return oldLowerBound;
+	}
+	public void setOldLowerBound(String oldLowerBound) {
+		this.oldLowerBound = oldLowerBound;
+	}		
+	public String getNewLowerBound() {
+		return newLowerBound;
+	}
+	public void setNewLowerBound(String newLowerBound) {
+		this.newLowerBound = newLowerBound;
+	}	
+	public String getOldUpperBound() {
+		return oldUpperBound;
+	}
+	public void setOldUpperBound(String oldUpperBound) {
+		this.oldUpperBound = oldUpperBound;
+	}
+	public String getNewUpperBound() {
+		return newUpperBound;
+	}
+	public void setNewUpperBound(String newUpperBound) {
+		this.newUpperBound = newUpperBound;
+	}
+	public Map<String, Object> getOldMetaboliteUsedMap() {
+		return oldMetaboliteUsedMap;
+	}
+	public void setOldMetaboliteUsedMap(Map<String, Object> oldMetaboliteUsedMap) {
+		this.oldMetaboliteUsedMap = oldMetaboliteUsedMap;
+	}
+	public Map<String, Object> getNewMetaboliteUsedMap() {
+		return newMetaboliteUsedMap;
+	}
+	public void setNewMetaboliteUsedMap(Map<String, Object> newMetaboliteUsedMap) {
+		this.newMetaboliteUsedMap = newMetaboliteUsedMap;
 	}
 	
 	public String createUndoDescription() {
 		String undoDescription = "";
 		if (this.undoType.equals(UndoConstants.TYPING)) {
 			undoDescription = UndoConstants.TYPING + "'"
-			+ this.newValue + "' in '" + displayReactionsColumnNameFromIndex(this.column) + "' row " + (this.row + 1);
+			+ this.newValue + "' in '" + this.columnName + "' row " + (this.row + 1);				
 		} else if (this.undoType.equals(UndoConstants.REPLACE)) {
 			undoDescription = UndoConstants.REPLACE;
 		} else if (this.undoType.equals(UndoConstants.REPLACE_ALL)) {
@@ -148,58 +239,82 @@ public class ReactionUndoItem implements UndoItem {
 		} else if (this.undoType.equals(UndoConstants.ADD_ROW)) {
 			undoDescription = UndoConstants.ADD_ROW;
 		} else if (this.undoType.equals(UndoConstants.ADD_COLUMN)) {
-			undoDescription = UndoConstants.ADD_COLUMN_PREFIX + displayReactionsColumnNameFromIndex(this.addedColumnIndex) + UndoConstants.ADD_COLUMN_SUFFIX;	
+			undoDescription = UndoConstants.ADD_COLUMN_PREFIX + displayReactionsColumnNameFromIndex(this.addedColumnIndex, this.newMetaColumnNames) + UndoConstants.ADD_COLUMN_SUFFIX;	
 		} else if (this.undoType.equals(UndoConstants.DELETE_ROW)) {
 			undoDescription = UndoConstants.DELETE_ROW;	
 		} else if (this.undoType.equals(UndoConstants.DELETE_COLUMN)) {
-			undoDescription = UndoConstants.DELETE_COLUMN_PREFIX + displayReactionsColumnNameFromIndex(this.deletedColumnIndex) + UndoConstants.DELETE_COLUMN_SUFFIX;								
+			undoDescription = UndoConstants.DELETE_COLUMN_PREFIX;
+			undoDescription = UndoConstants.DELETE_COLUMN_PREFIX + displayReactionsColumnNameFromIndex(this.deletedColumnIndex, this.oldMetaColumnNames) + UndoConstants.DELETE_COLUMN_SUFFIX;								
 		} else if (this.undoType.equals(UndoConstants.PASTE)) {
 			undoDescription = UndoConstants.PASTE;	
 		} else if (this.undoType.equals(UndoConstants.CLEAR_CONTENTS)) {
 			undoDescription = UndoConstants.CLEAR_CONTENTS;	
 		} else if (this.undoType.equals(UndoConstants.SORT)) {
 			undoDescription = UndoConstants.SORT;
-		} else if (this.undoType.equals(UndoConstants.EDIT_REACTION)) {
-			undoDescription = UndoConstants.EDIT_REACTION;
+		} else if (this.undoType.equals(UndoConstants.UNSORT)) {
+			undoDescription = UndoConstants.UNSORT;	
 		}
 		return undoDescription + UndoConstants.REACTION_UNDO_SUFFIX;
 	}
 	
 	public void undo() {
-		if (this.undoType.equals(UndoConstants.TYPING) || this.undoType.equals(UndoConstants.REPLACE) || this.undoType.equals(UndoConstants.EDIT_REACTION)) {
+		if (this.undoType.equals(UndoConstants.TYPING) || this.undoType.equals(UndoConstants.REPLACE)) {
 			undoEntry();
 		} else if (this.undoType.equals(UndoConstants.ADD_ROW)) {
 			undoAddRow();
 		} else if (this.undoType.equals(UndoConstants.ADD_COLUMN)) {
 			undoAddColumn();
+			copyTableUndoAction();			
 		} else if (this.undoType.equals(UndoConstants.DELETE_COLUMN)) {
 			undoDeleteColumn();
-		} else if (this.undoType.equals(UndoConstants.PASTE) || this.undoType.equals(UndoConstants.CLEAR_CONTENTS) ||
-				this.undoType.equals(UndoConstants.DELETE_ROW) || this.undoType.equals(UndoConstants.REPLACE_ALL)) {	
-			loadCopiedTables(this.tableCopyIndex);
-			int numCopied = LocalConfig.getInstance().getNumReactionTablesCopied();
-			numCopied -= 2;
-			LocalConfig.getInstance().setNumReactionTablesCopied(numCopied);
+			copyTableUndoAction();
+		} else if (this.undoType.equals(UndoConstants.PASTE) || this.undoType.equals(UndoConstants.REPLACE_ALL)) {
+			copyTableUndoAction();
+			pasteReplaceAllAction();
+		} else if (this.undoType.equals(UndoConstants.CLEAR_CONTENTS) || this.undoType.equals(UndoConstants.DELETE_ROW)) {	
+			copyTableUndoAction();
 		}
+		restoreOldCollections();
+//		System.out.println("undo " + LocalConfig.getInstance().getReactionEquationMap());
+//		System.out.println("undo id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
+//		System.out.println("undo used " + LocalConfig.getInstance().getMetaboliteUsedMap());
+	}
+	
+	public void copyTableUndoAction() {
+		int numCopied = LocalConfig.getInstance().getNumReactionTablesCopied();
+		numCopied -= 2;
+		LocalConfig.getInstance().setNumReactionTablesCopied(numCopied);
+		GraphicalInterface.reactionsTable.setModel(LocalConfig.getInstance().getReactionsUndoTableModelMap().get(Integer.toString(numCopied + 1)));
 	}
 	
 	public void redo() {
-		DatabaseCreator creator = new DatabaseCreator();
 		if (this.undoType.equals(UndoConstants.TYPING) || this.undoType.equals(UndoConstants.REPLACE)) {
 			redoEntry();
 		} else if (this.undoType.equals(UndoConstants.ADD_ROW)) {
 			redoAddRow();
 		} else if (this.undoType.equals(UndoConstants.ADD_COLUMN)) {
 			redoAddColumn();
+			copyTableRedoAction();			
 		} else if (this.undoType.equals(UndoConstants.DELETE_COLUMN)) {
 			redoDeleteColumn();
-		} else if (this.undoType.equals(UndoConstants.PASTE) || this.undoType.equals(UndoConstants.CLEAR_CONTENTS) ||
-				this.undoType.equals(UndoConstants.DELETE_ROW) || this.undoType.equals(UndoConstants.REPLACE_ALL)) {	
-			loadCopiedTables(this.tableCopyIndex + 1);
-			int numCopied = LocalConfig.getInstance().getNumReactionTablesCopied();
-			numCopied += 2;
-			LocalConfig.getInstance().setNumReactionTablesCopied(numCopied);
+			copyTableRedoAction();
+		} else if (this.undoType.equals(UndoConstants.PASTE) || this.undoType.equals(UndoConstants.REPLACE_ALL)) {
+			copyTableRedoAction();
+			pasteReplaceAllAction();
+		} else if (this.undoType.equals(UndoConstants.CLEAR_CONTENTS) || this.undoType.equals(UndoConstants.DELETE_ROW)) {
+			copyTableRedoAction();
 		}
+		restoreNewCollections();
+//		System.out.println("redo " + LocalConfig.getInstance().getReactionEquationMap());
+//		System.out.println("redo id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
+//		System.out.println("redo used " + LocalConfig.getInstance().getMetaboliteUsedMap());
+	}
+	
+	public void copyTableRedoAction() {
+		int numCopied = LocalConfig.getInstance().getNumReactionTablesCopied();
+		numCopied += 2;
+		LocalConfig.getInstance().setNumReactionTablesCopied(numCopied);
+		GraphicalInterface.reactionsTable.setModel(LocalConfig.getInstance().getReactionsUndoTableModelMap().get(Integer.toString(numCopied)));
 	}
 	
 	public boolean undoEntry() {
@@ -211,225 +326,217 @@ public class ReactionUndoItem implements UndoItem {
 				this.oldValue = GraphicalInterfaceConstants.BOOLEAN_VALUES[0];
 			}				
 		}
+		updateCellById(this.oldValue, this.id, this.column);
 		
-		try {
-			Class.forName("org.sqlite.JDBC");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
-		Connection conn;
-		try {
-			conn = DriverManager.getConnection(createConnectionStatement(getDatabaseName())); 
-
-			PreparedStatement prep = conn
-			.prepareStatement("update reactions set " + dbReactionsColumnNameFromIndex(this.getColumn()) + "=? where id=?;");
-			prep.setString(1, this.oldValue);
-			prep.setInt(2, this.getId());
-			conn.setAutoCommit(true);			
-			prep.executeUpdate();
-			
-			if (this.column.equals(GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN)) {
-				//System.out.println("undo added" + this.addedMetabolites);
-				for (int i = 0; i < this.addedMetabolites.size(); i++) {
-					String abbrev = (String) getKeyFromValue(LocalConfig.getInstance().getMetaboliteIdNameMap(), this.addedMetabolites.get(i)); 
-					LocalConfig.getInstance().getMetaboliteIdNameMap().remove(abbrev);
-					LocalConfig.getInstance().getMetaboliteUsedMap().remove(abbrev);
-					int maxId = LocalConfig.getInstance().getMaxMetaboliteId();
-					maxId -= 1;
-					LocalConfig.getInstance().setMaxMetaboliteId(maxId);
-					PreparedStatement prep2 = conn
-					.prepareStatement("update metabolites set metabolite_abbreviation='' where id=?;");
-					prep2.setInt(1, this.addedMetabolites.get(i));
-					conn.setAutoCommit(true);
-					prep2.executeUpdate();
-				}
-				ReactionsUpdater updater = new ReactionsUpdater();
-				updater.updateReactionEquations(this.id, this.newValue, this.oldValue, this.databaseName);				
+		if (this.column == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
+			EntryValidator validator = new EntryValidator();
+			if (LocalConfig.getInstance().getReactionEquationMap().get(this.id) != null) {
+				if (validator.validTrueEntry(this.oldValue)) {
+					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(this.id)).setReversible(GraphicalInterfaceConstants.BOOLEAN_VALUES[1]);
+				} else if (validator.validFalseEntry(this.oldValue)) {
+					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(this.id)).setReversible(GraphicalInterfaceConstants.BOOLEAN_VALUES[0]);
+				}			
+				((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(this.id)).writeReactionEquation();
+				updateCellById(((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(this.id)).equationAbbreviations, this.id, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
+				updateCellById(((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(this.id)).equationNames, this.id, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
+			}			
+			if (validator.validFalseEntry(this.newValue)) {
+				if (this.oldLowerBound != null) {
+					updateCellById(this.oldLowerBound, this.id, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+				}				
 			}
-			
-			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
 		}
+		
+		if (this.column.equals(GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN)) {
+		//if (this.column.equals(GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) && this.newValue != null && this.newValue.trim().length() > 0) {
+			LocalConfig.getInstance().setMaxMetabolite(this.maxMetab);
+			LocalConfig.getInstance().setMaxMetaboliteId(this.maxMetabId);
+			Map<String, Object> metabolitesIdRowMap = new HashMap<String, Object>();
+			for (int i = 0; i < GraphicalInterface.metabolitesTable.getRowCount(); i++) {
+				metabolitesIdRowMap.put((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN), i);
+			}
+			ArrayList<String> addedAbbr = new ArrayList<String>();
+			for (int i = 0; i < this.addedMetabolites.size(); i++) {
+				String abbrev = (String) getKeyFromValue(LocalConfig.getInstance().getMetaboliteAbbreviationIdMap(), this.addedMetabolites.get(i)); 
+				addedAbbr.add(abbrev);
+				LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().remove(abbrev);
+				//LocalConfig.getInstance().getMetaboliteUsedMap().remove(abbrev);
+//				if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(abbrev)) {
+//					int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(abbrev);
+//					if (usedCount > 1) {
+//						LocalConfig.getInstance().getMetaboliteUsedMap().put(abbrev, new Integer(usedCount - 1));									
+//					} else {
+//						LocalConfig.getInstance().getMetaboliteUsedMap().remove(abbrev);
+//					}
+//				}	
+				String row = (metabolitesIdRowMap.get(Integer.toString(this.addedMetabolites.get(i)))).toString();
+				
+				int rowNum = Integer.valueOf(row);
+				GraphicalInterface.metabolitesTable.getModel().setValueAt("", rowNum, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+			}
+			setAddedMetaboliteAbbr(addedAbbr);
+			ReactionEquationUpdater updater = new ReactionEquationUpdater();
+		}
+		//System.out.println(LocalConfig.getInstance().getReactionEquationMap());
 		
 		return true;
 	} 
 	
 	public boolean undoAddRow() {
-		
-		try {
-			Class.forName("org.sqlite.JDBC");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		DefaultTableModel model = (DefaultTableModel) GraphicalInterface.reactionsTable.getModel();
+		int maxId = LocalConfig.getInstance().getMaxReactionId();
+		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
+		for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
+			reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
 		}
-
-		try {
-			Connection conn =
-				DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db");
-
-			PreparedStatement prep = conn.prepareStatement(
-			"delete from reactions where id = ?;");
-
-			prep.setInt(1, this.getId());
-
-			prep.addBatch();
-
-			conn.setAutoCommit(false);
-			prep.executeBatch();
-			conn.setAutoCommit(true);
-
-			conn.close();
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
+		String row = (reactionsIdRowMap.get(Integer.toString(this.id))).toString();
+		int rowNum = Integer.valueOf(row);
+		model.removeRow(rowNum);
+		LocalConfig.getInstance().setMaxReactionId(maxId - 1);
+		if (LocalConfig.getInstance().getReactionEquationMap().containsKey(this.id)) {
+			LocalConfig.getInstance().getReactionEquationMap().remove(this.id);
+		}		
 		
 		return true;
 		
 	}
-		
+	
 	public void undoAddColumn() {
-		LocalConfig.getInstance().getHiddenReactionsColumns().add(this.addedColumnIndex);
+		LocalConfig.getInstance().setReactionsMetaColumnNames(this.oldMetaColumnNames);
 	}
 	
 	public void undoDeleteColumn() {
-		LocalConfig.getInstance().getHiddenReactionsColumns().remove(LocalConfig.getInstance().getHiddenReactionsColumns().indexOf(this.deletedColumnIndex));
+		LocalConfig.getInstance().setReactionsMetaColumnNames(this.oldMetaColumnNames);
 	}
 	
 	public boolean redoEntry() {
-
-		if (this.column == GraphicalInterfaceConstants.KO_COLUMN) {
+		EntryValidator validator = new EntryValidator();
+		if (this.column == GraphicalInterfaceConstants.KO_COLUMN || this.column == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
 			if (this.newValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_TRUE_VALUES[0])) {
 				this.newValue = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
 			} else if (this.newValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_FALSE_VALUES[0])) {
 				this.newValue = GraphicalInterfaceConstants.BOOLEAN_VALUES[0];
 			}				
 		}
+		updateCellById(this.newValue, this.id, this.column);
 		
-		try {
-			Class.forName("org.sqlite.JDBC");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
-		Connection conn;
-		try {
-			conn = DriverManager.getConnection(createConnectionStatement(getDatabaseName())); 
-
-			PreparedStatement prep = conn
-			.prepareStatement("update reactions set " + dbReactionsColumnNameFromIndex(this.getColumn()) + "=? where id=?;");
-			prep.setString(1, this.newValue);
-			prep.setInt(2, this.getId());
-			conn.setAutoCommit(true);
-			prep.executeUpdate();
-
-			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
+		if (this.column == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {				
+			if (LocalConfig.getInstance().getReactionEquationMap().get(this.id) != null) {			
+				if (validator.validTrueEntry(this.newValue)) {
+					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(this.id)).setReversible(GraphicalInterfaceConstants.BOOLEAN_VALUES[1]);
+				} else if (validator.validFalseEntry(this.newValue)) {
+					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(this.id)).setReversible(GraphicalInterfaceConstants.BOOLEAN_VALUES[0]);
+				}			
+				((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(this.id)).writeReactionEquation();
+				updateCellById(((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(this.id)).equationAbbreviations, this.id, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
+				updateCellById(((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(this.id)).equationNames, this.id, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
+			}
+			if (validator.validFalseEntry(this.newValue)) {
+				updateCellById("0.0", this.id, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+			}			
 		}
 		
-		if (this.column.equals(GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN)) {
-			ReactionsUpdater updater = new ReactionsUpdater();
-			updater.updateReactionEquations(this.id, this.oldValue, this.newValue, this.databaseName);
+		if (this.column == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN) {
+			Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
+			for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
+				reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
+			}
+			String idString = Integer.toString(this.id);
+			int rowNum = (int) reactionsIdRowMap.get(idString);
+			String rev = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
+			if (validator.validFalseEntry(rev)) {
+				if (this.getNewLowerBound() != null) {
+					updateCellById(this.getNewLowerBound(), this.id, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+				} else {
+					updateCellById("0.0", this.id, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+				}
+			}
+		}
+		
+		if (this.column == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN) {
+			Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
+			for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
+				reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
+			}
+			String idString = Integer.toString(this.id);
+			int rowNum = (int) reactionsIdRowMap.get(idString);
+			Double lowerBound = Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN));
+			if (Double.valueOf(this.getNewValue()) < lowerBound) {
+				if (this.getNewUpperBound() != null) {
+					updateCellById(this.getNewUpperBound(), this.id, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN);
+				} else {
+					updateCellById(GraphicalInterfaceConstants.UPPER_BOUND_DEFAULT_STRING, this.id, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN);
+				}		
+			}
 		}
 		
 		return true;
 	} 
 	
 	public void redoAddRow() {
-		DatabaseCreator creator = new DatabaseCreator();
-		creator.addReactionRow(this.databaseName);
+		
 	}
 	
 	public void redoAddColumn() {
-		LocalConfig.getInstance().getHiddenReactionsColumns().remove(LocalConfig.getInstance().getHiddenReactionsColumns().indexOf(this.addedColumnIndex));
+		LocalConfig.getInstance().setReactionsMetaColumnNames(this.newMetaColumnNames);
 	}
 	
 	public void redoDeleteColumn() {
-		LocalConfig.getInstance().getHiddenReactionsColumns().add(this.deletedColumnIndex);
-	}
-	
-	public void loadCopiedTables(int index) {		
-		DatabaseCreator creator = new DatabaseCreator();
-		creator.createReactionsTable(databaseName, "reactions");		
-		creator.createReactionReactantsTable(databaseName, "reaction_reactants");
-		creator.createReactionProductsTable(databaseName, "reaction_products");
-		creator.copyTable(databaseName, "reactions" + tableCopySuffix(index), "reactions");
-		creator.copyTable(databaseName, "reaction_reactants" + tableCopySuffix(index),  "reaction_reactants");
-		creator.copyTable(databaseName, "reaction_products" + tableCopySuffix(index),  "reaction_products");	
+		LocalConfig.getInstance().setReactionsMetaColumnNames(this.newMetaColumnNames);
 	}
 	
 	public static String tableCopySuffix(int count) {
     	return new DecimalFormat("000").format(count);
     }
 	
-	public String createConnectionStatement(String databaseName) {
-		return "jdbc:sqlite:" + getDatabaseName() + ".db";
-	}
-	
-	public String displayReactionsColumnNameFromIndex(int columnIndex) {
+	public String displayReactionsColumnNameFromIndex(int columnIndex, ArrayList<String> metaColumnNames) {
 		String columnName = "";
 		if (columnIndex > GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length - 1) {
-			ReactionsMetaColumnManager reactionsMetaColumnManager = new ReactionsMetaColumnManager();
-			columnName = reactionsMetaColumnManager.getColumnName(this.databaseName, columnIndex - GraphicalInterfaceConstants.REACTIONS_DB_COLUMN_NAMES.length + 1);
+			columnName = metaColumnNames.get(columnIndex - (GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length));
 		} else {
 			columnName = GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[columnIndex];
 		}
 		return columnName;
 	}
 	
-	public String dbReactionsColumnNameFromIndex(int columnIndex) {
-		String dbColumnName = "";
-		if (columnIndex > GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length - 1) {
-			dbColumnName = "meta_" + (columnIndex - GraphicalInterfaceConstants.REACTIONS_DB_COLUMN_NAMES.length + 1);
-		} else {
-			dbColumnName = GraphicalInterfaceConstants.REACTIONS_DB_COLUMN_NAMES[columnIndex];
-		}
-		return dbColumnName;
+	public void restoreOldCollections() {
+		LocalConfig.getInstance().setMetaboliteUsedMap(this.oldMetaboliteUsedMap);
+	}
+	
+	public void restoreNewCollections() {
+		LocalConfig.getInstance().setMetaboliteUsedMap(this.newMetaboliteUsedMap);
 	}
 	
 	public String toString() {
 		String undoString = "";
 		if (this.undoType.startsWith(UndoConstants.TYPING) || this.undoType.startsWith(UndoConstants.REPLACE)) {
-			undoString = "update reactions set " + dbReactionsColumnNameFromIndex(this.column) + "='" + this.oldValue + "' where id=" + this.id + ";";		
+			
 		} else if (this.undoType.equals(UndoConstants.ADD_ROW)) {
-			undoString = "delete from reactions where id = " + this.id + ";";
+			
 		} else if (this.undoType.equals(UndoConstants.ADD_COLUMN)) {
-			undoString = "add " + this.addedColumnIndex + " to hiddenReactionsColumns";
+			undoString += this.oldMetaColumnNames + " ";
+			undoString += this.newMetaColumnNames;
 		} else if (this.undoType.equals(UndoConstants.DELETE_COLUMN)) {
-			undoString = "delete " + this.deletedColumnIndex + " from hiddenReactionsColumns";			
+			
 		} else if (this.undoType.equals(UndoConstants.SORT)) {
-			undoString = "old sort index = " + this.oldSortColumnIndex + ", old sort order = " + this.oldSortOrder +
-			", new sort index = " + this.newSortColumnIndex + ", new sort order = " + this.newSortOrder;
+			
 		}
 		return undoString;
 		
 	}
 	
 	public String toRedoString() {
-		DatabaseCreator creator = new DatabaseCreator();
 		String redoString = "";
 		if (this.undoType.startsWith(UndoConstants.TYPING) || this.undoType.startsWith(UndoConstants.REPLACE)) {
-			redoString = "redo: update reactions set " + dbReactionsColumnNameFromIndex(this.column) + "='" + this.newValue + "' where id=" + this.id + ";";		
+			
 		} else if (this.undoType.equals(UndoConstants.ADD_ROW)) {
-			redoString = "id = " + (creator.maxReactionId(this.databaseName) + 1);
+			
 		} else if (this.undoType.equals(UndoConstants.ADD_COLUMN)) {
-			redoString = "redo: remove " + this.addedColumnIndex + " from hiddenReactionsColumns";
+			
 		} else if (this.undoType.equals(UndoConstants.DELETE_COLUMN)) {
-			redoString = "redo: add " + this.deletedColumnIndex + " to hiddenReactionsColumns";			
+			
 		} else if (this.undoType.equals(UndoConstants.SORT)) {
-			redoString = "old sort index = " + this.oldSortColumnIndex + ", old sort order = " + this.oldSortOrder +
-			", new sort index = " + this.newSortColumnIndex + ", new sort order = " + this.newSortOrder;
+			
 		}
 		return redoString;
 		
@@ -444,26 +551,38 @@ public class ReactionUndoItem implements UndoItem {
 		return null;
 	}
 	
+	public static void updateCellById(String value, int id, int col) {
+		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
+		for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
+			reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
+		}
+		String row = (reactionsIdRowMap.get(Integer.toString(id))).toString();
+		int rowNum = Integer.valueOf(row);
+		GraphicalInterface.reactionsTable.getModel().setValueAt(value, rowNum, col);
+	}
+	
+	public void pasteReplaceAllAction() {
+		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
+		for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
+			reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
+		}
+		// updates equation map for reversible value
+		if (this.column == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {				
+			for (int i = 0; i < this.pasteIds.size(); i++) {
+				int id = Integer.valueOf(this.pasteIds.get(i));
+				String idString = this.pasteIds.get(i);
+				int rowNum = (int) reactionsIdRowMap.get(idString);
+				if (LocalConfig.getInstance().getReactionEquationMap().get(id) != null) {
+					String rev = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
+					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).setReversible(rev);
+					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).writeReactionEquation();
+				}				
+			}
+		}
+	}
+	
 	public static void main(String[] args) {
-		/*
-		ReactionUndoItem m = new ReactionUndoItem();
-		m.setDatabaseName("untitled");
-		m.setColumn(1);
-		m.setOldValue("test");
-		m.setNewValue("1");
-		m.setRow(10);
-		m.setId(1);
-		m.setUndoType(UndoConstants.TYPING);
-		System.out.println(m.createUndoDescription());
-		System.out.println(m.toString());
-		m.undo();
-		System.out.println(m.undoType);
-		m.setId(9);
-		m.setUndoType(UndoConstants.ADD_ROW);
-		System.out.println(m.createUndoDescription());
-		System.out.println(m.toString());
-		m.undo();
-		*/
+		
 	}
 	
 }

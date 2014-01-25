@@ -7,22 +7,27 @@ import java.awt.Insets;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import edu.rutgers.MOST.config.LocalConfig;
-
 public class MetabolitesTableCellRenderer extends DefaultTableCellRenderer{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public Component getTableCellRendererComponent (JTable table, 
 			Object obj, boolean isSelected, boolean hasFocus, int row, int column) {
 		Component cell = super.getTableCellRendererComponent(
 				table, obj, isSelected, hasFocus, row, column);
 		String tooltip = "";
 		int viewRow = table.convertRowIndexToModel(row);
-		int id = Integer.valueOf(table.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.DB_METABOLITE_ID_COLUMN).toString());	
+		int id = Integer.valueOf(table.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN).toString());	
 		// TODO need nameid map, reverse look up too slow
+		/*
 		if (LocalConfig.getInstance().getSuspiciousMetabolites().contains(id)) {
 			tooltip = "Suspicious metabolite";
 		} else if (LocalConfig.getInstance().getDuplicateIds().contains(id)) {
 			tooltip = "Duplicate metabolite";
 		}
+		*/
 		if (isSelected) {
 			//cell.setBackground(new Color(180, 216, 231));
 		}  

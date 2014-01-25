@@ -3,28 +3,42 @@ package edu.rutgers.MOST.presentation;
 import javax.swing.*;
 
 import java.awt.Dimension;
-import java.awt.TextArea;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import javax.swing.JFrame;
-import edu.rutgers.MOST.config.LocalConfig;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 import edu.rutgers.MOST.data.MetaboliteFactory;
-import edu.rutgers.MOST.data.ReactionFactory;
+import edu.rutgers.MOST.data.SBMLProduct;
+import edu.rutgers.MOST.data.SBMLReactant;
 import edu.rutgers.MOST.logic.ReactionParser;
 
 public class ReactionEditor extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public JButton okButton = new JButton("   OK   ");
 	public JButton cancelButton = new JButton("Cancel");
 	public JButton clearButton = new JButton(" Clear ");
 	public final JTextArea reactionArea = new JTextArea();
+	private final JMenuItem copyItem = new JMenuItem("Copy");
+	private final JMenuItem selectAllItem = new JMenuItem("Select All");
 
 	private String reactantString;
 	private int numReactantFields;
@@ -35,16 +49,8 @@ public class ReactionEditor extends JFrame {
 	private String productString;
 	private String reactionEquation;
 	private String oldReaction;
-
-	public static String databaseName;
-
-	public void setDatabaseName(String databaseName) {
-		this.databaseName = databaseName;
-	}
-
-	public static String getDatabaseName() {
-		return databaseName;
-	}
+	private boolean reactantsPopulated;
+	private boolean productsPopulated;
 
 	public void setReactantString(String reactantString) {
 		this.reactantString = reactantString;
@@ -119,17 +125,8 @@ public class ReactionEditor extends JFrame {
 	}
 
 	// private final JList names;
-	public ReactionEditor(final Connection con)
-	throws SQLException {
+	public ReactionEditor() {
 	setTitle("Reaction Editor");
-
-		try {
-			Class.forName("org.sqlite.JDBC");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		setDatabaseName(LocalConfig.getInstance().getLoadedDatabase());
 
 		//getRootPane().setDefaultButton(okButton);
 
@@ -140,12 +137,16 @@ public class ReactionEditor extends JFrame {
 		reactionArea.setEditable(false);
 		reactionArea.setLineWrap(true);
 		
+		reactantsPopulated = false;
+		productsPopulated = false;
+		
 		// create sorted list of metabolites to populate combo boxes
-		MetaboliteFactory mFactory = new MetaboliteFactory("SBML", getDatabaseName());
-		final ArrayList<String> metabList = mFactory.metabolitesList();
+		MetaboliteFactory mFactory = new MetaboliteFactory("SBML");
+		final ArrayList<String> metabList = mFactory.metaboliteAbbreviationList();
 		Collections.sort(metabList);
 		
-		int viewRow = GraphicalInterface.reactionsTable.convertRowIndexToModel(GraphicalInterface.getCurrentRow());
+		int viewRow = GraphicalInterface.reactionsTable.convertRowIndexToModel(GraphicalInterface.getCurrentReactionsRow());
+		int id = Integer.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
 		String reactionEquation = ((String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN));
 		
 		if (((String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN)).compareTo("true") == 0) {
@@ -284,22 +285,25 @@ public class ReactionEditor extends JFrame {
 					}
 					ReactionParser parser = new ReactionParser();
 					if (reactionArea.getText() != null && parser.isValid(reactionArea.getText())) {
-						ArrayList<ArrayList<String>> reactants = parser.reactionList(reactionArea.getText().trim()).get(0);
+						parser.reactionList(reactionArea.getText().trim());
 						if ((getNumPopulatedReacBoxes() + 1) < getNumReactantFields()) {
-							if (reactants.size() == getNumPopulatedReacBoxes()) {
+							int index = parser.getEquation().getReactants().size();
+							if (index == getNumPopulatedReacBoxes() && !reactantsPopulated) {
 								for (int m = 0; m < metabList.size(); m++) {
-									cbReactant[reactants.size()].addItem(metabList.get(m));
+									cbReactant[index].addItem(metabList.get(m));
 								}
-								cbReactant[reactants.size()].setEnabled(true);
-								cbReactant[reactants.size()].setSelectedIndex(-1);
-								reactantEditor[reactants.size()] = new JTextField();
-								reactantEditor[reactants.size()] = (JTextField)cbReactant[reactants.size()].getEditor().getEditorComponent();
-								reactantEditor[reactants.size()].addKeyListener(new ComboKeyHandler(cbReactant[reactants.size()]));
-								setNumPopulatedReacBoxes(reactants.size() + 1);
+								reactantsPopulated = true;
+								cbReactant[index].setEnabled(true);
+								cbReactant[index].setSelectedIndex(-1);
+								reactantEditor[index] = new JTextField();
+								reactantEditor[index] = (JTextField)cbReactant[index].getEditor().getEditorComponent();
+								reactantEditor[index].addKeyListener(new ComboKeyHandler(cbReactant[index]));
+								setNumPopulatedReacBoxes(index + 1);
 							}
 						}
 					}
-				}
+					reactantsPopulated = false;
+				}				
 			};
 			reactantCoeffField[i].addActionListener(reactantsActionListener);
 			cbReactant[i].addActionListener(reactantsActionListener);			
@@ -390,22 +394,24 @@ public class ReactionEditor extends JFrame {
 					}					
 					ReactionParser parser = new ReactionParser();
 					if (reactionArea.getText() != null && parser.isValid(reactionArea.getText())) {
-						ArrayList<ArrayList<String>> products = parser.reactionList(reactionArea.getText().trim()).get(1);
+						parser.reactionList(reactionArea.getText().trim());
 						if ((getNumPopulatedProdBoxes() + 1) < getNumProductFields()) {
-							if (products.size() == getNumPopulatedProdBoxes()) {
+							int index = parser.getEquation().getProducts().size();
+							if (index == getNumPopulatedProdBoxes() && !productsPopulated) {
 								for (int m = 0; m < metabList.size(); m++) {
-									cbProduct[products.size()].addItem(metabList.get(m));
+									cbProduct[index].addItem(metabList.get(m));
 								}
-								cbProduct[products.size()].setEnabled(true);
-								cbProduct[products.size()].setSelectedIndex(-1);
-								productEditor[products.size()] = new JTextField();
-								productEditor[products.size()] = (JTextField)cbProduct[products.size()].getEditor().getEditorComponent();
-								productEditor[products.size()].addKeyListener(new ComboKeyHandler(cbProduct[products.size()]));
-								setNumPopulatedProdBoxes(products.size() + 1);
+								productsPopulated = true;
+								cbProduct[index].setEnabled(true);
+								cbProduct[index].setSelectedIndex(-1);
+								productEditor[index] = new JTextField();
+								productEditor[index] = (JTextField)cbProduct[index].getEditor().getEditorComponent();
+								productEditor[index].addKeyListener(new ComboKeyHandler(cbProduct[index]));
+								setNumPopulatedProdBoxes(index + 1);
 							}
 						}
 					}
-					
+					productsPopulated = false;
 				}
 			};
 			productCoeffField[j].addActionListener(productsActionListener);
@@ -440,7 +446,7 @@ public class ReactionEditor extends JFrame {
 		//falseButton.setMnemonic(KeyEvent.VK_F);//bug - clears first reactant in reactionEquation
 		falseButton.setEnabled(true); 
 
-		if (((String) GraphicalInterface.reactionsTable.getModel().getValueAt(GraphicalInterface.getCurrentRow(), GraphicalInterfaceConstants.REVERSIBLE_COLUMN)).compareTo("true") == 0) {
+		if (((String) GraphicalInterface.reactionsTable.getModel().getValueAt(GraphicalInterface.getCurrentReactionsRow(), GraphicalInterfaceConstants.REVERSIBLE_COLUMN)).compareTo("true") == 0) {
 			trueButton.setSelected(true);
 		} else {
 			falseButton.setSelected(true);
@@ -497,12 +503,17 @@ public class ReactionEditor extends JFrame {
 		//create reaction string from these species
 		/*****************************************************************************/
 
+		ArrayList<SBMLReactant> reactants = new ArrayList<SBMLReactant>();
+		ArrayList<SBMLProduct> products = new ArrayList<SBMLProduct>();
 		ReactionParser parser = new ReactionParser();
 		if (reactionEquation != null && parser.isValid(reactionEquation)) {
+			// TODO: determine if needed
 			setOldReaction(reactionEquation);
-			ArrayList<ArrayList<String>> reactants = parser.reactionList(reactionEquation.trim()).get(0);
-			//reactions of the type ==> b will be size 1, assigned the value [0] in parser
-			if (reactants.get(0).size() == 1) {	
+			parser.reactionList(reactionEquation);
+			reactants = parser.getEquation().getReactants();
+			products = parser.getEquation().getProducts();
+			//reactions of the type ==> b will have a reactants list of size 0
+			if (reactants.size() == 0) {	
 				for (int m = 0; m < metabList.size(); m++) {
 					cbReactant[0].addItem(metabList.get(m));
 				}
@@ -515,7 +526,9 @@ public class ReactionEditor extends JFrame {
 			} else {
 				for (int r = 0; r < reactants.size(); r++) {
 					for (int m = 0; m < metabList.size(); m++) {
-						cbReactant[r].addItem(metabList.get(m));
+						if (r > 0) {
+							cbReactant[r].addItem(metabList.get(m));
+						}						
 					}
 					cbReactant[r].setEnabled(true);
 					cbReactant[r].setSelectedIndex(-1);
@@ -523,17 +536,15 @@ public class ReactionEditor extends JFrame {
 					reactantEditor[r] = (JTextField)cbReactant[r].getEditor().getEditorComponent();
 					reactantEditor[r].addKeyListener(new ComboKeyHandler(cbReactant[r]));
 					setNumPopulatedReacBoxes(r);
-					if (reactants.get(r).size() == 2) {
-						String stoicStr = (String) reactants.get(r).get(0);
-						if (!(Double.valueOf(stoicStr) == 1)) {
-							if (stoicStr.endsWith(".0")) {
-								stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
-							}
-							reactantCoeffField[r].setText(stoicStr);
+					String stoicStr = Double.toString(reactants.get(r).getStoic());
+					if (!(Double.valueOf(stoicStr) == 1)) {
+						if (stoicStr.endsWith(".0")) {
+							stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
 						}
-						String reactant = (String) reactants.get(r).get(1);
-						cbReactant[r].setSelectedItem(reactant);
+						reactantCoeffField[r].setText(stoicStr);
 					}
+					String reactant = reactants.get(r).getMetaboliteAbbreviation();
+					cbReactant[r].setSelectedItem(reactant);
 				}
 				if (reactants.size() < getNumReactantFields()) {
 					for (int m = 0; m < metabList.size(); m++) {
@@ -547,9 +558,8 @@ public class ReactionEditor extends JFrame {
 					setNumPopulatedReacBoxes(reactants.size() + 1);
 				}
 			}
-			ArrayList<ArrayList<String>> products = parser.reactionList(reactionEquation.trim()).get(1);
-			//reactions of the type a ==> will be size 1, assigned the value [0] in parser
-			if (products.get(0).size() == 1) {
+			//reactions of the type a ==> will will have a products list of size 0
+			if (products.size() == 0) {
 				for (int m = 0; m < metabList.size(); m++) {
 					cbProduct[0].addItem(metabList.get(m));
 				}
@@ -562,25 +572,26 @@ public class ReactionEditor extends JFrame {
 			} else {
 				for (int p = 0; p < products.size(); p++) {
 					for (int m = 0; m < metabList.size(); m++) {
-						cbProduct[p].addItem(metabList.get(m));
+						if (p > 0) {
+							cbProduct[p].addItem(metabList.get(m));
+						}						
 					}
 					cbProduct[p].setEnabled(true);
 					cbProduct[p].setSelectedIndex(-1);
 					productEditor[p] = new JTextField();
 					productEditor[p] = (JTextField)cbProduct[p].getEditor().getEditorComponent();
 					productEditor[p].addKeyListener(new ComboKeyHandler(cbProduct[p]));
-					if (products.get(p).size() == 2) {
-						String stoicStr = (String) products.get(p).get(0);
-						if (!(Double.valueOf(stoicStr) == 1)) {
-							if (stoicStr.endsWith(".0")) {
-								stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
-							}
-							productCoeffField[p].setText(stoicStr);
+					setNumPopulatedProdBoxes(p);
+					String stoicStr = Double.toString(products.get(p).getStoic());
+					if (!(Double.valueOf(stoicStr) == 1)) {
+						if (stoicStr.endsWith(".0")) {
+							stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
 						}
-						String product = (String) products.get(p).get(1);
-						cbProduct[p].setSelectedItem(product);
-						setNumPopulatedProdBoxes(p);
+						productCoeffField[p].setText(stoicStr);
 					}
+					String product = products.get(p).getMetaboliteAbbreviation();
+					//String product = parser.getEquation().getProducts().get(p).getMetaboliteAbbreviation();
+					cbProduct[p].setSelectedItem(product);
 				}
 				if (products.size() < getNumProductFields()) {
 					for (int m = 0; m < metabList.size(); m++) {
@@ -626,7 +637,7 @@ public class ReactionEditor extends JFrame {
 
 		ActionListener revActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent revActionEvent) {
-				ReactionFactory rFactory = new ReactionFactory("SBML", LocalConfig.getInstance().getLoadedDatabase());			
+				//ReactionFactory rFactory = new ReactionFactory("SBML");			
 				cbProduct[0].grabFocus();
 				if (trueButton.isSelected()) {
 					setArrowString(" <==> ");
@@ -674,6 +685,97 @@ public class ReactionEditor extends JFrame {
 		clearButton.addActionListener(clearButtonActionListener);
 		cancelButton.addActionListener(cancelButtonActionListener);	
 		
+		final JPopupMenu popupMenu = new JPopupMenu();
+		copyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+		selectAllItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
+		popupMenu.add(copyItem);
+		copyItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 	
+				setClipboardContents(reactionArea.getSelectedText());							
+			}
+		});
+		
+		popupMenu.add(selectAllItem);
+		selectAllItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 
+				reactionArea.selectAll();							
+			}
+		});
+		
+		reactionArea.addMouseListener(new MouseAdapter() {
+
+			public void mousePressed(MouseEvent e)  {check(e);}
+			public void mouseReleased(MouseEvent e) {check(e);}
+
+			public void check(MouseEvent e) {
+				if (e.isPopupTrigger()) { //if the event shows the menu
+					popupMenu.show(reactionArea, e.getX(), e.getY()); 
+				}
+			}
+		});	
+
+		reactionArea.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				fieldChangeAction();
+			}
+			public void removeUpdate(DocumentEvent e) {
+				fieldChangeAction();
+			}
+			public void insertUpdate(DocumentEvent e) {
+				fieldChangeAction();
+			}
+			public void fieldChangeAction() {
+				if (reactionArea.getText().length() > 0) {
+					copyItem.setEnabled(true);
+					selectAllItem.setEnabled(true);
+				} else {
+					copyItem.setEnabled(false);
+					selectAllItem.setEnabled(false);
+				}
+			}
+		});
+		
+	}	
+
+	//from http://www.javakb.com/Uwe/Forum.aspx/java-programmer/21291/popupmenu-for-a-cell-in-a-JXTable
+	private static String getClipboardContents(Object requestor) {
+		Transferable t = Toolkit.getDefaultToolkit()
+				.getSystemClipboard().getContents(requestor);
+		if (t != null) {
+			DataFlavor df = DataFlavor.stringFlavor;
+			if (df != null) {
+				try {
+					Reader r = df.getReaderForText(t);
+					char[] charBuf = new char[512];
+					StringBuffer buf = new StringBuffer();
+					int n;
+					while ((n = r.read(charBuf, 0, charBuf.length)) > 0) {
+						buf.append(charBuf, 0, n);
+					}
+					r.close();
+					return (buf.toString());
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				} catch (UnsupportedFlavorException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+		return null;
+	}
+
+	private static boolean isClipboardContainingText(Object requestor) {
+		Transferable t = Toolkit.getDefaultToolkit()
+				.getSystemClipboard().getContents(requestor);
+		return t != null
+				&& (t.isDataFlavorSupported(DataFlavor.stringFlavor) || t
+						.isDataFlavorSupported(DataFlavor.plainTextFlavor));
+	}
+
+	private static void setClipboardContents(String s) {
+		StringSelection selection = new StringSelection(s);
+		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
+				selection, selection);
 	}
 
 }

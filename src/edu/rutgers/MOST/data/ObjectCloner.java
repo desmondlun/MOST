@@ -42,7 +42,7 @@ public class ObjectCloner
       finally
       {
          oos.close();
-         ois.close();
+         ois.close();       
       }
    }
    

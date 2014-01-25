@@ -3,6 +3,9 @@ package edu.rutgers.MOST.presentation;
 import java.awt.*;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -45,8 +48,22 @@ public class LineNumberTableRowHeader extends JComponent {
         });
 
         setPreferredSize(new Dimension(50, 100));
+  
+        // This gives y position when mouse moved over row header. need to figure out how to
+        // highlight cell(s) and select appropriate cells in selected table
+//        MouseMotionAdapter mml = new MouseMotionAdapter() {
+//    		public void mouseMoved( MouseEvent e) {
+//    			int y = e.getY();
+//    			System.out.println(y);
+//    		}
+//    	};
+//    	
+//    	this.addMouseMotionListener(mml);
+        
     }
 
+    
+    
     protected void paintComponent(Graphics g) {
         Point viewPosition = scrollPane.getViewport().getViewPosition();
         Dimension viewSize = scrollPane.getViewport().getViewSize();

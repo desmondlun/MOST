@@ -5,9 +5,6 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -21,18 +18,22 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
 import edu.rutgers.MOST.config.LocalConfig;
-import edu.rutgers.MOST.data.ReactionsMetaColumnManager;
 
 public class ReactionColAddRenameInterface  extends JDialog {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static JButton okButton = new JButton("    OK    ");
 	public static JButton cancelButton = new JButton("  Cancel  ");
 	public static final JTextField textField = new JTextField();
 
-	public ReactionColAddRenameInterface(final Connection con)
-	throws SQLException {
+	public ReactionColAddRenameInterface() {
 
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		
@@ -117,9 +118,8 @@ public class ReactionColAddRenameInterface  extends JDialog {
 		cancelButton.addActionListener(cancelButtonActionListener);
 	} 	 
 
-	public boolean isColumnDuplicate(String databaseName) {
+	public boolean isColumnDuplicate() {
 		String columnName = textField.getText();
-		ReactionsMetaColumnManager manager = new ReactionsMetaColumnManager();
 		int columnIndex = -1;
 		boolean duplicate = false;
 		for (int i = 0; i < GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length; i++) {
@@ -128,36 +128,30 @@ public class ReactionColAddRenameInterface  extends JDialog {
 				columnIndex = i;
 			}
 		}
-		for (int j = 0; j < manager.getColumnNames(databaseName).size(); j++) {
-			if (manager.getColumnNames(databaseName).get(j).equals(columnName)) {
+		for (int j = 0; j < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); j++) {
+			if (LocalConfig.getInstance().getReactionsMetaColumnNames().get(j).equals(columnName)) {
 				duplicate = true;
 				columnIndex = GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length + j;
 			}
-		}
-		if (columnIndex > -1) {
-			if (LocalConfig.getInstance().getHiddenReactionsColumns().contains(columnIndex)) {
-				duplicate = false;
-			}
-		}		
+		}	
 		return duplicate;
 	}
 	
-	public void addColumnToMeta(String databaseName){
+	public void addColumn(){
 		String columnName = textField.getText();
-		ReactionsMetaColumnManager manager = new ReactionsMetaColumnManager();
-		manager.addColumnName(databaseName, columnName); 
+		LocalConfig.getInstance().getReactionsMetaColumnNames().add(columnName);
+		DefaultTableModel model = (DefaultTableModel) GraphicalInterface.reactionsTable.getModel();
+		model.addColumn(columnName);
+		LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), model);
 	}
 
 	public static void main(String[] args) throws Exception {
-		Class.forName("org.sqlite.JDBC");       
-		Connection con = DriverManager.getConnection("jdbc:sqlite:" + "untitled" + ".db");
-
 		//based on code from http://stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
 		icons.add(new ImageIcon("images/most16.jpg").getImage()); 
 		icons.add(new ImageIcon("images/most32.jpg").getImage());
 
-		ReactionColAddRenameInterface frame = new ReactionColAddRenameInterface(con);
+		ReactionColAddRenameInterface frame = new ReactionColAddRenameInterface();
 
 		frame.setIconImages(icons);
 		frame.setSize(350, 170);

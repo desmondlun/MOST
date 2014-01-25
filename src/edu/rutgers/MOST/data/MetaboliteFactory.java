@@ -1,22 +1,29 @@
 package edu.rutgers.MOST.data;
 
-import edu.rutgers.MOST.config.LocalConfig;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
+
+import edu.rutgers.MOST.config.LocalConfig;
+import edu.rutgers.MOST.presentation.GraphicalInterface;
+import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 public class MetaboliteFactory {
 	private String sourceType;
-	private String databaseName;
+	private Map<Object, Object> internalMetabolitesIdPositionMap;
 	
-	public MetaboliteFactory(String sourceType, String databaseName) {
+	public Map<Object, Object> getInternalMetabolitesIdPositionMap() {
+		return internalMetabolitesIdPositionMap;
+	}
+
+	public void setInternalMetabolitesIdPositionMap(
+			Map<Object, Object> internalMetabolitesIdPositionMap) {
+		this.internalMetabolitesIdPositionMap = internalMetabolitesIdPositionMap;
+	}
+
+	public MetaboliteFactory(String sourceType) {
 		this.sourceType = sourceType;
-		this.databaseName = databaseName;
 	}
 	
 	public ModelMetabolite getMetaboliteById(Integer metaboliteId){
@@ -24,227 +31,151 @@ public class MetaboliteFactory {
 
 		if("SBML".equals(sourceType)){
 			SBMLMetabolite metabolite = new SBMLMetabolite();
-			metabolite.setDatabaseName(databaseName);
 			metabolite.loadById(metaboliteId);
 			return metabolite;
 		}
 		return new SBMLMetabolite(); //Default behavior.
 	}
 
-	public ArrayList<Integer> participatingReactions(String metaboliteAbbreviation) {
-		int reactionId = 0;
-		ArrayList<Integer> participatingReactions = new ArrayList<Integer>();
-		if (metaboliteAbbreviation != null) {
-			int metabId = (Integer) LocalConfig.getInstance().getMetaboliteIdNameMap().get(metaboliteAbbreviation);
-			
-			String queryString = "jdbc:sqlite:" + databaseName + ".db";
-			try {
-				Class.forName("org.sqlite.JDBC"); 
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			Connection conn;
-			try {
-				conn = DriverManager.getConnection(queryString);
-				PreparedStatement prep1 = conn.prepareStatement("select reaction_id from reaction_reactants where metabolite_id=?;");
-				prep1.setInt(1, metabId);
+	public ModelMetabolite getMetaboliteByRow(Integer row){
 
-				conn.setAutoCommit(true);
-				ResultSet rs1 = prep1.executeQuery();			
-				while (rs1.next()) {
-					reactionId = rs1.getInt("reaction_id");
-					participatingReactions.add(reactionId);
-				}
 
-				PreparedStatement prep2 = conn.prepareStatement("select reaction_id from reaction_products where metabolite_id=?;");
-				prep2.setInt(1, metabId);
-
-				conn.setAutoCommit(true);
-				ResultSet rs2 = prep2.executeQuery();			
-				while (rs2.next()) {
-					reactionId = rs2.getInt("reaction_id");
-					if (!participatingReactions.contains(reactionId)) {
-						participatingReactions.add(reactionId);
-					}
-				}
-				
-				conn.close();				
-				
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();			
-			}	
+		if("SBML".equals(sourceType)){
+			SBMLMetabolite metabolite = new SBMLMetabolite();
+			metabolite.loadByRow(row);
+			return metabolite;
 		}
-
+		return new SBMLMetabolite(); //Default behavior.
+	}
+	
+	public ArrayList<Integer> participatingReactions(String metaboliteAbbreviation) {
+		ArrayList<Integer> participatingReactions = new ArrayList<Integer>();
+		if("SBML".equals(sourceType)){
+			if (metaboliteAbbreviation != null) {
+				ReactantFactory reactantFactory = new ReactantFactory("SBML");
+				ArrayList<SBMLReactant> reactantList = reactantFactory.getAllReactants();
+				for (int i = 0; i < reactantList.size(); i++) {
+					if (reactantList.get(i).getMetaboliteAbbreviation() != null) {
+						if (reactantList.get(i).getMetaboliteAbbreviation().equals(metaboliteAbbreviation)) {
+							if (!participatingReactions.contains(reactantList.get(i).getReactionId())) {
+								participatingReactions.add(reactantList.get(i).getReactionId());
+							}
+						}
+					}					
+				}
+				ProductFactory productFactory = new ProductFactory("SBML");
+				ArrayList<SBMLProduct> productList = productFactory.getAllProducts();
+				for (int j = 0; j < productList.size(); j++) {
+					if (productList.get(j).getMetaboliteAbbreviation() != null) {
+						if (productList.get(j).getMetaboliteAbbreviation().equals(metaboliteAbbreviation)) {
+							if (!participatingReactions.contains(productList.get(j).getReactionId())) {
+								participatingReactions.add(productList.get(j).getReactionId());
+							}
+						}
+					}					
+				}
+			}
+		}
+		
 		return participatingReactions;
 	}
 
 	public Vector<ModelMetabolite> getAllInternalMetabolites() {
 		Vector<ModelMetabolite> metabolites = new Vector<ModelMetabolite>();
+		Map<Object, Object> internalMetabolitesIdPositionMap = new HashMap<Object, Object>();
+		int count = 0;
 		
-		if("SBML".equals(sourceType)){
-			try {
-				Class.forName("org.sqlite.JDBC");
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return metabolites;
+		if("SBML".equals(sourceType)){			
+			for (int i = 0; i < GraphicalInterface.metabolitesTable.getRowCount(); i++) {
+				if (GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) != null &&
+						((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN)).trim().length() > 0) {
+					String boundary = (String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.BOUNDARY_COLUMN);
+					if (boundary.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
+						SBMLMetabolite metabolite = new SBMLMetabolite();
+						metabolite.setId(Integer.valueOf((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN)));
+						metabolite.setBoundary((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.BOUNDARY_COLUMN));
+						metabolites.add(metabolite);
+						internalMetabolitesIdPositionMap.put(metabolite.getId(), count);
+						count += 1;
+					}
+				}							
 			}
-			Connection conn;
-			try {
-				conn = DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db"); // TODO:
-				// Make
-				// this
-				// configurable
-				PreparedStatement prep = conn
-				.prepareStatement("select id, metabolite_abbreviation, metabolite_name, charge, compartment, "
-						+ " boundary "
-						+ " from metabolites where length(metabolite_abbreviation) > 0 and boundary = 'false';");
-				conn.setAutoCommit(true);
-				ResultSet rs = prep.executeQuery();
-				while (rs.next()) {
-					SBMLMetabolite metabolite = new SBMLMetabolite();
-					metabolite.setId(rs.getInt("id"));
-					metabolite.setMetaboliteAbbreviation(rs.getString("metabolite_abbreviation"));
-					metabolite.setMetaboliteName(rs.getString("metabolite_name"));
-					metabolite.setCharge(rs.getString("charge"));
-					metabolite.setCompartment(rs.getString("compartment"));
-					metabolite.setBoundary(rs.getString("boundary"));
-
-					metabolites.add(metabolite);
-				}
-				rs.close();
-				conn.close();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return metabolites;
-			}
+			
+			setInternalMetabolitesIdPositionMap(internalMetabolitesIdPositionMap);
 		}
 		
 		return metabolites;
 	}
 	
-	public Integer metaboliteId(String metaboliteAbbreviation) {
-		Integer metaboliteId = 0;
+	public ArrayList<Integer> metaboliteInternalIdList() {
+		ArrayList<Integer> metaboliteInternalIdList = new ArrayList<Integer>();
 
-		String queryString = "jdbc:sqlite:" + databaseName + ".db";
-		try {
-			Class.forName("org.sqlite.JDBC");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Connection conn;
-		try {
-			conn = DriverManager.getConnection(queryString);
-			PreparedStatement prep1 = conn.prepareStatement("select id from metabolites where metabolite_abbreviation=?;");
-			prep1.setString(1, metaboliteAbbreviation);
-
-			conn.setAutoCommit(true);
-			ResultSet rs = prep1.executeQuery();
-			metaboliteId = rs.getInt("id");
-
-			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();			
-		}	
-
-		return metaboliteId;
-	}
-	
-	public int maximumId() {
-		int max = 0;
-		String queryString = "jdbc:sqlite:" + databaseName + ".db";
-		try {
-			Class.forName("org.sqlite.JDBC");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Connection conn;
-		try {
-			conn = DriverManager.getConnection(queryString);
-			PreparedStatement prep = conn.prepareStatement("select max(id) from metabolites;");
-			ResultSet rs = prep.executeQuery();
-			//if metabolite_abbreviation is in table will return 1, else 0
-			max = rs.getInt("max(id)");			
-			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();			
-		}
-		return max;
-	}
-	
-	public ArrayList<String> metabolitesList() {
-		ArrayList<String> metabolitesList = new ArrayList<String>();
-		
-			try {
-				Class.forName("org.sqlite.JDBC");
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if("SBML".equals(sourceType)){
+			for (int i = 0; i < GraphicalInterface.metabolitesTable.getRowCount(); i++) {
+				if (GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) != null &&
+						((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN)).trim().length() > 0) {
+					String boundary = (String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.BOUNDARY_COLUMN);
+					if (boundary.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
+						int id = Integer.valueOf((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
+						metaboliteInternalIdList.add(id);
+					}
+				}				
 			}
-			Connection conn;
-			try {
-				conn = DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db"); // TODO:
-				// Make
-				// this
-				// configurable
-				PreparedStatement prep = conn
-				.prepareStatement("select metabolite_abbreviation from metabolites where length(metabolite_abbreviation) > 0;");
-				conn.setAutoCommit(true);
-				ResultSet rs = prep.executeQuery();
-				while (rs.next()) {
-					String metaboliteAbbreviation = rs.getString("metabolite_abbreviation");
-
-					metabolitesList.add(metaboliteAbbreviation);
-				}
-				rs.close();
-				conn.close();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		}
 		
-		return metabolitesList;
+		return metaboliteInternalIdList;
 	}
 	
 	public ArrayList<Integer> metaboliteIdList() {
 		ArrayList<Integer> metaboliteIdList = new ArrayList<Integer>();
-		
-		if("SBML".equals(sourceType)){
-			try {
-				Class.forName("org.sqlite.JDBC");
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return metaboliteIdList;
-			}
-			Connection conn;
-			try {
-				conn = DriverManager.getConnection("jdbc:sqlite:" + databaseName + ".db"); 
 
-				Statement stat = conn.createStatement();
-				ResultSet rs = stat.executeQuery("select id from metabolites;");
-				
-				while (rs.next()) {
-					metaboliteIdList.add(rs.getInt("id"));
-				}
-				rs.close();
-				conn.close();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return metaboliteIdList;
+		if("SBML".equals(sourceType)){
+			for (int i = 0; i < GraphicalInterface.metabolitesTable.getRowCount(); i++) {
+				int id = Integer.valueOf((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
+				metaboliteIdList.add(id);
 			}
 		}
-
 		
 		return metaboliteIdList;
+	}
+	
+	public ArrayList<String> metaboliteAbbreviationList() {
+		ArrayList<String> metaboliteAbbreviationList = new ArrayList<String>();
+
+		if("SBML".equals(sourceType)){
+			for (int i = 0; i < GraphicalInterface.metabolitesTable.getRowCount(); i++) {
+				if (GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) != null &&
+						((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN)).trim().length() > 0) {
+					String abbrev = (String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+					if (!metaboliteAbbreviationList.contains(abbrev)) {
+						metaboliteAbbreviationList.add(abbrev);
+					}					
+				}				
+			}
+		}
+		
+		return metaboliteAbbreviationList;
+	}
+	
+	public Vector<SBMLMetabolite> getAllMetabolites() {
+		Vector<SBMLMetabolite> metabolites = new Vector<SBMLMetabolite>();
+		Map<Object, Object> internalMetabolitesIdPositionMap = new HashMap<Object, Object>();
+		
+		if("SBML".equals(sourceType)){			
+			for (int i = 0; i < GraphicalInterface.metabolitesTable.getRowCount(); i++) {
+				if (GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) != null &&	
+						((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN)).trim().length() > 0) {
+					int id = Integer.valueOf((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));	
+					SBMLMetabolite metabolite = new SBMLMetabolite();
+					metabolite.setId(Integer.valueOf((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN)));
+					metabolite.setBoundary((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.BOUNDARY_COLUMN));
+					metabolites.add(metabolite);
+				}													
+			}
+			setInternalMetabolitesIdPositionMap(internalMetabolitesIdPositionMap);
+		}
+		
+		return metabolites;
 	}
 	
 	public static void main(String[] args) {

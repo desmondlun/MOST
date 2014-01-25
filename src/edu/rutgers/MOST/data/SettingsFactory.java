@@ -38,7 +38,25 @@ public class SettingsFactory {
 	
 	public SettingsFactory() throws Exception {
 		mappings = new HashMap<String, String>();
-		this.filename = "settings.xml";
+		String fileName = "";
+		if (System.getProperty("os.name").equals("Windows 7")) {
+			File destDir = new File(SettingsConstants.SETTINGS_PATH_PREFIX_WINDOWS_7 + System.getProperty("user.name") + SettingsConstants.SETTINGS_PATH_SUFFIX_WINDOWS_7 + SettingsConstants.FOLDER_NAME);
+			if (!destDir.exists()) {
+				destDir.mkdir();				
+			}
+			fileName = SettingsConstants.SETTINGS_PATH_PREFIX_WINDOWS_7 + System.getProperty("user.name") + SettingsConstants.SETTINGS_PATH_SUFFIX_WINDOWS_7 + SettingsConstants.FOLDER_NAME + "settings.xml";
+		} else if (System.getProperty("os.name").equals("Windows XP")) {
+			File destDir = new File(SettingsConstants.SETTINGS_PATH_PREFIX_WINDOWS_XP + System.getProperty("user.name") + SettingsConstants.SETTINGS_PATH_SUFFIX_WINDOWS_XP + SettingsConstants.FOLDER_NAME);
+			if (!destDir.exists()) {
+				destDir.mkdir();				
+			}
+			fileName = SettingsConstants.SETTINGS_PATH_PREFIX_WINDOWS_XP + System.getProperty("user.name") + SettingsConstants.SETTINGS_PATH_SUFFIX_WINDOWS_XP + SettingsConstants.FOLDER_NAME + "settings.xml";
+		} else {
+			fileName = "settings.xml";
+		}
+		this.filename = fileName;
+		//this.filename = "settings.xml";
+		//System.out.println(this.filename);
 		this.read();
 	}
 	

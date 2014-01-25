@@ -4,10 +4,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import edu.rutgers.MOST.config.LocalConfig;
+import edu.rutgers.MOST.data.SBMLProduct;
+import edu.rutgers.MOST.data.SBMLReactant;
+import edu.rutgers.MOST.data.SBMLReactionEquation;
 
 public class ReactionParser {
 	
+	private static SBMLReactionEquation equation = new SBMLReactionEquation();
+
+	public static SBMLReactionEquation getEquation() {
+		return equation;
+	}
+
+	public void setEquation(SBMLReactionEquation equation) {
+		ReactionParser.equation = equation;
+	}
+
 	// if reaction starts with [c]: for example, suffix will be appended to all
 	// species in the reaction when adding to metabolites table and maps
 	public static boolean hasPrefix = false;
@@ -18,63 +30,46 @@ public class ReactionParser {
 	public static boolean invalidSyntax = false;
 	public static ArrayList<String> suspiciousMetabolites = new ArrayList<String>();
 
-	public static ArrayList<ArrayList<ArrayList<String>>> reactionList(String reactionEquation) {
+	public void reactionList(String reactionEquation) {
 		invalidSyntax = false;
-		ArrayList<ArrayList<ArrayList<String>>> reactionList = new ArrayList<ArrayList<ArrayList<String>>>();
-		ArrayList<String> reactantAndStoicList = new ArrayList<String>();
-		ArrayList<String> productAndStoicList = new ArrayList<String>();
 		if (reactionEquation != null) {
-			reactionEquation = compartmentPrefixRemoved(reactionEquation);
-						
+			reactionEquation = compartmentPrefixRemoved(reactionEquation);						
 			java.util.List<String> halfEquations = Arrays.asList(reactionEquation.split(splitString(reactionEquation)));	
 			if (reactionEquation.trim().startsWith(splitString(reactionEquation))) {
-				reactantAndStoicList.add("0");
-				
-				ArrayList<ArrayList<String>> reactants = new ArrayList();
-				reactants.add(reactantAndStoicList);
-				reactionList.add(reactants);
-				
+				// set empty list to avoid null errors
+				ArrayList<SBMLReactant> reac = new ArrayList<SBMLReactant>();
+				getEquation().setReactants(reac);
+		
 				String productHalfEquation = reactionEquation.substring(splitString(reactionEquation).length(), reactionEquation.length());
 				java.util.List<String> productsAndCoeff = Arrays.asList(productHalfEquation.split("\\s+"));
 				
 				ArrayList<ArrayList<String>> rawProducts = rawSpeciesAndCoeffList(productsAndCoeff);
-				ArrayList<ArrayList<String>> products = stoicAndSpeciesList(rawProducts);			
-				reactionList.add(products);
-				
-			} else if (reactionEquation.trim().endsWith(splitString(reactionEquation).trim())) {			
-				
+				createSBMLReactionEquation(rawProducts, "product");				
+			} else if (reactionEquation.trim().endsWith(splitString(reactionEquation).trim())) {							
 				String reactantHalfEquation = reactionEquation.substring(0, reactionEquation.length() - splitString(reactionEquation).length());
 				java.util.List<String> reactantsAndCoeff = Arrays.asList(reactantHalfEquation.split("\\s+"));			
 				
 				ArrayList<ArrayList<String>> rawReactants = rawSpeciesAndCoeffList(reactantsAndCoeff);
-				ArrayList<ArrayList<String>> reactants = stoicAndSpeciesList(rawReactants);			
-				reactionList.add(reactants);
+				createSBMLReactionEquation(rawReactants, "reactant");
 				
-				productAndStoicList.add("0");
-				
-				ArrayList<ArrayList<String>> products = new ArrayList<ArrayList<String>>();
-				products.add(productAndStoicList);
-				reactionList.add(products);
-				
+				// set empty list to avoid null errors
+				ArrayList<SBMLProduct> prod = new ArrayList<SBMLProduct>();
+				getEquation().setProducts(prod);
 			} else {	
 				//String reactantHalfEquation = halfEquations.get(0).trim();
 				java.util.List<String> reactantsAndCoeff = Arrays.asList(halfEquations.get(0).trim().split("\\s+"));
 							
 				ArrayList<ArrayList<String>> rawReactants = rawSpeciesAndCoeffList(reactantsAndCoeff);
-				ArrayList<ArrayList<String>> reactants = stoicAndSpeciesList(rawReactants);
-				reactionList.add(reactants);
+				createSBMLReactionEquation(rawReactants, "reactant");
 				
 				String productHalfEquation = halfEquations.get(1).trim();
 				java.util.List<String> productsAndCoeff = Arrays.asList(productHalfEquation.split("\\s+"));
 				
 				ArrayList<ArrayList<String>> rawProducts = rawSpeciesAndCoeffList(productsAndCoeff);
-				ArrayList<ArrayList<String>> products = stoicAndSpeciesList(rawProducts);
-				reactionList.add(products);
+				createSBMLReactionEquation(rawProducts, "product");
 			}		
 		}
-		
-		hasPrefix = false;
-		return reactionList;		
+		hasPrefix = false;		
 	}
 	
 	//creates list of raw lists of coeff and species from half equations
@@ -100,15 +95,25 @@ public class ReactionParser {
 		return rawSpeciesAndCoeffList;
 	}
 	
-	public static ArrayList<ArrayList<String>> stoicAndSpeciesList(ArrayList<ArrayList<String>> rawSpeciesList) {
-		ArrayList<ArrayList<String>> stoicAndSpeciesList = new ArrayList();
+	public void createSBMLReactionEquation(ArrayList<ArrayList<String>> rawSpeciesList, String type) {
 		ArrayList<String> stoicAndSpecies[] = new ArrayList[rawSpeciesList.size()];
+		ArrayList<SBMLReactant> reactants = new ArrayList<SBMLReactant>();
+		ArrayList<SBMLProduct> products = new ArrayList<SBMLProduct>();
 		for (int i = 0; i < rawSpeciesList.size(); i++) {
 			stoicAndSpecies[i] = stoicAndSpecies((ArrayList) rawSpeciesList.get(i));
-			stoicAndSpeciesList.add(stoicAndSpecies[i]);
+			if (type == "reactant") {
+				SBMLReactant reac = reactant(stoicAndSpecies[i]);
+				reactants.add(reac);
+			} else if (type == "product") {
+				SBMLProduct prod = product(stoicAndSpecies[i]);
+				products.add(prod);
+			}
 		}
-
-		return stoicAndSpeciesList;
+		if (type == "reactant") {
+			getEquation().setReactants(reactants);
+		} else if (type == "product") {
+			getEquation().setProducts(products);
+		} 
 	}
 	
 	//converts raw lists of coeff and species or species only from rawSpeciesAndCoeffList to
@@ -142,6 +147,20 @@ public class ReactionParser {
 		stoicAndSpecies.add(stoic);
 		stoicAndSpecies.add(reactant);
 		return stoicAndSpecies;
+	}
+	
+	public static SBMLReactant reactant(ArrayList<String> stoicAndSpecies) {
+		SBMLReactant reactant = new SBMLReactant();
+		reactant.setStoic(Double.valueOf(stoicAndSpecies.get(0)));
+		reactant.setMetaboliteAbbreviation(stoicAndSpecies.get(1));
+		return reactant;
+	}
+	
+	public static SBMLProduct product(ArrayList<String> stoicAndSpecies) {
+		SBMLProduct product = new SBMLProduct();
+		product.setStoic(Double.valueOf(stoicAndSpecies.get(0)));
+		product.setMetaboliteAbbreviation(stoicAndSpecies.get(1));
+		return product;
 	}
 	
 	//removes compartment prefix such as "[c]:"
@@ -178,21 +197,37 @@ public class ReactionParser {
 				//trailing space on splitString gets rid of preceding space on first split
 				//of productsAndCoeff
 				splitString = "<==> ";
+				equation.setReversible("true");
+				equation.setReversibleArrow(splitString);
 			} else if (reactionEquation.contains("<=>")) {
 				splitString = "<=> ";
+				equation.setReversible("true");
+				equation.setReversibleArrow(splitString);
 			} else if (reactionEquation.contains("<-->")) {
-				splitString = "<--> ";		
+				splitString = "<--> ";
+				equation.setReversible("true");
+				equation.setReversibleArrow(splitString);
 			} else if (reactionEquation.contains("<->")) {
 				splitString = "<-> ";	
+				equation.setReversible("true");
+				equation.setReversibleArrow(splitString);
 			} else if (reactionEquation.contains("=") && !reactionEquation.contains(">")) {
 				splitString = "= ";
+				equation.setReversible("true");
+				equation.setReversibleArrow(splitString);
 				//not reversible options
 			} else if (reactionEquation.contains("=>")) {
 				splitString = "=> ";
+				equation.setReversible("false");
+				equation.setIrreversibleArrow(splitString);
 			} else if (reactionEquation.contains("-->")) {
 				splitString = "--> ";
+				equation.setReversible("false");
+				equation.setIrreversibleArrow(splitString);
 			} else if (reactionEquation.contains("->")) {
 				splitString = "-> ";
+				equation.setReversible("false");
+				equation.setIrreversibleArrow(splitString);
 			}
 		}
 		
@@ -273,6 +308,9 @@ public class ReactionParser {
 
 	
 	public static boolean hasPrefix(String reactionEquation) {
+		// corrects error if {} are used instead of []
+		reactionEquation = reactionEquation.replace("{", "[");
+		reactionEquation = reactionEquation.replace("}", "]");
 		if (reactionEquation.startsWith("[") && reactionEquation.indexOf("]") == 2 && reactionEquation.contains(":")) {
 			return true;
 		}
@@ -318,7 +356,11 @@ public class ReactionParser {
 	}
 	
 	public static void main(String[] args) {
-		
+		ReactionParser parser = new ReactionParser();
+		//String reactionEquation = "[c]: a + 2 b --> c + 3.0 d";
+		//String reactionEquation = "a + 2 b -->";
+		String reactionEquation = "--> c + 3.0 d";
+		parser.reactionList(reactionEquation);
 	}
 	
 }

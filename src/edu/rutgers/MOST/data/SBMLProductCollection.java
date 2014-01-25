@@ -1,34 +1,21 @@
 package edu.rutgers.MOST.data;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
+
+import edu.rutgers.MOST.config.LocalConfig;
 
 public class SBMLProductCollection implements ModelProductCollection {
     
-	private String databaseName;
 	private Integer reactionId;
-	private ArrayList<ModelProduct> productList;
+	private ArrayList<SBMLProduct> productList;
 	
 
-	public ArrayList<ModelProduct> getProductList() {
+	public ArrayList<SBMLProduct> getProductList() {
 		return productList;
 	}
 
-	public void setProductList(ArrayList<ModelProduct> productList) {
+	public void setProductList(ArrayList<SBMLProduct> productList) {
 		this.productList = productList;
-	}
-
-	public void setDatabaseName(String databaseName) {
-		this.databaseName = databaseName;
-	}
-	
-	public String getDatabaseName() {
-		return databaseName;
 	}
 	
 	public void setReactionId(Integer reactionId) {
@@ -39,98 +26,32 @@ public class SBMLProductCollection implements ModelProductCollection {
 		return reactionId;
 	}
 
-	public boolean loadByReactionId(Integer reactionId) {
+	public void loadByReactionId(Integer reactionId) {
 
-		try {
-			Class.forName("org.sqlite.JDBC");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
-		Connection conn;
-		try {
-			conn = DriverManager.getConnection(createConnectionStatement(getDatabaseName())); // TODO:
-																		// Make
-																		// this
-																		// configurable
-			PreparedStatement prep = conn
-					.prepareStatement("select reaction_id, metabolite_id, stoic, metabolite_abbreviation from reaction_products, metabolites where reaction_products.metabolite_id = metabolites.id and reaction_id = ?;");
-			prep.setInt(1, reactionId);
-			conn.setAutoCommit(true);
-			ResultSet rs = prep.executeQuery();
-			productList = new ArrayList<ModelProduct>();
-			
-			while (rs.next()) {
-				SBMLProduct aProduct = new SBMLProduct();
-				aProduct.setReactionId(rs.getInt("reaction_id"));
-				aProduct.setMetaboliteId(rs.getInt("metabolite_id"));
-				aProduct.setStoic(rs.getDouble("stoic"));
-				aProduct.setMetaboliteAbbreviation(rs.getString("metabolite_abbreviation"));
-				this.productList.add(aProduct);
-			}
-			
-			rs.close();
-			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
-
-		return true;
 	}
 
-	public boolean loadAll() {
-
-		try {
-			Class.forName("org.sqlite.JDBC");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
+	public void loadAll() {
+		productList = new ArrayList<SBMLProduct>();
+		ReactionFactory rFactory = new ReactionFactory("SBML");
+		ArrayList<Integer> reactionIdList = rFactory.reactionIdList();
+		for (int i = 0; i < reactionIdList.size(); i++) {
+			int index = reactionIdList.get(i);
+			try {
+				for (int j = 0; j < ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(index)).products.size(); j++) {
+					SBMLProduct product = ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(index)).products.get(j);
+					this.productList.add(product);
+					//System.out.println(i);
+					//System.out.println(product.getMetaboliteAbbreviation());
+				}
+			} catch (Throwable t) {
+				
+			} 
 		}
-		Connection conn;
-		try {
-			conn = DriverManager.getConnection(createConnectionStatement(getDatabaseName())); // TODO:
-																		// Make
-																		// this
-																		// configurable
-			PreparedStatement prep = conn
-					.prepareStatement("select reaction_id, metabolite_id, stoic, metabolite_abbreviation from reaction_products, metabolites where reaction_products.metabolite_id = metabolites.id;");
-			conn.setAutoCommit(true);
-			ResultSet rs = prep.executeQuery();
-			productList = new ArrayList<ModelProduct>();
-			
-			while (rs.next()) {
-				SBMLProduct aProduct = new SBMLProduct();
-				aProduct.setReactionId(rs.getInt("reaction_id"));
-				aProduct.setMetaboliteId(rs.getInt("metabolite_id"));
-				aProduct.setStoic(rs.getDouble("stoic"));
-				aProduct.setMetaboliteAbbreviation(rs.getString("metabolite_abbreviation"));
-				this.productList.add(aProduct);
-			}
-			
-			rs.close();
-			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
-
-		return true;
+		//System.out.println("product list " + this.productList);
 	}	
 
-	public String createConnectionStatement(String databaseName) {
-		return "jdbc:sqlite:" + getDatabaseName() + ".db";
-	}
-	
-	
-
-	
-
 	public static void main(String[] args) {
+		/*
 		ProductFactory aProductFactory = new ProductFactory("SBML", "test_03182012");
 		ArrayList<ModelProduct> products = aProductFactory.getProductsByReactionId(1);
 		Iterator<ModelProduct> iterator = products.iterator();
@@ -139,6 +60,7 @@ public class SBMLProductCollection implements ModelProductCollection {
 			SBMLProduct aProduct = (SBMLProduct)iterator.next();
 			//System.out.print("\nabbr" + aProduct.toString());
 		}
+		*/
 	}
 
 }

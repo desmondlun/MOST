@@ -1,9 +1,7 @@
 package edu.rutgers.MOST.presentation;
 
 import java.awt.event.*;
-
 import javax.swing.*;
-
 import java.beans.*;
 
 /*
@@ -105,25 +103,21 @@ public class TableCellListener implements PropertyChangeListener, Runnable
 	{
 		return table;
 	}
-	//
-	//  Implement the PropertyChangeListener interface
-	//
+//
+//  Implement the PropertyChangeListener interface
+//
 	@Override
 	public void propertyChange(PropertyChangeEvent e)
 	{
 		//  A cell has started/stopped editing
 
-		try {
-			if ("tableCellEditor".equals(e.getPropertyName()))
-			{
-				if (table.isEditing())
-					processEditingStarted();
-				else
-					processEditingStopped();
-			}
-		} catch (Throwable t) {
-			
-		}		
+		if ("tableCellEditor".equals(e.getPropertyName()))
+		{
+			if (table.isEditing())
+				processEditingStarted();
+			else
+				processEditingStopped();
+		}
 	}
 
 	/*
@@ -144,14 +138,10 @@ public class TableCellListener implements PropertyChangeListener, Runnable
 	@Override
 	public void run()
 	{
-		try {
-			row = table.convertRowIndexToModel( table.getEditingRow() );
-			column = table.convertColumnIndexToModel( table.getEditingColumn() );
-			oldValue = (String) table.getModel().getValueAt(row, column);
-			newValue = null;
-		} catch (Throwable t) {
-			
-		}		
+		row = table.convertRowIndexToModel( table.getEditingRow() );
+		column = table.convertColumnIndexToModel( table.getEditingColumn() );
+		oldValue = (String) table.getModel().getValueAt(row, column);
+		newValue = null;
 	}
 
 	/*
@@ -163,24 +153,20 @@ public class TableCellListener implements PropertyChangeListener, Runnable
 
 		//  The data has changed, invoke the supplied Action
 
-		try {
-			if (! newValue.equals(oldValue))
-			{
-				//  Make a copy of the data in case another cell starts editing
-				//  while processing this change
+		if (! newValue.equals(oldValue))
+		{
+			//  Make a copy of the data in case another cell starts editing
+			//  while processing this change
 
-				TableCellListener tcl = new TableCellListener(
-						getTable(), getRow(), getColumn(), getOldValue(), getNewValue());
+			TableCellListener tcl = new TableCellListener(
+				getTable(), getRow(), getColumn(), getOldValue(), getNewValue());
 
-				ActionEvent event = new ActionEvent(
-						tcl,
-						ActionEvent.ACTION_PERFORMED,
+			ActionEvent event = new ActionEvent(
+				tcl,
+				ActionEvent.ACTION_PERFORMED,
 				"");
-				action.actionPerformed(event);
-			}
-		} catch (Throwable t) {
-			
-		}		
+			action.actionPerformed(event);
+		}
 	}
 }
 

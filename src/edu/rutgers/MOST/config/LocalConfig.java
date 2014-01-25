@@ -5,54 +5,248 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import java.sql.Connection;
-
 import javax.swing.SortOrder;
+import javax.swing.table.DefaultTableModel;
+
+import edu.rutgers.MOST.data.ModelReactionEquation;
+import edu.rutgers.MOST.presentation.GraphicalInterface;
 
 public class LocalConfig {	
 
 	
 	//Singleton pattern:
-    private static final LocalConfig instance = new LocalConfig();
+	private static final LocalConfig instance = new LocalConfig();
 
-    // Private constructor prevents instantiation from other classes
-    private LocalConfig() { }
+	// Private constructor prevents instantiation from other classes
+	private LocalConfig() { }
 
-    public static LocalConfig getInstance() {
-            return instance;
-    }
+	public static LocalConfig getInstance() {
+		return instance;
+	}
+	
+    private static String modelName;
     
+    public static String getModelName() {
+		return modelName;
+	}
+
+	public static void setModelName(String modelName) {
+		LocalConfig.modelName = modelName;
+	}
+	
+	/*****************************************************************************/
+	// table model maps
+	/*****************************************************************************/
+	
+	private static Map<String, DefaultTableModel> metabolitesTableModelMap;
+
+	public static Map<String, DefaultTableModel> getMetabolitesTableModelMap() {
+		return metabolitesTableModelMap;
+	}
+
+	public static void setMetabolitesTableModelMap(
+			Map<String, DefaultTableModel> metabolitesTableModelMap) {
+		LocalConfig.metabolitesTableModelMap = metabolitesTableModelMap;
+	}
+	
+	private static Map<String, DefaultTableModel> reactionsTableModelMap;
+
+	public static Map<String, DefaultTableModel> getReactionsTableModelMap() {
+		return reactionsTableModelMap;
+	}
+
+	public static void setReactionsTableModelMap(
+			Map<String, DefaultTableModel> reactionsTableModelMap) {
+		LocalConfig.reactionsTableModelMap = reactionsTableModelMap;
+	}
+
+	/*****************************************************************************/
+	// end table model maps
+	/*****************************************************************************/
+	
+	private static Integer progress;
+	
+	public void setProgress(Integer progress) {
+		this.progress = progress;
+	}
+	
+	public Integer getProgress() {
+		return progress;
+	}
+	
+	private static File metabolitesCSVFile;
+
+	public void setMetabolitesCSVFile(File metabolitesCSVFile) {
+		LocalConfig.metabolitesCSVFile = metabolitesCSVFile;
+	}
+
+	public static File getMetabolitesCSVFile() {
+		return metabolitesCSVFile;
+	}
+
+	private static File reactionsCSVFile;
+
+	public void setReactionsCSVFile(File reactionsCSVFile) {
+		LocalConfig.reactionsCSVFile = reactionsCSVFile;
+	}
+
+	public static File getReactionsCSVFile() {
+		return reactionsCSVFile;
+	}
+	
+	private static ArrayList<Integer> participatingReactions;
+
+	public void setParticipatingReactions(ArrayList<Integer> participatingReactions) {
+		LocalConfig.participatingReactions = participatingReactions;
+	}
+
+	public ArrayList<Integer> getParticipatingReactions() {
+		return participatingReactions;
+	}  
+	
+	// list used when exiting program. If items remain in list at exit, user prompted
+	// to save these files
+	private static ArrayList<String> optimizationFilesList;
+
+	public void setOptimizationFilesList(ArrayList<String> optimizationFilesList) {
+		LocalConfig.optimizationFilesList = optimizationFilesList;
+	}
+
+	public ArrayList<String> getOptimizationFilesList() {
+		return optimizationFilesList;
+	}  
+	
+	//Map used to hold number of reactions a metabolite is used in. if a metabolites
+	//is not present in map, it is unused. Also used when adding, deleting or changing
+	//reactions to determine whether the used status of a metabolite must be changed.
+	private static Map<String, Object> metaboliteUsedMap = new HashMap<String, Object>();
+	
+	public static Map<String, Object> getMetaboliteUsedMap() {
+		return metaboliteUsedMap;
+	}
+
+	public void setMetaboliteUsedMap(Map<String, Object> metaboliteUsedMap) {
+		LocalConfig.metaboliteUsedMap = metaboliteUsedMap;
+	}
+	
+    private static ArrayList<Integer> unusedList = new ArrayList<Integer>();
+	
+	public static ArrayList<Integer> getUnusedList() {
+		return unusedList;
+	}
+
+	public static void setUnusedList(ArrayList<Integer> unusedList) {
+		LocalConfig.unusedList = unusedList;
+	}
     
-    private String databaseName;
+    //map used to hold metabolite abbreviation/id pairs, in order to construct reaction_reactant
+	//and reaction_product (lookup) tables
+    public static Map<String, Object> metaboliteAbbreviationIdMap = new HashMap<String, Object>();
 
-	public String getDatabaseName() {
-		return databaseName;
+    public static Map<String, Object> getMetaboliteAbbreviationIdMap() {
+		return metaboliteAbbreviationIdMap;
 	}
 
-	public void setDatabaseName(String databaseName) {
-		this.databaseName = databaseName;
-	}
-	
-	//Database currently loaded in table. This is needed when optimizations are loaded
-	//update methods change optimized database. 
-	private String loadedDatabase;
-
-	public String getLoadedDatabase() {
-		return loadedDatabase;
-	}
-
-	public void setLoadedDatabase(String loadedDatabase) {
-		this.loadedDatabase = loadedDatabase;
+	public static void setMetaboliteAbbreviationIdMap(
+			Map<String, Object> metaboliteAbbreviationIdMap) {
+		LocalConfig.metaboliteAbbreviationIdMap = metaboliteAbbreviationIdMap;
 	}
 	
-	private Connection currentConnection;
+	private static Map<Object, String> metaboliteIdNameMap;
 	
-	public Connection getCurrentConnection() {
-		return currentConnection;
+    public static Map<Object, String> getMetaboliteIdNameMap() {
+		return metaboliteIdNameMap;
 	}
 
-	public void setCurrentConnection(Connection currentConnection) {
-		this.currentConnection = currentConnection;
+	public static void setMetaboliteIdNameMap(
+			Map<Object, String> metaboliteIdNameMap) {
+		LocalConfig.metaboliteIdNameMap = metaboliteIdNameMap;
+	}
+	
+	//used for determining id when adding a metabolite when a reaction is
+	//read and metabolite is not present
+	private static Integer maxMetabolite;
+	
+	public static Integer getMaxMetabolite() {
+		return maxMetabolite;
+	}
+
+	public static void setMaxMetabolite(Integer maxMetabolite) {
+		LocalConfig.maxMetabolite = maxMetabolite;
+	}
+
+	// used for adding rows
+	private static Integer maxMetaboliteId;
+	
+	public void setMaxMetaboliteId(Integer maxMetaboliteId) {
+		LocalConfig.maxMetaboliteId = maxMetaboliteId;
+	}
+	
+	public Integer getMaxMetaboliteId() {
+		return maxMetaboliteId;
+	}
+	
+	private static Integer maxReactionId;
+
+	public static Integer getMaxReactionId() {
+		return maxReactionId;
+	}
+
+	public static void setMaxReactionId(Integer maxReactionId) {
+		LocalConfig.maxReactionId = maxReactionId;
+	}
+
+	private static Map<Object, ModelReactionEquation> reactionEquationMap;
+
+	public static Map<Object, ModelReactionEquation> getReactionEquationMap() {
+		return reactionEquationMap;
+	}
+
+	public static void setReactionEquationMap(
+			Map<Object, ModelReactionEquation> reactionEquationMap) {
+		LocalConfig.reactionEquationMap = reactionEquationMap;
+	}
+
+	private static Map<String, Object> reactionsIdRowMap;
+
+	public static Map<String, Object> getReactionsIdRowMap() {
+		return reactionsIdRowMap;
+	}
+
+	public static void setReactionsIdRowMap(Map<String, Object> reactionsIdRowMap) {
+		LocalConfig.reactionsIdRowMap = reactionsIdRowMap;
+	}
+
+	private static ArrayList<String> metabolitesMetaColumnNames;
+
+	public ArrayList<String> getMetabolitesMetaColumnNames() {
+		return metabolitesMetaColumnNames;
+	}
+
+	public void setMetabolitesMetaColumnNames(
+			ArrayList<String> metabolitesMetaColumnNames) {
+		LocalConfig.metabolitesMetaColumnNames = metabolitesMetaColumnNames;
+	}
+	
+	private static ArrayList<String> reactionsMetaColumnNames;
+
+	public ArrayList<String> getReactionsMetaColumnNames() {
+		return reactionsMetaColumnNames;
+	}
+
+	public void setReactionsMetaColumnNames(
+			ArrayList<String> reactionsMetaColumnNames) {
+		LocalConfig.reactionsMetaColumnNames = reactionsMetaColumnNames;
+	}
+	
+	private static ArrayList<Integer> suspiciousMetabolites = new ArrayList<Integer>();
+	
+	public ArrayList<Integer> getSuspiciousMetabolites() {
+		return suspiciousMetabolites;
+	}
+	
+	public void setSuspiciousMetabolites(ArrayList<Integer> suspiciousMetabolites) {
+		LocalConfig.suspiciousMetabolites = suspiciousMetabolites;
 	}
 	
 	public boolean hasMetabolitesFile;
@@ -66,7 +260,7 @@ public class LocalConfig {
     private static Integer metaboliteAbbreviationColumnIndex;
 	
 	public void setMetaboliteAbbreviationColumnIndex(Integer metaboliteAbbreviationColumnIndex) {
-		this.metaboliteAbbreviationColumnIndex = metaboliteAbbreviationColumnIndex;
+		LocalConfig.metaboliteAbbreviationColumnIndex = metaboliteAbbreviationColumnIndex;
 	}
 
 	public static Integer getMetaboliteAbbreviationColumnIndex() {
@@ -76,7 +270,7 @@ public class LocalConfig {
     private static Integer metaboliteNameColumnIndex;
 	
 	public void setMetaboliteNameColumnIndex(Integer metaboliteNameColumnIndex) {
-		this.metaboliteNameColumnIndex = metaboliteNameColumnIndex;
+		LocalConfig.metaboliteNameColumnIndex = metaboliteNameColumnIndex;
 	}
 
 	public static Integer getMetaboliteNameColumnIndex() {
@@ -86,7 +280,7 @@ public class LocalConfig {
     private static Integer chargeColumnIndex;
 	
 	public void setChargeColumnIndex(Integer chargeColumnIndex) {
-		this.chargeColumnIndex = chargeColumnIndex;
+		LocalConfig.chargeColumnIndex = chargeColumnIndex;
 	}
 
 	public static Integer getChargeColumnIndex() {
@@ -96,7 +290,7 @@ public class LocalConfig {
 	private static Integer compartmentColumnIndex;
 	
 	public void setCompartmentColumnIndex(Integer compartmentColumnIndex) {
-		this.compartmentColumnIndex = compartmentColumnIndex;
+		LocalConfig.compartmentColumnIndex = compartmentColumnIndex;
 	}
 
 	public static Integer getCompartmentColumnIndex() {
@@ -106,7 +300,7 @@ public class LocalConfig {
     private static Integer boundaryColumnIndex;
 	
 	public void setBoundaryColumnIndex(Integer boundaryColumnIndex) {
-		this.boundaryColumnIndex = boundaryColumnIndex;
+		LocalConfig.boundaryColumnIndex = boundaryColumnIndex;
 	}
 
 	public static Integer getBoundaryColumnIndex() {
@@ -120,13 +314,13 @@ public class LocalConfig {
 	}
 	
 	public void setMetabolitesMetaColumnIndexList(ArrayList<Integer> metabolitesMetaColumnIndexList) {
-		this.metabolitesMetaColumnIndexList = metabolitesMetaColumnIndexList;
+		LocalConfig.metabolitesMetaColumnIndexList = metabolitesMetaColumnIndexList;
 	}    
 	
     private static Integer metabolitesNextRowCorrection;
 	
 	public void setMetabolitesNextRowCorrection(Integer metabolitesNextRowCorrection) {
-		this.metabolitesNextRowCorrection = metabolitesNextRowCorrection;
+		LocalConfig.metabolitesNextRowCorrection = metabolitesNextRowCorrection;
 	}
 
 	public static Integer getMetabolitesNextRowCorrection() {
@@ -137,10 +331,31 @@ public class LocalConfig {
 	//parameters for reactions in columnNameInterfaces
 	/**********************************************************************************/
 	//reaction column indices
+	
+	private static Integer knockoutColumnIndex;
+
+	public Integer getKnockoutColumnIndex() {
+		return knockoutColumnIndex;
+	}
+
+	public void setKnockoutColumnIndex(Integer knockoutColumnIndex) {
+		LocalConfig.knockoutColumnIndex = knockoutColumnIndex;
+	}
+	
+	private static Integer fluxValueColumnIndex;
+
+	public Integer getFluxValueColumnIndex() {
+		return fluxValueColumnIndex;
+	}
+
+	public void setFluxValueColumnIndex(Integer fluxValueColumnIndex) {
+		LocalConfig.fluxValueColumnIndex = fluxValueColumnIndex;
+	}
+	
     private static Integer reactionAbbreviationColumnIndex;
 	
 	public void setReactionAbbreviationColumnIndex(Integer reactionAbbreviationColumnIndex) {
-		this.reactionAbbreviationColumnIndex = reactionAbbreviationColumnIndex;
+		LocalConfig.reactionAbbreviationColumnIndex = reactionAbbreviationColumnIndex;
 	}
 
 	public static Integer getReactionAbbreviationColumnIndex() {
@@ -150,7 +365,7 @@ public class LocalConfig {
     private static Integer reactionNameColumnIndex;
 	
 	public void setReactionNameColumnIndex(Integer reactionNameColumnIndex) {
-		this.reactionNameColumnIndex = reactionNameColumnIndex;
+		LocalConfig.reactionNameColumnIndex = reactionNameColumnIndex;
 	}
 
 	public static Integer getReactionNameColumnIndex() {
@@ -164,27 +379,17 @@ public class LocalConfig {
 	}
 
 	public void setReactionEquationColumnIndex(Integer reactionEquationColumnIndex) {
-		this.reactionEquationColumnIndex = reactionEquationColumnIndex;
+		LocalConfig.reactionEquationColumnIndex = reactionEquationColumnIndex;
 	}
 	
-	private static Integer knockoutColumnIndex;
+	private static Integer reactionEquationNamesColumnIndex;
 
-	public Integer getKnockoutColumnIndex() {
-		return knockoutColumnIndex;
+	public Integer getReactionEquationNamesColumnIndex() {
+		return reactionEquationNamesColumnIndex;
 	}
 
-	public void setKnockoutColumnIndex(Integer knockoutColumnIndex) {
-		this.knockoutColumnIndex = knockoutColumnIndex;
-	}
-	
-	private static Integer fluxValueColumnIndex;
-
-	public Integer getFluxValueColumnIndex() {
-		return fluxValueColumnIndex;
-	}
-
-	public void setFluxValueColumnIndex(Integer fluxValueColumnIndex) {
-		this.fluxValueColumnIndex = fluxValueColumnIndex;
+	public void setReactionEquationNamesColumnIndex(Integer reactionEquationNamesColumnIndex) {
+		LocalConfig.reactionEquationNamesColumnIndex = reactionEquationNamesColumnIndex;
 	}
 	
 	private static Integer reversibleColumnIndex;
@@ -194,7 +399,7 @@ public class LocalConfig {
 	}
 
 	public void setReversibleColumnIndex(Integer reversibleColumnIndex) {
-		this.reversibleColumnIndex = reversibleColumnIndex;
+		LocalConfig.reversibleColumnIndex = reversibleColumnIndex;
 	}
 	
 	private static Integer lowerBoundColumnIndex;
@@ -204,7 +409,7 @@ public class LocalConfig {
 	}
 
 	public void setLowerBoundColumnIndex(Integer lowerBoundColumnIndex) {
-		this.lowerBoundColumnIndex = lowerBoundColumnIndex;
+		LocalConfig.lowerBoundColumnIndex = lowerBoundColumnIndex;
 	}
 	
 	private static Integer upperBoundColumnIndex;
@@ -214,7 +419,7 @@ public class LocalConfig {
 	}
 
 	public void setUpperBoundColumnIndex(Integer upperBoundColumnIndex) {
-		this.upperBoundColumnIndex = upperBoundColumnIndex;
+		LocalConfig.upperBoundColumnIndex = upperBoundColumnIndex;
 	}
 	
 	private static Integer biologicalObjectiveColumnIndex;
@@ -224,7 +429,7 @@ public class LocalConfig {
 	}
 
 	public void setBiologicalObjectiveColumnIndex(Integer biologicalObjectiveColumnIndex) {
-		this.biologicalObjectiveColumnIndex = biologicalObjectiveColumnIndex;
+		LocalConfig.biologicalObjectiveColumnIndex = biologicalObjectiveColumnIndex;
 	}
 	
 	private static Integer syntheticObjectiveColumnIndex;
@@ -234,7 +439,7 @@ public class LocalConfig {
 	}
 
 	public void setSyntheticObjectiveColumnIndex(Integer syntheticObjectiveColumnIndex) {
-		this.syntheticObjectiveColumnIndex = syntheticObjectiveColumnIndex;
+		LocalConfig.syntheticObjectiveColumnIndex = syntheticObjectiveColumnIndex;
 	}
 	
 	private static Integer geneAssociationColumnIndex;
@@ -244,23 +449,54 @@ public class LocalConfig {
 	}
 
 	public void setGeneAssociationColumnIndex(Integer geneAssociationColumnIndex) {
-		this.geneAssociationColumnIndex = geneAssociationColumnIndex;
+		LocalConfig.geneAssociationColumnIndex = geneAssociationColumnIndex;
 	}
 	
-    private static ArrayList<Integer> reactionsMetaColumnIndexList;
+	private static Integer proteinAssociationColumnIndex;
+	
+    public static Integer getProteinAssociationColumnIndex() {
+		return proteinAssociationColumnIndex;
+	}
+
+	public static void setProteinAssociationColumnIndex(
+			Integer proteinAssociationColumnIndex) {
+		LocalConfig.proteinAssociationColumnIndex = proteinAssociationColumnIndex;
+	}
+
+	private static Integer subsystemColumnIndex;
+	
+	public static Integer getSubsystemColumnIndex() {
+		return subsystemColumnIndex;
+	}
+
+	public static void setSubsystemColumnIndex(Integer subsystemColumnIndex) {
+		LocalConfig.subsystemColumnIndex = subsystemColumnIndex;
+	}
+
+	private static Integer proteinClassColumnIndex;
+	
+	public static Integer getProteinClassColumnIndex() {
+		return proteinClassColumnIndex;
+	}
+
+	public static void setProteinClassColumnIndex(Integer proteinClassColumnIndex) {
+		LocalConfig.proteinClassColumnIndex = proteinClassColumnIndex;
+	}
+
+	private static ArrayList<Integer> reactionsMetaColumnIndexList;
 	
 	public ArrayList<Integer> getReactionsMetaColumnIndexList() {
 		return reactionsMetaColumnIndexList;
 	}
 	
 	public void setReactionsMetaColumnIndexList(ArrayList<Integer> reactionsMetaColumnIndexList) {
-		this.reactionsMetaColumnIndexList = reactionsMetaColumnIndexList;
+		LocalConfig.reactionsMetaColumnIndexList = reactionsMetaColumnIndexList;
 	}
 	
     private static Integer reactionsNextRowCorrection;
 	
 	public void setReactionsNextRowCorrection(Integer reactionsNextRowCorrection) {
-		this.reactionsNextRowCorrection = reactionsNextRowCorrection;
+		LocalConfig.reactionsNextRowCorrection = reactionsNextRowCorrection;
 	}
 
 	public static Integer getReactionsNextRowCorrection() {
@@ -271,173 +507,12 @@ public class LocalConfig {
 	//end parameters for columnNameInterfaces
 	/**********************************************************************************/
 	
-	private static Integer progress;
-	
-	public void setProgress(Integer progress) {
-		this.progress = progress;
-	}
-	
-	public Integer getProgress() {
-		return progress;
-	}
-	
-	private static ArrayList<String> invalidReactions = new ArrayList();
-	
-	public ArrayList<String> getInvalidReactions() {
-		return invalidReactions;
-	}
-	
-	public void setInvalidReactions(ArrayList<String> invalidReactions) {
-		this.invalidReactions = invalidReactions;
-	}
-	
-    private static Integer numberCopiedRows;
-	
-	public void setNumberCopiedColumns(Integer numberCopiedColumns) {
-		this.numberCopiedColumns = numberCopiedColumns;
-	}
-	
-	public Integer getNumberCopiedColumns() {
-		return numberCopiedColumns;
-	}
-	
-	private static Integer numberCopiedColumns;
-	
-	public void setNumberCopiedRows(Integer numberCopiedRows) {
-		this.numberCopiedRows = numberCopiedRows;
-	}
-	
-	public Integer getNumberCopiedRows() {
-		return numberCopiedRows;
-	}
-	
-    private static Integer headerColumnIndex;
-	
-	public void setHeaderColumnIndex(Integer headerColumnIndex) {
-		this.headerColumnIndex = headerColumnIndex;
-	}
-	
-	public Integer getHeaderColumnIndex() {
-		return headerColumnIndex;
-	}
-	
-	//map used to hold metabolite name/id pairs, in order to construct reaction_reactant
-	//and reaction_product (lookup) tables
-    public static Map<String, Object> metaboliteIdNameMap = new HashMap<String, Object>();
-	
-	public static Map<String, Object> getMetaboliteIdNameMap() {
-		return metaboliteIdNameMap;
-	}
-
-	public void setMetaboliteIdNameMap(Map<String, Object> metaboliteIdNameMap) {
-		this.metaboliteIdNameMap = metaboliteIdNameMap;
-	}
-	
-    private static ArrayList<Integer> blankMetabIds = new ArrayList<Integer>();
-	
-	public ArrayList<Integer> getBlankMetabIds() {
-		return blankMetabIds;
-	}
-	
-	public void setBlankMetabIds(ArrayList<Integer> blankMetabIds) {
-		this.blankMetabIds = blankMetabIds;
-	}
-	
-	private static ArrayList<Integer> duplicateIds = new ArrayList<Integer>();
-	
-	public ArrayList<Integer> getDuplicateIds() {
-		return duplicateIds;
-	}
-	
-	public void setDuplicateIds(ArrayList<Integer> duplicateIds) {
-		this.duplicateIds = duplicateIds;
-	}
-	
-	//used for determining id when adding a metabolite when a reaction is
-	//read and metabolite is not present
-	private static Integer maxMetaboliteId;
-	
-	public void setMaxMetaboliteId(Integer maxMetaboliteId) {
-		this.maxMetaboliteId = maxMetaboliteId;
-	}
-	
-	public Integer getMaxMetaboliteId() {
-		return maxMetaboliteId;
-	}
-
-	//Map used to hold number of reactions a metabolite is used in. if a metabolites
-	//is not present in map, it is unused. Also used when adding, deleting or changing
-	//reactions to determine whether the used status of a metabolite must be changed.
-	private static Map<String, Object> metaboliteUsedMap = new HashMap<String, Object>();
-	
-	public static Map<String, Object> getMetaboliteUsedMap() {
-		return metaboliteUsedMap;
-	}
-
-	public void setMetaboliteUsedMap(Map<String, Object> metaboliteUsedMap) {
-		this.metaboliteUsedMap = metaboliteUsedMap;
-	}
-	
-    private static ArrayList<Integer> unusedList = new ArrayList<Integer>();
-	
-	public static ArrayList<Integer> getUnusedList() {
-		return unusedList;
-	}
-
-	public static void setUnusedList(ArrayList<Integer> unusedList) {
-		LocalConfig.unusedList = unusedList;
-	}
-	
-	private static File metabolitesCSVFile;
-
-	public void setMetabolitesCSVFile(File metabolitesCSVFile) {
-		this.metabolitesCSVFile = metabolitesCSVFile;
-	}
-
-	public static File getMetabolitesCSVFile() {
-		return metabolitesCSVFile;
-	}
-
-	private static File reactionsCSVFile;
-
-	public void setReactionsCSVFile(File reactionsCSVFile) {
-		this.reactionsCSVFile = reactionsCSVFile;
-	}
-
-	public static File getReactionsCSVFile() {
-		return reactionsCSVFile;
-	}
-	
-	private static ArrayList<Integer> participatingReactions;
-
-	public void setParticipatingReactions(ArrayList<Integer> participatingReactions) {
-		this.participatingReactions = participatingReactions;
-	}
-
-	public ArrayList<Integer> getParticipatingReactions() {
-		return participatingReactions;
-	}  
-	
-	// list used when exiting program. If items remain in list at exit, user prompted
-	// to save these files
-	private static ArrayList<String> optimizationFilesList;
-
-	public void setOptimizationFilesList(ArrayList<String> optimizationFilesList) {
-		this.optimizationFilesList = optimizationFilesList;
-	}
-
-	public ArrayList<String> getOptimizationFilesList() {
-		return optimizationFilesList;
-	}  
-	
 	// if "No" button pressed in Add Metabolite Prompt, is set to false
 	public boolean addMetaboliteOption;	
 	public boolean noButtonClicked;
 	public boolean yesToAllButtonClicked;
 	public boolean pastedReaction;
 	public boolean includesReactions;
-	
-	public boolean editMode;
 	
 	public boolean reactionsTableChanged;
 	public boolean metabolitesTableChanged;
@@ -457,7 +532,7 @@ public class LocalConfig {
 	private static Integer reactionsLocationsListCount;
 	
 	public void setReactionsLocationsListCount(Integer reactionsLocationsListCount) {
-		this.reactionsLocationsListCount = reactionsLocationsListCount;
+		LocalConfig.reactionsLocationsListCount = reactionsLocationsListCount;
 	}
 	
 	public Integer getReactionsLocationsListCount() {
@@ -473,36 +548,6 @@ public class LocalConfig {
 	public static void setMetabolitesLocationsListCount(
 			Integer metabolitesLocationsListCount) {
 		LocalConfig.metabolitesLocationsListCount = metabolitesLocationsListCount;
-	}
-	
-	private static ArrayList<Integer> suspiciousMetabolites = new ArrayList<Integer>();
-	
-	public ArrayList<Integer> getSuspiciousMetabolites() {
-		return suspiciousMetabolites;
-	}
-	
-	public void setSuspiciousMetabolites(ArrayList<Integer> suspiciousMetabolites) {
-		this.suspiciousMetabolites = suspiciousMetabolites;
-	}
-	
-    private static ArrayList<Integer> hiddenReactionsColumns = new ArrayList<Integer>();
-	
-	public ArrayList<Integer> getHiddenReactionsColumns() {
-		return hiddenReactionsColumns;
-	}
-	
-	public void setHiddenReactionsColumns(ArrayList<Integer> hiddenReactionsColumns) {
-		this.hiddenReactionsColumns = hiddenReactionsColumns;
-	}
-	
-    private static ArrayList<Integer> hiddenMetabolitesColumns = new ArrayList<Integer>();
-	
-	public ArrayList<Integer> getHiddenMetabolitesColumns() {
-		return hiddenMetabolitesColumns;
-	}
-	
-	public void setHiddenMetabolitesColumns(ArrayList<Integer> hiddenMetabolitesColumns) {
-		this.hiddenMetabolitesColumns = hiddenMetabolitesColumns;
 	}
 	
 	private static  ArrayList<String> findEntryList = new ArrayList<String>();
@@ -525,6 +570,17 @@ public class LocalConfig {
 		LocalConfig.replaceEntryList = replaceEntryList;
 	}
 	
+	private static Map<String, Object> metabDisplayCollectionMap = new HashMap<String, Object>();
+	
+	public static Map<String, Object> getMetabDisplayCollectionMap() {
+		return metabDisplayCollectionMap;
+	}
+
+	public static void setMetabDisplayCollectionMap(
+			Map<String, Object> metabDisplayCollectionMap) {
+		LocalConfig.metabDisplayCollectionMap = metabDisplayCollectionMap;
+	}
+
 	/********************************************************************************/
 	// undo/redo
 	/********************************************************************************/
@@ -666,6 +722,28 @@ public class LocalConfig {
 
 	public void setAddedMetabolites(ArrayList<Integer> addedMetabolites) {
 		this.addedMetabolites = addedMetabolites;
-	}	
+	}
 	
+	private static Map<String, DefaultTableModel> metabolitesUndoTableModelMap;
+	
+	public static Map<String, DefaultTableModel> getMetabolitesUndoTableModelMap() {
+		return metabolitesUndoTableModelMap;
+	}
+
+	public static void setMetabolitesUndoTableModelMap(
+			Map<String, DefaultTableModel> metabolitesUndoTableModelMap) {
+		LocalConfig.metabolitesUndoTableModelMap = metabolitesUndoTableModelMap;
+	}
+
+	private static Map<String, DefaultTableModel> reactionsUndoTableModelMap;
+
+	public static Map<String, DefaultTableModel> getReactionsUndoTableModelMap() {
+		return reactionsUndoTableModelMap;
+	}
+
+	public static void setReactionsUndoTableModelMap(
+			Map<String, DefaultTableModel> reactionsUndoTableModelMap) {
+		LocalConfig.reactionsUndoTableModelMap = reactionsUndoTableModelMap;
+	}
+
 }

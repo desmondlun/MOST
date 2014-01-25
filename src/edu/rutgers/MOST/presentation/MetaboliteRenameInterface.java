@@ -21,6 +21,10 @@ import javax.swing.event.DocumentListener;
 
 public class MetaboliteRenameInterface  extends JDialog {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static JButton okButton = new JButton("    OK    ");
 	public static JButton cancelButton = new JButton("  Cancel  ");
 	public static final JTextField textField = new JTextField();

@@ -3,12 +3,10 @@ package edu.rutgers.MOST.data;
 public class UndoConstants {
 
 	// Descriptions of undo actions
-	// undo uses sql statement
 	public static final String TYPING = "Typing ";
 	public static final String REPLACE = "Replace";
 	public static final String RENAME_METABOLITE = "Rename";
 	public static final String ADD_ROW = "Add Row";
-	public static final String EDIT_REACTION = "Edit Reaction";
 	
 	// undo modifies hidden column list
 	public static final String ADD_COLUMN = "Add Column";
@@ -27,6 +25,7 @@ public class UndoConstants {
 	
 	// sort
 	public static final String SORT = "Sort";
+	public static final String UNSORT = "Unsort";
 	
 	public static final String REACTION_UNDO_ITEM_TYPE = "reactions";
 	public static final String METABOLITE_UNDO_ITEM_TYPE = "metabolites";

@@ -6,7 +6,6 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -15,21 +14,21 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.SettingsFactory;
 
 public class GurobiPathInterface  extends JDialog {
 
-	public static JButton fileButton = new JButton(GraphicalInterfaceConstants.GUROBI_PATH_BUTTON);
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	public static JButton fileButton = new JButton(GraphicalInterfaceConstants.GUROBI_JAR_PATH_BUTTON);
 	public static JButton okButton = new JButton("    OK    ");
 	public static JButton cancelButton = new JButton("  Cancel  ");
 	public static JButton clearButton = new JButton("Clear");
@@ -53,7 +52,7 @@ public class GurobiPathInterface  extends JDialog {
 	
 	public GurobiPathInterface() {
 
-		setTitle(GraphicalInterfaceConstants.GUROBI_PATH_INTERFACE_TITLE);		
+		setTitle(GraphicalInterfaceConstants.GUROBI_JAR_PATH_INTERFACE_TITLE);		
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
 		getRootPane().setDefaultButton(okButton);
@@ -145,56 +144,19 @@ public class GurobiPathInterface  extends JDialog {
 		
 		ActionListener fileButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
-				/*
-				setAlwaysOnTop(false);
-				if (!fileSelected) {
-					JTextArea output = null;
-					JFileChooser fileChooser = new JFileChooser(); 
-					fileChooser.setDialogTitle("Browse For Gurobi Path");
-					fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);				
-					
-					fileChooser.setCurrentDirectory(new File("C:\\"));
-					
-					//... Open a file dialog.
-					int retval = fileChooser.showOpenDialog(output);
-					if (retval == JFileChooser.APPROVE_OPTION) {
-						//... The user selected a file, get it, use it.          	
-						File file = fileChooser.getSelectedFile();
-						String rawPathName = file.getAbsolutePath();
-						textField.setText(rawPathName);	
-						setPath(rawPathName);
-						fileSelected = true;
-					}			
-				}
-				setAlwaysOnTop(true);
-				*/
+				
 			}
 		};
 		
 		ActionListener okButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
-				/*
-				String lastGurobi_path = GraphicalInterface.curSettings.get("LastGurobi");
-				if (lastGurobi_path == null) {
-					lastGurobi_path = ".";
-				}
-				GraphicalInterface.curSettings.add("LastGurobi", getPath());
-				setVisible(false);
-				dispose();
-				*/
+				
 			}
 		};
 		
 		ActionListener cancelButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
-				/*
-				JOptionPane.showMessageDialog(null,                
-						GraphicalInterfaceConstants.NO_GUROBI_PATH_ERROR,                
-						"No Gurobi Path",                                
-						JOptionPane.ERROR_MESSAGE);
-				setVisible(false);
-				dispose();
-				*/
+				
 			}
 		}; 
 		
@@ -216,8 +178,8 @@ public class GurobiPathInterface  extends JDialog {
 		
 		//based on code from http://stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
-		icons.add(new ImageIcon("images/most16.jpg").getImage()); 
-		icons.add(new ImageIcon("images/most32.jpg").getImage());
+		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
+		icons.add(new ImageIcon("etc/most32.jpg").getImage());
 
 		String lastGurobi_path = curSettings.get("LastGurobi");
 		if (lastGurobi_path == null) {

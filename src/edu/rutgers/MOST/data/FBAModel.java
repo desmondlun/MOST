@@ -3,7 +3,6 @@ package edu.rutgers.MOST.data;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map;
 import java.util.Vector;
 
 public class FBAModel {
@@ -12,39 +11,59 @@ public class FBAModel {
 	protected Vector<ModelMetabolite> metabolites;
 	protected Vector<Double> objective;
 	protected ArrayList<Map<Integer, Double>> sMatrix;
+	protected ArrayList<Integer> metaboliteInternalIdList;
+	protected ArrayList<Integer> reactionIdList;
+	protected Map<Object, Object> reactionsIdPositionMap;
 	
-	public FBAModel(String databaseName) {
-		ReactionFactory rFactory = new ReactionFactory("SBML", databaseName);
+	public Map<Object, Object> getReactionsIdPositionMap() {
+		return reactionsIdPositionMap;
+	}
+
+	public void setReactionsIdPositionMap(Map<Object, Object> reactionsIdPositionMap) {
+		this.reactionsIdPositionMap = reactionsIdPositionMap;
+	}
+
+	protected Map<Object, Object> metaboliteInternalIdMap;
+	
+	public FBAModel() {
+		ReactionFactory rFactory = new ReactionFactory("SBML");
 		this.reactions = rFactory.getAllReactions(); 
 		this.objective = rFactory.getObjective();
+		this.reactionIdList = rFactory.reactionIdList();
+		this.reactionsIdPositionMap = rFactory.getReactionsIdPositionMap();
 		
-		MetaboliteFactory mFactory = new MetaboliteFactory("SBML", databaseName);
+		MetaboliteFactory mFactory = new MetaboliteFactory("SBML");
 		this.metabolites = mFactory.getAllInternalMetabolites();
+		this.metaboliteInternalIdList = mFactory.metaboliteInternalIdList();
+		this.metaboliteInternalIdMap = mFactory.getInternalMetabolitesIdPositionMap();
 
-		ReactantFactory reactantFactory = new ReactantFactory("SBML", databaseName);
-		ArrayList<ModelReactant> reactantList = reactantFactory.getAllReactants();		
-		ProductFactory productFactory = new ProductFactory("SBML", databaseName);
-		ArrayList<ModelProduct> productList = productFactory.getAllProducts();
+		ReactantFactory reactantFactory = new ReactantFactory("SBML");
+		ArrayList<SBMLReactant> reactantList = reactantFactory.getAllReactants();		
+		ProductFactory productFactory = new ProductFactory("SBML");
+		ArrayList<SBMLProduct> productList = productFactory.getAllProducts();
 		
-		this.sMatrix = new ArrayList<Map<Integer, Double>>(metabolites.size());
-		for (int i = 0; i < metabolites.size(); i++) {
+		this.sMatrix = new ArrayList<Map<Integer, Double>>(metaboliteInternalIdList.size());
+		for (int i = 0; i < metaboliteInternalIdList.size(); i++) {
 			Map<Integer, Double> sRow = new HashMap<Integer, Double>();
 			sMatrix.add(sRow);
 		}
 		
 		for (int i = 0; i < reactantList.size(); i++) {
 			SBMLReactant reactant = (SBMLReactant) reactantList.get(i);
-			if (reactant.getMetaboliteId() <= metabolites.size()) {
-				sMatrix.get(reactant.getMetaboliteId() - 1).put(reactant.getReactionId() - 1, -reactant.getStoic());
+			if (metaboliteInternalIdList.contains(reactant.getMetaboliteId()) && reactionIdList.contains(reactant.getReactionId())) {
+				sMatrix.get((Integer) metaboliteInternalIdMap.get(reactant.getMetaboliteId())).put((Integer) reactionsIdPositionMap.get(reactant.getReactionId()), -reactant.getStoic());
 			}
 		}
 		
 		for (int i = 0; i < productList.size(); i++) {
 			SBMLProduct product = (SBMLProduct) productList.get(i);
-			if (product.getMetaboliteId() <= metabolites.size()) {
-				sMatrix.get(product.getMetaboliteId() - 1).put(product.getReactionId() - 1, product.getStoic());
+			if (metaboliteInternalIdList.contains(product.getMetaboliteId()) && reactionIdList.contains(product.getReactionId())) {			
+				sMatrix.get((Integer) metaboliteInternalIdMap.get(product.getMetaboliteId())).put((Integer) reactionsIdPositionMap.get(product.getReactionId()), product.getStoic());
 			}
 		}
+		
+		//System.out.println(sMatrix);
+
 		
 //		for (int i = 0; i < metabolites.size(); i++) {
 //			Iterator<Integer> iterator = sMatrix.get(i).keySet().iterator();

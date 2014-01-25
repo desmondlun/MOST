@@ -26,10 +26,13 @@ import javax.swing.event.DocumentListener;
 
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.SettingsFactory;
-import edu.rutgers.MOST.presentation.GraphicalInterface;
 
 public class CSVLoadInterface  extends JDialog {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static JButton metabFileButton = new JButton(GraphicalInterfaceConstants.CSV_FILE_LOAD_METAB_BUTTON);
 	public static JButton reacFileButton = new JButton(GraphicalInterfaceConstants.CSV_FILE_LOAD_REAC_BUTTON);	
 	public static JButton okButton = new JButton("    OK    ");
@@ -60,6 +63,11 @@ public class CSVLoadInterface  extends JDialog {
 		Box hbReac = Box.createHorizontalBox();
 		Box hbButton = Box.createHorizontalBox();
 
+		metabFileButton.setMnemonic(KeyEvent.VK_M);
+		reacFileButton.setMnemonic(KeyEvent.VK_R);
+		clearMetabButton.setMnemonic(KeyEvent.VK_E);
+		clearReacButton.setMnemonic(KeyEvent.VK_A);
+		
 		JLabel topLabel = new JLabel();
 		topLabel.setText("File Name");
 		topLabel.setSize(new Dimension(150, 10));
@@ -125,12 +133,14 @@ public class CSVLoadInterface  extends JDialog {
 				} else {
 					LocalConfig.getInstance().hasReactionsFile = false;
 				}
+				/*
 				if (textMetabField.getText() != null && textMetabField.getText().length() > 0) {
 					okButton.setEnabled(true);
 					LocalConfig.getInstance().hasMetabolitesFile = true;
 				} else {
 					LocalConfig.getInstance().hasMetabolitesFile = false;
 				}
+				*/
 				//System.out.println("csv load " + LocalConfig.getInstance().hasMetabolitesFile);
 			}
 		});
@@ -185,12 +195,10 @@ public class CSVLoadInterface  extends JDialog {
 				fileChooser.setDialogTitle("Load CSV Metabolite File");
 				fileChooser.setFileFilter(new CSVFileFilter());
 				fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-				
 				String lastCSV_path = GraphicalInterface.curSettings.get("LastCSV");
-				if (lastCSV_path == null) {
-					lastCSV_path = ".";
-				}
-				fileChooser.setCurrentDirectory(new File(lastCSV_path));
+				Utilities u = new Utilities();
+				// if path is null or does not exist, default used, else last path used		
+				fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));	
 				
 				//... Open a file dialog.
 				int retval = fileChooser.showOpenDialog(output);
@@ -199,6 +207,7 @@ public class CSVLoadInterface  extends JDialog {
 					File file = fileChooser.getSelectedFile();
 					String rawPathName = file.getAbsolutePath();
 					GraphicalInterface.curSettings.add("LastCSV", rawPathName);
+					GraphicalInterface.curSettings.add("LastCSVMetabolites", rawPathName);
 
 					String rawFilename = file.getName();
 					String filename = rawFilename.substring(0, rawFilename.length() - 4); 
@@ -213,8 +222,7 @@ public class CSVLoadInterface  extends JDialog {
 						textMetabField.setText(path);
 						LocalConfig.getInstance().setMetabolitesCSVFile(file); 
 						if (!LocalConfig.getInstance().hasReactionsFile) {
-							LocalConfig.getInstance().setDatabaseName(filename);
-							LocalConfig.getInstance().setLoadedDatabase(filename);
+							LocalConfig.getInstance().setModelName(filename);
 						}						
 					}
 				}				
@@ -227,14 +235,12 @@ public class CSVLoadInterface  extends JDialog {
 				JFileChooser fileChooser = new JFileChooser(); 
 				fileChooser.setDialogTitle("Load CSV Reaction File");
 				fileChooser.setFileFilter(new CSVFileFilter());
-				fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-				
+				fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);				
 				String lastCSV_path = GraphicalInterface.curSettings.get("LastCSV");
-				if (lastCSV_path == null) {
-					lastCSV_path = ".";
-				}
-				fileChooser.setCurrentDirectory(new File(lastCSV_path));
-								
+				Utilities u = new Utilities();
+				// if path is null or does not exist, default used, else last path used		
+				fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));	
+				
 				//... Open a file dialog.
 				int retval = fileChooser.showOpenDialog(output);
 				if (retval == JFileChooser.APPROVE_OPTION) {
@@ -242,6 +248,7 @@ public class CSVLoadInterface  extends JDialog {
 					File file = fileChooser.getSelectedFile();
 					String rawPathName = file.getAbsolutePath();
 					GraphicalInterface.curSettings.add("LastCSV", rawPathName);
+					GraphicalInterface.curSettings.add("LastCSVReactions", rawPathName);
 					
 					String rawFilename = file.getName();
 					String filename = rawFilename.substring(0, rawFilename.length() - 4); 
@@ -255,8 +262,7 @@ public class CSVLoadInterface  extends JDialog {
 					} else {
 						textReacField.setText(path);
 						LocalConfig.getInstance().setReactionsCSVFile(file);
-						LocalConfig.getInstance().setDatabaseName(filename);
-						LocalConfig.getInstance().setLoadedDatabase(filename);
+						LocalConfig.getInstance().setModelName(filename);
 					}
 
 				}				
@@ -275,6 +281,9 @@ public class CSVLoadInterface  extends JDialog {
 				textMetabField.setText("");	
 				LocalConfig.getInstance().hasMetabolitesFile = false;
 				LocalConfig.getInstance().setMetabolitesCSVFile(null); 
+				if (textReacField.getText().trim().length() == 0) {
+					okButton.setEnabled(false);
+				}
 			}
 		}; 
 		
@@ -283,6 +292,9 @@ public class CSVLoadInterface  extends JDialog {
 				textReacField.setText("");
 				LocalConfig.getInstance().hasReactionsFile = false;
 				LocalConfig.getInstance().setReactionsCSVFile(null);
+				if (textMetabField.getText().trim().length() == 0) {
+					okButton.setEnabled(false);
+				}
 			}
 		};
 		
