@@ -9978,7 +9978,7 @@ public class GraphicalInterface extends JFrame {
 		
 		showPrompt = true;
 		
-		// selected row default at first
+		// selected row default at first row
 		statusBar.setText("Row 1");
 		
 	}
