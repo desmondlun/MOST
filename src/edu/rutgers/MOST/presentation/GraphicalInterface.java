@@ -5593,19 +5593,21 @@ public class GraphicalInterface extends JFrame {
 						int id = (Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
 						deleteIds.add(id);	
 						model.removeRow(viewRow);
-						for (int i = 0; i < ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getReactants().size(); i++) {
-							String reactant = ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getReactants().get(i).getMetaboliteAbbreviation();
-							if (oldMetaboliteUsedMap.containsKey(reactant)) {
-								updateMetaboliteUsedMap(reactant);
+						if (LocalConfig.getInstance().getReactionEquationMap().get(id) != null) {
+							for (int i = 0; i < ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getReactants().size(); i++) {
+								String reactant = ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getReactants().get(i).getMetaboliteAbbreviation();
+								if (oldMetaboliteUsedMap.containsKey(reactant)) {
+									updateMetaboliteUsedMap(reactant);
+								}
 							}
-						}
-						for (int j = 0; j < ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getProducts().size(); j++) {
-							String product = ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getProducts().get(j).getMetaboliteAbbreviation();
-							if (oldMetaboliteUsedMap.containsKey(product)) {
-								updateMetaboliteUsedMap(product);
+							for (int j = 0; j < ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getProducts().size(); j++) {
+								String product = ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getProducts().get(j).getMetaboliteAbbreviation();
+								if (oldMetaboliteUsedMap.containsKey(product)) {
+									updateMetaboliteUsedMap(product);
+								}
 							}
-						}
-						LocalConfig.getInstance().getReactionEquationMap().remove(id);
+							LocalConfig.getInstance().getReactionEquationMap().remove(id);
+						}												
 //						System.out.println("del " + LocalConfig.getInstance().getReactionEquationMap());
 //						System.out.println("del id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
 //						System.out.println("del used " + LocalConfig.getInstance().getMetaboliteUsedMap());
