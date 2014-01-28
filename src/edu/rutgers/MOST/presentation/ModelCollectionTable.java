@@ -116,7 +116,9 @@ class ModelCollectionTable
 	{
 		// Set the frame characteristics
 		setTitle(ModelCollectionConstants.TITLE);
-		setSize( 700, 500 );
+		//setSize( 700, 500 );
+		setSize( 700, 326 );
+		
 		setBackground( Color.gray );
 		
 		okButton.setMnemonic(KeyEvent.VK_O);
