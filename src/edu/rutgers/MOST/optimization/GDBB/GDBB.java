@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import edu.rutgers.MOST.data.*;
 import edu.rutgers.MOST.optimization.solvers.*;
+import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 //http://commons.apache.org/proper/commons-lang/download_lang.cgi
 import org.apache.commons.lang3.time.StopWatch;
@@ -256,11 +257,23 @@ public class GDBB extends Thread {
 			if (objective.size() != 0) {
 				E.get(rowsE_1).put(i, objective.get(i).doubleValue());
 			}
+			
+			double lb = reac.get(i).getLowerBound();
+			double ub = reac.get(i).getUpperBound();
+			
+			if (reac.get(i).getKnockout().equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[1])) {
+				lb = 0;
+				ub = 0;
+			}
 
 //          SBMLReaction reac = (SBMLReaction) (reactions.elementAt(i));
-			E.get(rowsE_1).put(i + reactions.size(), reac.get(i).getLowerBound());
+//			E.get(rowsE_1).put(i + reactions.size(), reac.get(i).getLowerBound());
+//
+//			E.get(rowsE_1).put(i + reactions_2, -reac.get(i).getUpperBound());
+			
+			E.get(rowsE_1).put(i + reactions.size(), lb);
 
-			E.get(rowsE_1).put(i + reactions_2, -reac.get(i).getUpperBound());
+			E.get(rowsE_1).put(i + reactions_2, -ub);
 		}
 
 //      Ad*G'
@@ -276,7 +289,13 @@ public class GDBB extends Thread {
 //          SBMLReaction reac = (SBMLReaction) (reactions.elementAt(i));
 			for (int j = 0; j < gprMatrix.size(); j++) {
 				if(gprMatrix.get(j).get(i) != null) {
-					Gad.get(i).put(j, reac.get(i).getLowerBound()*gprMatrix.get(j).get(i).doubleValue());
+					double lb = reac.get(i).getLowerBound();
+					
+					if (reac.get(i).getKnockout().equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[1])) {
+						lb = 0;
+					}
+					Gad.get(i).put(j, lb*gprMatrix.get(j).get(i).doubleValue());
+//					Gad.get(i).put(j, reac.get(i).getLowerBound()*gprMatrix.get(j).get(i).doubleValue());
 				}
 			}
 		}
@@ -317,7 +336,13 @@ public class GDBB extends Thread {
 //          SBMLReaction reac = (SBMLReaction) (reactions.elementAt(i));
 			for (int j = 0; j < gprMatrix.size(); j++) {
 				if(gprMatrix.get(j).get(i) != null) {
-					Gbd.get(i).put(j, reac.get(i).getUpperBound()*gprMatrix.get(j).get(i).doubleValue());
+					double ub = reac.get(i).getUpperBound();
+					
+					if (reac.get(i).getKnockout().equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[1])) {
+						ub = 0;
+					}
+					Gbd.get(i).put(j, ub*gprMatrix.get(j).get(i).doubleValue());
+//					Gbd.get(i).put(j, reac.get(i).getUpperBound()*gprMatrix.get(j).get(i).doubleValue());
 				}
 			}
 		}
@@ -372,7 +397,13 @@ public class GDBB extends Thread {
 
 		for (int i = 0; i < reactions.size(); i++) {
 //          SBMLReaction reac = (SBMLReaction) (reactions.elementAt(i));
-			GDBB.getSolver().addConstraint(Ma.get(i), ConType.GREATER_EQUAL, reac.get(i).getLowerBound());
+			double lb = reac.get(i).getLowerBound();
+			
+			if (reac.get(i).getKnockout().equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[1])) {
+				lb = 0;
+			}
+			GDBB.getSolver().addConstraint(Ma.get(i), ConType.GREATER_EQUAL, lb);
+//			GDBB.getSolver().addConstraint(Ma.get(i), ConType.GREATER_EQUAL, reac.get(i).getLowerBound());
 		}
 
 		for (int i = reactions.size(); i < reactions_2; i++) {
@@ -381,7 +412,13 @@ public class GDBB extends Thread {
 
 		for (int i = 0; i < reactions.size(); i++) {
 //          SBMLReaction reac = (SBMLReaction) (reactions.elementAt(i));
-			GDBB.getSolver().addConstraint(Mb.get(i), ConType.LESS_EQUAL, reac.get(i).getUpperBound());
+			double ub = reac.get(i).getUpperBound();
+			
+			if (reac.get(i).getKnockout().equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[1])) {
+				ub = 0;
+			}
+			GDBB.getSolver().addConstraint(Mb.get(i), ConType.LESS_EQUAL, ub);
+//			GDBB.getSolver().addConstraint(Mb.get(i), ConType.LESS_EQUAL, reac.get(i).getUpperBound());
 		}
 
 		for (int i = reactions.size(); i < reactions_2; i++) {

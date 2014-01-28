@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import edu.rutgers.MOST.data.*;
 import edu.rutgers.MOST.optimization.solvers.*;
+import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 public class FBA {
 
@@ -38,6 +39,11 @@ public class FBA {
 			//String varName = Integer.toString(reac.getId());
 			double lb = reac.getLowerBound();
 			double ub = reac.getUpperBound();
+			
+			if (reac.getKnockout().equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[1])) {
+				lb = 0;
+				ub = 0;
+			}
 
 			FBA.getSolver().setVar(varName, VarType.CONTINUOUS, lb, ub);
 
