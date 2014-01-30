@@ -39,7 +39,7 @@ public class SettingsFactory {
 	public SettingsFactory() throws Exception {
 		mappings = new HashMap<String, String>();
 		String fileName = "";
-		if (System.getProperty("os.name").equals("Windows 7")) {
+		if (System.getProperty("os.name").equals("Windows 7") || System.getProperty("os.name").equals("Windows 8") || System.getProperty("os.name").equals("Windows Vista")) {
 			File destDir = new File(SettingsConstants.SETTINGS_PATH_PREFIX_WINDOWS_7 + System.getProperty("user.name") + SettingsConstants.SETTINGS_PATH_SUFFIX_WINDOWS_7 + SettingsConstants.FOLDER_NAME);
 			if (!destDir.exists()) {
 				destDir.mkdir();				

@@ -117,7 +117,8 @@ class ModelCollectionTable
 		// Set the frame characteristics
 		setTitle(ModelCollectionConstants.TITLE);
 		//setSize( 700, 500 );
-		setSize( 700, 326 );
+		//setSize( 700, 326 );
+		setSize( 700, 286 );
 		
 		setBackground( Color.gray );
 		

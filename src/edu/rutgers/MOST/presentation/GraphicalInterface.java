@@ -1278,7 +1278,12 @@ public class GraphicalInterface extends JFrame {
 						outputText.append("FBA\n");
 						outputText.append(LocalConfig.getInstance().getModelName() + "\n");
 						outputText.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions\n");
-						outputText.append("Maximum objective: "	+ fba.getMaxObj() + "\n");
+						String maxObj = Double.toString(fba.getMaxObj());
+						if (maxObj.equals("-0.0")) {
+							maxObj = "0.0";
+						}
+						outputText.append("Maximum objective: "	+ maxObj + "\n");
+						//outputText.append("Maximum objective: "	+ fba.getMaxObj() + "\n");
 						
 						File file = new File(u.createLogFileName(optimizeName + ".log"));
 						writer = new BufferedWriter(new FileWriter(file));
@@ -2402,7 +2407,8 @@ public class GraphicalInterface extends JFrame {
 		double border = 10;
 		double size[][] =
 			{{border, TableLayout.FILL, 20, 0.20, border},  //Columns
-				{border, 0.06, 10, 0.04, 10, TableLayout.FILL, 10, 0.15, 5, 0.02, border}}; // Rows
+				{border, 0.06, 10, 0.04, 10, TableLayout.FILL, 10, 0.17, 5, 0.02, border}}; // Rows
+				//{border, 0.06, 10, 0.04, 10, TableLayout.FILL, 10, 0.15, 5, 0.02, border}}; // old value
 
 		setLayout (new TableLayout(size)); 
 

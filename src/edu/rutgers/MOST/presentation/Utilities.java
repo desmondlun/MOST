@@ -107,7 +107,7 @@ public class Utilities {
 	
 	public String createLogFileName(String name) {
 		String fileName = "";
-		if (System.getProperty("os.name").equals("Windows 7")) {
+		if (System.getProperty("os.name").equals("Windows 7") || System.getProperty("os.name").equals("Windows 8") || System.getProperty("os.name").equals("Windows Vista")) {
 			File destDir = new File(GraphicalInterfaceConstants.SETTINGS_PATH_PREFIX_WINDOWS_7 + System.getProperty("user.name") + GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_7 + GraphicalInterfaceConstants.FOLDER_NAME);
 			if (!destDir.exists()) {
 				destDir.mkdir();				

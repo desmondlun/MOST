@@ -502,6 +502,7 @@ public class GurobiSolver extends Solver {
 			outputText.append("gurobi.GRB$DoubleAttr loaded \n");
 				
 			Enum[] grbDoubleAttrConstants = (Enum[]) grbDoubleAttr.getEnumConstants();
+			outputText.append(grbDoubleAttrConstants.toString() + "\n");
 			Enum objValAttr = null;
 			for (int i = 0; i < grbDoubleAttrConstants.length; i++)
 				if (grbDoubleAttrConstants[i].name() == "ObjVal") {
@@ -510,6 +511,7 @@ public class GurobiSolver extends Solver {
 				}
 			
 			Method modelGetMethod = modelClass.getMethod("get", new Class[]{ grbDoubleAttr });
+			outputText.append(modelGetMethod.invoke(model, new Object[]{ objValAttr }));
 			writeLogFile(outputText);
 			return (double) modelGetMethod.invoke(model, new Object[]{ objValAttr });
 		} catch (IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | ClassNotFoundException | InstantiationException e) {
@@ -527,6 +529,7 @@ public class GurobiSolver extends Solver {
 			handleGurobiException();
 		}
 		outputText.append("return NaN \n");
+		writeLogFile(outputText);
 		
 		return Double.NaN;
 	}
