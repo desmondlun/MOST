@@ -1,7 +1,5 @@
 Model Version,Organism Name,Year,Genes,Reactions,Metabolites,Reference,Path,Type
-AraGEM,Arabidopis thaliana,2009,0,1406,1253,"Poolman et al., 2009",sbml\\Arabidopsis thaliana,sbml
 iBsu1103,Bacillus subtilis 168,2009,1103,1437,1138,"Henry et al., 2009",sbml\\Bacillus subtilis,sbml
-iRC1080,Chlamydomonas reinhardtii,2009,0,484,458,"Boyle and Morgan, 2009",sbml\\Chlamydomonas reinhardtii,sbml
 iCA1273,Escherichia coli K-12 MG1655,2000,660,627,438,"Edwards and Palsson, 2000",sbml\\E. Coli,sbml
 iJR904,Escherichia coli K-12 MG1655,2003,904,931,625,"Reed et al., 2003",sbml\\E. Coli,sbml
 iJO1366,Escherichia coli K-12 MG1655,2006,0,873,518,"Henry et al., 2006",sbml\\E. Coli,sbml
