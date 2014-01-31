@@ -295,7 +295,8 @@ class ModelCollectionTable
 					ending = "._mtb.csv";
 				}
 				setFileName(filename);
-				setPath(userPath + "\\" + path + "\\" + filename + ending);
+				setPath(userPath + "/" + path + "/" + filename + ending);
+				//setPath(userPath + "\\" + path + "\\" + filename + ending);
     			okButton.setEnabled(true);
 			}
     	}
