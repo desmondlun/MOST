@@ -23,12 +23,14 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import edu.rutgers.MOST.config.LocalConfig;
-import edu.rutgers.MOST.data.ReactionUndoItem;
-import edu.rutgers.MOST.data.UndoConstants;
-import edu.rutgers.MOST.presentation.GraphicalInterface.MetabolitesPopupListener;
+import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.hyperlink.AbstractHyperlinkAction;
+import org.jdesktop.swingx.renderer.DefaultTableRenderer;
+import org.jdesktop.swingx.renderer.HyperlinkProvider;
+
 import au.com.bytecode.opencsv.CSVReader;
 
 // loosely based on http://www.cs.cf.ac.uk/Dave/HCI/HCI_Handout_CALLER/node167.html
@@ -43,7 +45,7 @@ class ModelCollectionTable
 	// Instance attributes used in this example
 	private	JPanel		topPanel;
 	private	JScrollPane scrollPane;
-	private JTable table = new JTable(){  
+	private JXTable table = new JXTable(){  
 		/**
 		 * 
 		 */
@@ -228,9 +230,14 @@ class ModelCollectionTable
 		int r = table.getModel().getColumnCount();	
 		for (int i = 0; i < r; i++) {
 			//set background of id column to grey
-			ModelCollectionCellRenderer renderer = new ModelCollectionCellRenderer();			
+			ModelCollectionCellRenderer renderer = new ModelCollectionCellRenderer();
+			TableCellRenderer hyperlinkRenderer = new DefaultTableRenderer(new HyperlinkProvider(simpleAction));
 			TableColumn column = table.getColumnModel().getColumn(i);
-            column.setCellRenderer(renderer);
+			if (i == ModelCollectionConstants.REFERENCE_COLUMN) {
+				column.setCellRenderer(hyperlinkRenderer);
+			} else {
+				column.setCellRenderer(renderer);
+			}            
             // Column widths can be changed here           
             if (i == ModelCollectionConstants.MODEL_VERSION_COLUMN) {
             	column.setPreferredWidth(ModelCollectionConstants.MODEL_VERSION_WIDTH);
@@ -515,6 +522,15 @@ class ModelCollectionTable
 	/***********************************************************************************/
 	//end tab override methods
 	/***********************************************************************************/
+	
+	AbstractHyperlinkAction<Object> simpleAction = new AbstractHyperlinkAction<Object>(null) {
+
+	    public void actionPerformed(ActionEvent e) {
+	        // here goes what you want to do on activating the hyperlink
+	        //LOG.info("hit: " + getTarget());
+	    }
+
+	};
 	
 	public static void main( String args[] )
 	{
