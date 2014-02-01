@@ -526,8 +526,24 @@ class ModelCollectionTable
 	AbstractHyperlinkAction<Object> simpleAction = new AbstractHyperlinkAction<Object>(null) {
 
 	    public void actionPerformed(ActionEvent e) {
-	        // here goes what you want to do on activating the hyperlink
-	        //LOG.info("hit: " + getTarget());
+	    	if (table.getModel().getValueAt(table.getSelectedRow(), 9) != null &&
+	    			((String) table.getModel().getValueAt(table.getSelectedRow(), 9)).trim().length() > 0) {
+	    		try{ 
+					String url = (String) table.getModel().getValueAt(table.getSelectedRow(), 9);  
+					java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));  
+				}  
+				catch (java.io.IOException e1) {  
+					JOptionPane.showMessageDialog(null,                
+							GraphicalInterfaceConstants.HELP_URL_NOT_FOUND_MESSAGE,                
+							GraphicalInterfaceConstants.HELP_URL_NOT_FOUND_TITLE,                                
+							JOptionPane.ERROR_MESSAGE);   
+				}
+	    	} else {
+	    		JOptionPane.showMessageDialog(null,                
+						GraphicalInterfaceConstants.HELP_URL_NOT_FOUND_MESSAGE,                
+						GraphicalInterfaceConstants.HELP_URL_NOT_FOUND_TITLE,                                
+						JOptionPane.ERROR_MESSAGE);
+	    	}
 	    }
 
 	};

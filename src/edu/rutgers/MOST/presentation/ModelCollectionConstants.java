@@ -22,7 +22,8 @@ public class ModelCollectionConstants {
 	public static final String[] INVISIBLE_COLUMN_NAMES = 
 		{
 			"Path", 	
-			"Type"
+			"Type",
+			"URL"
 		};
 	
 	public static final int DEFAULT_WIDTH = 70; //columns with no assigned width use default
