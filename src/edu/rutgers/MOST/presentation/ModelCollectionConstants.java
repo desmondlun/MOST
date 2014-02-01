@@ -36,6 +36,6 @@ public class ModelCollectionConstants {
 	public static final int REACTIONS_COLUMN = visibleColumnsList.indexOf("Reactions");
 	public static final int METABOLITES_COLUMN = visibleColumnsList.indexOf("Metabolites");
 	public static final int REFERENCE_COLUMN = visibleColumnsList.indexOf("Reference");
-	public static final int REFERENCE_WIDTH = 150; 
+	public static final int REFERENCE_WIDTH = 200; 
 			
 }
