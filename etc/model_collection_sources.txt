@@ -11,15 +11,16 @@ doi:10.1186/1471-2180-5-8            Staphylococcus aureus N315 Becker and Palss
 
 
 
+10.1038/msb.2008.10          Acinetobacter baumannii AYE Durot et al., 2008       174.full.pdf
+doi: http:/?/?dx.?doi.?org/?10.?1104/?pp.?109.?141267     Arabidopis thaliana Poolman et al., 2009         Plant Physiol.-2009-Poolman-1570-81.pdf
+Aspergillus nidulans FGSC A4 David et al., 2008
+doi:10.1038/nbt1282         Aspergillus niger CBS 513.88 Andersen et al., 2008       nbt1282.pdf
+doi:10.1186/1471-2164-9-245          Aspergillus oryzae RIB40 Vongsangnak et al., 2008         1471-2164-9-245.pdf
+doi:10.1186/1752-0509-3-4        Chlamydomonas reinhardtii Boyle and Morgan, 2009                 1752-0509-3-4.pdf
+doi: 10.1073/pnas.0610772104       Homo sapiens Duarte et al., 2007        PNAS-2007-Duarte-1777-82.pdf
+doi:  10.1038/msb4100046        Methanosarcina barkeri Feist et al., 2006         msb4100046.pdf
 
-
-
-
-
-
-
-
-
+ 
 
 
 https://www.google.com/search?q=iJO1366+Escherichia+coli+K-12+Henry+et+al.%2C+2006&ie=utf-8&oe=utf-8&aq=t&rls=org.mozilla:en-US:official&client=firefox-a
