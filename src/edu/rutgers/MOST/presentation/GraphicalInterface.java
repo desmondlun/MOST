@@ -9816,12 +9816,17 @@ public class GraphicalInterface extends JFrame {
 		gpi.setLocationRelativeTo(null);		
 		gpi.setAlwaysOnTop(true);	
 		gpi.setModal(true);
-		gpi.textField.setText(findGurobiPath());
-		if (gurobiPathFound) {
-			gpi.topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_FOUND_LABEL);
-			setGurobiPath(findGurobiPath());
+		if (System.getProperty("os.name").equals("Windows 7") || System.getProperty("os.name").equals("Windows 8")
+				|| System.getProperty("os.name").equals("Windows Vista") || System.getProperty("os.name").equals("Windows XP")) {
+			gpi.textField.setText(findGurobiPath());
+			if (gurobiPathFound) {
+				gpi.topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_FOUND_LABEL);
+				setGurobiPath(findGurobiPath());
+			} else {
+				gpi.topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_NOT_FOUND_LABEL);
+			}
 		} else {
-			gpi.topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_NOT_FOUND_LABEL);
+			gpi.topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_LINUX);
 		}
 		gpi.fileButton.addActionListener(fileButtonActionListener);
 		gpi.okButton.addActionListener(gpiOKActionListener);
