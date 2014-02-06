@@ -5,12 +5,12 @@ WindowTitle=MOST Setup
 ProductName=MOST
 
 [Graphics]
-SplashScreen=C:\Users\Rutgers\Documents\MOST_dist013014a\most32.bmp
+SplashScreen=C:\Users\Rutgers\Documents\MOST_dist020514\most32.bmp
 SplashScreenDelay=1
-Header=C:\Users\Rutgers\Documents\MOST_dist013014a\most32.bmp
+Header=C:\Program Files (x86)\InstallSimple 2.7\images\2.bmp
 HeaderJustify=Right
 HeaderFontColor=0
-WizardBitmap=C:\Users\Rutgers\Documents\MOST_dist013014a\most32.bmp
+WizardBitmap=C:\Program Files (x86)\InstallSimple 2.7\images\2.bmp
 WizardFontColor=0
 
 [FirstMessage]
@@ -258,12 +258,13 @@ The precise terms and conditions for copying, distribution and modification foll
 l.
 
 [SetupFiles]
-SourceFolder=C:\Users\Rutgers\Documents\MOST_dist013014a
+SourceFolder=C:\Users\Rutgers\Documents\MOST_dist020514
 SpecialFolder=System Drive
 SetupPath=Program Files\MOST
 
 [Shortcuts]
 ProgramGroup=MOST
+MOST.exe=dmp
 
 [Registry]
 
