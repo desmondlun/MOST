@@ -158,6 +158,14 @@ A{text-decoration:none}
 
 	<br>
 
+	<blockquote>Gurobi installation instructions can be found <a href="http://www.gurobi.com/documentation/5.6/quick-start-guide/installation_windows">
+	here</a>.</blockquote>
+
+	<blockquote>In order to run Gurobi, you also need to install the Gurobi JNI library. See topic #42 on the 
+	<a href="http://www.gurobi.com/resources/faqs">Gurobi FAQ's page</a> for installation instructions.</blockquote>
+
+	<br>
+
 	<p><a name="issues"> Known Issues:</a></p>
 
 	<blockquote>Windows 8 is known to have issues with using the installer. If the installer will not work, download
@@ -173,8 +181,20 @@ A{text-decoration:none}
 
 	 <blockquote>in the directory where the gzip was uncompressed.</blockquote>
 
+	<br>
+
+	<blockquote>Gurobi installation instructions can be found <a href="http://www.gurobi.com/documentation/5.6/quick-start-guide/installation_linux">
+	here</a>.</blockquote>
+
 	<blockquote>In order to run Gurobi, you also need to install the Gurobi JNI library. See topic #42 on the 
 	<a href="http://www.gurobi.com/resources/faqs">Gurobi FAQ's page</a> for installation instructions.</blockquote>
+
+	<blockquote>Once Gurobi is set up correctly, the command to run MOST must include the library path.</blockquote>
+
+	<blockquote><tt>java -Djava.library.path=&lt;JNI directory&gt; -jar MOST.jar</tt></blockquote>
+
+	<blockquote>where JNI directory is the directory that contains libGurobiJniXX.so file. "XX" is the version number.
+	</blockquote>
 
 	<br>
 	<p><a name="mac">  Macintosh:</a></p>
