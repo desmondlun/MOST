@@ -9817,7 +9817,8 @@ public class GraphicalInterface extends JFrame {
 		gpi.setAlwaysOnTop(true);	
 		gpi.setModal(true);
 		if (System.getProperty("os.name").equals("Windows 7") || System.getProperty("os.name").equals("Windows 8")
-				|| System.getProperty("os.name").equals("Windows Vista") || System.getProperty("os.name").equals("Windows XP")) {
+				|| System.getProperty("os.name").equals("Windows Vista") || System.getProperty("os.name").equals("Windows XP")
+				|| System.getProperty("os.name").equals("Linux")) {
 			gpi.textField.setText(findGurobiPath());
 			if (gurobiPathFound) {
 				gpi.topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_FOUND_LABEL);
@@ -9850,8 +9851,11 @@ public class GraphicalInterface extends JFrame {
 			fileChooser.setDialogTitle(GraphicalInterfaceConstants.GUROBI_JAR_PATH_FILE_CHOOSER_TITLE);
 			// no matter what is tried this file filter will not work (?????)
 			//			fileChooser.setFileFilter(new SBMLFileFilter());
-			fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);							
-			fileChooser.setCurrentDirectory(new File("C:\\"));
+			fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+			if (System.getProperty("os.name").equals("Windows 7") || System.getProperty("os.name").equals("Windows 8")
+					|| System.getProperty("os.name").equals("Windows Vista") || System.getProperty("os.name").equals("Windows XP")) {
+				fileChooser.setCurrentDirectory(new File("C:\\"));
+			}			
 			//... Open a file dialog.
 			int retval = fileChooser.showOpenDialog(output);
 			if (retval == JFileChooser.APPROVE_OPTION) {
@@ -9922,12 +9926,22 @@ public class GraphicalInterface extends JFrame {
 
 		String variable = System.getenv("GUROBI_HOME");  
 		if (variable != null) {
-			gurobiPath = variable;
+			if (System.getProperty("os.name").equals("Linux")) {
+				gurobiPath = System.getProperty("user.home") + variable;
+			} else {
+				gurobiPath = variable;
+			}
 			gurobiPathFound = true;
 		}
 
 		if (gurobiPathFound) {
-			gurobiPath = gurobiPath + "\\lib\\gurobi.jar";
+			if (System.getProperty("os.name").equals("Windows 7") || System.getProperty("os.name").equals("Windows 8")
+					|| System.getProperty("os.name").equals("Windows Vista") || System.getProperty("os.name").equals("Windows XP")) {
+				gurobiPath = gurobiPath + "\\lib\\gurobi.jar";
+			} else {
+				gurobiPath = gurobiPath + "/lib/gurobi.jar";
+			}
+						
 			File f = new File(gurobiPath);
 			// uncomment to test Gurobi not found
 			//File f = new File("none");
@@ -9993,6 +10007,11 @@ public class GraphicalInterface extends JFrame {
 		
 		// selected row default at first row
 		statusBar.setText("Row 1");
+		
+//		Map<String, String> env = System.getenv();
+//        for (String envName : env.keySet()) {
+//            System.out.format("%s=%s%n", envName, env.get(envName));
+//        }
 		
 	}
 }
