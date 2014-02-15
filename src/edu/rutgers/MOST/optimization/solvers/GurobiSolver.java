@@ -97,7 +97,12 @@ public class GurobiSolver extends Solver {
 				File gurobiJARFile = new File(gurobiPath);
 				classLoader = URLClassLoader.newInstance(new URL[]{ gurobiJARFile.toURI().toURL() });
 			}
-			//put in here
+			// set path to JNI library for Linux programmatically, in same folder as gurobi.jar
+			// see http://stackoverflow.com/questions/15961483/setting-djava-library-path-programmatically-or-alternatives
+			if (System.getProperty("os.name").equals("Linux")) {
+				String jniPath = GraphicalInterface.getGurobiPath().substring(0, GraphicalInterface.getGurobiPath().lastIndexOf("/"));
+				System.setProperty("java.library.path", jniPath);
+			}			
 			grbClass = classLoader.loadClass("gurobi.GRB");
 			outputText.append("gurobi.GRB loaded \n");
 			
@@ -489,7 +494,7 @@ public class GurobiSolver extends Solver {
 			};
 			
 			Method modelSetCallbackMethod = modelClass.getMethod("setCallback", new Class[]{ grbCallbackClass });
-			System.out.println(new Class[0].toString());
+			
 			Object callback = factory.create(new Class[0], new Object[0], handler);
 			modelSetCallbackMethod.invoke(model, new Object[]{ callback });
 			

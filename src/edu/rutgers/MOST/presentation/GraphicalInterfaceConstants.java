@@ -402,7 +402,7 @@ public class GraphicalInterfaceConstants {
     public static final String NO_GUROBI_JAR_PATH_ERROR_TITLE = "No Gurobi Jar Path";
     public static final String GUROBI_JAR_PATH_FILE_CHOOSER_TITLE = "Browse For Gurobi Jar Path";
     public static final String GUROBI_JAR_PATH_OPTIONS_MENU_ITEM = "Set Gurobi Jar Path";
-    public static final String GUROBI_JAR_PATH_LINUX = "Browse for Gurobi Path";
+    public static final String GUROBI_JAR_PATH_DEFAULT = "Browse for Gurobi Path";
     
     public static final String GUROBI_KEY_ERROR_TITLE = "Gurobi Key Error";
     public static final String GUROBI_KEY_ERROR = "Gurobi Key Error";

@@ -1805,6 +1805,8 @@ public class GraphicalInterface extends JFrame {
 		setGurobiPath.setMnemonic(KeyEvent.VK_G);
 		setGurobiPath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
+				getGurobiPathInterface().setSize(600, 150);
+				getGurobiPathInterface().topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_DEFAULT);
 				getGurobiPathInterface().setVisible(true);
 				//loadGurobiPathInterface();
 			}    	     
@@ -9810,7 +9812,7 @@ public class GraphicalInterface extends JFrame {
 		GurobiPathInterface gpi = new GurobiPathInterface();
 		setGurobiPathInterface(gpi);
 		gpi.setIconImages(icons);					
-		gpi.setSize(600, 150);
+		gpi.setSize(700, 150);
 		gpi.setResizable(false);
 		gpi.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		gpi.setLocationRelativeTo(null);		
@@ -9827,7 +9829,7 @@ public class GraphicalInterface extends JFrame {
 				gpi.topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_NOT_FOUND_LABEL);
 			}
 		} else {
-			gpi.topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_LINUX);
+			gpi.topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_DEFAULT);
 		}
 		gpi.fileButton.addActionListener(fileButtonActionListener);
 		gpi.okButton.addActionListener(gpiOKActionListener);
@@ -9927,7 +9929,13 @@ public class GraphicalInterface extends JFrame {
 		String variable = System.getenv("GUROBI_HOME");  
 		if (variable != null) {
 			if (System.getProperty("os.name").equals("Linux")) {
-				gurobiPath = System.getProperty("user.home") + variable;
+				// path behavior not consistent, 32 bit Gurobi environmental variable
+				// returns full path, 64 bit only relative path
+				if (!variable.startsWith(System.getProperty("user.home"))) {
+					gurobiPath = System.getProperty("user.home") + variable;
+				} else {
+					gurobiPath = variable;
+				}
 			} else {
 				gurobiPath = variable;
 			}
