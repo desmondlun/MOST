@@ -1,5 +1,9 @@
 doi:10.1186/gb-2009-10-6-r69                                     Bacillus subtilis 168 Henry et al., 2009                       P1633.pdf      http://dx.doi.org/10.1186/gb-2009-10-6-r69 
+
+// incorrect
 http://dx.doi.org/10.1128%2FJB.185.21.6400-6408.2003  Escherichia coli K-12 MG1655 Edwards and Palsson, 2000     0253.pdf     http://dx.doi.org/10.1128%2FJB.185.21.6400-6408.2003
+
+
 doi:10.1186/gb-2003-4-9-r54               Escherichia coli K-12 MG1655 Reed et al., 2003      gb-2003-4-9-r54.pdf          http://dx.doi.org/10.1186/gb-2003-4-9-r54
        Escherichia coli K-12 Orth et al, 2011           http://dx.doi.org/10.1038/msb.2011.65
 http://dx.doi.org/10.1038%2Fmsb4100155       Escherichia coli K-12 Feist et al., 2007         msb4100155.pdf                

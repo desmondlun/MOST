@@ -139,7 +139,7 @@ public class ReactionColAddRenameInterface  extends JDialog {
 	
 	public void addColumn(){
 		String columnName = textField.getText();
-		LocalConfig.getInstance().getReactionsMetaColumnNames().add(columnName);
+		//LocalConfig.getInstance().getReactionsMetaColumnNames().add(columnName);
 		DefaultTableModel model = (DefaultTableModel) GraphicalInterface.reactionsTable.getModel();
 		model.addColumn(columnName);
 		LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), model);
