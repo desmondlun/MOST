@@ -5,9 +5,6 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -141,7 +138,7 @@ public class MetaboliteColAddRenameInterface  extends JDialog {
 	
 	public void addColumn(){
 		String columnName = textField.getText();
-		LocalConfig.getInstance().getMetabolitesMetaColumnNames().add(columnName); 
+		//LocalConfig.getInstance().getMetabolitesMetaColumnNames().add(columnName); 
 		DefaultTableModel model = (DefaultTableModel) GraphicalInterface.metabolitesTable.getModel();
 		model.addColumn(columnName);
 		LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), model);

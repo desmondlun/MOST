@@ -1,9 +1,14 @@
 package edu.rutgers.MOST.presentation;
 
+import java.awt.Component;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
@@ -18,10 +23,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.table.DefaultTableModel;
-import edu.rutgers.MOST.config.LocalConfig;
 
-public class ReactionColAddRenameInterface  extends JDialog {
+public class AddRowsDialog extends JDialog {
 
 	/**
 	 * 
@@ -31,7 +34,7 @@ public class ReactionColAddRenameInterface  extends JDialog {
 	public static JButton cancelButton = new JButton("  Cancel  ");
 	public static final JTextField textField = new JTextField();
 
-	public ReactionColAddRenameInterface() {
+	public AddRowsDialog() {
 
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		
@@ -45,7 +48,7 @@ public class ReactionColAddRenameInterface  extends JDialog {
 		Box hbButton = Box.createHorizontalBox();
 
 		JLabel topLabel = new JLabel();
-		topLabel.setText(GraphicalInterfaceConstants.COLUMN_ADD_RENAME_LABEL);
+		topLabel.setText(GraphicalInterfaceConstants.ADD_ROWS_DIALOG_LABEL);
 		topLabel.setSize(new Dimension(150, 10));
 		//top, left, bottom. right
 		topLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
@@ -59,10 +62,27 @@ public class ReactionColAddRenameInterface  extends JDialog {
 		hbLabel.add(labelPanel);
 		
 		topLabel.setMinimumSize(new Dimension(200, 15));
+		textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
+	    textField.setHorizontalAlignment(JTextField.RIGHT);
+				
 		textField.setEditable(true);
+		
+		textField.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent e) {	
+				Component c = e.getComponent();
+				if (c instanceof JTextField) {
+		            ((JTextField)c).selectAll();
+		        }				
+			}
+
+			@Override
+			public void focusLost(FocusEvent arg0) {				
+			}
+		});
 
 		okButton.setMnemonic(KeyEvent.VK_O);
-		okButton.setEnabled(false);
 		JLabel blank = new JLabel("    "); 
 		cancelButton.setMnemonic(KeyEvent.VK_C);
 
@@ -115,49 +135,24 @@ public class ReactionColAddRenameInterface  extends JDialog {
 
 		cancelButton.addActionListener(cancelButtonActionListener);
 	} 	 
-
-	public boolean isColumnDuplicate() {
-		String columnName = textField.getText();
-		int columnIndex = -1;
-		boolean duplicate = false;
-		for (int i = 0; i < GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length; i++) {
-			if (GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[i].equals(columnName)) {
-				duplicate = true;
-				columnIndex = i;
-			}
-		}
-		for (int j = 0; j < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); j++) {
-			if (LocalConfig.getInstance().getReactionsMetaColumnNames().get(j).equals(columnName)) {
-				duplicate = true;
-				columnIndex = GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length + j;
-			}
-		}	
-		return duplicate;
-	}
 	
-	public void addColumn(){
-		String columnName = textField.getText();
-		//LocalConfig.getInstance().getReactionsMetaColumnNames().add(columnName);
-		DefaultTableModel model = (DefaultTableModel) GraphicalInterface.reactionsTable.getModel();
-		model.addColumn(columnName);
-		LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), model);
-	}
-
 	public static void main(String[] args) throws Exception {
 		//based on code from http://stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
 		icons.add(new ImageIcon("images/most16.jpg").getImage()); 
 		icons.add(new ImageIcon("images/most32.jpg").getImage());
 
-		ReactionColAddRenameInterface frame = new ReactionColAddRenameInterface();
+		AddRowsDialog frame = new AddRowsDialog();
 
 		frame.setIconImages(icons);
-		frame.setSize(350, 170);
+		frame.setSize(220, 150);
 		frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
 }
+
+
 
 
 

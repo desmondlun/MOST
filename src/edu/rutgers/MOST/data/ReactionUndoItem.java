@@ -243,7 +243,6 @@ public class ReactionUndoItem implements UndoItem {
 		} else if (this.undoType.equals(UndoConstants.DELETE_ROW)) {
 			undoDescription = UndoConstants.DELETE_ROW;	
 		} else if (this.undoType.equals(UndoConstants.DELETE_COLUMN)) {
-			undoDescription = UndoConstants.DELETE_COLUMN_PREFIX;
 			undoDescription = UndoConstants.DELETE_COLUMN_PREFIX + displayReactionsColumnNameFromIndex(this.deletedColumnIndex + 1, this.oldMetaColumnNames) + UndoConstants.DELETE_COLUMN_SUFFIX;								
 		} else if (this.undoType.equals(UndoConstants.PASTE)) {
 			undoDescription = UndoConstants.PASTE;	

@@ -304,8 +304,17 @@ public class GraphicalInterfaceConstants {
     // interface titles and labels
     public static final String COLUMN_ADD_INTERFACE_TITLE = "Add Column";   
     public static final String COLUMN_RENAME_INTERFACE_TITLE = "Rename Column";    
-    public static final String COLUMN_ADD_RENAME_LABEL = "Enter Column Name";
-      
+    public static final String COLUMN_ADD_RENAME_LABEL = "Enter Column Name:";
+    
+    public static final String ADD_ROWS_DIALOG_TITLE = "Add Rows";
+    public static final String ADD_ROWS_DIALOG_LABEL = "Enter Number of Rows to Add:";
+    public static final String DEFAULT_NUM_ADD_ROWS = "10";
+       
+    // to prevent entering an outrageous number like 1000000;
+    public static final int MAX_NUM_ADD_ROWS = 20000;
+    public static final String ADD_ROWS_OUT_OF_RANGE_TITLE = "Out of Range Error";
+    public static final String ADD_ROWS_OUT_OF_RANGE_MESSAGE = "Value out of range.";
+          
     public static final String RENAME_METABOLITE_INTERFACE_TITLE = "Rename Metabolite";
     public static final String RENAME_METABOLITE_LABEL = "Enter New Metabolite Name";
     

@@ -285,6 +285,16 @@ public class GraphicalInterface extends JFrame {
 
 	public final AboutDialog aboutDialog = new AboutDialog();
 	
+	private static AddRowsDialog addRowsDialog;
+	
+	public static AddRowsDialog getAddRowsDialog() {
+		return addRowsDialog;
+	}
+
+	public static void setAddRowsDialog(AddRowsDialog addRowsDialog) {
+		GraphicalInterface.addRowsDialog = addRowsDialog;
+	}
+
 	public final CSVLoadInterface csvLoadInterface = new CSVLoadInterface();
 
 	private static FindReplaceDialog findReplaceDialog;
@@ -496,7 +506,9 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem findReplaceItem = new JMenuItem("Find/Replace");	
 	public final JMenuItem selectAllItem = new JMenuItem("SelectAll");	
 	public final JMenuItem addReacRowItem = new JMenuItem("Add Row to Reactions Table");
+	public final JMenuItem addReacRowsItem = new JMenuItem("Add Rows to Reactions Table");
 	public final JMenuItem addMetabRowItem = new JMenuItem("Add Row to Metabolites Table");
+	public final JMenuItem addMetabRowsItem = new JMenuItem("Add Rows to Metabolites Table");
 	public final JMenuItem addReacColumnItem = new JMenuItem("Add Column to Reactions Table");
 	public final JMenuItem addMetabColumnItem = new JMenuItem("Add Column to Metabolites Table"); 
 	public final JMenuItem deleteReactionRowMenuItem = new JMenuItem("Delete Row(s)");
@@ -1536,6 +1548,9 @@ public class GraphicalInterface extends JFrame {
 		};  
 
 		addReacRowItem.addActionListener(addReacRowActionListener);
+		
+		editMenu.add(addReacRowsItem);
+		addReacRowsItem.setMnemonic(KeyEvent.VK_W);
 
 		editMenu.add(addMetabRowItem); 
 		addMetabRowItem.setMnemonic(KeyEvent.VK_M);
@@ -1559,6 +1574,80 @@ public class GraphicalInterface extends JFrame {
 				LocalConfig.getInstance().setMaxMetaboliteId(id + 1);
 			}
 		});
+		
+		editMenu.add(addMetabRowsItem); 
+		addMetabRowsItem.setMnemonic(KeyEvent.VK_I);
+		
+		addMetabRowsItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				setCurrentMetabolitesRow(metabolitesTable.getSelectedRow());
+				setCurrentMetabolitesColumn(metabolitesTable.getSelectedColumn());
+				tabbedPane.setSelectedIndex(1);
+				LocalConfig.getInstance().addRowsInterfaceVisible = true;
+				AddRowsDialog addRowsDialog = new AddRowsDialog();
+				setAddRowsDialog(addRowsDialog);
+				addRowsDialog.setTitle(GraphicalInterfaceConstants.ADD_ROWS_DIALOG_TITLE);
+				addRowsDialog.setIconImages(icons);
+				addRowsDialog.setSize(220, 150);
+				addRowsDialog.setResizable(false);
+				addRowsDialog.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+				addRowsDialog.setAlwaysOnTop(true);
+				addRowsDialog.setModal(true);
+				addRowsDialog.setLocationRelativeTo(null);
+				addRowsDialog.addWindowListener(new WindowAdapter() {
+					public void windowClosing(WindowEvent evt) {
+						addRowsDialogCloseAction();
+					}
+				});
+				addRowsDialog.setVisible(true);						
+			}
+		});
+
+		ActionListener addMetabRowsOKButtonActionListener = new ActionListener() {
+			public void actionPerformed(ActionEvent prodActionEvent) {	
+				EntryValidator validator = new EntryValidator();
+				// check if integer
+				if (!validator.isInteger(addRowsDialog.textField.getText())) {
+					addRowsDialog.setAlwaysOnTop(false);
+					addRowsDialog.setModal(false);
+					JOptionPane.showMessageDialog(null,                
+							GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_TITLE,                
+							GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_MESSAGE,                                
+							JOptionPane.ERROR_MESSAGE);
+					addRowsDialog.setAlwaysOnTop(true);
+					addRowsDialog.setModal(true);
+					addRowsDialog.textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
+					addRowsDialog.textField.selectAll();
+				} else {
+					// check that value in acceptable range
+					if (Integer.valueOf(addRowsDialog.textField.getText()) >= GraphicalInterfaceConstants.MAX_NUM_ADD_ROWS ||
+							Integer.valueOf(addRowsDialog.textField.getText()) <= 0) {
+						addRowsDialog.setAlwaysOnTop(false);
+						addRowsDialog.setModal(false);
+						JOptionPane.showMessageDialog(null,                
+								GraphicalInterfaceConstants.ADD_ROWS_OUT_OF_RANGE_MESSAGE,                
+								GraphicalInterfaceConstants.ADD_ROWS_OUT_OF_RANGE_TITLE,                                
+								JOptionPane.ERROR_MESSAGE);
+						addRowsDialog.setAlwaysOnTop(true);
+						addRowsDialog.setModal(true);
+						addRowsDialog.textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
+						addRowsDialog.textField.selectAll();
+					} else {
+						// add rows
+						addRowsDialogCloseAction();
+					}					
+				}								
+			}
+		};
+
+		ActionListener addMetabRowsCancelButtonActionListener = new ActionListener() {
+			public void actionPerformed(ActionEvent prodActionEvent) {
+				addRowsDialogCloseAction();
+			}
+		};
+
+		addRowsDialog.okButton.addActionListener(addMetabRowsOKButtonActionListener);
+		addRowsDialog.cancelButton.addActionListener(addMetabRowsCancelButtonActionListener);
 
 		editMenu.addSeparator();
 
@@ -1571,13 +1660,11 @@ public class GraphicalInterface extends JFrame {
 				setCurrentReactionsColumn(reactionsTable.getSelectedColumn());
 				tabbedPane.setSelectedIndex(0);
 				LocalConfig.getInstance().addColumnInterfaceVisible = true;
-				addReacColumnItem.setEnabled(false);
-				addMetabColumnItem.setEnabled(false);
 				ReactionColAddRenameInterface reactionColAddRenameInterface = new ReactionColAddRenameInterface();
 				setReactionColAddRenameInterface(reactionColAddRenameInterface);
 				reactionColAddRenameInterface.setTitle(GraphicalInterfaceConstants.COLUMN_ADD_INTERFACE_TITLE);
 				reactionColAddRenameInterface.setIconImages(icons);
-				reactionColAddRenameInterface.setSize(350, 160);
+				reactionColAddRenameInterface.setSize(350, 150);
 				reactionColAddRenameInterface.setResizable(false);
 				reactionColAddRenameInterface.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 				reactionColAddRenameInterface.setAlwaysOnTop(true);
@@ -1657,13 +1744,11 @@ public class GraphicalInterface extends JFrame {
 				setCurrentMetabolitesColumn(metabolitesTable.getSelectedColumn());
 				tabbedPane.setSelectedIndex(1);
 				LocalConfig.getInstance().addColumnInterfaceVisible = true;
-				addReacColumnItem.setEnabled(false);
-				addMetabColumnItem.setEnabled(false);
 				MetaboliteColAddRenameInterface metaboliteColAddRenameInterface = new MetaboliteColAddRenameInterface();
 				setMetaboliteColAddRenameInterface(metaboliteColAddRenameInterface);
 				metaboliteColAddRenameInterface.setTitle(GraphicalInterfaceConstants.COLUMN_ADD_INTERFACE_TITLE);
 				metaboliteColAddRenameInterface.setIconImages(icons);
-				metaboliteColAddRenameInterface.setSize(350, 160);
+				metaboliteColAddRenameInterface.setSize(350, 150);
 				metaboliteColAddRenameInterface.setResizable(false);
 				metaboliteColAddRenameInterface.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 				metaboliteColAddRenameInterface.setAlwaysOnTop(true);
@@ -1695,6 +1780,7 @@ public class GraphicalInterface extends JFrame {
 					// copy old model for undo/redo
 					DefaultTableModel oldMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());			
 					copyMetabolitesTableModels(oldMetabolitesModel);
+					LocalConfig.getInstance().getMetabolitesMetaColumnNames().add(getMetaboliteColAddRenameInterface().textField.getText());
 					MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", getCurrentMetabolitesRow(), getCurrentMetabolitesColumn(), 0, UndoConstants.ADD_COLUMN, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);		
 					undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
 					undoItem.setAddedColumnIndex(LocalConfig.getInstance().getMetabolitesMetaColumnNames().size() + GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length);
@@ -9440,8 +9526,6 @@ public class GraphicalInterface extends JFrame {
 
 	public void addReactionColumnCloseAction() {
 		LocalConfig.getInstance().addColumnInterfaceVisible = false;
-    	addReacColumnItem.setEnabled(true);
-    	addMetabColumnItem.setEnabled(true);
     	getReactionColAddRenameInterface().textField.setText("");
     	getReactionColAddRenameInterface().setVisible(false);
     	getReactionColAddRenameInterface().dispose();
@@ -9449,12 +9533,17 @@ public class GraphicalInterface extends JFrame {
 
 	public void addMetaboliteColumnCloseAction() {
 		LocalConfig.getInstance().addColumnInterfaceVisible = false;
-    	addReacColumnItem.setEnabled(true);
-    	addMetabColumnItem.setEnabled(true);
     	getMetaboliteColAddRenameInterface().textField.setText("");
     	getMetaboliteColAddRenameInterface().setVisible(false);
     	getMetaboliteColAddRenameInterface().dispose();
 	}
+	
+	public void addRowsDialogCloseAction() {
+		LocalConfig.getInstance().addRowsInterfaceVisible = false;
+		getAddRowsDialog().textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
+		getAddRowsDialog().setVisible(false);
+		getAddRowsDialog().dispose();
+	}	
 
 	/*******************************************************************************/
 	//progressBar methods
