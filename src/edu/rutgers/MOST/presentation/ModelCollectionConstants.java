@@ -10,7 +10,6 @@ public class ModelCollectionConstants {
 		{
 			"Model Version", 	
 			"Organism Name",	
-			"Year",	
 			"Genes",	
 			"Reactions",	
 			"Metabolites",	
@@ -26,16 +25,20 @@ public class ModelCollectionConstants {
 			"URL"
 		};
 	
+	private static java.util.List<String> invisibleColumnsList = Arrays.asList(INVISIBLE_COLUMN_NAMES);
+	
 	public static final int DEFAULT_WIDTH = 70; //columns with no assigned width use default
 	public static final int MODEL_VERSION_COLUMN = visibleColumnsList.indexOf("Model Version");
 	public static final int MODEL_VERSION_WIDTH = 100; 
 	public static final int ORGANISM_NAME_COLUMN = visibleColumnsList.indexOf("Organism Name");
 	public static final int ORGANISM_NAME_WIDTH = 200; 
-	public static final int YEAR_COLUMN = visibleColumnsList.indexOf("Year");
 	public static final int GENES_COLUMN = visibleColumnsList.indexOf("Genes");
 	public static final int REACTIONS_COLUMN = visibleColumnsList.indexOf("Reactions");
 	public static final int METABOLITES_COLUMN = visibleColumnsList.indexOf("Metabolites");
 	public static final int REFERENCE_COLUMN = visibleColumnsList.indexOf("Reference");
 	public static final int REFERENCE_WIDTH = 200; 
+	public static final int PATH_COLUMN = visibleColumnsList.size() + invisibleColumnsList.indexOf("Path");
+	public static final int TYPE_COLUMN = visibleColumnsList.size() + invisibleColumnsList.indexOf("Type");
+	public static final int URL_COLUMN = visibleColumnsList.size() + invisibleColumnsList.indexOf("URL");
 			
 }

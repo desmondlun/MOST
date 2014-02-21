@@ -121,7 +121,8 @@ class ModelCollectionTable
 		setTitle(ModelCollectionConstants.TITLE);
 		//setSize( 700, 500 );
 		//setSize( 700, 326 );
-		setSize( 750, 286 );
+		//setSize( 750, 286 );
+		setSize( 750, 266 );
 		
 		setBackground( Color.gray );
 		
@@ -249,8 +250,9 @@ class ModelCollectionTable
             if (i == ModelCollectionConstants.REFERENCE_COLUMN) {
             	column.setPreferredWidth(ModelCollectionConstants.REFERENCE_WIDTH);
             }
-            if (i == ModelCollectionConstants.YEAR_COLUMN || i == ModelCollectionConstants.GENES_COLUMN ||
-            		i == ModelCollectionConstants.REACTIONS_COLUMN || i == ModelCollectionConstants.METABOLITES_COLUMN) {
+            if (i == ModelCollectionConstants.GENES_COLUMN ||
+            		i == ModelCollectionConstants.REACTIONS_COLUMN || 
+            		i == ModelCollectionConstants.METABOLITES_COLUMN) {
             	column.setPreferredWidth(ModelCollectionConstants.DEFAULT_WIDTH);
             	renderer.setHorizontalAlignment(JLabel.RIGHT);
             }
@@ -289,12 +291,10 @@ class ModelCollectionTable
     			// location of folder in the user's computer
 				String userPath = "etc";
 				// model collection folder location
-				String path = (table.getModel().getValueAt(table.getSelectedRow(), 7)).toString();
-				//String path = (table.getModel().getValueAt(table.getSelectedRow(), 7)).toString().trim();
-				String filename = (table.getModel().getValueAt(table.getSelectedRow(), 0)).toString();
-				//String filename = (table.getModel().getValueAt(table.getSelectedRow(), 0)).toString().trim();
+				String path = (table.getModel().getValueAt(table.getSelectedRow(), ModelCollectionConstants.PATH_COLUMN)).toString();
+				String filename = (table.getModel().getValueAt(table.getSelectedRow(), ModelCollectionConstants.MODEL_VERSION_COLUMN)).toString();
 				String ending = "";
-				String type = (table.getModel().getValueAt(table.getSelectedRow(), 8)).toString();
+				String type = (table.getModel().getValueAt(table.getSelectedRow(), ModelCollectionConstants.TYPE_COLUMN)).toString();
 				if (type.equals("sbml")) {
 					setFileType(GraphicalInterfaceConstants.SBML_FILE_TYPE);
 					ending = ".xml";
@@ -304,7 +304,6 @@ class ModelCollectionTable
 				}
 				setFileName(filename);
 				setPath(userPath + "/" + path + "/" + filename + ending);
-				//setPath(userPath + "\\" + path + "\\" + filename + ending);
     			okButton.setEnabled(true);
 			}
     	}
@@ -527,10 +526,10 @@ class ModelCollectionTable
 	AbstractHyperlinkAction<Object> simpleAction = new AbstractHyperlinkAction<Object>(null) {
 
 	    public void actionPerformed(ActionEvent e) {
-	    	if (table.getModel().getValueAt(table.getSelectedRow(), 9) != null &&
-	    			((String) table.getModel().getValueAt(table.getSelectedRow(), 9)).trim().length() > 0) {
+	    	if (table.getModel().getValueAt(table.getSelectedRow(), ModelCollectionConstants.URL_COLUMN) != null &&
+	    			((String) table.getModel().getValueAt(table.getSelectedRow(), ModelCollectionConstants.URL_COLUMN)).trim().length() > 0) {
 	    		try{ 
-					String url = ((String) table.getModel().getValueAt(table.getSelectedRow(), 9)).trim();  
+					String url = ((String) table.getModel().getValueAt(table.getSelectedRow(), ModelCollectionConstants.URL_COLUMN)).trim();  
 					java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));  
 				}  
 				catch (java.io.IOException e1) {  
