@@ -525,8 +525,6 @@ public class LocalConfig {
 	public boolean addReactantPromptShown;
 	public boolean reactionEditorVisible;
 	public boolean loadExistingVisible;
-	public boolean addRowsInterfaceVisible;
-	public boolean addColumnInterfaceVisible;
 	
 	public boolean hasValidGurobiKey;
 	

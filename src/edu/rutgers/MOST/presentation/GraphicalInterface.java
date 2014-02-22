@@ -1583,7 +1583,6 @@ public class GraphicalInterface extends JFrame {
 				setCurrentMetabolitesRow(metabolitesTable.getSelectedRow());
 				setCurrentMetabolitesColumn(metabolitesTable.getSelectedColumn());
 				tabbedPane.setSelectedIndex(1);
-				LocalConfig.getInstance().addRowsInterfaceVisible = true;
 				AddRowsDialog addRowsDialog = new AddRowsDialog();
 				setAddRowsDialog(addRowsDialog);
 				addRowsDialog.setTitle(GraphicalInterfaceConstants.ADD_ROWS_DIALOG_TITLE);
@@ -1681,7 +1680,6 @@ public class GraphicalInterface extends JFrame {
 				setCurrentReactionsRow(reactionsTable.getSelectedRow());
 				setCurrentReactionsColumn(reactionsTable.getSelectedColumn());
 				tabbedPane.setSelectedIndex(0);
-				LocalConfig.getInstance().addColumnInterfaceVisible = true;
 				ReactionColAddRenameInterface reactionColAddRenameInterface = new ReactionColAddRenameInterface();
 				setReactionColAddRenameInterface(reactionColAddRenameInterface);
 				reactionColAddRenameInterface.setTitle(GraphicalInterfaceConstants.COLUMN_ADD_INTERFACE_TITLE);
@@ -1765,7 +1763,6 @@ public class GraphicalInterface extends JFrame {
 				setCurrentMetabolitesRow(metabolitesTable.getSelectedRow());
 				setCurrentMetabolitesColumn(metabolitesTable.getSelectedColumn());
 				tabbedPane.setSelectedIndex(1);
-				LocalConfig.getInstance().addColumnInterfaceVisible = true;
 				MetaboliteColAddRenameInterface metaboliteColAddRenameInterface = new MetaboliteColAddRenameInterface();
 				setMetaboliteColAddRenameInterface(metaboliteColAddRenameInterface);
 				metaboliteColAddRenameInterface.setTitle(GraphicalInterfaceConstants.COLUMN_ADD_INTERFACE_TITLE);
@@ -9547,21 +9544,18 @@ public class GraphicalInterface extends JFrame {
 	}
 
 	public void addReactionColumnCloseAction() {
-		LocalConfig.getInstance().addColumnInterfaceVisible = false;
     	getReactionColAddRenameInterface().textField.setText("");
     	getReactionColAddRenameInterface().setVisible(false);
     	getReactionColAddRenameInterface().dispose();
 	}
 
 	public void addMetaboliteColumnCloseAction() {
-		LocalConfig.getInstance().addColumnInterfaceVisible = false;
     	getMetaboliteColAddRenameInterface().textField.setText("");
     	getMetaboliteColAddRenameInterface().setVisible(false);
     	getMetaboliteColAddRenameInterface().dispose();
 	}
 	
 	public void addRowsDialogCloseAction() {
-		LocalConfig.getInstance().addRowsInterfaceVisible = false;
 		getAddRowsDialog().textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
 		getAddRowsDialog().setVisible(false);
 		getAddRowsDialog().dispose();
