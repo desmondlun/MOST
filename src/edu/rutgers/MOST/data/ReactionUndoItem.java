@@ -238,6 +238,8 @@ public class ReactionUndoItem implements UndoItem {
 			undoDescription = UndoConstants.REPLACE_ALL;	
 		} else if (this.undoType.equals(UndoConstants.ADD_ROW)) {
 			undoDescription = UndoConstants.ADD_ROW;
+		} else if (this.undoType.equals(UndoConstants.ADD_ROWS)) {
+			undoDescription = UndoConstants.ADD_ROWS;
 		} else if (this.undoType.equals(UndoConstants.ADD_COLUMN)) {
 			undoDescription = UndoConstants.ADD_COLUMN_PREFIX + displayReactionsColumnNameFromIndex(this.addedColumnIndex, this.newMetaColumnNames) + UndoConstants.ADD_COLUMN_SUFFIX;	
 		} else if (this.undoType.equals(UndoConstants.DELETE_ROW)) {
@@ -270,7 +272,8 @@ public class ReactionUndoItem implements UndoItem {
 		} else if (this.undoType.equals(UndoConstants.PASTE) || this.undoType.equals(UndoConstants.REPLACE_ALL)) {
 			copyTableUndoAction();
 			pasteReplaceAllAction();
-		} else if (this.undoType.equals(UndoConstants.CLEAR_CONTENTS) || this.undoType.equals(UndoConstants.DELETE_ROW)) {	
+		} else if (this.undoType.equals(UndoConstants.CLEAR_CONTENTS) || this.undoType.equals(UndoConstants.DELETE_ROW) ||
+				this.undoType.equals(UndoConstants.ADD_ROWS)) {	
 			copyTableUndoAction();
 		}
 		restoreOldCollections();
@@ -300,7 +303,8 @@ public class ReactionUndoItem implements UndoItem {
 		} else if (this.undoType.equals(UndoConstants.PASTE) || this.undoType.equals(UndoConstants.REPLACE_ALL)) {
 			copyTableRedoAction();
 			pasteReplaceAllAction();
-		} else if (this.undoType.equals(UndoConstants.CLEAR_CONTENTS) || this.undoType.equals(UndoConstants.DELETE_ROW)) {
+		} else if (this.undoType.equals(UndoConstants.CLEAR_CONTENTS) || this.undoType.equals(UndoConstants.DELETE_ROW) ||
+				this.undoType.equals(UndoConstants.ADD_ROWS)) {	
 			copyTableRedoAction();
 		}
 		restoreNewCollections();

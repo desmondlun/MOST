@@ -1,10 +1,8 @@
 package edu.rutgers.MOST.presentation;
 
 import java.awt.Component;
-import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.Image;
-import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -24,17 +22,39 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-public class AddRowsDialog extends JDialog {
+// This may appear redundant since AddMetaboliteRowsDialog and AddReactionRows Dialog are exactly 
+// the same but when having one AddRowsDialog and extending for these two classes, clicking OK
+// button added rows to both tables. The other option of using conditionals such as
+// if tabbed pane index = 0 or 1 seems messier than this approach
+public class AddMetaboliteRowsDialog extends JDialog {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public static JButton okButton = new JButton("    OK    ");
-	public static JButton cancelButton = new JButton("  Cancel  ");
+	private static JButton okButton = new JButton("    OK    ");
+
+	public static JButton getOkButton() {
+		return okButton;
+	}
+
+	public static void setOkButton(JButton okButton) {
+		AddMetaboliteRowsDialog.okButton = okButton;
+	}
+
+	private static JButton cancelButton = new JButton("  Cancel  ");
+
+	public static JButton getCancelButton() {
+		return cancelButton;
+	}
+
+	public static void setCancelButton(JButton cancelButton) {
+		AddMetaboliteRowsDialog.cancelButton = cancelButton;
+	}
+
 	public static final JTextField textField = new JTextField();
 
-	public AddRowsDialog() {
+	public AddMetaboliteRowsDialog() {
 
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		
@@ -142,7 +162,7 @@ public class AddRowsDialog extends JDialog {
 		icons.add(new ImageIcon("images/most16.jpg").getImage()); 
 		icons.add(new ImageIcon("images/most32.jpg").getImage());
 
-		AddRowsDialog frame = new AddRowsDialog();
+		AddMetaboliteRowsDialog frame = new AddMetaboliteRowsDialog();
 
 		frame.setIconImages(icons);
 		frame.setSize(220, 150);
