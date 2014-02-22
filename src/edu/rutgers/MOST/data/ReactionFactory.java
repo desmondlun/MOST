@@ -58,6 +58,7 @@ public class ReactionFactory {
 			for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
 //				if (GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN) != null &&
 //						((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN)).trim().length() > 0) {
+				if (((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN)).length() > 0) {
 					SBMLReaction reaction = new SBMLReaction();
 					reaction.setId(Integer.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
 					reaction.setKnockout((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.KO_COLUMN));
@@ -77,6 +78,7 @@ public class ReactionFactory {
 					reactions.add(reaction);
 					reactionsIdPositionMap.put(reaction.getId(), count);
 					count += 1;
+				}					
 				//}				
 			}
 			setReactionsIdPositionMap(reactionsIdPositionMap);
