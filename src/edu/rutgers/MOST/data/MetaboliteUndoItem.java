@@ -213,6 +213,8 @@ public class MetaboliteUndoItem implements UndoItem {
 			undoDescription = UndoConstants.REPLACE_ALL;	
 		} else if (this.undoType.equals(UndoConstants.ADD_ROW)) {
 			undoDescription = UndoConstants.ADD_ROW;
+		} else if (this.undoType.equals(UndoConstants.ADD_ROWS)) {
+			undoDescription = UndoConstants.ADD_ROWS;	
 		} else if (this.undoType.equals(UndoConstants.ADD_COLUMN)) {
 			undoDescription = UndoConstants.ADD_COLUMN_PREFIX + displayMetabolitesColumnNameFromIndex(this.addedColumnIndex, this.newMetaColumnNames) + UndoConstants.ADD_COLUMN_SUFFIX;	
 		} else if (this.undoType.equals(UndoConstants.DELETE_ROW)) {
@@ -252,7 +254,8 @@ public class MetaboliteUndoItem implements UndoItem {
 			undoDeleteColumn();
 			copyTableUndoAction();
 		} else if (this.undoType.equals(UndoConstants.PASTE) || this.undoType.equals(UndoConstants.CLEAR_CONTENTS) ||
-				this.undoType.equals(UndoConstants.DELETE_ROW) || this.undoType.equals(UndoConstants.REPLACE_ALL)) {	
+				this.undoType.equals(UndoConstants.DELETE_ROW) || this.undoType.equals(UndoConstants.REPLACE_ALL) ||
+				this.undoType.equals(UndoConstants.ADD_ROWS)) {	
 			copyTableUndoAction();
 		} else if (this.undoType.equals(UndoConstants.DELETE_UNUSED)) {			
 			copyTableUndoAction();
@@ -283,7 +286,8 @@ public class MetaboliteUndoItem implements UndoItem {
 			redoDeleteColumn();
 			copyTableRedoAction();
 		} else if (this.undoType.equals(UndoConstants.PASTE) || this.undoType.equals(UndoConstants.CLEAR_CONTENTS) ||
-				this.undoType.equals(UndoConstants.DELETE_ROW) || this.undoType.equals(UndoConstants.REPLACE_ALL)) {	
+				this.undoType.equals(UndoConstants.DELETE_ROW) || this.undoType.equals(UndoConstants.REPLACE_ALL) ||
+				this.undoType.equals(UndoConstants.ADD_ROWS)) {
 			copyTableRedoAction();
 		} else if (this.undoType.equals(UndoConstants.DELETE_UNUSED)) {
 			copyTableRedoAction();

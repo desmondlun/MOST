@@ -19,6 +19,7 @@ public class UndoConstants {
 	// undo copies database
 	public static final String PASTE = "Paste";
 	public static final String CLEAR_CONTENTS = "Clear Contents";
+	public static final String ADD_ROWS = "Add Rows";
 	public static final String DELETE_ROW = "Delete Row(s)";
 	public static final String DELETE_UNUSED = "Delete All Unused Metabolites";
 	public static final String REPLACE_ALL = "Replace All";

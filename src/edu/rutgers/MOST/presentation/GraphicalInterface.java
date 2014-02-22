@@ -1619,9 +1619,9 @@ public class GraphicalInterface extends JFrame {
 					addRowsDialog.textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
 					addRowsDialog.textField.selectAll();
 				} else {
+					int numRows = Integer.valueOf(addRowsDialog.textField.getText());
 					// check that value in acceptable range
-					if (Integer.valueOf(addRowsDialog.textField.getText()) >= GraphicalInterfaceConstants.MAX_NUM_ADD_ROWS ||
-							Integer.valueOf(addRowsDialog.textField.getText()) <= 0) {
+					if (numRows >= GraphicalInterfaceConstants.MAX_NUM_ADD_ROWS || numRows <= 0) {
 						addRowsDialog.setAlwaysOnTop(false);
 						addRowsDialog.setModal(false);
 						JOptionPane.showMessageDialog(null,                
@@ -1633,8 +1633,30 @@ public class GraphicalInterface extends JFrame {
 						addRowsDialog.textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
 						addRowsDialog.textField.selectAll();
 					} else {
-						// add rows
+						// copy old model for undo/redo
+						DefaultTableModel oldMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());	
+						copyMetabolitesTableModels(oldMetabolitesModel); 
+						
+						int row = metabolitesTable.getSelectedRow();
+						int col = metabolitesTable.getSelectedColumn();
+						int id = LocalConfig.getInstance().getMaxMetaboliteId();
+						DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
+						for (int i = 0; i < numRows; i++) {
+							model.addRow(createMetabolitesRow(id));
+						}						
+						setUpMetabolitesTable(model);
+						MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", row, col, id, UndoConstants.ADD_ROWS, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+						setUndoOldCollections(undoItem);				
+						int maxRow = metabolitesTable.getModel().getRowCount();
+						int viewRow = metabolitesTable.convertRowIndexToView(maxRow - 1);
+						setTableCellFocused(viewRow, 1, metabolitesTable);
+						LocalConfig.getInstance().setMaxMetaboliteId(id + numRows);
 						addRowsDialogCloseAction();
+						
+						undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
+						copyMetabolitesTableModels(model); 
+						setUndoNewCollections(undoItem);
+						setUpMetabolitesUndo(undoItem);
 					}					
 				}								
 			}
