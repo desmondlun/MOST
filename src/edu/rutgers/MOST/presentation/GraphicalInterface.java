@@ -3892,6 +3892,9 @@ public class GraphicalInterface extends JFrame {
 				MetaboliteFactory aFactory = new MetaboliteFactory("SBML");
 				LocalConfig.getInstance().setParticipatingReactions(aFactory.participatingReactions(getParticipatingMetabolite()));
 			}
+		} else {
+			reactionsTable.getModel().setValueAt("", rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
+			LocalConfig.getInstance().getReactionEquationMap().remove(reactionId);
 		}
 //		System.out.println("upd equn " + LocalConfig.getInstance().getReactionEquationMap());
 //		System.out.println("upd equn id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
