@@ -2583,9 +2583,13 @@ public class GraphicalInterface extends JFrame {
 					maybeDisplaySuspiciousMetabMessage(reactionRow);
 					// prevents invisible id column from setting id in formulaBar for find events
 					if (reactionsTable.getSelectedRow() > -1 && reactionsTable.getSelectedColumn() > 0) {
-						int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
-						formulaBar.setText((String) reactionsTable.getModel().getValueAt(viewRow, reactionsTable.getSelectedColumn()));
-						setTableCellOldValue(formulaBar.getText());
+						try {
+							
+						} catch (Throwable t) {
+							int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
+							formulaBar.setText((String) reactionsTable.getModel().getValueAt(viewRow, reactionsTable.getSelectedColumn()));
+							setTableCellOldValue(formulaBar.getText());
+						}						
 					} 
 					enableOrDisableReactionsItems();
 				} else if (tabIndex == 1 && metabolitesTable.getSelectedRow() > - 1) {
@@ -4314,7 +4318,11 @@ public class GraphicalInterface extends JFrame {
 		tabbedPane.setSelectedIndex(0);
 		scrollToLocation(reactionsTable, 0, 1);
 		
-		formulaBar.setText((String) reactionsTable.getModel().getValueAt(0, 1));  
+		try {
+			formulaBar.setText((String) reactionsTable.getModel().getValueAt(0, 1));  
+		} catch (Throwable t) {
+			
+		}		
 	}
 
 	public void setBooleanDefaults() {
@@ -4368,19 +4376,23 @@ public class GraphicalInterface extends JFrame {
 		enterPressed = false;
 		reactionsUndo = false;
 		// save
-		saveFile = false;
+		if (!saveSBML) {
+			saveFile = false;
+		}		
 		showJSBMLFileChooser = true;
 	}
 
-	public void clearConfigLists() {
-		LocalConfig.getInstance().getMetabolitesTableModelMap().clear();
-		LocalConfig.getInstance().getReactionsTableModelMap().clear();
+	public void clearConfigLists() {		
 		LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().clear();
 		LocalConfig.getInstance().getMetaboliteIdNameMap().clear();
 		LocalConfig.getInstance().getMetaboliteUsedMap().clear();
 		LocalConfig.getInstance().getSuspiciousMetabolites().clear();
 		LocalConfig.getInstance().getUnusedList().clear();
-		LocalConfig.getInstance().getOptimizationFilesList().clear();
+		if (!saveSBML) {
+			LocalConfig.getInstance().getOptimizationFilesList().clear();
+			LocalConfig.getInstance().getMetabolitesTableModelMap().clear();
+			LocalConfig.getInstance().getReactionsTableModelMap().clear();
+		}		
 		LocalConfig.getInstance().getAddedMetabolites().clear();
 		LocalConfig.getInstance().getReactionEquationMap().clear();
 		LocalConfig.getInstance().getUndoItemMap().clear();
@@ -9686,9 +9698,7 @@ public class GraphicalInterface extends JFrame {
 
 		@Override
 		protected Void doInBackground() throws Exception {
-			if (!saveSBML) {
-				loadSetUp();
-			}			
+			loadSetUp();
 			int progress = 0;
 			SBMLDocument doc = new SBMLDocument();
 			SBMLReader reader = new SBMLReader();

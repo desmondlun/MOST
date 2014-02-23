@@ -362,23 +362,27 @@ public class JSBMLWriter implements TreeModelListener{
 			for (int i=0; i < length; i++) {
 				SBMLMetabolite curMeta = (SBMLMetabolite) mFactory.getMetaboliteByRow(i);
 				//SBMLMetabolite curMeta = (SBMLMetabolite) mFactory.getMetaboliteById(i);
-				if (curMeta.getMetaboliteAbbreviation() == null || curMeta.getMetaboliteAbbreviation().trim().length() == 0) {
-					curMeta.setMetaboliteAbbreviation(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + "_" + blankMetabAbbrCount);
-					blankMetabAbbrCount += 1;
-				}
-				JSBMLValidator validator = new JSBMLValidator();
-				String abbr = validator.makeValidID(curMeta.getMetaboliteAbbreviation());
-				curMeta.setMetaboliteAbbreviation(abbr);
-				String comp = validator.replaceInvalidSBMLCharacters(curMeta.getCompartment());
-				String compTrim = comp.trim();
-				if (!compartments.containsKey(compTrim)) {
-					Compartment temp = model.createCompartment(compTrim);
-					compartments.put(compTrim,temp);
-				}
+				// if metabolite name column or metabolite abbreviation contain a value, add to model
+				if ((curMeta.getMetaboliteName() != null && curMeta.getMetaboliteName().trim().length() > 0) ||
+						(curMeta.getMetaboliteAbbreviation() != null && curMeta.getMetaboliteAbbreviation().trim().length() > 0)) {
+					if (curMeta.getMetaboliteAbbreviation() == null || curMeta.getMetaboliteAbbreviation().trim().length() == 0) {
+						curMeta.setMetaboliteAbbreviation(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + "_" + blankMetabAbbrCount);
+						blankMetabAbbrCount += 1;
+					}
+					JSBMLValidator validator = new JSBMLValidator();
+					String abbr = validator.makeValidID(curMeta.getMetaboliteAbbreviation());
+					curMeta.setMetaboliteAbbreviation(abbr);
+					String comp = validator.replaceInvalidSBMLCharacters(curMeta.getCompartment());
+					String compTrim = comp.trim();
+					if (!compartments.containsKey(compTrim)) {
+						Compartment temp = model.createCompartment(compTrim);
+						compartments.put(compTrim,temp);
+					}
 
-				this.allMetabolites.add(curMeta);	
-				metabolitesMap.put(metabRow, curMeta);
-				metabRow += 1;		
+					this.allMetabolites.add(curMeta);	
+					metabolitesMap.put(metabRow, curMeta);
+					metabRow += 1;	
+				}					
 			}
 			
 			if (this.model != null) {
@@ -486,20 +490,25 @@ public class JSBMLWriter implements TreeModelListener{
 		public void parseAllReactions() {
 			ReactionFactory rFactory = new ReactionFactory(sourceType);
 			
-			int length = rFactory.getAllReactions().size();
+			//int length = rFactory.getAllReactions().size();
 			
 			int reacCount = 0;
 			int blankReacAbbrCount = 1;
 			int duplCount = 1;
-			for (int i = 0 ; i< length; i++) {
+			for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
+			//for (int i = 0 ; i< length; i++) {
 				SBMLReaction curReact = (SBMLReaction) rFactory.getReactionByRow(i);
-				//SBMLReaction curReact = (SBMLReaction) rFactory.getReactionById(i);
-				if (curReact.getReactionAbbreviation() == null || curReact.getReactionAbbreviation().trim().length() == 0) {
-					curReact.setReactionAbbreviation(SBMLConstants.REACTION_ABBREVIATION_PREFIX + "_" + blankReacAbbrCount);
-					blankReacAbbrCount += 1;
-				}
-								
-				allReactions.add(curReact);				
+				// if row contains a reaction equation, it is considered valid, else will not be in model
+				// if reaction abbreviation is empty, it will be named "R_" + number
+				if (curReact.getReactionEqunAbbr() != null && curReact.getReactionEqunAbbr().trim().length() > 0) {
+					//SBMLReaction curReact = (SBMLReaction) rFactory.getReactionById(i);
+					if (curReact.getReactionAbbreviation() == null || curReact.getReactionAbbreviation().trim().length() == 0) {
+						curReact.setReactionAbbreviation(SBMLConstants.REACTION_ABBREVIATION_PREFIX + "_" + blankReacAbbrCount);
+						blankReacAbbrCount += 1;
+					}
+									
+					allReactions.add(curReact);	
+				}											
 			}
 			
 			
