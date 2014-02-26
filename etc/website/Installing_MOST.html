@@ -169,11 +169,11 @@ A{text-decoration:none}
 	<p><a name="issues"> Known Issues:</a></p>
 
 	<blockquote>Windows 8 is known to have issues with using the installer. If the installer will not work, download
-	the <a href="MOST_alpha-2.zip" target="_blank">MOST Executable Jar</a> and extract it into a directory, then double-click on the MOST.jar file to run MOST.</blockquote>
+	the <a href="MOST_alpha-4.zip" target="_blank">MOST Executable Jar</a> and extract it into a directory, then double-click on the MOST.jar file to run MOST.</blockquote>
 
 	<br>
 	<p><a name="linux">  Linux:</a></p>
-	<blockquote>Download <a href="MOST_alpha-3.tar.gz" target="_blank">MOST for Linux</a>, 
+	<blockquote>Download <a href="MOST_alpha-4.tar.gz" target="_blank">MOST for Linux</a>, 
 	and extract the gzip compressed file. MOST can be run from the command line using the java command:
  	</blockquote>
 
@@ -186,14 +186,7 @@ A{text-decoration:none}
 	<blockquote>Gurobi installation instructions can be found <a href="http://www.gurobi.com/documentation/5.6/quick-start-guide/installation_linux">
 	here</a>.</blockquote>
 
-	<blockquote>In order to run Gurobi, you also need to install the Gurobi JNI library. See topic #42 on the 
-	<a href="http://www.gurobi.com/resources/faqs">Gurobi FAQ's page</a> for installation instructions.</blockquote>
-
-	<blockquote>Once Gurobi is set up correctly, the command to run MOST must include the library path.</blockquote>
-
-	<blockquote><tt>java -Djava.library.path=&lt;JNI directory&gt; -jar MOST.jar</tt></blockquote>
-
-	<blockquote>where JNI directory is the directory that contains libGurobiJniXX.so file. "XX" is the version number.
+	<blockquote>Gurobi JNI Library path is set when Gurobi jar path is located.
 	</blockquote>
 
 	<br>
