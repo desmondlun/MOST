@@ -190,7 +190,8 @@ public class GurobiSolver extends Solver {
 					}
 				}
 				else
-				e.printStackTrace();
+					e.printStackTrace();
+				
 				StringWriter errors = new StringWriter();
 				e.printStackTrace(new PrintWriter(errors));
 				outputText.append(errors.toString());

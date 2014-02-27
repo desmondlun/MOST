@@ -19,10 +19,8 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
-import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -30,11 +28,8 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.Timer;
-import javax.swing.WindowConstants;
 
 import edu.rutgers.MOST.data.Solution;
-import edu.rutgers.MOST.presentation.GraphicalInterface.GDBBTask;
-import edu.rutgers.MOST.presentation.GraphicalInterface.TimeListener;
 
 public class GDBBDialog1  extends JDialog {
 

@@ -1,0 +1,46 @@
+1. Change version in about box - GraphicalInterfaceConstants.ABOUT_BOX_VERSION_TEXT
+Change download links in download.html and Installing_MOST.html
+
+2. Create a folder MOST_distXXXXXX where XXXXXX is the date.  The etc folder, ModelCollection.csv,
+and README must be placed in this folder.
+
+3. Right click on the MOST project folder in Eclipse and select
+Export -> Runnable Jar. Select "Extract required libraries into generated jar.
+Locate the correct GraphicalInterface, and browse for folder. 
+Browse for folder created in step 2 and type in MOST.jar
+in input box. Click Finish.
+Click OK for next two dialogs.
+
+4. Create a folder MOST_alpha-x where x is version. The etc folder, ModelCollection.csv,
+and README must be placed in this folder. This folder will be used to create a tar.gz
+for Linux and zip file for Windows 8.
+
+5. Create Windows executable:
+Open launch4j
+In Basic Tab - Output file - browse for folder created in step 3. Type in MOST.exe. 
+In Jar runtime path type MOST.jar
+Check - "Don't wrap the jar, launch only" checkbox
+Browse for most32.ico in folder from step 3 etc folder subdirectory.
+In JRE tab type 1.7.0 in Min JRE version
+
+You can save this set up if desired in folder from step 3.
+
+Click the gear icon on top to build exe.
+If the arrow is clicked, MOST will launch but strangely no icons will exist in
+the toolbar. Instead to test exe, double click newly created exe in folder.
+
+6. Create installer:
+Open InstallSimple.
+Open MOST.ispro in GitHub MOST repository local folder in dist folder
+Click Next until Graphics page is reached
+Update link in Graphics page to current folder created in step 3 etc folder
+for Splash screen.
+On Files to distribute screen, browse for folder in step 3, then choose
+Special Folder -> System Drive and type Program Files\MOST in
+Setup path box.
+Click Next
+In Shortcuts select MOST.exe then check Desktop, Start Menu, and 
+Program Files
+Click Next
+Click Next until Build Setup is reached. Click Build.
+Rename Setup.exe to MOST_Setup.exe
