@@ -84,7 +84,9 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.channels.FileChannel;
 import java.text.DecimalFormat;
@@ -10210,45 +10212,54 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 	
-	public static void main(String[] args) throws Exception {
-		curSettings = new SettingsFactory();
+	public static void main(String[] args) {
+	//public static void main(String[] args) throws Exception {
+		ResizableDialog dialog = new ResizableDialog("Error", "Error", "Error");
+		try {
+			curSettings = new SettingsFactory();
 
-		//based on code from http://stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
-		final ArrayList<Image> icons = new ArrayList<Image>(); 
-		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
-		icons.add(new ImageIcon("etc/most32.jpg").getImage());
-		
-		gurobiPathFound = false;
-		hasGurobiPath = true;
-		String lastGurobi_path = curSettings.get("LastGurobi");
-		if (lastGurobi_path == null) {
-			openGurobiPathFilechooser = true;
-			loadGurobiPathInterface(true);
-		} else {
-			setGurobiPath(lastGurobi_path);
-		}
+			//based on code from http://stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
+			final ArrayList<Image> icons = new ArrayList<Image>(); 
+			icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
+			icons.add(new ImageIcon("etc/most32.jpg").getImage());
+			
+			gurobiPathFound = false;
+			hasGurobiPath = true;
+			String lastGurobi_path = curSettings.get("LastGurobi");
+			if (lastGurobi_path == null) {
+				openGurobiPathFilechooser = true;
+				loadGurobiPathInterface(true);
+			} else {
+				setGurobiPath(lastGurobi_path);
+			}
 
-		GraphicalInterface frame = new GraphicalInterface();
-		frame.setIconImages(icons);
-		frame.setSize(1000, 610);
-		frame.setMinimumSize(new Dimension(800, 610));
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
-		
-		// based on http://iitdu.forumsmotion.com/t593-java-swing-adding-confirmation-dialogue-for-closing-window-in-jframe
-		// prevents window from closing when cancel button is pressed in Save Changes Prompt
-		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		
-		showPrompt = true;
-		
-		// selected row default at first row
-		statusBar.setText("Row 1");
-		
-//		Map<String, String> env = System.getenv();
-//        for (String envName : env.keySet()) {
-//            System.out.format("%s=%s%n", envName, env.get(envName));
-//        }
-		
+			GraphicalInterface frame = new GraphicalInterface();
+			frame.setIconImages(icons);
+			frame.setSize(1000, 610);
+			frame.setMinimumSize(new Dimension(800, 610));
+			frame.setLocationRelativeTo(null);
+			frame.setVisible(true);
+			
+			// based on http://iitdu.forumsmotion.com/t593-java-swing-adding-confirmation-dialogue-for-closing-window-in-jframe
+			// prevents window from closing when cancel button is pressed in Save Changes Prompt
+			frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+			
+			showPrompt = true;
+			
+			// selected row default at first row
+			statusBar.setText("Row 1");
+			
+//			Map<String, String> env = System.getenv();
+//	        for (String envName : env.keySet()) {
+//	            System.out.format("%s=%s%n", envName, env.get(envName));
+//	        }
+		} catch (Exception e) {
+			e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			dialog.setErrorMessage(errors.toString());
+			dialog.setVisible(true);
+		}		
 	}
 }
 
