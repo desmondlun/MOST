@@ -9596,7 +9596,9 @@ public class GraphicalInterface extends JFrame {
 			gdbbItem.setEnabled(true);
 		}		
 		addReacRowItem.setEnabled(true);
+		addReacRowsItem.setEnabled(true);
 		addMetabRowItem.setEnabled(true);
+		addMetabRowsItem.setEnabled(true);
 		addReacColumnItem.setEnabled(true);
 		addMetabColumnItem.setEnabled(true);
 		reactionsTableEditable = true;
@@ -9653,7 +9655,9 @@ public class GraphicalInterface extends JFrame {
 		fbaItem.setEnabled(false);
 		gdbbItem.setEnabled(false);
 		addReacRowItem.setEnabled(false);
+		addReacRowsItem.setEnabled(false);
 		addMetabRowItem.setEnabled(false);
+		addMetabRowsItem.setEnabled(false);
 		addReacColumnItem.setEnabled(false);
 		addMetabColumnItem.setEnabled(false);
 		reactionsTableEditable = false;

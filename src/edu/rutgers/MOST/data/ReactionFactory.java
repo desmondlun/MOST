@@ -110,9 +110,7 @@ public class ReactionFactory {
 			reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
 		}
 		for (int i = 0; i < fluxes.size(); i++) {
-			//System.out.println(fluxes.get(i).toString());
 			int id = ((SBMLReaction) reactions.get(i)).getId();
-			System.out.println(id);
 			String row = (reactionsIdRowMap.get(Integer.toString(id))).toString();
 			int rowNum = Integer.valueOf(row);			
 			reactionsOptModel.setValueAt(fluxes.get(i).toString(), rowNum, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN);
@@ -153,19 +151,19 @@ public class ReactionFactory {
 		//				}
 		//			}
 
-
-		//			String queryKVector = "";
-		//			for (int i = 0; i < geneAssocaitons.size(); i++) {
-		//				if(kVector.get(i).doubleValue() != 0.0) {
-		//					queryKVector += " when " + (i + 1) + " then " + kVector.get(i);
-		//				}
-		//			}
-
 		DefaultTableModel reactionsOptModel = (DefaultTableModel) GraphicalInterface.reactionsTable.getModel();
+		Vector<ModelReaction> reactions = getAllReactions();
+		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
+		for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
+			reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
+		}
 		for (int j = 0; j < rowList.size(); j++) {
-		//if (queryKVector.length() != 0) {
-			reactionsOptModel.setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[1], rowList.get(j), GraphicalInterfaceConstants.KO_COLUMN);
-			//String query = "update reactions set knockout = case id" + queryKVector + " end";
+			int id = ((SBMLReaction) reactions.get(rowList.get(j))).getId();
+			String row = (reactionsIdRowMap.get(Integer.toString(id))).toString();
+			int rowNum = Integer.valueOf(row);	
+			System.out.println(rowNum);
+			reactionsOptModel.setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[1], rowNum, GraphicalInterfaceConstants.KO_COLUMN);
+			//reactionsOptModel.setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[1], rowList.get(j), GraphicalInterfaceConstants.KO_COLUMN);
 		}	
 
 		return knockoutGenes;
