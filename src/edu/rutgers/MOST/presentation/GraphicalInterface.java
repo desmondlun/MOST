@@ -1630,13 +1630,14 @@ public class GraphicalInterface extends JFrame {
 						DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
 						for (int i = 0; i < numRows; i++) {
 							model.addRow(createReactionsRow(id));
-						}						
+							id += 1;
+						}
 						setUpReactionsTable(model);
 						ReactionUndoItem undoItem = createReactionUndoItem("", "", row, col, id, UndoConstants.ADD_ROWS, UndoConstants.REACTION_UNDO_ITEM_TYPE);				
 						int maxRow = reactionsTable.getModel().getRowCount();
 						int viewRow = reactionsTable.convertRowIndexToView(maxRow - 1);
 						setTableCellFocused(viewRow, 1, reactionsTable);
-						LocalConfig.getInstance().setMaxReactionId(id + numRows);
+						LocalConfig.getInstance().setMaxReactionId(id);
 						addReactionRowsDialogCloseAction();
 						
 						undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());
@@ -1746,6 +1747,7 @@ public class GraphicalInterface extends JFrame {
 						DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
 						for (int i = 0; i < numRows; i++) {
 							model.addRow(createMetabolitesRow(id));
+							id += 1;
 						}						
 						setUpMetabolitesTable(model);
 						MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", row, col, id, UndoConstants.ADD_ROWS, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
@@ -1753,7 +1755,7 @@ public class GraphicalInterface extends JFrame {
 						int maxRow = metabolitesTable.getModel().getRowCount();
 						int viewRow = metabolitesTable.convertRowIndexToView(maxRow - 1);
 						setTableCellFocused(viewRow, 1, metabolitesTable);
-						LocalConfig.getInstance().setMaxMetaboliteId(id + numRows);
+						LocalConfig.getInstance().setMaxMetaboliteId(id);
 						addMetaboliteRowsDialogCloseAction();
 						
 						undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
@@ -5841,7 +5843,7 @@ public class GraphicalInterface extends JFrame {
 							}
 							LocalConfig.getInstance().getReactionEquationMap().remove(id);
 						}												
-//						System.out.println("del " + LocalConfig.getInstance().getReactionEquationMap());
+						System.out.println("del " + LocalConfig.getInstance().getReactionEquationMap());
 //						System.out.println("del id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
 //						System.out.println("del used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 					}
