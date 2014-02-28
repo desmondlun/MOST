@@ -22,6 +22,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -472,29 +473,33 @@ public class GDBBDialog1  extends JDialog {
 					}
 					setAlwaysOnTop(true);
 				} else {
-					disableComponents();
-					count = 0;
-					timer.restart();
-					startButton.setEnabled(false);
-					stopButton.setEnabled(true);
+					try {
+						disableComponents();
+						count = 0;
+						timer.restart();
+						startButton.setEnabled(false);
+						stopButton.setEnabled(true);
 
-					String solutionName = GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1);
-					DynamicTreePanel.treePanel.addObject(new Solution(solutionName, solutionName));
-					
-					gi.gdbbTask = gi.new GDBBTask();
+						String solutionName = GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1);
+						DynamicTreePanel.treePanel.addObject(new Solution(solutionName, solutionName));
+						
+						gi.gdbbTask = gi.new GDBBTask();
 
-					gi.gdbbTask.getModel().setC((new Double(numKnockoutsField.getText())).doubleValue());
-					gi.gdbbTask.getModel().setTimeLimit(timeLimit);
+						gi.gdbbTask.getModel().setC((new Double(numKnockoutsField.getText())).doubleValue());
+						gi.gdbbTask.getModel().setTimeLimit(timeLimit);
 
-					if (indefiniteTimeButton.isSelected()) {
-						gi.gdbbTask.getModel().setTimeLimit(Double.POSITIVE_INFINITY);
-					}
-					else {
-						gi.gdbbTask.getModel().setTimeLimit((new Double(finiteTimeField.getText())).doubleValue());
-					}
-					
-					gi.gdbbTask.getModel().setThreadNum((Integer)cbNumThreads.getSelectedItem());
-					gi.gdbbTask.execute();
+						if (indefiniteTimeButton.isSelected()) {
+							gi.gdbbTask.getModel().setTimeLimit(Double.POSITIVE_INFINITY);
+						}
+						else {
+							gi.gdbbTask.getModel().setTimeLimit((new Double(finiteTimeField.getText())).doubleValue());
+						}
+						
+						gi.gdbbTask.getModel().setThreadNum((Integer)cbNumThreads.getSelectedItem());
+						gi.gdbbTask.execute();
+					} catch (Exception e) {
+						
+					}					
 				}
 			}
 		};

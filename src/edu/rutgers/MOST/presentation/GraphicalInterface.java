@@ -825,8 +825,8 @@ public class GraphicalInterface extends JFrame {
 
 	public GraphicalInterface() {		
 		// make this true only when troubleshooting, false for actual use
-		//showIdColumn = true;
-		showIdColumn = false;
+		showIdColumn = true;
+		//showIdColumn = false;
 
 		gi = this;
 
@@ -925,6 +925,7 @@ public class GraphicalInterface extends JFrame {
 		textInput.setLocationRelativeTo(null);
 		textInput.setAlwaysOnTop(true);
 		setTextInput(textInput);
+		textInput.setVisible(false);
 
 		LocalConfig.getInstance().setProgress(0);
 		progressBar.pack();
@@ -1380,7 +1381,11 @@ public class GraphicalInterface extends JFrame {
         		textInput.stopped = false;
         		textInput.enableStart();
         		textInput.enableComponents();
-        		textInput.setVisible(true);       		
+        		try {
+        			textInput.setVisible(true); 
+        		} catch (Exception e) {
+        			
+        		}      		      		
         	}
         });
 
@@ -5854,6 +5859,7 @@ public class GraphicalInterface extends JFrame {
 					copyReactionsTableModels(model); 
 					setNewUsedMap(undoItem);
 					setUpReactionsUndo(undoItem);
+					LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), model);
 				}
 				formulaBar.setText("");
 			}
@@ -6862,6 +6868,7 @@ public class GraphicalInterface extends JFrame {
 								copyMetabolitesTableModels(model); 
 								setUndoNewCollections(undoItem);
 								setUpMetabolitesUndo(undoItem);
+								LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), model);
 							}
 							formulaBar.setText("");
 							if (participant && !errorShown) {

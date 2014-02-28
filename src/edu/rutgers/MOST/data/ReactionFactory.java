@@ -104,8 +104,18 @@ public class ReactionFactory {
 
 	public void setFluxes(ArrayList<Double> fluxes) {
 		DefaultTableModel reactionsOptModel = (DefaultTableModel) GraphicalInterface.reactionsTable.getModel();
+		Vector<ModelReaction> reactions = getAllReactions();
+		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
+		for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
+			reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
+		}
 		for (int i = 0; i < fluxes.size(); i++) {
-			reactionsOptModel.setValueAt(fluxes.get(i).toString(), i, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN);
+			//System.out.println(fluxes.get(i).toString());
+			int id = ((SBMLReaction) reactions.get(i)).getId();
+			System.out.println(id);
+			String row = (reactionsIdRowMap.get(Integer.toString(id))).toString();
+			int rowNum = Integer.valueOf(row);			
+			reactionsOptModel.setValueAt(fluxes.get(i).toString(), rowNum, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN);
 		}
 	}
 
