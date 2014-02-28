@@ -340,6 +340,16 @@ public class GraphicalInterface extends JFrame {
 	public void setTextInput(GDBBDialog1 textInput) {
 		GraphicalInterface.textInput = textInput;
 	}
+	
+	private static GDBBDialog2 gdbbDialog;
+
+	public static GDBBDialog2 getGdbbDialog() {
+		return gdbbDialog;
+	}
+
+	public static void setGdbbDialog(GDBBDialog2 gdbbDialog) {
+		GraphicalInterface.gdbbDialog = gdbbDialog;
+	}
 
 	private static GurobiPathInterface gurobiPathInterface;
 
@@ -913,12 +923,9 @@ public class GraphicalInterface extends JFrame {
 		setIconsList(icons);
 
 		textInput = new GDBBDialog1(gi);
-		//textInput = new GDBBDialog(gi);
 		textInput.setModal(true);
 		textInput.setIconImages(icons);
 		textInput.setTitle(GDBBConstants.GDBB_DIALOG_TITLE);
-		//textInput.setSize(350, 400);
-		// actually get different results when size is changed
         textInput.setSize(400, 350);
 		textInput.setResizable(false);
 		textInput.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -1376,16 +1383,70 @@ public class GraphicalInterface extends JFrame {
         		listModel.addElement(optimizeName);
 
         		setOptimizeName(optimizeName);
+        		
+        		GDBBDialog2 gdbbDialog = new GDBBDialog2();
+        		gdbbDialog.setModal(true);
+        		gdbbDialog.setIconImages(icons);
+        		gdbbDialog.setTitle(GDBBConstants.GDBB_DIALOG_TITLE);
+                gdbbDialog.setSize(400, 350);
+        		gdbbDialog.setResizable(false);
+        		gdbbDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        		gdbbDialog.setLocationRelativeTo(null);
+        		gdbbDialog.setAlwaysOnTop(true);
+        		setGdbbDialog(gdbbDialog);
+        		gdbbDialog.addWindowListener(new WindowAdapter() {
+        			public void windowClosing(WindowEvent evt) {
+        				if (timer.isRunning()) {
+        					setAlwaysOnTop(false);
+        					Object[] options = {"    Yes    ", "    No    ",};
+        					int choice = JOptionPane.showOptionDialog(null, 
+        							GDBBConstants.FRAME_CLOSE_MESSAGE, 
+        							GDBBConstants.FRAME_CLOSE_TITLE, 
+        							JOptionPane.YES_NO_OPTION, 
+        							JOptionPane.QUESTION_MESSAGE, 
+        							null, options, options[0]);
+        					if (choice == JOptionPane.YES_OPTION) {
+        						//stopGDBBAction();
+        					}
+        					if (choice == JOptionPane.NO_OPTION) {
+        						
+        					}
+        					setAlwaysOnTop(true);
+        				} else {
+        					getGdbbDialog().setVisible(false);
+        					getGdbbDialog().dispose();
+        				}
+        			}
+        		});	
+        		
+        		ActionListener startButtonActionListener = new ActionListener() {
+        			public void actionPerformed(ActionEvent prodActionEvent) {
+        				System.out.println("Start");
+        				
+        			}
+        		};
+        		
+        		gdbbDialog.startButton.addActionListener(startButtonActionListener);
+        		
+        		ActionListener stopButtonActionListener = new ActionListener() {
+        			public void actionPerformed(ActionEvent prodActionEvent) {
+        				System.out.println("Stop");
+        			}
+        		};
+        		
+        		gdbbDialog.stopButton.addActionListener(stopButtonActionListener);
+        		gdbbDialog.setVisible(true);
+        		
 
-        		textInput.getCounterLabel().setText(GDBBConstants.COUNTER_LABEL_PREFIX + "0" + GDBBConstants.COUNTER_LABEL_SUFFIX);
-        		textInput.stopped = false;
-        		textInput.enableStart();
-        		textInput.enableComponents();
-        		try {
-        			textInput.setVisible(true); 
-        		} catch (Exception e) {
-        			
-        		}      		      		
+//        		textInput.getCounterLabel().setText(GDBBConstants.COUNTER_LABEL_PREFIX + "0" + GDBBConstants.COUNTER_LABEL_SUFFIX);
+//        		textInput.stopped = false;
+//        		textInput.enableStart();
+//        		textInput.enableComponents();
+//        		try {
+//        			textInput.setVisible(true); 
+//        		} catch (Exception e) {
+//        			
+//        		}      		      		
         	}
         });
 
