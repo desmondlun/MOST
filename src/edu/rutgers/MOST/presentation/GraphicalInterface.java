@@ -277,6 +277,8 @@ public class GraphicalInterface extends JFrame {
 	public static boolean showJSBMLFileChooser;
 	// close
 	public static boolean exit;
+	// GDBB
+	public boolean gdbbStopped;
 
 	/*****************************************************************************/
 	// end boolean values
@@ -511,6 +513,17 @@ public class GraphicalInterface extends JFrame {
 	// end find replace
 	/*****************************************************************************/
 
+	/*****************************************************************************/
+	// gdbb timer items
+	/*****************************************************************************/
+	
+	private int timeCount;
+	private int dotCount;
+	
+	/*****************************************************************************/
+	// gdbb timer items
+	/*****************************************************************************/
+	
 	/*****************************************************************************/
 	// menu items
 	/*****************************************************************************/
@@ -1385,6 +1398,12 @@ public class GraphicalInterface extends JFrame {
 
         		setOptimizeName(optimizeName);
         		
+        		timeCount = 0;
+        		dotCount = 0;
+        		
+        		// will not be needed once GDBB task is working
+        		gdbbTimer.stop();
+        		
         		GDBBDialog2 gdbbDialog = new GDBBDialog2();
         		gdbbDialog.setModal(true);
         		gdbbDialog.setIconImages(icons);
@@ -1408,6 +1427,8 @@ public class GraphicalInterface extends JFrame {
         							null, options, options[0]);
         					if (choice == JOptionPane.YES_OPTION) {
         						//stopGDBBAction();
+        						gdbbStopped = true;
+        						dotCount = 0;
         					}
         					if (choice == JOptionPane.NO_OPTION) {
         						
@@ -1423,6 +1444,7 @@ public class GraphicalInterface extends JFrame {
         		ActionListener startButtonActionListener = new ActionListener() {
         			public void actionPerformed(ActionEvent prodActionEvent) {
         				System.out.println("Start");
+        				gdbbStopped = false;
         				System.out.println(getGdbbDialog().getNumKnockouts());
         				System.out.println(getGdbbDialog().cbNumThreads.getSelectedItem());
         				System.out.println(getGdbbDialog().cbSynObj.getSelectedItem());
@@ -1479,7 +1501,8 @@ public class GraphicalInterface extends JFrame {
         			public void actionPerformed(ActionEvent prodActionEvent) {
         				System.out.println("Stop");
         				getGdbbDialog().stopButton.setEnabled(false);
-        				gdbbTimer.stop();
+        				gdbbStopped = true;
+        				dotCount = 0;
         			}
         		};
         		
@@ -10154,23 +10177,25 @@ public class GraphicalInterface extends JFrame {
 	}
 
 	class GDBBTimeListener implements ActionListener {
-		public void actionPerformed(ActionEvent ae) {
-//			count += 1;
-//			dotCount += 1;
-//			StringBuffer dotBuffer = new StringBuffer();
-//			int numDots = dotCount % (GDBBConstants.MAX_NUM_DOTS + 1);
-//			for (int i = 0; i < numDots; i++) {
-//				dotBuffer.append(" .");
-//			}
+		public void actionPerformed(ActionEvent ae) {			
+			timeCount += 1;
+			dotCount += 1;
+			StringBuffer dotBuffer = new StringBuffer();
+			int numDots = dotCount % (GDBBConstants.MAX_NUM_DOTS + 1);
+			for (int i = 0; i < numDots; i++) {
+				dotBuffer.append(" .");
+			}
 //			setProcessingString(GDBBConstants.PROCESSING + dotBuffer.toString());			
 //			if (finiteTimeButton.isSelected() && count == Integer.valueOf(finiteTimeField.getText())) {
 //				stopGDBBAction();
 //			}
-//			if (!stopped) {
-//				counterLabel.setText(GDBBConstants.COUNTER_LABEL_PREFIX + count + GDBBConstants.COUNTER_LABEL_SUFFIX);
-//			} else {
-//				counterLabel.setText(GDBBConstants.PROCESSING + dotBuffer.toString());
-//			}
+			if (!gdbbStopped) {
+				System.out.println(GDBBConstants.COUNTER_LABEL_PREFIX + timeCount + GDBBConstants.COUNTER_LABEL_SUFFIX);
+				//counterLabel.setText(GDBBConstants.COUNTER_LABEL_PREFIX + count + GDBBConstants.COUNTER_LABEL_SUFFIX);
+			} else {
+				System.out.println(GDBBConstants.PROCESSING + dotBuffer.toString());
+				//counterLabel.setText(GDBBConstants.PROCESSING + dotBuffer.toString());
+			}
 		}
 	}
 	
