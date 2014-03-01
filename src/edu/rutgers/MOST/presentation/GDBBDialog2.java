@@ -28,6 +28,8 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.Timer;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class GDBBDialog2  extends JDialog {
 
@@ -36,18 +38,38 @@ public class GDBBDialog2  extends JDialog {
 	 */
 	private static final long serialVersionUID = 1L;
 	private JTextField numKnockoutsField = new JTextField();
-	private JComboBox<Integer> cbNumThreads = new JComboBox<Integer>();
+	public JComboBox<Integer> cbNumThreads = new JComboBox<Integer>();
 	public SizedComboBox cbSynObj = new SizedComboBox();
-
-	private Timer timer;
-	public Timer getTimer() {
-		return timer;
+	public JButton startButton = new JButton("Start");
+	public JButton stopButton = new JButton("Stop");
+	private JRadioButton indefiniteTimeButton = new JRadioButton(GDBBConstants.INDEFINITE_TIME_LABEL);
+	private JRadioButton finiteTimeButton = new JRadioButton(GDBBConstants.FINITE_TIME_LABEL);
+	private JLabel blankLabel = new JLabel("");
+	private JTextField finiteTimeField = new JTextField();
+	private JLabel counterLabel = new JLabel(GDBBConstants.COUNTER_LABEL_PREFIX + "0" + GDBBConstants.COUNTER_LABEL_SUFFIX);
+	
+	private String numKnockouts;
+	private String numThreads;
+	private String finiteTimeString;
+	
+	public boolean finiteTimeSelected = false;
+	
+	public String getNumKnockouts() {
+		return numKnockouts;
 	}
 
-	public void setTimer(Timer timer) {
-		this.timer = timer;
+	public void setNumKnockouts(String numKnockouts) {
+		this.numKnockouts = numKnockouts;
 	}
 
+	public String getNumThreads() {
+		return numThreads;
+	}
+
+	public void setNumThreads(String numThreads) {
+		this.numThreads = numThreads;
+	}
+	
 	private int count;
 	
 	public int getCount() {
@@ -68,14 +90,6 @@ public class GDBBDialog2  extends JDialog {
 		this.dotCount = dotCount;
 	}
 
-	public JButton startButton = new JButton("Start");
-	public JButton stopButton = new JButton("Stop");
-	private JRadioButton indefiniteTimeButton = new JRadioButton(GDBBConstants.INDEFINITE_TIME_LABEL);
-	private JRadioButton finiteTimeButton = new JRadioButton(GDBBConstants.FINITE_TIME_LABEL);
-	private JLabel blankLabel = new JLabel("");
-	private JTextField finiteTimeField = new JTextField();
-	private JLabel counterLabel = new JLabel(GDBBConstants.COUNTER_LABEL_PREFIX + "0" + GDBBConstants.COUNTER_LABEL_SUFFIX);
-
 	public JLabel getCounterLabel() {
 		return counterLabel;
 	}
@@ -94,7 +108,13 @@ public class GDBBDialog2  extends JDialog {
 		this.processingString = processingString;
 	}
 	
-	public boolean stopped;
+	public String getFiniteTimeString() {
+		return finiteTimeString;
+	}
+
+	public void setFiniteTimeString(String finiteTimeString) {
+		this.finiteTimeString = finiteTimeString;
+	}
 
 	@SuppressWarnings("unchecked")
 	public GDBBDialog2() {
@@ -106,33 +126,6 @@ public class GDBBDialog2  extends JDialog {
 		getRootPane().setDefaultButton(startButton);
 
 		setTitle(GDBBConstants.GDBB_DIALOG_TITLE);
-//		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-		
-//		addWindowListener(new WindowAdapter() {
-//			public void windowClosing(WindowEvent evt) {
-//				if (timer.isRunning()) {
-//					setAlwaysOnTop(false);
-//					Object[] options = {"    Yes    ", "    No    ",};
-//					int choice = JOptionPane.showOptionDialog(null, 
-//							GDBBConstants.FRAME_CLOSE_MESSAGE, 
-//							GDBBConstants.FRAME_CLOSE_TITLE, 
-//							JOptionPane.YES_NO_OPTION, 
-//							JOptionPane.QUESTION_MESSAGE, 
-//							null, options, options[0]);
-//					if (choice == JOptionPane.YES_OPTION) {
-//						stopGDBBAction();
-//					}
-//					if (choice == JOptionPane.NO_OPTION) {
-//						
-//					}
-//					setAlwaysOnTop(true);
-//				} else {
-//					setVisible(false);
-//				}
-//			}
-//		});	
-		
-		stopped = false;
 		
 		cbNumThreads.setEditable(false);
 		cbSynObj.setEditable(false);
@@ -149,6 +142,7 @@ public class GDBBDialog2  extends JDialog {
 		numKnockoutsField.setMinimumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
 		
 		numKnockoutsField.setText(GDBBConstants.NUM_KNOCKOUTS_DEFAULT);
+		setNumKnockouts(GDBBConstants.NUM_KNOCKOUTS_DEFAULT);
 		
 		numKnockoutsField.addFocusListener(new FocusListener() {
 
@@ -162,6 +156,18 @@ public class GDBBDialog2  extends JDialog {
 
 			@Override
 			public void focusLost(FocusEvent arg0) {				
+			}
+		});
+		
+		numKnockoutsField.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				setNumKnockouts(numKnockoutsField.getText());
+			}
+			public void removeUpdate(DocumentEvent e) {
+				setNumKnockouts(numKnockoutsField.getText());
+			}
+			public void insertUpdate(DocumentEvent e) {
+				setNumKnockouts(numKnockoutsField.getText());
 			}
 		});
 
@@ -198,6 +204,7 @@ public class GDBBDialog2  extends JDialog {
 		finiteTimeField.setMinimumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
 		
 		finiteTimeField.setText(GDBBConstants.FINITE_TIME_DEFAULT);	
+		setFiniteTimeString(GDBBConstants.FINITE_TIME_DEFAULT);
 		
 		// since indefinite is the default button, this field is disabled
 		finiteTimeField.setEditable(false);
@@ -217,7 +224,17 @@ public class GDBBDialog2  extends JDialog {
 			}
 		});
 		
-		
+		finiteTimeField.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				setFiniteTimeString(finiteTimeField.getText());
+			}
+			public void removeUpdate(DocumentEvent e) {
+				setFiniteTimeString(finiteTimeField.getText());
+			}
+			public void insertUpdate(DocumentEvent e) {
+				setFiniteTimeString(finiteTimeField.getText());
+			}
+		});
 		
 		//box layout
 		Box vb = Box.createVerticalBox();
@@ -422,8 +439,6 @@ public class GDBBDialog2  extends JDialog {
 
 		add(vb);
 		
-		//Set up timer to drive animation events.
-		timer = new Timer(1000, new TimeListener());
 		count = 0;
 		dotCount = 0;
 		
@@ -439,7 +454,7 @@ public class GDBBDialog2  extends JDialog {
 
 		ActionListener stopButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
-				stopGDBBAction();
+				
 			}
 		};
 
@@ -448,6 +463,7 @@ public class GDBBDialog2  extends JDialog {
 		indefiniteTimeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				finiteTimeField.setEditable(false);
+				finiteTimeSelected = false;
 			}
 		});
 		
@@ -456,6 +472,7 @@ public class GDBBDialog2  extends JDialog {
 				finiteTimeField.setEnabled(true);
 				finiteTimeField.setEditable(true);
 				finiteTimeField.requestFocus();
+				finiteTimeSelected = true;
 			}
 		});
 	
@@ -463,6 +480,7 @@ public class GDBBDialog2  extends JDialog {
 	
 	// disables changing any components while GDBB is running
 	public void disableComponents() {
+		startButton.setEnabled(false);
 		numKnockoutsField.setEditable(false);
 		cbNumThreads.setEnabled(false);
 		cbSynObj.setEnabled(false);
@@ -478,28 +496,6 @@ public class GDBBDialog2  extends JDialog {
 		cbSynObj.setEnabled(true);
 		indefiniteTimeButton.setEnabled(true);
 		finiteTimeButton.setEnabled(true);
-		//finiteTimeField.setEnabled(true);
-	}
-	
-	class TimeListener implements ActionListener {
-		public void actionPerformed(ActionEvent ae) {
-			count += 1;
-			dotCount += 1;
-			StringBuffer dotBuffer = new StringBuffer();
-			int numDots = dotCount % (GDBBConstants.MAX_NUM_DOTS + 1);
-			for (int i = 0; i < numDots; i++) {
-				dotBuffer.append(" .");
-			}
-			setProcessingString(GDBBConstants.PROCESSING + dotBuffer.toString());			
-			if (finiteTimeButton.isSelected() && count == Integer.valueOf(finiteTimeField.getText())) {
-				stopGDBBAction();
-			}
-			if (!stopped) {
-				counterLabel.setText(GDBBConstants.COUNTER_LABEL_PREFIX + count + GDBBConstants.COUNTER_LABEL_SUFFIX);
-			} else {
-				counterLabel.setText(GDBBConstants.PROCESSING + dotBuffer.toString());
-			}
-		}
 	}
 	
 	public void enableStart() {
@@ -513,14 +509,6 @@ public class GDBBDialog2  extends JDialog {
 		finiteTimeField.setEditable(false);
 		finiteTimeField.setEnabled(false);
 	}
-	
-	// used when stop button or finite time stops GDBB
-	public void stopGDBBAction() {
-		stopButton.setEnabled(false);
-		stopped = true;
-		dotCount = 0;
-		counterLabel.setText(getProcessingString());
-	}
 
 	public static void main(String[] args) throws Exception {
 //		//based on code from http:stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
@@ -528,7 +516,7 @@ public class GDBBDialog2  extends JDialog {
 //		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
 //		icons.add(new ImageIcon("etc/most32.jpg").getImage());
 //		
-//		GDBBDialog1 d = new GDBBDialog1();
+//		GDBBDialog2 d = new GDBBDialog2();
 //		
 //		d.setIconImages(icons);
 //    	d.setDefaultCloseOperation(DISPOSE_ON_CLOSE);

@@ -1422,7 +1422,15 @@ public class GraphicalInterface extends JFrame {
         		ActionListener startButtonActionListener = new ActionListener() {
         			public void actionPerformed(ActionEvent prodActionEvent) {
         				System.out.println("Start");
-        				
+        				System.out.println(getGdbbDialog().getNumKnockouts());
+        				System.out.println(getGdbbDialog().cbNumThreads.getSelectedItem());
+        				System.out.println(getGdbbDialog().cbSynObj.getSelectedItem());
+        				System.out.println(getGdbbDialog().finiteTimeSelected);
+        				if (getGdbbDialog().finiteTimeSelected) {
+        					System.out.println(getGdbbDialog().getFiniteTimeString());
+        				} 
+        				getGdbbDialog().disableComponents();
+        				getGdbbDialog().stopButton.setEnabled(true);
         			}
         		};
         		
@@ -1431,6 +1439,7 @@ public class GraphicalInterface extends JFrame {
         		ActionListener stopButtonActionListener = new ActionListener() {
         			public void actionPerformed(ActionEvent prodActionEvent) {
         				System.out.println("Stop");
+        				getGdbbDialog().stopButton.setEnabled(false);
         			}
         		};
         		
