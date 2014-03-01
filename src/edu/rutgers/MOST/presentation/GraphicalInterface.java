@@ -197,7 +197,7 @@ public class GraphicalInterface extends JFrame {
 	public static SettingsFactory curSettings;
 
 	protected GDBBTask gdbbTask;
-	javax.swing.Timer gdbbTimer = new javax.swing.Timer(1000, new GDBBTimeListener());
+	public javax.swing.Timer gdbbTimer = new javax.swing.Timer(1000, new GDBBTimeListener());
 
 	private Task task;	
 	public final ProgressBar progressBar = new ProgressBar();	
@@ -323,34 +323,14 @@ public class GraphicalInterface extends JFrame {
 	public static FindReplaceDialog getFindReplaceDialog() {
 		return findReplaceDialog;
 	}
-
-//	private static GDBBDialog textInput;
-//
-//	public static GDBBDialog getTextInput() {
-//		return textInput;
-//	}
-//
-//	public void setTextInput(GDBBDialog textInput) {
-//		GraphicalInterface.textInput = textInput;
-//	}
 	
-	private static GDBBDialog1 textInput;
+	private static GDBBDialog gdbbDialog;
 
-	public static GDBBDialog1 getTextInput() {
-		return textInput;
-	}
-
-	public void setTextInput(GDBBDialog1 textInput) {
-		GraphicalInterface.textInput = textInput;
-	}
-	
-	private static GDBBDialog2 gdbbDialog;
-
-	public static GDBBDialog2 getGdbbDialog() {
+	public static GDBBDialog getGdbbDialog() {
 		return gdbbDialog;
 	}
 
-	public static void setGdbbDialog(GDBBDialog2 gdbbDialog) {
+	public static void setGdbbDialog(GDBBDialog gdbbDialog) {
 		GraphicalInterface.gdbbDialog = gdbbDialog;
 	}
 
@@ -936,18 +916,6 @@ public class GraphicalInterface extends JFrame {
 		icons.add(new ImageIcon("etc/most32.jpg").getImage());
 		setIconsList(icons);
 
-		textInput = new GDBBDialog1(gi);
-		textInput.setModal(true);
-		textInput.setIconImages(icons);
-		textInput.setTitle(GDBBConstants.GDBB_DIALOG_TITLE);
-        textInput.setSize(400, 350);
-		textInput.setResizable(false);
-		textInput.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		textInput.setLocationRelativeTo(null);
-		textInput.setAlwaysOnTop(true);
-		setTextInput(textInput);
-		textInput.setVisible(false);
-
 		LocalConfig.getInstance().setProgress(0);
 		progressBar.pack();
 		progressBar.setIconImages(icons);
@@ -1381,153 +1349,147 @@ public class GraphicalInterface extends JFrame {
         		Utilities u = new Utilities();
 
         		String dateTimeStamp = u.createDateTimeStamp();
-        		
+
         		String optimizeName = GraphicalInterfaceConstants.GDBB_PREFIX
-        					+ LocalConfig.getInstance().getModelName() + dateTimeStamp;
+        				+ LocalConfig.getInstance().getModelName() + dateTimeStamp;
 
         		// copy models, run optimization on these model
-				DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
-				DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
-				LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
-				LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
-				setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
-				setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
-				//System.out.println(LocalConfig.getInstance().getReactionsTableModelMap());
-				
+        		DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
+        		DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
+        		LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
+        		LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
+        		setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
+        		setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
+        		//System.out.println(LocalConfig.getInstance().getReactionsTableModelMap());
+
         		listModel.addElement(optimizeName);
 
         		setOptimizeName(optimizeName);
-        		
+
+        		// in case timer is running due to no license error
+        		gdbbTimer.stop();
+
         		timeCount = 0;
         		dotCount = 0;
-        		
-        		GDBBDialog2 gdbbDialog = new GDBBDialog2();
-        		gdbbDialog.setModal(true);
-        		gdbbDialog.setIconImages(icons);
-        		gdbbDialog.setTitle(GDBBConstants.GDBB_DIALOG_TITLE);
-                gdbbDialog.setSize(400, 350);
-        		gdbbDialog.setResizable(false);
-        		gdbbDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        		gdbbDialog.setLocationRelativeTo(null);
-        		gdbbDialog.setAlwaysOnTop(true);
-        		setGdbbDialog(gdbbDialog);
-        		gdbbDialog.addWindowListener(new WindowAdapter() {
-        			public void windowClosing(WindowEvent evt) {
-        				if (gdbbTimer.isRunning()) {
-        					getGdbbDialog().setAlwaysOnTop(false);
-        					Object[] options = {"    Yes    ", "    No    ",};
-        					int choice = JOptionPane.showOptionDialog(null, 
-        							GDBBConstants.FRAME_CLOSE_MESSAGE, 
-        							GDBBConstants.FRAME_CLOSE_TITLE, 
-        							JOptionPane.YES_NO_OPTION, 
-        							JOptionPane.QUESTION_MESSAGE, 
-        							null, options, options[0]);
-        					if (choice == JOptionPane.YES_OPTION) {
-        						stopGDBBAction();
+
+        		try {
+        			GDBBDialog gdbbDialog = new GDBBDialog();
+        			gdbbDialog.setModal(true);
+        			gdbbDialog.setIconImages(icons);
+        			gdbbDialog.setTitle(GDBBConstants.GDBB_DIALOG_TITLE);
+        			gdbbDialog.setSize(400, 350);
+        			gdbbDialog.setResizable(false);
+        			gdbbDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        			gdbbDialog.setLocationRelativeTo(null);
+        			gdbbDialog.setAlwaysOnTop(true);
+        			setGdbbDialog(gdbbDialog);
+        			gdbbDialog.addWindowListener(new WindowAdapter() {
+        				public void windowClosing(WindowEvent evt) {
+        					if (gdbbTimer.isRunning()) {
+        						getGdbbDialog().setAlwaysOnTop(false);
+        						Object[] options = {"    Yes    ", "    No    ",};
+        						int choice = JOptionPane.showOptionDialog(null, 
+        								GDBBConstants.FRAME_CLOSE_MESSAGE, 
+        								GDBBConstants.FRAME_CLOSE_TITLE, 
+        								JOptionPane.YES_NO_OPTION, 
+        								JOptionPane.QUESTION_MESSAGE, 
+        								null, options, options[0]);
+        						if (choice == JOptionPane.YES_OPTION) {
+        							stopGDBBAction();
+        						}
+        						if (choice == JOptionPane.NO_OPTION) {
+
+        						}
+        						getGdbbDialog().setAlwaysOnTop(true);
+        					} else {
+        						getGdbbDialog().setVisible(false);
+        						getGdbbDialog().dispose();
         					}
-        					if (choice == JOptionPane.NO_OPTION) {
-        						
-        					}
-        					getGdbbDialog().setAlwaysOnTop(true);
-        				} else {
-        					getGdbbDialog().setVisible(false);
-        					getGdbbDialog().dispose();
         				}
-        			}
-        		});	
-        		
-        		ActionListener startButtonActionListener = new ActionListener() {
-        			public void actionPerformed(ActionEvent prodActionEvent) {
-        				System.out.println("Start");
-        				gdbbStopped = false;
-        				System.out.println(getGdbbDialog().getNumKnockouts());
-        				System.out.println(getGdbbDialog().cbNumThreads.getSelectedItem());
-        				System.out.println(getGdbbDialog().cbSynObj.getSelectedItem());
-        				System.out.println(getGdbbDialog().finiteTimeSelected);
-        				if (getGdbbDialog().finiteTimeSelected) {
-        					System.out.println(getGdbbDialog().getFiniteTimeString());
-        				} 
-        				
-        				// check if all entries are valid
-        				boolean isValid = true;
-        				boolean koIsInteger = true;
-        				boolean finiteTimeIsInteger = true;
-        				try {
-        					Integer.parseInt(getGdbbDialog().getNumKnockouts());
-        				}
-        				catch(NumberFormatException nfe2) {
-        					isValid = false;
-        					koIsInteger = false;
-        				}
-        				if (getGdbbDialog().finiteTimeSelected) {
+        			});	
+
+        			ActionListener startButtonActionListener = new ActionListener() {
+        				public void actionPerformed(ActionEvent prodActionEvent) {
+        					gdbbStopped = false;
+        					if (getGdbbDialog().finiteTimeSelected) {
+        						System.out.println(getGdbbDialog().getFiniteTimeString());
+        					}         				
+        					// check if all entries are valid
+        					boolean isValid = true;
+        					boolean koIsInteger = true;
+        					boolean finiteTimeIsInteger = true;
         					try {
-            					Integer.parseInt(getGdbbDialog().getFiniteTimeString());
-            				}
-            				catch(NumberFormatException nfe2) {
-            					isValid = false;
-            					finiteTimeIsInteger = false;
-            				}
-        				}        				
-        				if (!isValid) {
-        					getGdbbDialog().setAlwaysOnTop(false);
-        					JOptionPane.showMessageDialog(null,                
-        							GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_TITLE,                
-        							GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_MESSAGE,                               
-        							JOptionPane.ERROR_MESSAGE);
-        					if (!koIsInteger) {
-        						getGdbbDialog().setKnockoutDefaultValue();
+        						Integer.parseInt(getGdbbDialog().getNumKnockouts());
         					}
-        					if (!finiteTimeIsInteger) {
-        						getGdbbDialog().setFiniteTimeDefaultValue();
+        					catch(NumberFormatException nfe2) {
+        						isValid = false;
+        						koIsInteger = false;
         					}
-        					getGdbbDialog().setAlwaysOnTop(true);
-        				} else {
-        					// run gdbb
-        					getGdbbDialog().disableComponents();
-            				getGdbbDialog().stopButton.setEnabled(true);
-            				gdbbTimer.start();
-            				String solutionName = GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1);
-    						DynamicTreePanel.treePanel.addObject(new Solution(solutionName, solutionName));
-    						
-    						gdbbTask = new GDBBTask();
+        					if (getGdbbDialog().finiteTimeSelected) {
+        						try {
+        							Integer.parseInt(getGdbbDialog().getFiniteTimeString());
+        						}
+        						catch(NumberFormatException nfe2) {
+        							isValid = false;
+        							finiteTimeIsInteger = false;
+        						}
+        					}        				
+        					if (!isValid) {
+        						getGdbbDialog().setAlwaysOnTop(false);
+        						JOptionPane.showMessageDialog(null,                
+        								GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_TITLE,                
+        								GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_MESSAGE,                               
+        								JOptionPane.ERROR_MESSAGE);
+        						if (!koIsInteger) {
+        							getGdbbDialog().setKnockoutDefaultValue();
+        						}
+        						if (!finiteTimeIsInteger) {
+        							getGdbbDialog().setFiniteTimeDefaultValue();
+        						}
+        						getGdbbDialog().setAlwaysOnTop(true);
+        					} else {
+        						// run gdbb
+        						getGdbbDialog().disableComponents();
+        						getGdbbDialog().stopButton.setEnabled(true);
+        						gdbbTimer.start();
+        						String solutionName = GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1);
+        						DynamicTreePanel.treePanel.addObject(new Solution(solutionName, solutionName));
 
-    						gdbbTask.getModel().setC((new Double(getGdbbDialog().getNumKnockouts())).doubleValue());
-    						gdbbTask.getModel().setTimeLimit((new Double(getGdbbDialog().getFiniteTimeString())).doubleValue());
+        						gdbbTask = new GDBBTask();
 
-    						if (!getGdbbDialog().finiteTimeSelected) {
-    							gdbbTask.getModel().setTimeLimit(Double.POSITIVE_INFINITY);
-    						}
-    						else {
-    							gdbbTask.getModel().setTimeLimit((new Double(getGdbbDialog().getFiniteTimeString())).doubleValue());
-    						}
-    						
-    						gdbbTask.getModel().setThreadNum((Integer)getGdbbDialog().cbNumThreads.getSelectedItem());
-    						gdbbTask.execute();
-        				}       				
+        						gdbbTask.getModel().setC((new Double(getGdbbDialog().getNumKnockouts())).doubleValue());
+        						gdbbTask.getModel().setTimeLimit((new Double(getGdbbDialog().getFiniteTimeString())).doubleValue());
+
+        						if (!getGdbbDialog().finiteTimeSelected) {
+        							gdbbTask.getModel().setTimeLimit(Double.POSITIVE_INFINITY);
+        						}
+        						else {
+        							gdbbTask.getModel().setTimeLimit((new Double(getGdbbDialog().getFiniteTimeString())).doubleValue());
+        						}
+
+        						gdbbTask.getModel().setThreadNum((Integer)getGdbbDialog().cbNumThreads.getSelectedItem());
+        						gdbbTask.execute();
+        					}       				
+        				}
+        			};
+
+        			gdbbDialog.startButton.addActionListener(startButtonActionListener);
+
+        			ActionListener stopButtonActionListener = new ActionListener() {
+        				public void actionPerformed(ActionEvent prodActionEvent) {
+        					stopGDBBAction();
+        				}
+        			};
+
+        			gdbbDialog.stopButton.addActionListener(stopButtonActionListener);
+        			try {
+        				gdbbDialog.setVisible(true);
+        			} catch (Exception e) {
+
         			}
-        		};
-        		
-        		gdbbDialog.startButton.addActionListener(startButtonActionListener);
-        		
-        		ActionListener stopButtonActionListener = new ActionListener() {
-        			public void actionPerformed(ActionEvent prodActionEvent) {
-        				stopGDBBAction();
-        			}
-        		};
-        		
-        		gdbbDialog.stopButton.addActionListener(stopButtonActionListener);
-        		gdbbDialog.setVisible(true);
-        		
+        		} catch (Exception e) {
 
-//        		textInput.getCounterLabel().setText(GDBBConstants.COUNTER_LABEL_PREFIX + "0" + GDBBConstants.COUNTER_LABEL_SUFFIX);
-//        		textInput.stopped = false;
-//        		textInput.enableStart();
-//        		textInput.enableComponents();
-//        		try {
-//        			textInput.setVisible(true); 
-//        		} catch (Exception e) {
-//        			
-//        		}      		      		
+        		}
         	}
         });
 
@@ -1579,7 +1541,6 @@ public class GraphicalInterface extends JFrame {
 				for (int j = metabolitesTable.getRowCount() - 1; j >=0; j--) {
 					if (metabolitesTable.getModel().getValueAt(j, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) == null ||
 							((String) metabolitesTable.getModel().getValueAt(j, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN)).trim().length() == 0) {
-						//System.out.println(j);
 						model.removeRow(j);
 					}
 				}
@@ -5988,7 +5949,7 @@ public class GraphicalInterface extends JFrame {
 							}
 							LocalConfig.getInstance().getReactionEquationMap().remove(id);
 						}												
-						System.out.println("del " + LocalConfig.getInstance().getReactionEquationMap());
+//						System.out.println("del " + LocalConfig.getInstance().getReactionEquationMap());
 //						System.out.println("del id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
 //						System.out.println("del used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 					}
@@ -9944,7 +9905,6 @@ public class GraphicalInterface extends JFrame {
 					solution.setIndex(index);
 					index += 1;
 					publish(solution);
-					System.out.println("timer " + gdbbTimer.isRunning());
 
 					// copy models, run optimization on these model
 					DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
@@ -10041,7 +10001,7 @@ public class GraphicalInterface extends JFrame {
 
 		@Override
 		protected void process(List<Solution> solutions) {
-			System.out.println("alive " + gdbb.isAlive());
+			//System.out.println("alive " + gdbb.isAlive());
 			Solution solution = solutions.get(solutions.size() - 1);
 			double[] x = solution.getKnockoutVector();
 			double objectiveValue = solution.getObjectiveValue();
@@ -10065,7 +10025,7 @@ public class GraphicalInterface extends JFrame {
 
 		@Override
 		protected void done() {
-			System.out.println("GDBB is done!");
+			//System.out.println("GDBB is done!");
 			soln = gdbb.getSolution();
 			
 			log.debug("optimization complete");
@@ -10081,7 +10041,6 @@ public class GraphicalInterface extends JFrame {
 			getrFactory().setKnockouts(soln.subList(knockoutOffset, soln.size()));
 			
 			if (gdbbTimer.isRunning()) {
-			//if (textInput.getTimer().isRunning()) {
 				gdbbItem.setEnabled(false);
 				outputTextArea.setText(output);
 				if (getPopout() != null) {
@@ -10210,13 +10169,13 @@ public class GraphicalInterface extends JFrame {
 	}
 	
 	// used when stop button or finite time stops GDBB
-		public void stopGDBBAction() {
-			gdbbTask.getGdbb().stopGDBB();
-			getGdbbDialog().stopButton.setEnabled(false);
-			gdbbStopped = true;
-			dotCount = 0;
-			getGdbbDialog().getCounterLabel().setText(GDBBConstants.PROCESSING);
-		}
+	public void stopGDBBAction() {
+		gdbbTask.getGdbb().stopGDBB();
+		getGdbbDialog().stopButton.setEnabled(false);
+		gdbbStopped = true;
+		dotCount = 0;
+		getGdbbDialog().getCounterLabel().setText(GDBBConstants.PROCESSING);
+	}
 	
 	/*******************************************************************************/
 	//end progressBar methods
