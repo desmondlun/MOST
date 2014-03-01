@@ -197,6 +197,7 @@ public class GraphicalInterface extends JFrame {
 	public static SettingsFactory curSettings;
 
 	protected GDBBTask gdbbTask;
+	javax.swing.Timer gdbbTimer = new javax.swing.Timer(1000, new GDBBTimeListener());
 
 	private Task task;	
 	public final ProgressBar progressBar = new ProgressBar();	
@@ -1396,8 +1397,8 @@ public class GraphicalInterface extends JFrame {
         		setGdbbDialog(gdbbDialog);
         		gdbbDialog.addWindowListener(new WindowAdapter() {
         			public void windowClosing(WindowEvent evt) {
-        				if (timer.isRunning()) {
-        					setAlwaysOnTop(false);
+        				if (gdbbTimer.isRunning()) {
+        					getGdbbDialog().setAlwaysOnTop(false);
         					Object[] options = {"    Yes    ", "    No    ",};
         					int choice = JOptionPane.showOptionDialog(null, 
         							GDBBConstants.FRAME_CLOSE_MESSAGE, 
@@ -1411,7 +1412,7 @@ public class GraphicalInterface extends JFrame {
         					if (choice == JOptionPane.NO_OPTION) {
         						
         					}
-        					setAlwaysOnTop(true);
+        					getGdbbDialog().setAlwaysOnTop(true);
         				} else {
         					getGdbbDialog().setVisible(false);
         					getGdbbDialog().dispose();
@@ -1429,8 +1430,46 @@ public class GraphicalInterface extends JFrame {
         				if (getGdbbDialog().finiteTimeSelected) {
         					System.out.println(getGdbbDialog().getFiniteTimeString());
         				} 
-        				getGdbbDialog().disableComponents();
-        				getGdbbDialog().stopButton.setEnabled(true);
+        				
+        				// check if all entries are valid
+        				boolean isValid = true;
+        				boolean koIsInteger = true;
+        				boolean finiteTimeIsInteger = true;
+        				try {
+        					Integer.parseInt(getGdbbDialog().getNumKnockouts());
+        				}
+        				catch(NumberFormatException nfe2) {
+        					isValid = false;
+        					koIsInteger = false;
+        				}
+        				if (getGdbbDialog().finiteTimeSelected) {
+        					try {
+            					Integer.parseInt(getGdbbDialog().getFiniteTimeString());
+            				}
+            				catch(NumberFormatException nfe2) {
+            					isValid = false;
+            					finiteTimeIsInteger = false;
+            				}
+        				}        				
+        				if (!isValid) {
+        					getGdbbDialog().setAlwaysOnTop(false);
+        					JOptionPane.showMessageDialog(null,                
+        							GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_TITLE,                
+        							GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_MESSAGE,                               
+        							JOptionPane.ERROR_MESSAGE);
+        					if (!koIsInteger) {
+        						getGdbbDialog().setKnockoutDefaultValue();
+        					}
+        					if (!finiteTimeIsInteger) {
+        						getGdbbDialog().setFiniteTimeDefaultValue();
+        					}
+        					getGdbbDialog().setAlwaysOnTop(true);
+        				} else {
+        					// run gdbb
+        					getGdbbDialog().disableComponents();
+            				getGdbbDialog().stopButton.setEnabled(true);
+            				gdbbTimer.start();
+        				}       				
         			}
         		};
         		
@@ -1440,6 +1479,7 @@ public class GraphicalInterface extends JFrame {
         			public void actionPerformed(ActionEvent prodActionEvent) {
         				System.out.println("Stop");
         				getGdbbDialog().stopButton.setEnabled(false);
+        				gdbbTimer.stop();
         			}
         		};
         		
@@ -10113,6 +10153,27 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 
+	class GDBBTimeListener implements ActionListener {
+		public void actionPerformed(ActionEvent ae) {
+//			count += 1;
+//			dotCount += 1;
+//			StringBuffer dotBuffer = new StringBuffer();
+//			int numDots = dotCount % (GDBBConstants.MAX_NUM_DOTS + 1);
+//			for (int i = 0; i < numDots; i++) {
+//				dotBuffer.append(" .");
+//			}
+//			setProcessingString(GDBBConstants.PROCESSING + dotBuffer.toString());			
+//			if (finiteTimeButton.isSelected() && count == Integer.valueOf(finiteTimeField.getText())) {
+//				stopGDBBAction();
+//			}
+//			if (!stopped) {
+//				counterLabel.setText(GDBBConstants.COUNTER_LABEL_PREFIX + count + GDBBConstants.COUNTER_LABEL_SUFFIX);
+//			} else {
+//				counterLabel.setText(GDBBConstants.PROCESSING + dotBuffer.toString());
+//			}
+		}
+	}
+	
 	/*******************************************************************************/
 	//end progressBar methods
 	/*******************************************************************************/

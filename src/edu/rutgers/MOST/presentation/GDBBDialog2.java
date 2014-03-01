@@ -141,8 +141,7 @@ public class GDBBDialog2  extends JDialog {
 		numKnockoutsField.setMaximumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
 		numKnockoutsField.setMinimumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
 		
-		numKnockoutsField.setText(GDBBConstants.NUM_KNOCKOUTS_DEFAULT);
-		setNumKnockouts(GDBBConstants.NUM_KNOCKOUTS_DEFAULT);
+		setKnockoutDefaultValue();
 		
 		numKnockoutsField.addFocusListener(new FocusListener() {
 
@@ -203,8 +202,7 @@ public class GDBBDialog2  extends JDialog {
 		finiteTimeField.setMaximumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
 		finiteTimeField.setMinimumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
 		
-		finiteTimeField.setText(GDBBConstants.FINITE_TIME_DEFAULT);	
-		setFiniteTimeString(GDBBConstants.FINITE_TIME_DEFAULT);
+		setFiniteTimeDefaultValue();
 		
 		// since indefinite is the default button, this field is disabled
 		finiteTimeField.setEditable(false);
@@ -509,6 +507,16 @@ public class GDBBDialog2  extends JDialog {
 		finiteTimeField.setEditable(false);
 		finiteTimeField.setEnabled(false);
 	}
+	
+	public void setKnockoutDefaultValue() {
+		numKnockoutsField.setText(GDBBConstants.NUM_KNOCKOUTS_DEFAULT);
+		setNumKnockouts(GDBBConstants.NUM_KNOCKOUTS_DEFAULT);
+	}
+	
+	public void setFiniteTimeDefaultValue() {
+		finiteTimeField.setText(GDBBConstants.FINITE_TIME_DEFAULT);	
+		setFiniteTimeString(GDBBConstants.FINITE_TIME_DEFAULT);
+	}	
 
 	public static void main(String[] args) throws Exception {
 //		//based on code from http:stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
