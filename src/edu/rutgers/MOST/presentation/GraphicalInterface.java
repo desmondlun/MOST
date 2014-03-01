@@ -1401,9 +1401,6 @@ public class GraphicalInterface extends JFrame {
         		timeCount = 0;
         		dotCount = 0;
         		
-        		// will not be needed once GDBB task is working
-        		gdbbTimer.stop();
-        		
         		GDBBDialog2 gdbbDialog = new GDBBDialog2();
         		gdbbDialog.setModal(true);
         		gdbbDialog.setIconImages(icons);
@@ -1426,9 +1423,7 @@ public class GraphicalInterface extends JFrame {
         							JOptionPane.QUESTION_MESSAGE, 
         							null, options, options[0]);
         					if (choice == JOptionPane.YES_OPTION) {
-        						//stopGDBBAction();
-        						gdbbStopped = true;
-        						dotCount = 0;
+        						stopGDBBAction();
         					}
         					if (choice == JOptionPane.NO_OPTION) {
         						
@@ -1491,6 +1486,23 @@ public class GraphicalInterface extends JFrame {
         					getGdbbDialog().disableComponents();
             				getGdbbDialog().stopButton.setEnabled(true);
             				gdbbTimer.start();
+            				String solutionName = GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1);
+    						DynamicTreePanel.treePanel.addObject(new Solution(solutionName, solutionName));
+    						
+    						gdbbTask = new GDBBTask();
+
+    						gdbbTask.getModel().setC((new Double(getGdbbDialog().getNumKnockouts())).doubleValue());
+    						gdbbTask.getModel().setTimeLimit((new Double(getGdbbDialog().getFiniteTimeString())).doubleValue());
+
+    						if (!getGdbbDialog().finiteTimeSelected) {
+    							gdbbTask.getModel().setTimeLimit(Double.POSITIVE_INFINITY);
+    						}
+    						else {
+    							gdbbTask.getModel().setTimeLimit((new Double(getGdbbDialog().getFiniteTimeString())).doubleValue());
+    						}
+    						
+    						gdbbTask.getModel().setThreadNum((Integer)getGdbbDialog().cbNumThreads.getSelectedItem());
+    						gdbbTask.execute();
         				}       				
         			}
         		};
@@ -1499,10 +1511,7 @@ public class GraphicalInterface extends JFrame {
         		
         		ActionListener stopButtonActionListener = new ActionListener() {
         			public void actionPerformed(ActionEvent prodActionEvent) {
-        				System.out.println("Stop");
-        				getGdbbDialog().stopButton.setEnabled(false);
-        				gdbbStopped = true;
-        				dotCount = 0;
+        				stopGDBBAction();
         			}
         		};
         		
@@ -3247,9 +3256,7 @@ public class GraphicalInterface extends JFrame {
 					task = new Task();
 					task.execute();
 					saveDisabled = false;
-				} else {
-					// need a progress bar here if large opt files take too long to save
-				}
+				} 
 			}				
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -9898,9 +9905,10 @@ public class GraphicalInterface extends JFrame {
 		private String kString;
 		private String output;
 		
+		
 		GDBBTask() {
 			model = new GDBBModel(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN]);
-			//model = new GDBBModel(textInput.getReactionNameDBColumnMapping().get((String)textInput.cbSynObj.getSelectedItem()));
+			//model = new GDBBModel(getGdbbDialog().getReactionNameDBColumnMapping().get((String)getGdbbDialog().cbSynObj.getSelectedItem()));
 		}
 
 		@Override
@@ -9936,14 +9944,14 @@ public class GraphicalInterface extends JFrame {
 					solution.setIndex(index);
 					index += 1;
 					publish(solution);
-					//System.out.println("timer " + textInput.getTimer().isRunning());
+					System.out.println("timer " + gdbbTimer.isRunning());
 
 					// copy models, run optimization on these model
 					DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
 					DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
 					LocalConfig.getInstance().getReactionsTableModelMap().put(solution.getSolutionName(), reactionsOptModel);
 					LocalConfig.getInstance().getMetabolitesTableModelMap().put(solution.getSolutionName(), metabolitesOptModel);
-					if (textInput.getTimer().isRunning()) {
+					if (gdbbTimer.isRunning()) {
 						setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solution.getSolutionName()));
 						setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solution.getSolutionName()));
 					}					
@@ -9990,7 +9998,7 @@ public class GraphicalInterface extends JFrame {
 							e.printStackTrace();
 						}
 					}
-					if (textInput.getTimer().isRunning()) {
+					if (gdbbTimer.isRunning()) {
 						gdbbItem.setEnabled(false);
 						DynamicTreePanel.treePanel.addObject((DefaultMutableTreeNode)DynamicTreePanel.treePanel.getRootNode().getChildAt(DynamicTreePanel.treePanel.getRootNode().getChildCount() - 1), solution, true);
 						outputTextArea.setText(output);
@@ -10003,12 +10011,14 @@ public class GraphicalInterface extends JFrame {
 						}						
 					}
 					// if no optimizations have been started, just kill the dialog and reset
-				} else if (textInput.stopped) {
+				} else if (gdbbStopped) {
 					gdbbTask.getGdbb().stopGDBB();
-					textInput.setVisible(false);
-					textInput.getTimer().stop();
-					textInput.enableComponents();
-					textInput.selectIndefiniteTimeButton();
+					getGdbbDialog().setVisible(false);
+					getGdbbDialog().dispose();
+					gdbbTimer.stop();
+					// probably not necessary since dispose
+					getGdbbDialog().enableComponents();
+					getGdbbDialog().selectIndefiniteTimeButton();
 					// fixes bug where column header not aligned with columns when gdbb closes
 					reactionsTable.repaint();
 					GDBB.getSolver().setAbort(false);
@@ -10031,7 +10041,7 @@ public class GraphicalInterface extends JFrame {
 
 		@Override
 		protected void process(List<Solution> solutions) {
-			//System.out.println("alive " + gdbb.isAlive());
+			System.out.println("alive " + gdbb.isAlive());
 			Solution solution = solutions.get(solutions.size() - 1);
 			double[] x = solution.getKnockoutVector();
 			double objectiveValue = solution.getObjectiveValue();
@@ -10055,7 +10065,7 @@ public class GraphicalInterface extends JFrame {
 
 		@Override
 		protected void done() {
-			//System.out.println("GDBB is done!");
+			System.out.println("GDBB is done!");
 			soln = gdbb.getSolution();
 			
 			log.debug("optimization complete");
@@ -10063,14 +10073,15 @@ public class GraphicalInterface extends JFrame {
 			if (soln == null || soln.isEmpty())
 				return;
 
-			textInput.enableStart();
+			getGdbbDialog().enableStart();
 			DynamicTreePanel.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);		
 			
 			setrFactory(new ReactionFactory("SBML"));
 			getrFactory().setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())));
 			getrFactory().setKnockouts(soln.subList(knockoutOffset, soln.size()));
 			
-			if (textInput.getTimer().isRunning()) {
+			if (gdbbTimer.isRunning()) {
+			//if (textInput.getTimer().isRunning()) {
 				gdbbItem.setEnabled(false);
 				outputTextArea.setText(output);
 				if (getPopout() != null) {
@@ -10082,10 +10093,12 @@ public class GraphicalInterface extends JFrame {
 				}						
 			}
 
-			textInput.setVisible(false);
-			textInput.getTimer().stop();
-			textInput.enableComponents();
-			textInput.selectIndefiniteTimeButton();
+			getGdbbDialog().setVisible(false);
+			getGdbbDialog().dispose();
+			gdbbTimer.stop();
+			// probably not necessary since dispose
+			getGdbbDialog().enableComponents();
+			getGdbbDialog().selectIndefiniteTimeButton();
 			// fixes bug where column header not aligned with columns when gdbb closes
 			reactionsTable.repaint();
 			GDBB.getSolver().setAbort(false);
@@ -10184,20 +10197,26 @@ public class GraphicalInterface extends JFrame {
 			int numDots = dotCount % (GDBBConstants.MAX_NUM_DOTS + 1);
 			for (int i = 0; i < numDots; i++) {
 				dotBuffer.append(" .");
+			}		
+			if (getGdbbDialog().finiteTimeSelected && timeCount == Integer.valueOf(getGdbbDialog().getFiniteTimeString())) {
+				stopGDBBAction();
 			}
-//			setProcessingString(GDBBConstants.PROCESSING + dotBuffer.toString());			
-//			if (finiteTimeButton.isSelected() && count == Integer.valueOf(finiteTimeField.getText())) {
-//				stopGDBBAction();
-//			}
 			if (!gdbbStopped) {
-				System.out.println(GDBBConstants.COUNTER_LABEL_PREFIX + timeCount + GDBBConstants.COUNTER_LABEL_SUFFIX);
-				//counterLabel.setText(GDBBConstants.COUNTER_LABEL_PREFIX + count + GDBBConstants.COUNTER_LABEL_SUFFIX);
+				getGdbbDialog().getCounterLabel().setText(GDBBConstants.COUNTER_LABEL_PREFIX + timeCount + GDBBConstants.COUNTER_LABEL_SUFFIX);
 			} else {
-				System.out.println(GDBBConstants.PROCESSING + dotBuffer.toString());
-				//counterLabel.setText(GDBBConstants.PROCESSING + dotBuffer.toString());
+				getGdbbDialog().getCounterLabel().setText(GDBBConstants.PROCESSING + dotBuffer.toString());
 			}
 		}
 	}
+	
+	// used when stop button or finite time stops GDBB
+		public void stopGDBBAction() {
+			gdbbTask.getGdbb().stopGDBB();
+			getGdbbDialog().stopButton.setEnabled(false);
+			gdbbStopped = true;
+			dotCount = 0;
+			getGdbbDialog().getCounterLabel().setText(GDBBConstants.PROCESSING);
+		}
 	
 	/*******************************************************************************/
 	//end progressBar methods

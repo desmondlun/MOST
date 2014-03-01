@@ -112,7 +112,8 @@ public class ReactionFactory {
 		for (int i = 0; i < fluxes.size(); i++) {
 			int id = ((SBMLReaction) reactions.get(i)).getId();
 			String row = (reactionsIdRowMap.get(Integer.toString(id))).toString();
-			int rowNum = Integer.valueOf(row);			
+			int rowNum = Integer.valueOf(row);	
+			System.out.println("flux " + i);
 			reactionsOptModel.setValueAt(fluxes.get(i).toString(), rowNum, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN);
 		}
 	}
@@ -161,7 +162,6 @@ public class ReactionFactory {
 			int id = ((SBMLReaction) reactions.get(rowList.get(j))).getId();
 			String row = (reactionsIdRowMap.get(Integer.toString(id))).toString();
 			int rowNum = Integer.valueOf(row);	
-			System.out.println(rowNum);
 			reactionsOptModel.setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[1], rowNum, GraphicalInterfaceConstants.KO_COLUMN);
 			//reactionsOptModel.setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[1], rowList.get(j), GraphicalInterfaceConstants.KO_COLUMN);
 		}	
