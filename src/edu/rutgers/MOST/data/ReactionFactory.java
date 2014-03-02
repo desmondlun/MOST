@@ -116,7 +116,7 @@ public class ReactionFactory {
 			try {
 				reactionsOptModel.setValueAt(fluxes.get(i).toString(), rowNum, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN);
 			} catch (Exception e) {
-				
+				e.printStackTrace();
 			}			
 		}
 	}
