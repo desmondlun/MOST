@@ -279,6 +279,7 @@ public class GraphicalInterface extends JFrame {
 	public static boolean exit;
 	// GDBB
 	public boolean gdbbStopped;
+	public boolean gdbbRunning;
 
 	/*****************************************************************************/
 	// end boolean values
@@ -870,8 +871,10 @@ public class GraphicalInterface extends JFrame {
 							saveOptFile = true;
 							if (node.getUserObject().toString() != null) {
 								//System.out.println("node " + node.getUserObject().toString());
-								setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
-								setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
+								if (!gdbbRunning) {
+									setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
+									setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
+								}								
 								loadOutputPane(u.createLogFileName(solutionName + ".log"));
 								isRoot = false;	
 								disableMenuItems();
@@ -1469,6 +1472,7 @@ public class GraphicalInterface extends JFrame {
 
         						gdbbTask.getModel().setThreadNum((Integer)getGdbbDialog().cbNumThreads.getSelectedItem());
         						gdbbTask.execute();
+        						gdbbRunning = true;
         					}       				
         				}
         			};
@@ -1485,10 +1489,10 @@ public class GraphicalInterface extends JFrame {
         			try {
         				gdbbDialog.setVisible(true);
         			} catch (Exception e) {
-
+        				System.out.println("first catch");
         			}
         		} catch (Exception e) {
-
+        			System.out.println("second catch");
         		}
         	}
         });
@@ -4490,6 +4494,7 @@ public class GraphicalInterface extends JFrame {
 			saveFile = false;
 		}		
 		showJSBMLFileChooser = true;
+		gdbbRunning = false;
 	}
 
 	public void clearConfigLists() {		
@@ -9891,6 +9896,9 @@ public class GraphicalInterface extends JFrame {
 
 			soln = new ArrayList<Double>();
 			Solution solution;
+			
+			DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
+			DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
 
 			int index = 1;
 			try {
@@ -9909,13 +9917,14 @@ public class GraphicalInterface extends JFrame {
 							publish(solution);
 
 							// copy models, run optimization on these model
-							DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
-							DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
-							LocalConfig.getInstance().getReactionsTableModelMap().put(solution.getSolutionName(), reactionsOptModel);
-							LocalConfig.getInstance().getMetabolitesTableModelMap().put(solution.getSolutionName(), metabolitesOptModel);
+//							DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
+//							DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
+//							LocalConfig.getInstance().getReactionsTableModelMap().put(solution.getSolutionName(), reactionsOptModel);
+//							LocalConfig.getInstance().getMetabolitesTableModelMap().put(solution.getSolutionName(), metabolitesOptModel);
+							
 							if (gdbbTimer.isRunning()) {
-								setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solution.getSolutionName()));
-								setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solution.getSolutionName()));
+//								setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solution.getSolutionName()));
+//								setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solution.getSolutionName()));
 							}					
 							LocalConfig.getInstance().getOptimizationFilesList().add(solution.getSolutionName());
 
@@ -10090,6 +10099,9 @@ public class GraphicalInterface extends JFrame {
 				Utilities u = new Utilities();
 				copyLogFile(u.createLogFileName(solutionName), u.createLogFileName(getOptimizeName())); 
 				disableMenuItems();
+				setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
+				setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
+				gdbbRunning = false;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
