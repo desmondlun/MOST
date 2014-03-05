@@ -280,6 +280,7 @@ public class GraphicalInterface extends JFrame {
 	// GDBB
 	public boolean gdbbStopped;
 	public boolean gdbbRunning;
+	public boolean gdbbProcessed;
 
 	/*****************************************************************************/
 	// end boolean values
@@ -509,16 +510,6 @@ public class GraphicalInterface extends JFrame {
 
 	public void setGdbbFluxesMap(Map<String, ArrayList<Double>> gdbbFluxesMap) {
 		this.gdbbFluxesMap = gdbbFluxesMap;
-	}
-	
-	private Map<String, ArrayList<Double>> gdbbKnockoutsMap;
-	
-	public Map<String, ArrayList<Double>> getGdbbKnockoutsMap() {
-		return gdbbKnockoutsMap;
-	}
-
-	public void setGdbbKnockoutsMap(Map<String, ArrayList<Double>> gdbbKnockoutsMap) {
-		this.gdbbKnockoutsMap = gdbbKnockoutsMap;
 	}
 	
 	/*****************************************************************************/
@@ -890,11 +881,17 @@ public class GraphicalInterface extends JFrame {
 						} else {
 							saveOptFile = true;
 							if (node.getUserObject().toString() != null) {
+								// only set table models if gdbb not running to prevent
+								// out of range error, fluxes and knockouts set when item
+								// selected, node info index > -1 is so FBA items will not 
+								// execute this code
 								if (!gdbbRunning && nodeInfo.getIndex() > -1) {
 									setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
 									setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
 									ReactionFactory rFactory = new ReactionFactory("SBML");
 									rFactory.setFluxes(getGdbbFluxesMap().get(nodeInfo.getSolutionName()));
+									System.out.println(LocalConfig.getInstance().getGdbbKnockoutsMap().get(nodeInfo.getSolutionName()));
+									rFactory.updateKnockouts(LocalConfig.getInstance().getGdbbKnockoutsMap().get(nodeInfo.getSolutionName()));
 								}								
 								loadOutputPane(u.createLogFileName(solutionName + ".log"));
 								isRoot = false;	
@@ -1049,8 +1046,10 @@ public class GraphicalInterface extends JFrame {
 		// gdbb
 		Map<String, ArrayList<Double>> gdbbFluxesMap = new HashMap<String, ArrayList<Double>>();
 		setGdbbFluxesMap(gdbbFluxesMap);
-		Map<String, ArrayList<Double>> gdbbKnockoutsMap = new HashMap<String, ArrayList<Double>>();
-		setGdbbKnockoutsMap(gdbbKnockoutsMap);
+		ArrayList<Integer> gdbbKnockoutsList = new ArrayList<Integer>();
+		LocalConfig.getInstance().setGdbbKnockoutsList(gdbbKnockoutsList);
+		Map<String, ArrayList<Integer>> gdbbKnockoutsMap = new HashMap<String, ArrayList<Integer>>();
+		LocalConfig.getInstance().setGdbbKnockoutsMap(gdbbKnockoutsMap);
 
 		selectedReactionsRowStartIndex = 0;
 		selectedReactionsRowEndIndex = 0;
@@ -1497,6 +1496,7 @@ public class GraphicalInterface extends JFrame {
         						gdbbTask.getModel().setThreadNum((Integer)getGdbbDialog().cbNumThreads.getSelectedItem());
         						gdbbTask.execute();
         						gdbbRunning = true;
+        						gdbbProcessed = false;
         					}       				
         				}
         			};
@@ -4519,6 +4519,7 @@ public class GraphicalInterface extends JFrame {
 		}		
 		showJSBMLFileChooser = true;
 		gdbbRunning = false;
+		gdbbProcessed = false;
 	}
 
 	public void clearConfigLists() {		
@@ -4531,6 +4532,9 @@ public class GraphicalInterface extends JFrame {
 			LocalConfig.getInstance().getOptimizationFilesList().clear();
 			LocalConfig.getInstance().getMetabolitesTableModelMap().clear();
 			LocalConfig.getInstance().getReactionsTableModelMap().clear();
+			getGdbbFluxesMap().clear();
+			LocalConfig.getInstance().getGdbbKnockoutsList().clear();
+			LocalConfig.getInstance().getGdbbKnockoutsMap().clear();
 		}		
 		LocalConfig.getInstance().getAddedMetabolites().clear();
 		LocalConfig.getInstance().getReactionEquationMap().clear();
@@ -9937,8 +9941,10 @@ public class GraphicalInterface extends JFrame {
 							publish(solution);
 							
 							// copy models, run optimization on these model
-							DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
-							DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
+							DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel(LocalConfig.getInstance().getMetabolitesTableModelMap().get(LocalConfig.getInstance().getModelName()));
+							DefaultTableModel reactionsOptModel = copyReactionsTableModel(LocalConfig.getInstance().getReactionsTableModelMap().get(LocalConfig.getInstance().getModelName()));				
+//							DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
+//							DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
 							LocalConfig.getInstance().getReactionsTableModelMap().put(solution.getSolutionName(), reactionsOptModel);
 							LocalConfig.getInstance().getMetabolitesTableModelMap().put(solution.getSolutionName(), metabolitesOptModel);
 							
@@ -9987,7 +9993,10 @@ public class GraphicalInterface extends JFrame {
 							}
 							if (gdbbTimer.isRunning()) {
 								gdbbItem.setEnabled(false);
-								DynamicTreePanel.treePanel.addObject((DefaultMutableTreeNode)DynamicTreePanel.treePanel.getRootNode().getChildAt(DynamicTreePanel.treePanel.getRootNode().getChildCount() - 1), solution, true);
+								System.out.println("add " + solutionName);
+								if (gdbbProcessed) {
+									DynamicTreePanel.treePanel.addObject((DefaultMutableTreeNode)DynamicTreePanel.treePanel.getRootNode().getChildAt(DynamicTreePanel.treePanel.getRootNode().getChildCount() - 1), solution, true);
+								}						
 								outputTextArea.setText(output);
 								if (getPopout() != null) {
 									getPopout().setOutputText(output);
@@ -10054,7 +10063,10 @@ public class GraphicalInterface extends JFrame {
 				rFactory.setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())));
 				rFactory.setKnockouts(soln.subList(knockoutOffset, soln.size()));
 				getGdbbFluxesMap().put(solution.getSolutionName(), new ArrayList<Double>(soln.subList(0, model.getNumReactions())));
-				//getGdbbKnockoutsMap().put(solution.getSolutionName(), (ArrayList<Double>) soln.subList(knockoutOffset, soln.size()));
+//				System.out.println(solution.getSolutionName());
+//				System.out.println(LocalConfig.getInstance().getGdbbKnockoutsList());
+				LocalConfig.getInstance().getGdbbKnockoutsMap().put(solution.getSolutionName(), LocalConfig.getInstance().getGdbbKnockoutsList());
+				gdbbProcessed = true;
                 
 				DynamicTreePanel.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);	
 			} catch (Exception e) {
@@ -10079,6 +10091,7 @@ public class GraphicalInterface extends JFrame {
 				setrFactory(new ReactionFactory("SBML"));
 				getrFactory().setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())));
 				getrFactory().setKnockouts(soln.subList(knockoutOffset, soln.size()));
+				gdbbProcessed = true;
 
 				if (gdbbTimer.isRunning()) {
 					gdbbItem.setEnabled(false);

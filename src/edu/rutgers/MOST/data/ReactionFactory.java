@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import javax.swing.table.DefaultTableModel;
 
+import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
@@ -161,6 +162,7 @@ public class ReactionFactory {
 		for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
 			reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
 		}
+		LocalConfig.getInstance().setGdbbKnockoutsList(rowList);
 		for (int j = 0; j < rowList.size(); j++) {
 			int id = ((SBMLReaction) reactions.get(rowList.get(j))).getId();
 			String row = (reactionsIdRowMap.get(Integer.toString(id))).toString();
@@ -170,6 +172,27 @@ public class ReactionFactory {
 		}	
 
 		return knockoutGenes;
+	}
+	
+	public void updateKnockouts(ArrayList<Integer> rowList) {
+		DefaultTableModel reactionsOptModel = (DefaultTableModel) GraphicalInterface.reactionsTable.getModel();
+		// reset all values to false
+		for (int h = 0; h < GraphicalInterface.reactionsTable.getRowCount(); h++) {
+			reactionsOptModel.setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[0], h, GraphicalInterfaceConstants.KO_COLUMN);
+		}
+		// set knockouts to true
+		Vector<ModelReaction> reactions = getAllReactions();
+		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
+		for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
+			reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
+		}
+		LocalConfig.getInstance().setGdbbKnockoutsList(rowList);
+		for (int j = 0; j < rowList.size(); j++) {
+			int id = ((SBMLReaction) reactions.get(rowList.get(j))).getId();
+			String row = (reactionsIdRowMap.get(Integer.toString(id))).toString();
+			int rowNum = Integer.valueOf(row);	
+			reactionsOptModel.setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[1], rowNum, GraphicalInterfaceConstants.KO_COLUMN);
+		}	
 	}
 
 	/**

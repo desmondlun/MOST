@@ -3,6 +3,7 @@ package edu.rutgers.MOST.config;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.SortOrder;
@@ -743,6 +744,26 @@ public class LocalConfig {
 	public static void setReactionsUndoTableModelMap(
 			Map<String, DefaultTableModel> reactionsUndoTableModelMap) {
 		LocalConfig.reactionsUndoTableModelMap = reactionsUndoTableModelMap;
+	}
+	
+	private ArrayList<Integer> gdbbKnockoutsList;
+	
+    public ArrayList<Integer> getGdbbKnockoutsList() {
+		return gdbbKnockoutsList;
+	}
+
+	public void setGdbbKnockoutsList(ArrayList<Integer> gdbbKnockoutsList) {
+		this.gdbbKnockoutsList = gdbbKnockoutsList;
+	}
+
+	private Map<String, ArrayList<Integer>> gdbbKnockoutsMap;
+
+	public Map<String, ArrayList<Integer>> getGdbbKnockoutsMap() {
+		return gdbbKnockoutsMap;
+	}
+
+	public void setGdbbKnockoutsMap(Map<String, ArrayList<Integer>> gdbbKnockoutsMap) {
+		this.gdbbKnockoutsMap = gdbbKnockoutsMap;
 	}
 
 }
