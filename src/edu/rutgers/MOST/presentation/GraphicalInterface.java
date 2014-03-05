@@ -890,10 +890,11 @@ public class GraphicalInterface extends JFrame {
 						} else {
 							saveOptFile = true;
 							if (node.getUserObject().toString() != null) {
-								if (!gdbbRunning) {
-									System.out.println(getGdbbFluxesMap().get(nodeInfo.getSolutionName()));
+								if (!gdbbRunning && nodeInfo.getIndex() > -1) {
 									setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
 									setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
+									ReactionFactory rFactory = new ReactionFactory("SBML");
+									rFactory.setFluxes(getGdbbFluxesMap().get(nodeInfo.getSolutionName()));
 								}								
 								loadOutputPane(u.createLogFileName(solutionName + ".log"));
 								isRoot = false;	
