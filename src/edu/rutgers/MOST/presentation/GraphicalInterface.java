@@ -890,7 +890,7 @@ public class GraphicalInterface extends JFrame {
 									setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
 									ReactionFactory rFactory = new ReactionFactory("SBML");
 									rFactory.setFluxes(getGdbbFluxesMap().get(nodeInfo.getSolutionName()));
-									System.out.println(LocalConfig.getInstance().getGdbbKnockoutsMap().get(nodeInfo.getSolutionName()));
+									//System.out.println(LocalConfig.getInstance().getGdbbKnockoutsMap().get(nodeInfo.getSolutionName()));
 									rFactory.updateKnockouts(LocalConfig.getInstance().getGdbbKnockoutsMap().get(nodeInfo.getSolutionName()));
 								}								
 								loadOutputPane(u.createLogFileName(solutionName + ".log"));
@@ -9993,7 +9993,7 @@ public class GraphicalInterface extends JFrame {
 							}
 							if (gdbbTimer.isRunning()) {
 								gdbbItem.setEnabled(false);
-								System.out.println("add " + solutionName);
+								//System.out.println("add " + solutionName);
 								if (gdbbProcessed) {
 									DynamicTreePanel.treePanel.addObject((DefaultMutableTreeNode)DynamicTreePanel.treePanel.getRootNode().getChildAt(DynamicTreePanel.treePanel.getRootNode().getChildCount() - 1), solution, true);
 								}						
