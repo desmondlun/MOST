@@ -137,12 +137,17 @@ public class ReactionEquationUpdater {
 				}
 			}			
 		} else if (type.equals("new")) {
-			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(species)) {
-				int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(species);
-				LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(usedCount + 1));									
-			} else {
-				LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(1));
-			}
+			System.out.println(LocalConfig.getInstance().getMetaboliteUsedMap());
+			try {
+				if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(species)) {
+					int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(species);
+					LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(usedCount + 1));									
+				} else {
+					LocalConfig.getInstance().getMetaboliteUsedMap().put(species, new Integer(1));
+				}
+			} catch (Exception e) {
+				
+			}			
 		}
 	}
 	

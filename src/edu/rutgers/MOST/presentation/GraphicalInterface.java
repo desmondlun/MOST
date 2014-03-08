@@ -881,13 +881,15 @@ public class GraphicalInterface extends JFrame {
 						} else {
 							saveOptFile = true;
 							if (node.getUserObject().toString() != null) {
+								setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
+								setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
 								// only set table models if gdbb not running to prevent
 								// out of range error, fluxes and knockouts set when item
 								// selected, node info index > -1 is so FBA items will not 
 								// execute this code
 								if (!gdbbRunning && nodeInfo.getIndex() > -1) {
-									setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
-									setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
+//									setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
+//									setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
 									ReactionFactory rFactory = new ReactionFactory("SBML");
 									rFactory.setFluxes(getGdbbFluxesMap().get(nodeInfo.getSolutionName()));
 									//System.out.println(LocalConfig.getInstance().getGdbbKnockoutsMap().get(nodeInfo.getSolutionName()));
@@ -3967,6 +3969,7 @@ public class GraphicalInterface extends JFrame {
 							LocalConfig.getInstance().getSuspiciousMetabolites().add(metabId);
 						}							
 					}
+					System.out.println(updater.getMaybeAddReactants());
 					updater.updateMetaboliteUsedMap(updater.getMaybeAddReactants().get(i), "new");
 				} else {
 					unprocessedEqun.removeReactantByAbbr(updater.getMaybeAddReactants().get(i));
@@ -4038,7 +4041,7 @@ public class GraphicalInterface extends JFrame {
 			reactionsTable.getModel().setValueAt("", rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 			LocalConfig.getInstance().getReactionEquationMap().remove(reactionId);
 		}
-//		System.out.println("upd equn " + LocalConfig.getInstance().getReactionEquationMap());
+		System.out.println("upd equn " + LocalConfig.getInstance().getReactionEquationMap());
 //		System.out.println("upd equn id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
 //		System.out.println("upd equn used " + LocalConfig.getInstance().getMetaboliteUsedMap());	
 	}
