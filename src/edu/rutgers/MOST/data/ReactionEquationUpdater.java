@@ -137,7 +137,6 @@ public class ReactionEquationUpdater {
 				}
 			}			
 		} else if (type.equals("new")) {
-			System.out.println(LocalConfig.getInstance().getMetaboliteUsedMap());
 			try {
 				if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(species)) {
 					int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(species);

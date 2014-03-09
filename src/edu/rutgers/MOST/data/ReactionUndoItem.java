@@ -45,6 +45,7 @@ public class ReactionUndoItem implements UndoItem {
 	private String newUpperBound;
 	private Map<String, Object> oldMetaboliteUsedMap;
 	private Map<String, Object> newMetaboliteUsedMap;
+	private ArrayList<Integer> deleteIds;
 	
 	public Integer getId() {
 		return id;
@@ -225,6 +226,12 @@ public class ReactionUndoItem implements UndoItem {
 	}
 	public void setNewMetaboliteUsedMap(Map<String, Object> newMetaboliteUsedMap) {
 		this.newMetaboliteUsedMap = newMetaboliteUsedMap;
+	}
+	public ArrayList<Integer> getDeleteIds() {
+		return deleteIds;
+	}
+	public void setDeleteIds(ArrayList<Integer> deleteIds) {
+		this.deleteIds = deleteIds;
 	}
 	
 	public String createUndoDescription() {
