@@ -841,8 +841,8 @@ public class GraphicalInterface extends JFrame {
 
 	public GraphicalInterface() {		
 		// make this true only when troubleshooting, false for actual use
-		//showIdColumn = true;
-		showIdColumn = false;
+		showIdColumn = true;
+		//showIdColumn = false;
 
 		gi = this;
 
@@ -7903,7 +7903,7 @@ public class GraphicalInterface extends JFrame {
 		}			
 	}
 
-	public void addMenuItems(final Map<Object, Object> undoMap, final String type) {
+	public void addMenuItems(final Map<Object, Object> undoMap, final String type) {		
 		final JScrollPopupMenu popupMenu = new JScrollPopupMenu();
 		popupMenu.addMouseListener(new MouseListener() {
 			public void mouseClicked(MouseEvent e) {
@@ -7977,11 +7977,11 @@ public class GraphicalInterface extends JFrame {
 									reactionUndoAction(i);
 									Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
 									for (int j = 0; j < GraphicalInterface.reactionsTable.getRowCount(); j++) {
-										reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(j, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
+										reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(j, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), j);
 									}
 									for (int j = 0; j < deleteIds.size(); j++) {
 										String rowStr = (reactionsIdRowMap.get(Integer.toString(deleteIds.get(j)))).toString();
-										int rowNum = Integer.valueOf(row);
+										int rowNum = Integer.valueOf(rowStr);
 										if (reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) != null && ((String) reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN)).trim().length() > 0) {
 											String eq = (String) reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 											updateReactionEquation(rowNum, deleteIds.get(j), "", eq);
@@ -7996,6 +7996,8 @@ public class GraphicalInterface extends JFrame {
 									}									
 									DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
 									setUpReactionsTable(model);
+									DefaultTableModel reacModel = copyReactionsTableModel(model);
+									LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), reacModel);
 									undoCount -= 1;	
 									if (typing) {
 										scrollRow = getRowFromReactionsId(id);
@@ -8020,6 +8022,8 @@ public class GraphicalInterface extends JFrame {
 									reactionRedoAction(i);
 									DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
 									setUpReactionsTable(model);
+									DefaultTableModel reacModel = copyReactionsTableModel(model);
+									LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), reacModel);
 									scrollRow = getRowFromReactionsId(id);
 								}  
 								updateUndoButton();
@@ -8028,6 +8032,8 @@ public class GraphicalInterface extends JFrame {
 								if (i == Integer.valueOf(menuItem.getName())) {
 									DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
 									setUpReactionsTable(model);
+									DefaultTableModel reacModel = copyReactionsTableModel(model);
+									LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), reacModel);
 									tabbedPane.setSelectedIndex(0);
 									if (scroll) {										
 										scrollToLocation(reactionsTable, scrollRow, scrollCol);
@@ -8054,6 +8060,8 @@ public class GraphicalInterface extends JFrame {
 									metaboliteUndoAction(i);
 									DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
 									setUpMetabolitesTable(model);
+									DefaultTableModel metabModel = copyMetabolitesTableModel(model);
+									LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), metabModel);
 									undoCount -= 1;	
 									if (typing) {
 										scrollRow = getRowFromMetabolitesId(id);
@@ -8072,6 +8080,8 @@ public class GraphicalInterface extends JFrame {
 									metaboliteRedoAction(i);
 									DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
 									setUpMetabolitesTable(model);
+									DefaultTableModel metabModel = copyMetabolitesTableModel(model);
+									LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), metabModel);
 									scrollRow = getRowFromMetabolitesId(id);
 								} 
 								updateUndoButton();
@@ -8080,6 +8090,8 @@ public class GraphicalInterface extends JFrame {
 								if (i == Integer.valueOf(menuItem.getName())) {
 									DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
 									setUpMetabolitesTable(model);
+									DefaultTableModel metabModel = copyMetabolitesTableModel(model);
+									LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), metabModel);
 									tabbedPane.setSelectedIndex(1);
 									if (scroll) {
 										scrollToLocation(metabolitesTable, scrollRow, scrollCol);					
@@ -8283,7 +8295,7 @@ public class GraphicalInterface extends JFrame {
 		}
 		for (int j = 0; j < deleteIds.size(); j++) {
 			String rowStr = (reactionsIdRowMap.get(Integer.toString(deleteIds.get(j)))).toString();
-			int rowNum = Integer.valueOf(row);
+			int rowNum = Integer.valueOf(rowStr);
 			if (reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) != null && ((String) reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN)).trim().length() > 0) {
 				String eq = (String) reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 				updateReactionEquation(rowNum, deleteIds.get(j), "", eq);
@@ -8292,6 +8304,8 @@ public class GraphicalInterface extends JFrame {
 		
 		DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
 		setUpReactionsTable(model);
+		DefaultTableModel reacModel = copyReactionsTableModel(model);
+		LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), reacModel);
 		undoCount -= 1;	
 		if (typing) {
 			scrollRow = getRowFromReactionsId(id);
@@ -8375,12 +8389,12 @@ public class GraphicalInterface extends JFrame {
     	} 
     	ArrayList<Integer> deleteMetabRows = new ArrayList<Integer>();
     	if (((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getUndoType().equals(UndoConstants.TYPING) ||
-    			((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getUndoType().equals(UndoConstants.REPLACE)) {
+    		((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getUndoType().equals(UndoConstants.REPLACE)) {
     	}
     	LocalConfig.getInstance().getUndoItemMap().remove(index);
     	undoCount -= 1;	
     	if (reactionsTable.getModel().getRowCount() > LocalConfig.getInstance().getMetaboliteIdNameMap().size()) {
-			if (LocalConfig.getMaxMetabolite() >= Integer.valueOf((String)reactionsTable.getModel().getValueAt(reactionsTable.getModel().getRowCount() - 1, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN))) {
+			if (LocalConfig.getMaxMetabolite() >= Integer.valueOf((String)reactionsTable.getModel().getValueAt(reactionsTable.getModel().getRowCount() - 1, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN))) {
 				for (int k = 0; k < deleteMetabRows.size(); k++) {
 					deleteMetabolitesRowById(deleteMetabRows.get(k));
 				}
