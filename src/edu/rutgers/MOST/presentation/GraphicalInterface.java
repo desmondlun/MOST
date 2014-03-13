@@ -8361,7 +8361,7 @@ public class GraphicalInterface extends JFrame {
     	((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).undo(); 
     	DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
     	setUpMetabolitesTable(model);
-    	LocalConfig.getInstance().getUndoItemMap().put(redoCount, LocalConfig.getInstance().getUndoItemMap().get(index));
+    	LocalConfig.getInstance().getRedoItemMap().put(redoCount, LocalConfig.getInstance().getUndoItemMap().get(index));
     	redoCount += 1;		
     	if (((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getUndoType().equals(UndoConstants.SORT) ||
     			((MetaboliteUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getUndoType().equals(UndoConstants.UNSORT)) {
