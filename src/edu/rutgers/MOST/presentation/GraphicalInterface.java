@@ -841,8 +841,8 @@ public class GraphicalInterface extends JFrame {
 
 	public GraphicalInterface() {		
 		// make this true only when troubleshooting, false for actual use
-		showIdColumn = true;
-		//showIdColumn = false;
+		//showIdColumn = true;
+		showIdColumn = false;
 
 		gi = this;
 
@@ -4026,7 +4026,9 @@ public class GraphicalInterface extends JFrame {
 			reactionsTable.getModel().setValueAt(equation.equationNames, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 			reactionsTable.getModel().setValueAt(equation.getReversible(), rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
 			if (equation.getReversible().equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
-				reactionsTable.getModel().setValueAt("0.0", rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+				if (Double.valueOf((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)) < 0) {
+					reactionsTable.getModel().setValueAt("0.0", rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+				}				
 			}
 			GraphicalInterface.showPrompt = true;
 			createUnusedMetabolitesList();
@@ -6461,6 +6463,7 @@ public class GraphicalInterface extends JFrame {
 			setOldUsedMap(undoItem);
 			undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());		
 			boolean valid = true;
+			ArrayList<Integer> deleteIds = new ArrayList<Integer>();
 			// check if columns that require values will be cleared
 			for(int j=0; j < reactionsTable.getSelectedColumns().length ;j++) { 
 				if (startCol + j == GraphicalInterfaceConstants.KO_COLUMN || startCol + j == GraphicalInterfaceConstants.FLUX_VALUE_COLUMN || 
@@ -6473,12 +6476,15 @@ public class GraphicalInterface extends JFrame {
 			if (valid) {
 				for(int i=0; i < reactionsTable.getSelectedRows().length ;i++) { 
 					for(int j=0; j < reactionsTable.getSelectedColumns().length ;j++) {
-						updateReactionsCellIfPasteValid("", startRow+i, startCol+j);						
+						updateReactionsCellIfPasteValid("", startRow+i, startCol+j);
+						int reacId = Integer.valueOf((String) reactionsTable.getModel().getValueAt(startRow+i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
+						deleteIds.add(reacId);
 					} 
 				}
 				DefaultTableModel newReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
 				copyReactionsTableModels(newReactionsModel);  
 				setNewUsedMap(undoItem);
+				undoItem.setDeleteIds(deleteIds);
 				setUpReactionsUndo(undoItem);
 			} else {
 				JOptionPane.showMessageDialog(null,                
@@ -7971,7 +7977,8 @@ public class GraphicalInterface extends JFrame {
 											}
 											reactionsUndo = false;
 										}							
-									} else if (((ReactionUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.DELETE_ROW)) {
+									} else if (((ReactionUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.DELETE_ROW) ||
+											((ReactionUndoItem) undoMap.get(i)).getUndoType().equals(UndoConstants.CLEAR_CONTENTS)) {
 										deleteIds =	((ReactionUndoItem) undoMap.get(i)).getDeleteIds();								
 									} 
 									reactionUndoAction(i);
@@ -8285,7 +8292,8 @@ public class GraphicalInterface extends JFrame {
 				}
 				reactionsUndo = false;
 			}							
-		} else if (((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getUndoType().equals(UndoConstants.DELETE_ROW)) {
+		} else if (((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getUndoType().equals(UndoConstants.DELETE_ROW) ||
+				((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getUndoType().equals(UndoConstants.CLEAR_CONTENTS)) {
 			deleteIds = (((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getDeleteIds());
 		}
 		reactionUndoAction(LocalConfig.getInstance().getUndoItemMap().size());
