@@ -408,7 +408,7 @@ public class SBMLModelReader {
 			//System.out.println("upper bound " + upperBound);
 			reacRow.add(biologicalObjective);
 			//System.out.println("biol obj " + biologicalObjective);
-			reacRow.add(syntheticObjective);
+			//reacRow.add(syntheticObjective);
 			
 			Map<String, String> reactionsMetaColumnMap = new HashMap<String, String>();
 			if (reactions.get(j).isSetNotes()) {
@@ -565,7 +565,10 @@ public class SBMLModelReader {
 						}
 						if (columnName.compareTo("PROTEIN CLASS") == 0 || columnName.compareTo("PROTEIN_CLASS") == 0) {
 							proteinClass = value.trim();
-						} else {
+						} 
+						if (columnName.compareTo("SYNTHETIC_OBJECTIVE") == 0 || columnName.compareTo("SYNTHETIC OBJECTIVE") == 0) {
+							syntheticObjective = value.trim();
+						}  else {
 							if (columnName.compareTo("LOCUS") == 0) {
 								//System.out.println(j);
 								//System.out.println(locusBfrStr);
@@ -580,6 +583,7 @@ public class SBMLModelReader {
 				}
 				//System.out.println(reactionsMetaColumnMap);
 			}
+			reacRow.add(syntheticObjective);
 			reacRow.add(geneAssociation);
 			reacRow.add(proteinAssociation);
 			reacRow.add(subsystem);
