@@ -510,11 +510,33 @@ public class ReactionUndoItem implements UndoItem {
 	}
 	
 	public void restoreOldCollections() {
-		LocalConfig.getInstance().setMetaboliteUsedMap(this.oldMetaboliteUsedMap);
+		Map<String, Object> metaboliteUsedMap = new HashMap<String, Object>();
+
+		try {
+			if (this.oldMetaboliteUsedMap != null) {
+				metaboliteUsedMap = (Map<String, Object>) (ObjectCloner.deepCopy(this.oldMetaboliteUsedMap));
+				LocalConfig.getInstance().setMetaboliteUsedMap(metaboliteUsedMap);
+			}
+		} catch (Exception e3) {
+			// TODO Auto-generated catch block
+			e3.printStackTrace();
+		}
+		//LocalConfig.getInstance().setMetaboliteUsedMap(this.oldMetaboliteUsedMap);
 	}
 	
 	public void restoreNewCollections() {
-		LocalConfig.getInstance().setMetaboliteUsedMap(this.newMetaboliteUsedMap);
+		Map<String, Object> metaboliteUsedMap = new HashMap<String, Object>();
+
+		try {
+			if (this.newMetaboliteUsedMap != null) {
+				metaboliteUsedMap = (Map<String, Object>) (ObjectCloner.deepCopy(this.newMetaboliteUsedMap));
+				LocalConfig.getInstance().setMetaboliteUsedMap(metaboliteUsedMap);
+			}
+		} catch (Exception e3) {
+			// TODO Auto-generated catch block
+			e3.printStackTrace();
+		}
+		//LocalConfig.getInstance().setMetaboliteUsedMap(this.newMetaboliteUsedMap);
 	}
 	
 	public String toString() {
