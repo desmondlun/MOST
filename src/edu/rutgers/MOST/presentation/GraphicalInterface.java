@@ -8398,6 +8398,7 @@ public class GraphicalInterface extends JFrame {
     	ArrayList<Integer> deleteMetabRows = new ArrayList<Integer>();
     	if (((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getUndoType().equals(UndoConstants.TYPING) ||
     		((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(index)).getUndoType().equals(UndoConstants.REPLACE)) {
+    		
     	}
     	LocalConfig.getInstance().getUndoItemMap().remove(index);
     	undoCount -= 1;	
@@ -8454,6 +8455,8 @@ public class GraphicalInterface extends JFrame {
 		updateRedoButton();  
 		DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
 		setUpReactionsTable(model);
+		DefaultTableModel reacModel = copyReactionsTableModel(model);
+		LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), reacModel);
 		tabbedPane.setSelectedIndex(0);
 //		if (row > -1 && col > -1) {
 //			scrollToLocation(reactionsTable, row, col);  					
@@ -8486,6 +8489,8 @@ public class GraphicalInterface extends JFrame {
 		updateRedoButton();
 		DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
 		setUpMetabolitesTable(model);
+		DefaultTableModel metabModel = copyMetabolitesTableModel(model);
+		LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), metabModel);
 		tabbedPane.setSelectedIndex(1);
 //		if (row > -1 && col > -1) {
 //			scrollToLocation(metabolitesTable, row, col);				
@@ -9997,8 +10002,6 @@ public class GraphicalInterface extends JFrame {
 							// copy models, run optimization on these model
 							DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel(LocalConfig.getInstance().getMetabolitesTableModelMap().get(LocalConfig.getInstance().getModelName()));
 							DefaultTableModel reactionsOptModel = copyReactionsTableModel(LocalConfig.getInstance().getReactionsTableModelMap().get(LocalConfig.getInstance().getModelName()));				
-//							DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
-//							DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
 							LocalConfig.getInstance().getReactionsTableModelMap().put(solution.getSolutionName(), reactionsOptModel);
 							LocalConfig.getInstance().getMetabolitesTableModelMap().put(solution.getSolutionName(), metabolitesOptModel);
 							

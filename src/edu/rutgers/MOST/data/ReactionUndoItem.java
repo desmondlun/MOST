@@ -359,17 +359,17 @@ public class ReactionUndoItem implements UndoItem {
 		
 		if (this.column.equals(GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN)) {
 		//if (this.column.equals(GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) && this.newValue != null && this.newValue.trim().length() > 0) {
-			LocalConfig.getInstance().setMaxMetabolite(this.maxMetab);
-			LocalConfig.getInstance().setMaxMetaboliteId(this.maxMetabId);
-			Map<String, Object> metabolitesIdRowMap = new HashMap<String, Object>();
-			for (int i = 0; i < GraphicalInterface.metabolitesTable.getRowCount(); i++) {
-				metabolitesIdRowMap.put((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN), i);
-			}
-			ArrayList<String> addedAbbr = new ArrayList<String>();
-			for (int i = 0; i < this.addedMetabolites.size(); i++) {
-				String abbrev = (String) getKeyFromValue(LocalConfig.getInstance().getMetaboliteAbbreviationIdMap(), this.addedMetabolites.get(i)); 
-				addedAbbr.add(abbrev);
-				LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().remove(abbrev);
+//			LocalConfig.getInstance().setMaxMetabolite(this.maxMetab);
+//			LocalConfig.getInstance().setMaxMetaboliteId(this.maxMetabId);
+//			Map<String, Object> metabolitesIdRowMap = new HashMap<String, Object>();
+//			for (int i = 0; i < GraphicalInterface.metabolitesTable.getRowCount(); i++) {
+//				metabolitesIdRowMap.put((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN), i);
+//			}
+//			ArrayList<String> addedAbbr = new ArrayList<String>();
+//			for (int i = 0; i < this.addedMetabolites.size(); i++) {
+//				String abbrev = (String) getKeyFromValue(LocalConfig.getInstance().getMetaboliteAbbreviationIdMap(), this.addedMetabolites.get(i)); 
+//				addedAbbr.add(abbrev);
+//				LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().remove(abbrev);
 				//LocalConfig.getInstance().getMetaboliteUsedMap().remove(abbrev);
 //				if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(abbrev)) {
 //					int usedCount = (Integer) LocalConfig.getInstance().getMetaboliteUsedMap().get(abbrev);
@@ -379,13 +379,13 @@ public class ReactionUndoItem implements UndoItem {
 //						LocalConfig.getInstance().getMetaboliteUsedMap().remove(abbrev);
 //					}
 //				}	
-				String row = (metabolitesIdRowMap.get(Integer.toString(this.addedMetabolites.get(i)))).toString();
-				
-				int rowNum = Integer.valueOf(row);
-				GraphicalInterface.metabolitesTable.getModel().setValueAt("", rowNum, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
-			}
-			setAddedMetaboliteAbbr(addedAbbr);
-			ReactionEquationUpdater updater = new ReactionEquationUpdater();
+//				String row = (metabolitesIdRowMap.get(Integer.toString(this.addedMetabolites.get(i)))).toString();
+//				
+//				int rowNum = Integer.valueOf(row);
+//				GraphicalInterface.metabolitesTable.getModel().setValueAt("", rowNum, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+//			}
+//			setAddedMetaboliteAbbr(addedAbbr);
+//			ReactionEquationUpdater updater = new ReactionEquationUpdater();
 		}
 		//System.out.println(LocalConfig.getInstance().getReactionEquationMap());
 		
