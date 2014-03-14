@@ -659,6 +659,10 @@ public class JSBMLWriter implements TreeModelListener{
 				String pClass = "PROTEIN_CLASS:" + " " + pc;
 				curReact.appendNotes(pClass);
 				
+				String syn = Double.toString(cur.getSyntheticObjective());
+				String synClass = "SYNTHETIC_OBJECTIVE:" + " " + syn;
+				curReact.appendNotes(synClass);
+				
 				for (int n = 0; n < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); n++) {
 					String value = "";
 					if (cur.getMetaValues().get(n) != null) {

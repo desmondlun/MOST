@@ -246,11 +246,15 @@ public class TextReactionsModelReader {
 						reacRow.add(GraphicalInterfaceConstants.REVERSIBLE_DEFAULT);
 					}
 					
-					if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("false") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("FALSE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0.0") == 0) {
+					if (LocalConfig.getInstance().getReversibleColumnIndex() > -1) {
+						if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("false") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("FALSE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0.0") == 0) {
+							reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[0];
+						} else if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("true") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("TRUE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1.0") == 0) {
+							reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
+						} 
+					} else {
 						reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[0];
-					} else if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("true") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("TRUE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1.0") == 0) {
-						reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
-					} 
+					}
 					
 					if (LocalConfig.getInstance().getLowerBoundColumnIndex() > -1) {
 						if (isNumber(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()])) {

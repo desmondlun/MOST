@@ -521,7 +521,6 @@ public class ReactionUndoItem implements UndoItem {
 			// TODO Auto-generated catch block
 			e3.printStackTrace();
 		}
-		//LocalConfig.getInstance().setMetaboliteUsedMap(this.oldMetaboliteUsedMap);
 	}
 	
 	public void restoreNewCollections() {
@@ -536,7 +535,6 @@ public class ReactionUndoItem implements UndoItem {
 			// TODO Auto-generated catch block
 			e3.printStackTrace();
 		}
-		//LocalConfig.getInstance().setMetaboliteUsedMap(this.newMetaboliteUsedMap);
 	}
 	
 	public String toString() {
