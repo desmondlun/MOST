@@ -7982,18 +7982,8 @@ public class GraphicalInterface extends JFrame {
 										deleteIds =	((ReactionUndoItem) undoMap.get(i)).getDeleteIds();								
 									} 
 									reactionUndoAction(i);
-									Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
-									for (int j = 0; j < GraphicalInterface.reactionsTable.getRowCount(); j++) {
-										reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(j, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), j);
-									}
-									for (int j = 0; j < deleteIds.size(); j++) {
-										String rowStr = (reactionsIdRowMap.get(Integer.toString(deleteIds.get(j)))).toString();
-										int rowNum = Integer.valueOf(rowStr);
-										if (reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) != null && ((String) reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN)).trim().length() > 0) {
-											String eq = (String) reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
-											updateReactionEquation(rowNum, deleteIds.get(j), "", eq);
-										}	
-									}
+									updateReactionEquationsForUndo(deleteIds);
+
 									if (reactionsTable.getModel().getRowCount() > LocalConfig.getInstance().getMetaboliteIdNameMap().size()) {
 										if (LocalConfig.getMaxMetabolite() >= Integer.valueOf((String)reactionsTable.getModel().getValueAt(reactionsTable.getModel().getRowCount() - 1, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN))) {
 											for (int k = 0; k < deleteMetabRows.size(); k++) {
@@ -8164,25 +8154,19 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 	
-	
-	public Integer getRowFromReactionsId(int id) {
-		int viewRow = 0;
-		for (int j = 0; j < reactionsTable.getRowCount(); j++) {
-			if (Integer.valueOf(reactionsTable.getModel().getValueAt(j, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN).toString()) == id) {
-				viewRow = reactionsTable.convertRowIndexToView(j);
-			}
+	public void updateReactionEquationsForUndo(ArrayList<Integer> deleteIds) {
+		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
+		for (int j = 0; j < GraphicalInterface.reactionsTable.getRowCount(); j++) {
+			reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(j, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), j);
 		}
-		return viewRow;
-	}
-	
-	public Integer getRowFromMetabolitesId(int id) {
-		int viewRow = 0;
-		for (int j = 0; j < metabolitesTable.getRowCount(); j++) {
-			if (Integer.valueOf(metabolitesTable.getModel().getValueAt(j, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN).toString()) == id) {
-				viewRow = metabolitesTable.convertRowIndexToView(j);
-			}
+		for (int j = 0; j < deleteIds.size(); j++) {
+			String rowStr = (reactionsIdRowMap.get(Integer.toString(deleteIds.get(j)))).toString();
+			int rowNum = Integer.valueOf(rowStr);
+			if (reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) != null && ((String) reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN)).trim().length() > 0) {
+				String eq = (String) reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
+				updateReactionEquation(rowNum, deleteIds.get(j), "", eq);
+			}	
 		}
-		return viewRow;
 	}
 
 	public void redoAddReactionRow() {
@@ -8297,18 +8281,7 @@ public class GraphicalInterface extends JFrame {
 			deleteIds = (((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).getDeleteIds());
 		}
 		reactionUndoAction(LocalConfig.getInstance().getUndoItemMap().size());
-		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
-		for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
-			reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
-		}
-		for (int j = 0; j < deleteIds.size(); j++) {
-			String rowStr = (reactionsIdRowMap.get(Integer.toString(deleteIds.get(j)))).toString();
-			int rowNum = Integer.valueOf(rowStr);
-			if (reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) != null && ((String) reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN)).trim().length() > 0) {
-				String eq = (String) reactionsTable.getModel().getValueAt(rowNum, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
-				updateReactionEquation(rowNum, deleteIds.get(j), "", eq);
-			}	
-		}
+		updateReactionEquationsForUndo(deleteIds);
 		
 		DefaultTableModel model = (DefaultTableModel) reactionsTable.getModel();
 		setUpReactionsTable(model);
@@ -10459,6 +10432,26 @@ public class GraphicalInterface extends JFrame {
 	/******************************************************************************/
 	// end Gurobi path methods
 	/******************************************************************************/
+	
+	public Integer getRowFromReactionsId(int id) {
+		int viewRow = 0;
+		for (int j = 0; j < reactionsTable.getRowCount(); j++) {
+			if (Integer.valueOf(reactionsTable.getModel().getValueAt(j, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN).toString()) == id) {
+				viewRow = reactionsTable.convertRowIndexToView(j);
+			}
+		}
+		return viewRow;
+	}
+	
+	public Integer getRowFromMetabolitesId(int id) {
+		int viewRow = 0;
+		for (int j = 0; j < metabolitesTable.getRowCount(); j++) {
+			if (Integer.valueOf(metabolitesTable.getModel().getValueAt(j, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN).toString()) == id) {
+				viewRow = metabolitesTable.convertRowIndexToView(j);
+			}
+		}
+		return viewRow;
+	}
 	
 	class OpenUrlAction implements ActionListener {
 		@Override public void actionPerformed(ActionEvent e) {
