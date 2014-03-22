@@ -1585,7 +1585,7 @@ public class GraphicalInterface extends JFrame {
 				int numMetabRows = metabolitesTable.getRowCount();
 				int maxId = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(numMetabRows - 1, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
 				LocalConfig.getInstance().setMaxMetabolite(numMetabRows);
-				LocalConfig.getInstance().setMaxMetaboliteId(maxId + 1);		
+				LocalConfig.getInstance().setMaxMetaboliteId(maxId + 1);	
 			}
 		});   
 
@@ -5997,6 +5997,7 @@ public class GraphicalInterface extends JFrame {
 					setNewUsedMap(undoItem);
 					setUpReactionsUndo(undoItem);
 					LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), model);
+					setUpReactionsTable(model);
 				}
 				formulaBar.setText("");
 			}
