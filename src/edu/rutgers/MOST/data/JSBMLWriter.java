@@ -366,7 +366,8 @@ public class JSBMLWriter implements TreeModelListener{
 				if ((curMeta.getMetaboliteName() != null && curMeta.getMetaboliteName().trim().length() > 0) ||
 						(curMeta.getMetaboliteAbbreviation() != null && curMeta.getMetaboliteAbbreviation().trim().length() > 0)) {
 					if (curMeta.getMetaboliteAbbreviation() == null || curMeta.getMetaboliteAbbreviation().trim().length() == 0) {
-						curMeta.setMetaboliteAbbreviation(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + "_" + blankMetabAbbrCount);
+						//curMeta.setMetaboliteAbbreviation(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + "_" + blankMetabAbbrCount);
+						curMeta.setMetaboliteAbbreviation(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + blankMetabAbbrCount);
 						blankMetabAbbrCount += 1;
 					}
 					JSBMLValidator validator = new JSBMLValidator();
@@ -503,7 +504,8 @@ public class JSBMLWriter implements TreeModelListener{
 				if (curReact.getReactionEqunAbbr() != null && curReact.getReactionEqunAbbr().trim().length() > 0) {
 					//SBMLReaction curReact = (SBMLReaction) rFactory.getReactionById(i);
 					if (curReact.getReactionAbbreviation() == null || curReact.getReactionAbbreviation().trim().length() == 0) {
-						curReact.setReactionAbbreviation(SBMLConstants.REACTION_ABBREVIATION_PREFIX + "_" + blankReacAbbrCount);
+						//curReact.setReactionAbbreviation(SBMLConstants.REACTION_ABBREVIATION_PREFIX + "_" + blankReacAbbrCount);
+						curReact.setReactionAbbreviation(SBMLConstants.REACTION_ABBREVIATION_PREFIX + blankReacAbbrCount);
 						blankReacAbbrCount += 1;
 					}
 									

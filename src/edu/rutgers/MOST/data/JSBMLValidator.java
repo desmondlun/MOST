@@ -5,11 +5,12 @@ import java.util.ArrayList;
 public class JSBMLValidator {
 
 	public String makeValidID(String mAbrv) {
-		mAbrv = replaceInvalidSBMLIdCharacters(mAbrv);
+		//mAbrv = replaceInvalidSBMLIdCharacters(mAbrv);
 		if (mAbrv.contains("[") && mAbrv.contains("]")) {
 			mAbrv = mAbrv.replace("[","_");
 			mAbrv = mAbrv.replace("]","");
 		}
+		mAbrv = replaceInvalidSBMLIdCharacters(mAbrv);
 		
 		if (mAbrv.contains("+")) {
 			mAbrv = mAbrv.replace("+", SBMLConstants.PLUS_SIGN_REPLACEMENT);
@@ -31,11 +32,12 @@ public class JSBMLValidator {
 	}
 	
 	public String makeValidReactionID(String rAbrv) {
-		rAbrv = replaceInvalidSBMLIdCharacters(rAbrv);
+		//rAbrv = replaceInvalidSBMLIdCharacters(rAbrv);
 		if (rAbrv.contains("[") && rAbrv.contains("]")) {
 			rAbrv = rAbrv.replace("[","_");
 			rAbrv = rAbrv.replace("]","");
 		}
+		rAbrv = replaceInvalidSBMLIdCharacters(rAbrv);
 		
 		boolean valid = false;
 		for (int i = 0; i < SBMLConstants.REACTION_ABBREVIATION_PREFIXES.length; i++) {
