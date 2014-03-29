@@ -3229,15 +3229,15 @@ public class GraphicalInterface extends JFrame {
 			
 			if (jWrite.load) {
 				setSBMLFile(jWrite.getOutFile());
+				String modelName = jWrite.getOutFile().getName();
 				if (showJSBMLFileChooser) {
-					String modelName = jWrite.getOutFile().getName();
+					curSettings.add("LastSBML", jWrite.getOutFile().getAbsolutePath());
+				}	
+				if (!saveOptFile) {
 					if (modelName.endsWith(".xml")) {
 						modelName = modelName.substring(0, modelName.length() - 4);
 					}
 					LocalConfig.getInstance().setModelName(modelName);
-					curSettings.add("LastSBML", jWrite.getOutFile().getAbsolutePath());
-				}	
-				if (!saveOptFile) {
 					LocalConfig.getInstance().setProgress(0);
 					progressBar.setVisible(true);
 
