@@ -520,9 +520,11 @@ public class SBMLModelReader {
 									break;						
 								}
 							}
-							if (!contains) {													
-								reactionsMetaColumnNames.add(columnName);
-								metaColCount += 1;
+							if (!contains) {
+								if (!reactionsMetaColumnNames.contains(columnName)) {
+									reactionsMetaColumnNames.add(columnName);
+									metaColCount += 1;
+								}					
 							}
 						}
 					}
