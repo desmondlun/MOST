@@ -332,7 +332,7 @@ public class GraphicalInterfaceConstants {
     public static final String DEFAULT_REACTION_TABLE_TAB_NAME = " Reactions ";
     
     // help
-    public static final String HELP_TOPICS_URL = "http://citrate.rutgers.edu/most/help.html";
+    public static final String HELP_TOPICS_URL = "http://most.ccib.rutgers.edu/help.html";
     public static final String HELP_URL_NOT_FOUND_TITLE = "URL Not Found";
     public static final String HELP_URL_NOT_FOUND_MESSAGE = "This URL may not exist. Check internet connection.";
     
@@ -341,7 +341,7 @@ public class GraphicalInterfaceConstants {
     public static final String ABOUT_BOX_TEXT = "MOST - Metabolic Optimization and Simulation Tool.";	
     public static final String ABOUT_BOX_VERSION_TEXT = "Version: alpha-6";
     
-    public static final String ABOUT_LICENSE_URL = "http://citrate.rutgers.edu/most/help.html";
+    public static final String ABOUT_LICENSE_URL = "http://most.ccib.rutgers.edu/help.html";
     
     // other
     public static final String[] REVERSIBLE_ARROWS =
