@@ -56,6 +56,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import javax.swing.event.TreeModelEvent;
@@ -113,7 +114,7 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
         treeModel.addTreeModelListener(new MyTreeModelListener());
         tree = new JTree(treeModel);       
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
+        
         //Listen for when the selection changes.
         tree.addTreeSelectionListener(this);
 
@@ -125,10 +126,15 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
         ToolTipManager.sharedInstance().registerComponent(tree);
         
         //Set the icon for leaf nodes.
+        // This icon does not exist, but having a null icon apparently removes the default
+        // image for a tree of a piece of paper with a folded corner
+        // see - http://docs.oracle.com/javase/tutorial/uiswing/components/tree.html
         ImageIcon leafIcon = new ImageIcon("etc/DNA60h.jpg");
         if (leafIcon != null) {
-            DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
-            renderer.setLeafIcon(leafIcon);
+        	ToolTipTreeCellRenderer renderer = new ToolTipTreeCellRenderer();
+            //DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
+            //renderer.setLeafIcon(leafIcon);
+        	renderer.setIcon(leafIcon);
             tree.setCellRenderer(renderer);
         }
 

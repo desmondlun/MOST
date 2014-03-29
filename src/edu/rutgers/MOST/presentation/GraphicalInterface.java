@@ -14,6 +14,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeCellRenderer;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.log4j.Logger;
@@ -10472,6 +10473,7 @@ public class GraphicalInterface extends JFrame {
 	public static void main(String[] args) {
 	//public static void main(String[] args) throws Exception {
 		ResizableDialog dialog = new ResizableDialog("Error", "Error", "Error");
+		dialog.setLocationRelativeTo(null);
 		try {
 			curSettings = new SettingsFactory();
 
