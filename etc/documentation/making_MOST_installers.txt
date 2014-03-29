@@ -11,7 +11,7 @@ Browse for folder created in step 2 and type in MOST.jar
 in input box. Click Finish.
 Click OK for next two dialogs.
 
-4. Create a folder MOST_alpha-x where x is version. The etc folder, ModelCollection.csv,
+4. Create a folder MOST_alpha-x where x is version. The MOST.jar, etc folder, ModelCollection.csv,
 and README must be placed in this folder. This folder will be used to create a tar.gz
 for Linux and zip file for Windows 8.
 
@@ -44,3 +44,5 @@ Program Files
 Click Next
 Click Next until Build Setup is reached. Click Build.
 Rename Setup.exe to MOST_Setup.exe
+
+7. Update links in download.html and Installing_MOST.html.
