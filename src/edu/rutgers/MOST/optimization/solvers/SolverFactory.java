@@ -24,7 +24,7 @@ public class SolverFactory {
 		formatter = new SimpleDateFormat("_yyMMdd_HHmmss");
 		String dateTimeStamp = formatter.format(date);
 		
-		Solver solver = new GurobiSolver();
+		Solver solver = new GLPKSolver();
 		//Solver solver = new GurobiSolver(config.getModelName() + dateTimeStamp + GraphicalInterfaceConstants.MIP_SUFFIX + ".log");
 		return solver;
 	}
