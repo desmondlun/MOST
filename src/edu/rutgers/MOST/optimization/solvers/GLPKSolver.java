@@ -5,21 +5,87 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.gnu.glpk.GLPK;
 import org.gnu.glpk.GLPKConstants;
+import org.gnu.glpk.GlpkCallback;
+import org.gnu.glpk.GlpkCallbackListener;
 import org.gnu.glpk.SWIGTYPE_p_double;
 import org.gnu.glpk.SWIGTYPE_p_int;
+import org.gnu.glpk.glp_iocp;
 import org.gnu.glpk.glp_prob;
+import org.gnu.glpk.glp_tree;
+
+import edu.rutgers.MOST.data.Solution;
+import edu.rutgers.MOST.optimization.GDBB.GDBB;
 
 
 //we still need to delete the problem object at some point
-public class GLPKSolver extends Solver
+public class GLPKSolver extends Solver implements GlpkCallbackListener
 {
-	private glp_prob problem = GLPK.glp_create_prob();
+	private enum SolverKind
+	{
+		FBASolver,
+		GDBBSolver
+	}
+	private class RowEntry
+	{
+		public int idx;
+		public double value;
+		RowEntry( int i, double v )
+		{
+			idx = i;
+			value = v;
+		}
+	}
+	private class RowType
+	{
+		public double val;
+		public int type;
+		public double lb;
+		public double ub;
+		public Vector< RowEntry > entries = new Vector< RowEntry >();
+		RowType( double v, int t, double l, double u )
+		{
+			val = v;
+			type = t;
+			lb = l;
+			ub = u;
+		}
+	}
+	private class ColumnType
+	{
+		public String name;
+		public int kind;
+		public int type;
+		public double lb;
+		public double ub;
+		
+		ColumnType( String n, int k, int t, double l, double u )
+		{
+			name = n;
+			kind = k;
+			type = t;
+			lb = l;
+			ub = u;
+		}
+	}
+	private class ObjectiveType
+	{
+		int dir;
+		Vector< RowEntry > coefs = new Vector< RowEntry >();
+	}
+	
+	private Vector< RowType > rows = new Vector< RowType >();
+	private Vector< ColumnType > columns = new Vector< ColumnType >();
+	private ObjectiveType objective = new ObjectiveType();
+	private ArrayList< Double > soln = new ArrayList< Double >();
+	private double objval;
+	private glp_prob problem_tmp;
+	private SolverKind solverKind = SolverKind.FBASolver; //default may change in SetVar()
 	
 	public GLPKSolver()
 	{
-		GLPK.glp_set_prob_name( problem, "GLPK Problem" );
 	}
 	@Override
 	public String getName()
@@ -30,10 +96,6 @@ public class GLPKSolver extends Solver
 	public ArrayList< Double > getSoln()
 	{
 		//return the column list
-		ArrayList< Double > soln = new ArrayList< Double >();
-		int columnCount = GLPK.glp_get_num_cols( problem );
-		for( int i = 1; i < columnCount; ++i )
-			 soln.add( GLPK.glp_get_col_prim( problem, i ) );
 		return soln;
 	}
 	@Override
@@ -44,9 +106,11 @@ public class GLPKSolver extends Solver
 		switch( types )
 		{
 		case INTEGER:
+			solverKind = SolverKind.GDBBSolver;
 			kind = GLPKConstants.GLP_IV;
 			break;
 		case BINARY:
+			solverKind = SolverKind.GDBBSolver;
 			kind = GLPKConstants.GLP_BV;
 			break;
 		default:
@@ -54,11 +118,7 @@ public class GLPKSolver extends Solver
 			kind = GLPKConstants.GLP_CV;
 			break;
 		}
-		
-		int colNum = GLPK.glp_add_cols( problem, 1 );
-		GLPK.glp_set_col_name( problem, colNum, varName );
-		GLPK.glp_set_col_kind( problem, colNum, kind );
-		GLPK.glp_set_col_bnds( problem, colNum, lb != ub ? GLPKConstants.GLP_DB : GLPKConstants.GLP_FX, lb, ub );
+		columns.add( new ColumnType( varName, kind, lb != ub ? GLPKConstants.GLP_DB : GLPKConstants.GLP_FX, lb, ub ) );
 		
 	}
 	@Override
@@ -67,53 +127,48 @@ public class GLPKSolver extends Solver
 		this.objType = objType;
 		int dir = objType == ObjType.Minimize ? 
 				GLPKConstants.GLP_MIN : GLPKConstants.GLP_MAX;
-		GLPK.glp_set_obj_dir( problem, dir );
+		objective.dir = dir;
 	}
 	@Override
 	public void setObj( Map< Integer, Double > map )
 	{
-		//objective definition
+		//objective definition		
 		for( Entry< Integer, Double > entry : map.entrySet() )
-			GLPK.glp_set_obj_coef( problem, 1 + entry.getKey(), entry.getValue() );
+			objective.coefs.add( new RowEntry( 1 + entry.getKey(), entry.getValue() ) );
 	}
 	@Override
 	public void addConstraint( Map< Integer, Double > map, ConType con,
 			double value )
 	{
 		//row definitions
-		int rowNum = GLPK.glp_add_rows( problem, 1 );
-		int colCount = GLPK.glp_get_num_cols( problem );
+		double lb = 0;
+		double ub = 0;
+		int type = 0;
 		switch( con )
 		{
 		case LESS_EQUAL:
-			GLPK.glp_set_row_bnds( problem, rowNum, GLPKConstants.GLP_UP, 0, value );
+			ub = value;
+			type = GLPKConstants.GLP_UP;
 			break;
 		case EQUAL:
-			GLPK.glp_set_row_bnds( problem, rowNum, GLPKConstants.GLP_FX, value, value );
+			ub = lb = value;
+			type = GLPKConstants.GLP_FX;
 			break;
 		case GREATER_EQUAL:
-			GLPK.glp_set_row_bnds( problem, rowNum, GLPKConstants.GLP_LO, value, 0 );
+			type = GLPKConstants.GLP_LO;
+			lb = value;
 			break;
 		}
 		
-		int rowLength = map.size();
-		SWIGTYPE_p_int ind = GLPK.new_intArray( 1 + rowLength );
-		SWIGTYPE_p_double val = GLPK.new_doubleArray( 1 + rowLength );
 
-		int index = 1;
+		RowType row = new RowType( value, type, lb, ub );
 		for( Entry< Integer, Double > entry : map.entrySet() )
 		{
 			int key = entry.getKey();
 			double kvalue = entry.getValue();
-			GLPK.intArray_setitem( ind, index, 1 + key );
-			GLPK.doubleArray_setitem( val, index, kvalue );
-			++index;
+			row.entries.add( new RowEntry( key, kvalue ) );
 		}
-		
-		GLPK.glp_set_mat_row( problem, rowNum, rowLength, ind, val );
-		
-		GLPK.delete_intArray( ind );
-		GLPK.delete_doubleArray( val );
+		rows.add( row );
 		
 	}
 	@Override
@@ -122,14 +177,64 @@ public class GLPKSolver extends Solver
 		//optimize the solution and return the objective value
 		boolean terminalOutput = true;
 		GLPK.glp_term_out( terminalOutput? GLPKConstants.GLP_ON : GLPKConstants.GLP_OFF );
-		int glpkres = GLPK.glp_simplex( problem, null );
+		
+		glp_prob problem = GLPK.glp_create_prob();
+		GLPK.glp_set_prob_name( problem, "GLPK Problem" );
+		problem_tmp = problem;
+		
+		//add columns
+		for( ColumnType it : columns )
+		{
+			int colNum = GLPK.glp_add_cols( problem, 1 );
+			GLPK.glp_set_col_name( problem, colNum, it.name );
+			GLPK.glp_set_col_kind( problem, colNum, it.kind );
+			GLPK.glp_set_col_bnds( problem, colNum, it.type, it.lb, it.ub );
+		}
+		columns.clear();
+		
+		//add rows
+		for( RowType it : rows )
+		{
+			int rowNum = GLPK.glp_add_rows( problem, 1 );
+			GLPK.glp_set_row_bnds( problem, rowNum, it.type, it.lb, it.ub );
+			
+			SWIGTYPE_p_int ind = GLPK.new_intArray( 1 + it.entries.size() );
+			SWIGTYPE_p_double val = GLPK.new_doubleArray( 1 + it.entries.size() );
+			int index = 1;
+			for( RowEntry entry : it.entries )
+			{
+				GLPK.intArray_setitem( ind, index, 1 + entry.idx );
+				GLPK.doubleArray_setitem( val, index, entry.value );
+				++index;
+			}
+			
+			GLPK.glp_set_mat_row( problem, rowNum, it.entries.size(), ind, val );
+			GLPK.delete_intArray( ind );
+			GLPK.delete_doubleArray( val );
+		}
+		rows.clear();
+		
+		//set the objective 
+		GLPK.glp_set_obj_dir( problem, objective.dir );
+		for( RowEntry coef : objective.coefs )
+			GLPK.glp_set_obj_coef( problem, coef.idx, coef.value );
+		
+		GlpkCallback.addListener( this );
+		glp_iocp parm = new glp_iocp();
+		GLPK.glp_init_iocp( parm );
+		parm.setPresolve( GLPK.GLP_ON );
+		parm.setTol_int( 1e-6 );
+		/*int glpkres =*/ //GLPK.glp_simplex( problem, null );
+		int glpkres = GLPK.glp_intopt( problem, parm );
 		if( glpkres != 0 )
 		{
 			System.out.println( "The problem could not be solved" );
 			return Double.NaN;
 		}
-
-		return GLPK.glp_get_obj_val( problem );
+		GlpkCallback.removeListener( this );
+		GLPK.glp_delete_prob( problem );
+		problem_tmp = null;
+		return objval;
 	}
 	@Override
 	public void setEnv( double timeLimit, int numThreads )
@@ -147,7 +252,7 @@ public class GLPKSolver extends Solver
 	public void abort()
 	{
 		// TODO Auto-generated method stub
-
+		abort = true;
 	}
 	@Override
 	public void enable()
@@ -160,5 +265,30 @@ public class GLPKSolver extends Solver
 	{
 		// TODO Auto-generated method stub
 
+	}
+	@Override
+	public void callback( glp_tree tree )
+	{
+		int reason = GLPK.glp_ios_reason( tree );
+		if( abort )
+		{
+			GLPK.glp_ios_terminate( tree );
+		}
+		else if( reason == GLPKConstants.GLP_IBINGO )
+		{	
+			//get the solution columns
+			soln.clear();
+			int columnCount = GLPK.glp_get_num_cols( problem_tmp );
+			for( int i = 1; i <= columnCount; ++i )
+				// soln.add( GLPK.glp_get_col_prim( problem, i ) );
+				soln.add( GLPK.glp_mip_col_val( problem_tmp, i ) );
+
+			//objval = GLPK.glp_get_obj_val( problem );
+			objval = GLPK.glp_mip_obj_val( problem_tmp );
+			double[] darray = ArrayUtils.toPrimitive( soln.toArray( new Double[]{} ) );
+			Solution sn = new Solution( objval, darray );
+			if( solverKind == SolverKind.GDBBSolver )
+				GDBB.intermediateSolution.add( sn );
+		}
 	}
 }
