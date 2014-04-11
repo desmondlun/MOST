@@ -4809,15 +4809,19 @@ public class GraphicalInterface extends JFrame {
 		if (reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
 		//if (reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REVERSIBLE_COLUMN || reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
 			formulaBar.setEditable(false);
+			formulaBar.setForeground(GraphicalInterfaceConstants.FORMULA_BAR_NONEDITABLE_COLOR);
 			formulaBar.setBackground(Color.WHITE);
 			formulaBarPasteItem.setEnabled(false);
 			pastebutton.setEnabled(false);
-		}  else {
+		} else {
 			if (isRoot) {
+				formulaBar.setForeground(Color.BLACK);
 				formulaBar.setEditable(true);
 				formulaBarPasteItem.setEnabled(true);
 				pastebutton.setEnabled(true);
-			}					
+			} else {
+				formulaBar.setForeground(GraphicalInterfaceConstants.FORMULA_BAR_NONEDITABLE_COLOR);
+			}
 		}
 	}
 
