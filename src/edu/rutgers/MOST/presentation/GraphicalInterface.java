@@ -5299,6 +5299,17 @@ public class GraphicalInterface extends JFrame {
 
 	ColorHighlighter metaboliteFindAll = new ColorHighlighter(metaboliteFindAllPredicate, GraphicalInterfaceConstants.FIND_ALL_COLOR, null);
 
+	HighlightPredicate nonEditableMetabPredicate = new HighlightPredicate() {
+		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
+			if (!isRoot) {									
+				return true;
+			}						
+			return false;
+		}
+	};
+
+	ColorHighlighter nonEditableMetab = new ColorHighlighter(nonEditableMetabPredicate, null, GraphicalInterfaceConstants.NONEDITABLE_COLOR);
+	
 	public void setMetabolitesTableLayout() {
 		metabolitesTable.getSelectionModel().addListSelectionListener(new MetabolitesRowListener());
 		metabolitesTable.getColumnModel().getSelectionModel().
@@ -5313,6 +5324,7 @@ public class GraphicalInterface extends JFrame {
 		metabolitesTable.addHighlighter(suspicious);
 		metabolitesTable.addHighlighter(metabolitesSelectedArea);
 		metabolitesTable.addHighlighter(metaboliteFindAll);
+		metabolitesTable.addHighlighter(nonEditableMetab);
 
 		ColumnHeaderToolTips tips = new ColumnHeaderToolTips();		
 
