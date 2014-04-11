@@ -4905,6 +4905,18 @@ public class GraphicalInterface extends JFrame {
 	};
 
 	ColorHighlighter participating = new ColorHighlighter(participatingPredicate, Color.GREEN, null);
+	
+	HighlightPredicate nonEditablePredicate = new HighlightPredicate() {
+		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
+			if (adapter.column == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN ||
+					!isRoot) {									
+				return true;
+			}						
+			return false;
+		}
+	};
+
+	ColorHighlighter nonEditable = new ColorHighlighter(nonEditablePredicate, null, GraphicalInterfaceConstants.NONEDITABLE_COLOR);
 
 	public void setReactionsTableLayout() {
 		reactionsTable.getSelectionModel().addListSelectionListener(new ReactionsRowListener());
@@ -4925,7 +4937,8 @@ public class GraphicalInterface extends JFrame {
 
 		reactionsTable.addHighlighter(participating);
 		reactionsTable.addHighlighter(reactionsSelectedArea);
-		reactionsTable.addHighlighter(reactionFindAll);	
+		reactionsTable.addHighlighter(reactionFindAll);
+		reactionsTable.addHighlighter(nonEditable);
 
 		// these columns have names that are too long to fit in cell and need tooltips
 		// also KO has Knockout as tooltip

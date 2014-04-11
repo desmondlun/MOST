@@ -389,6 +389,7 @@ public class GraphicalInterfaceConstants {
     public static final Color FIND_ALL_COLOR = new Color(140,160,200);
     //public static final Color FIND_ALL_COLOR = new Color(190,205,225);
     public static final Color SELECTED_AREA_COLOR = new Color(190,205,225);
+    public static final Color NONEDITABLE_COLOR = Color.GRAY;
     
     // directories used for writing log files
     public static final String SETTINGS_PATH_PREFIX_WINDOWS_7 = "C:\\Users\\";
