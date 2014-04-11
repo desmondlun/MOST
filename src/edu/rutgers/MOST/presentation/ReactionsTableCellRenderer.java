@@ -1,10 +1,14 @@
 package edu.rutgers.MOST.presentation;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.FontMetrics;
 import java.awt.Insets;
+
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
+
+import edu.rutgers.MOST.config.LocalConfig;
 
 public class ReactionsTableCellRenderer extends DefaultTableCellRenderer{
 	/**
@@ -20,7 +24,7 @@ public class ReactionsTableCellRenderer extends DefaultTableCellRenderer{
 		if (isSelected) {
 			//cell.setBackground(new Color(180, 216, 231));
 		}
-
+		
 		//based on code from http://tech.chitgoks.com/2009/11/05/display-tooltip-in-jtable-cell-if-text-is-truncated/
 		int availableWidth = table.getColumnModel().getColumn(column).getWidth();
 		availableWidth -= table.getIntercellSpacing().getWidth();
@@ -33,15 +37,6 @@ public class ReactionsTableCellRenderer extends DefaultTableCellRenderer{
 
 			if (fm.stringWidth(cellText) > availableWidth) {
 				((javax.swing.JLabel) cell).setToolTipText(table.getModel().getValueAt(viewRow, column).toString()); 
-				/*
-				if (LocalConfig.getInstance().getInvalidReactions().contains(table.getModel().getValueAt(viewRow, column).toString())) {
-					((javax.swing.JLabel) cell).setToolTipText("Error: invalid syntax : " + table.getModel().getValueAt(viewRow, column).toString()); 
-				}
-				*/
-				/*
-			} else if (LocalConfig.getInstance().getInvalidReactions().contains(table.getModel().getValueAt(viewRow, column).toString())) {
-				((javax.swing.JLabel) cell).setToolTipText("Error: invalid syntax");
-			*/
 			} else {
 				((javax.swing.JLabel) cell).setToolTipText(null);
 			}
