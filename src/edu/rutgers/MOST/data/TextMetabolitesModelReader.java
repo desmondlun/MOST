@@ -183,7 +183,11 @@ public class TextMetabolitesModelReader {
 					metaboliteIdNameMap.put(new Integer(id), dataArray[LocalConfig.getInstance().getMetaboliteNameColumnIndex()]);
 					//metaboliteName = dataArray[LocalConfig.getInstance().getMetaboliteNameColumnIndex()];
 					//chargeString = dataArray[LocalConfig.getInstance().getChargeColumnIndex()];	
-					metabRow.add(dataArray[LocalConfig.getInstance().getChargeColumnIndex()]);	
+					if (LocalConfig.getInstance().getChargeColumnIndex() > -1) {
+						metabRow.add(dataArray[LocalConfig.getInstance().getChargeColumnIndex()]);
+					} else {
+						metabRow.add("");
+					}					
 					if (LocalConfig.getInstance().getCompartmentColumnIndex() > -1) {
 						compartment = dataArray[LocalConfig.getInstance().getCompartmentColumnIndex()];	
 					}

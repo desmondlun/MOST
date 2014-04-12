@@ -119,7 +119,7 @@ public class GraphicalInterfaceConstants {
     //metabolite column filtering names
     /*****************************************************************************/
     public static final String[] METAB_ABBREVIATION_FILTER =
-    {"abbreviation", "id"
+    {"abbrev", "id"
     };
     
     public static final String[] METAB_ABBREVIATION_NOT_FILTER =
@@ -150,7 +150,7 @@ public class GraphicalInterfaceConstants {
     //reaction column filtering names  
     /*****************************************************************************/
     public static final String[] ABBREVIATION_COLUMN_FILTER =
-    {"abbreviation", "reaction id"
+    {"abbrev", "reaction id"
     };
     
     public static final String[] ABBREVIATION_COLUMN_NOT_FILTER =
