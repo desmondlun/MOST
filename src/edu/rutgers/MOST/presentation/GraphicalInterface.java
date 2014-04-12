@@ -14,7 +14,6 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeCellRenderer;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.log4j.Logger;
@@ -6272,9 +6271,9 @@ public class GraphicalInterface extends JFrame {
 											showPasteOutOfRangeError();				
 										} else {
 											if (j < cells.length) {
-												updateReactionsCellIfPasteValid(cells[j], startRow+i, startCol+j);
+												updateReactionsCellIfPasteValid(cells[j], pasteRows.get(q*numberOfClipboardRows() + i), startCol+j);
 											} else {
-												updateReactionsCellIfPasteValid("", startRow+i, startCol+j);
+												updateReactionsCellIfPasteValid("", pasteRows.get(q*numberOfClipboardRows() + i), startCol+j);
 											} 	
 										}								
 									}
@@ -6285,7 +6284,7 @@ public class GraphicalInterface extends JFrame {
 										if (startCol + j > reactionsTable.getColumnCount()) {
 											showPasteOutOfRangeError();			
 										} else {
-											updateReactionsCellIfPasteValid("", startRow+i, startCol+j);
+											updateReactionsCellIfPasteValid("", pasteRows.get(q*numberOfClipboardRows() + i), startCol+j);
 										}									
 									}
 								}									
@@ -6404,6 +6403,7 @@ public class GraphicalInterface extends JFrame {
 				columnIndex == GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN) {
 			if (validator.isNumber(value)) {
 				if (columnIndex == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN && getSelectionMode() != 2) {
+					System.out.println(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN).toString());
 					Double lowerBound = Double.valueOf(value);
 					Double upperBound = Double.valueOf((String) (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));
 					if (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN).toString().compareTo("false") == 0 && lowerBound < 0) {					
@@ -7274,9 +7274,9 @@ public class GraphicalInterface extends JFrame {
 											showPasteOutOfRangeError();				
 										} else {
 											if (j < cells.length) {
-												updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), startCol+j);
+												updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(q*numberOfClipboardRows() + i), startCol+j);
 											} else {
-												updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
+												updateMetabolitesCellIfPasteValid("", pasteRows.get(q*numberOfClipboardRows() + i), startCol+j);
 											} 
 										}									
 									}
@@ -7287,7 +7287,7 @@ public class GraphicalInterface extends JFrame {
 										if (startCol + j > metabolitesTable.getColumnCount()) {
 											showPasteOutOfRangeError();			
 										} else {
-											updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
+											updateMetabolitesCellIfPasteValid("", pasteRows.get(q*numberOfClipboardRows() + i), startCol+j);
 										}									
 									}
 								}									
