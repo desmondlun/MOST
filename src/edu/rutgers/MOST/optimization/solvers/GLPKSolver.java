@@ -19,8 +19,6 @@ import org.gnu.glpk.glp_tree;
 import edu.rutgers.MOST.data.Solution;
 import edu.rutgers.MOST.optimization.GDBB.GDBB;
 
-
-//we still need to delete the problem object at some point
 public class GLPKSolver extends Solver implements GlpkCallbackListener
 {
 	private enum SolverKind
@@ -175,9 +173,10 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 	public double optimize()
 	{
 		//optimize the solution and return the objective value
-		boolean terminalOutput = true;
+		boolean terminalOutput = false;
 		GLPK.glp_term_out( terminalOutput? GLPKConstants.GLP_ON : GLPKConstants.GLP_OFF );
 		
+		//set up
 		glp_prob problem = GLPK.glp_create_prob();
 		GLPK.glp_set_prob_name( problem, "GLPK Problem" );
 		problem_tmp = problem;
@@ -225,46 +224,40 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 		parm.setPresolve( GLPK.GLP_ON );
 		parm.setTol_int( 1e-6 );
 		/*int glpkres =*/ //GLPK.glp_simplex( problem, null );
-		int glpkres = GLPK.glp_intopt( problem, parm );
-		if( glpkres != 0 )
-		{
-			System.out.println( "The problem could not be solved" );
-			return Double.NaN;
-		}
+		if( GLPK.glp_intopt( problem, parm ) != 0 )
+			return Double.NaN; /*problem could not be solved*/
+		
+		//clean up
 		GlpkCallback.removeListener( this );
 		GLPK.glp_delete_prob( problem );
 		problem_tmp = null;
+		
 		return objval;
 	}
 	@Override
 	public void setEnv( double timeLimit, int numThreads )
 	{
 		// TODO Auto-generated method stub
-
 	}
 	@Override
 	public void setVars( VarType[] types, double[] lb, double[] ub )
 	{
 		// TODO Auto-generated method stub
-
 	}
 	@Override
 	public void abort()
 	{
-		// TODO Auto-generated method stub
 		abort = true;
 	}
 	@Override
 	public void enable()
 	{
-		// TODO Auto-generated method stub
-
+		abort = false;
 	}
 	@Override
 	public void setAbort( boolean abort )
 	{
-		// TODO Auto-generated method stub
-
+		this.abort = abort;
 	}
 	@Override
 	public void callback( glp_tree tree )

@@ -458,45 +458,45 @@ public class GurobiSolver extends Solver {
 								handleGurobiException();
 							}
 						}
-						
-						try {
-							ClassLoader classLoader = grbCallbackClass.getClassLoader();
-
-							Class grbClass = classLoader.loadClass("gurobi.GRB");
-							outputText.append("gurobi.GRB loaded \n");
-							Field[] asdf = grbClass.getDeclaredFields();
-							
-							Field whereField = grbCallbackClass.getDeclaredField("where");
-							whereField.setAccessible(true);
-							
-							int where = whereField.getInt(self);
-							if (where == grbClass.getDeclaredField("CB_MIPSOL").getInt(null)) {
-								Method grbCallbackGetDoubleInfoMethod = grbCallbackClass.getDeclaredMethod("getDoubleInfo", new Class[]{ int.class });
-								Method grbCallbackGetSolutionMethod = grbCallbackClass.getDeclaredMethod("getSolution", new Class[]{ Array.newInstance(grbVarClass, 0).getClass() });
-								grbCallbackGetDoubleInfoMethod.setAccessible(true);
-								grbCallbackGetSolutionMethod.setAccessible(true);
-
-								Solution solution = new Solution((double) grbCallbackGetDoubleInfoMethod.invoke(self, new Object[]{ grbClass.getDeclaredField("CB_MIPSOL_OBJ").getInt(null) }), 
-										(double[]) grbCallbackGetSolutionMethod.invoke(self, new Object[]{ vars }));
-								GDBB.intermediateSolution.add(solution);
+						else {
+							try {
+								ClassLoader classLoader = grbCallbackClass.getClassLoader();
+	
+								Class grbClass = classLoader.loadClass("gurobi.GRB");
+								outputText.append("gurobi.GRB loaded \n");
+								Field[] asdf = grbClass.getDeclaredFields();
+								
+								Field whereField = grbCallbackClass.getDeclaredField("where");
+								whereField.setAccessible(true);
+								
+								int where = whereField.getInt(self);
+								if (where == grbClass.getDeclaredField("CB_MIPSOL").getInt(null)) {
+									Method grbCallbackGetDoubleInfoMethod = grbCallbackClass.getDeclaredMethod("getDoubleInfo", new Class[]{ int.class });
+									Method grbCallbackGetSolutionMethod = grbCallbackClass.getDeclaredMethod("getSolution", new Class[]{ Array.newInstance(grbVarClass, 0).getClass() });
+									grbCallbackGetDoubleInfoMethod.setAccessible(true);
+									grbCallbackGetSolutionMethod.setAccessible(true);
+	
+									Solution solution = new Solution((double) grbCallbackGetDoubleInfoMethod.invoke(self, new Object[]{ grbClass.getDeclaredField("CB_MIPSOL_OBJ").getInt(null) }), 
+											(double[]) grbCallbackGetSolutionMethod.invoke(self, new Object[]{ vars }));
+									GDBB.intermediateSolution.add(solution);
+								}
+							} catch (ClassNotFoundException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | NoSuchMethodException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+								StringWriter errors = new StringWriter();
+								e.printStackTrace(new PrintWriter(errors));
+								outputText.append(errors.toString());
+								errorText.append(errors.toString());
+								if (LocalConfig.getInstance().hasValidGurobiKey) {
+									dialog.setErrorMessage(errorText.toString());
+									dialog.setVisible(true);
+								}
+							} catch (InvocationTargetException e) {
+								handleGurobiException();
 							}
-						} catch (ClassNotFoundException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | NoSuchMethodException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-							StringWriter errors = new StringWriter();
-							e.printStackTrace(new PrintWriter(errors));
-							outputText.append(errors.toString());
-							errorText.append(errors.toString());
-							if (LocalConfig.getInstance().hasValidGurobiKey) {
-								dialog.setErrorMessage(errorText.toString());
-								dialog.setVisible(true);
-							}
-						} catch (InvocationTargetException e) {
-							handleGurobiException();
 						}
 					}
-					
-					return null;
+					return Double.NaN;
 				}
 			};
 			
