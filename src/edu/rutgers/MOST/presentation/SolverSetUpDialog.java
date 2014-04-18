@@ -16,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -28,12 +29,15 @@ public class SolverSetUpDialog  extends JDialog {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	public static JLabel solverSelectionLabel = new JLabel(GraphicalInterfaceConstants.SOLVER_SELECTION_LABEL);
+	private JRadioButton glpkRadioButton = new JRadioButton(GraphicalInterfaceConstants.GLPK_SOLVER_BUTTON_LABEL);
+	private JRadioButton gurobiRadioButton = new JRadioButton(GraphicalInterfaceConstants.GUROBI_SOLVER_BUTTON_LABEL);
 	public static JButton fileButton = new JButton(GraphicalInterfaceConstants.GUROBI_JAR_PATH_BUTTON);
 	public static JButton okButton = new JButton("    OK    ");
 	public static JButton cancelButton = new JButton("  Cancel  ");
 	public static JButton clearButton = new JButton("Clear");
 	public static final JTextField textField = new JTextField();
-	public static JLabel topLabel = new JLabel();
+	public static JLabel gurobiLabel = new JLabel();
 	
 	//Methods of saving current directory
 	public static SettingsFactory curSettings;
@@ -52,7 +56,7 @@ public class SolverSetUpDialog  extends JDialog {
 	
 	public SolverSetUpDialog() {
 
-		setTitle(GraphicalInterfaceConstants.SOLVER_INTERFACE_TITLE);		
+		setTitle(GraphicalInterfaceConstants.SOLVER_DIALOG_TITLE);		
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
 		getRootPane().setDefaultButton(okButton);
@@ -63,25 +67,52 @@ public class SolverSetUpDialog  extends JDialog {
 		
 		//box layout
 		Box vb = Box.createVerticalBox();
-		Box hbLabel = Box.createHorizontalBox();
+		Box hbSolverSelection = Box.createHorizontalBox();
+		Box glpkButtonBox = Box.createHorizontalBox();   
+		Box gurobiButtonBox = Box.createHorizontalBox();	
+		Box hbGurobiLabel = Box.createHorizontalBox();
 		Box hbMetab = Box.createHorizontalBox();
 		Box hbButton = Box.createHorizontalBox();
-
-		//JLabel topLabel = new JLabel();
-		//topLabel.setText(GraphicalInterfaceConstants.GUROBI_PATH_LABEL);
-		topLabel.setSize(new Dimension(150, 10));
+		
+		solverSelectionLabel.setSize(new Dimension(150, 10));
 		//top, left, bottom. right
-		topLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-		topLabel.setAlignmentX(CENTER_ALIGNMENT);
+		solverSelectionLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+		//solverSelectionLabel.setAlignmentX(CENTER_ALIGNMENT);
+
+		JPanel solverSelectionPanel = new JPanel();
+		solverSelectionPanel.setLayout(new BoxLayout(solverSelectionPanel, BoxLayout.X_AXIS));
+		solverSelectionPanel.add(solverSelectionLabel);
+		solverSelectionPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+
+		solverSelectionLabel.setMinimumSize(new Dimension(200, 15));
+		
+		JPanel glpkButtonPanel = new JPanel();
+		glpkButtonPanel.setLayout(new BoxLayout(glpkButtonPanel, BoxLayout.X_AXIS));
+		glpkButtonPanel.add(glpkRadioButton);
+		glpkButtonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 0));
+		
+		JPanel gurobiButtonPanel = new JPanel();
+		gurobiButtonPanel.setLayout(new BoxLayout(gurobiButtonPanel, BoxLayout.X_AXIS));
+		gurobiButtonPanel.add(gurobiRadioButton);
+		gurobiButtonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
+		
+		hbSolverSelection.add(solverSelectionPanel);		
+		hbSolverSelection.add(glpkButtonPanel);
+		hbSolverSelection.add(gurobiButtonPanel);
+
+		gurobiLabel.setSize(new Dimension(150, 10));
+		//top, left, bottom. right
+		gurobiLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+		gurobiLabel.setAlignmentX(CENTER_ALIGNMENT);
 
 		JPanel labelPanel = new JPanel();
 		labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
-		labelPanel.add(topLabel);
+		labelPanel.add(gurobiLabel);
 		labelPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
-		hbLabel.add(labelPanel);
+		hbGurobiLabel.add(labelPanel);
 		
-		topLabel.setMinimumSize(new Dimension(200, 15));
+		gurobiLabel.setMinimumSize(new Dimension(200, 15));
 		textField.setEditable(false);
 		textField.setBackground(Color.white);
 
@@ -89,7 +120,6 @@ public class SolverSetUpDialog  extends JDialog {
 		okButton.setEnabled(false);
 		JLabel blank = new JLabel("    "); 
 		cancelButton.setMnemonic(KeyEvent.VK_C);
-		
 
 		textField.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
@@ -136,7 +166,8 @@ public class SolverSetUpDialog  extends JDialog {
 
 		hbButton.add(buttonPanel);
 
-		vb.add(hbLabel);
+		vb.add(hbSolverSelection);
+		vb.add(hbGurobiLabel);
 		vb.add(hbMetab);
 		vb.add(hbButton);
 		add(vb);	

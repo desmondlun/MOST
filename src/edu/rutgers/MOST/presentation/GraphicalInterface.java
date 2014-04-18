@@ -2153,7 +2153,7 @@ public class GraphicalInterface extends JFrame {
 		setUpSolver.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
 				getSolverSetUpDialog().setSize(GraphicalInterfaceConstants.SOLVER_DIALOG_WIDTH, GraphicalInterfaceConstants.SOLVER_DIALOG_HEIGHT);
-				getSolverSetUpDialog().topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_DEFAULT);
+				getSolverSetUpDialog().gurobiLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_DEFAULT);
 				getSolverSetUpDialog().setVisible(true);
 				//loadGurobiPathInterface();
 			}    	     
@@ -10321,13 +10321,13 @@ public class GraphicalInterface extends JFrame {
 				|| System.getProperty("os.name").equals("Linux")) {
 			solvSetUpDlg.textField.setText(findGurobiPath());
 			if (gurobiPathFound) {
-				solvSetUpDlg.topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_FOUND_LABEL);
+				solvSetUpDlg.gurobiLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_FOUND_LABEL);
 				setGurobiPath(findGurobiPath());
 			} else {
-				solvSetUpDlg.topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_NOT_FOUND_LABEL);
+				solvSetUpDlg.gurobiLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_NOT_FOUND_LABEL);
 			}
 		} else {
-			solvSetUpDlg.topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_DEFAULT);
+			solvSetUpDlg.gurobiLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_DEFAULT);
 		}
 		solvSetUpDlg.fileButton.addActionListener(fileButtonActionListener);
 		solvSetUpDlg.okButton.addActionListener(solvOKActionListener);
@@ -10453,7 +10453,7 @@ public class GraphicalInterface extends JFrame {
 			//File f = new File("none");
 			if (f.exists()) {
 				gurobiPathFound = true;
-				getSolverSetUpDialog().topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_FOUND_LABEL);
+				getSolverSetUpDialog().gurobiLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_FOUND_LABEL);
 			} else {
 				gurobiPathFound = false;
 			}
