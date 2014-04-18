@@ -1275,7 +1275,8 @@ public class GraphicalInterface extends JFrame {
 		analysisMenu.setMnemonic(KeyEvent.VK_A);
 
 		analysisMenu.add(fbaItem);
-		if (!hasGurobiPath) {
+		if (curSettings.get("SolverType") == null) {
+		//if (!hasGurobiPath) {
 			fbaItem.setEnabled(false);
 		}
 		fbaItem.setMnemonic(KeyEvent.VK_F);
@@ -1365,7 +1366,8 @@ public class GraphicalInterface extends JFrame {
 		menuBar.add(analysisMenu);
 
 		analysisMenu.add(gdbbItem);
-        if (!hasGurobiPath) {
+		if (curSettings.get("SolverType") == null) {
+        //if (!hasGurobiPath) {
                 gdbbItem.setEnabled(false);
         }
         gdbbItem.setMnemonic(KeyEvent.VK_G);
