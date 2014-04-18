@@ -22,7 +22,7 @@ import javax.swing.event.DocumentListener;
 
 import edu.rutgers.MOST.data.SettingsFactory;
 
-public class GurobiPathInterface  extends JDialog {
+public class SolverSetUpDialog  extends JDialog {
 
 	/**
 	 * 
@@ -50,9 +50,9 @@ public class GurobiPathInterface  extends JDialog {
 
 	public boolean fileSelected;
 	
-	public GurobiPathInterface() {
+	public SolverSetUpDialog() {
 
-		setTitle(GraphicalInterfaceConstants.GUROBI_JAR_PATH_INTERFACE_TITLE);		
+		setTitle(GraphicalInterfaceConstants.SOLVER_INTERFACE_TITLE);		
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
 		getRootPane().setDefaultButton(okButton);
@@ -63,7 +63,6 @@ public class GurobiPathInterface  extends JDialog {
 		
 		//box layout
 		Box vb = Box.createVerticalBox();
-
 		Box hbLabel = Box.createHorizontalBox();
 		Box hbMetab = Box.createHorizontalBox();
 		Box hbButton = Box.createHorizontalBox();
@@ -183,9 +182,9 @@ public class GurobiPathInterface  extends JDialog {
 
 		String lastGurobi_path = curSettings.get("LastGurobi");
 		if (lastGurobi_path == null) {
-			GurobiPathInterface frame = new GurobiPathInterface();
+			SolverSetUpDialog frame = new SolverSetUpDialog();
 			frame.setIconImages(icons);
-			frame.setSize(600, 150);
+			frame.setSize(GraphicalInterfaceConstants.SOLVER_DIALOG_WIDTH, GraphicalInterfaceConstants.SOLVER_DIALOG_HEIGHT);
 			frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 			frame.setLocationRelativeTo(null);
 			frame.setVisible(true);

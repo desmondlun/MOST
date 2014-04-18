@@ -336,17 +336,6 @@ public class GraphicalInterface extends JFrame {
 		GraphicalInterface.gdbbDialog = gdbbDialog;
 	}
 
-	private static GurobiPathInterface gurobiPathInterface;
-
-	public static GurobiPathInterface getGurobiPathInterface() {
-		return gurobiPathInterface;
-	}
-
-	public static void setGurobiPathInterface(
-			GurobiPathInterface gurobiPathInterface) {
-		GraphicalInterface.gurobiPathInterface = gurobiPathInterface;
-	}
-
 	private static MetaboliteColAddRenameInterface metaboliteColAddRenameInterface;   
 
 	public void setMetaboliteColAddRenameInterface(MetaboliteColAddRenameInterface metaboliteColAddRenameInterface) {
@@ -428,6 +417,16 @@ public class GraphicalInterface extends JFrame {
 	public static ReactionEditor getReactionEditor() {
 		return reactionEditor;
 	}	
+	
+	private static SolverSetUpDialog solverSetUpDialog;
+
+	public static SolverSetUpDialog getSolverSetUpDialog() {
+		return solverSetUpDialog;
+	}
+
+	public static void setSolverSetUpDialog(SolverSetUpDialog solverSetUpDialog) {
+		GraphicalInterface.solverSetUpDialog = solverSetUpDialog;
+	}
 
 	private DynamicTreePanel treePanel;
 
@@ -849,7 +848,7 @@ public class GraphicalInterface extends JFrame {
 		isRoot = true;
 		gurobiPathSelected = false;
 		gurobiPathErrorShown = false;
-		loadGurobiPathInterface(false);
+		loadSolverSetUpDialog(false);
 
 		// Tree Panel
 		treePanel = new DynamicTreePanel(new DynamicTree() {
@@ -2148,14 +2147,14 @@ public class GraphicalInterface extends JFrame {
 		JMenu optionsMenu = new JMenu("Options");
 		optionsMenu.setMnemonic(KeyEvent.VK_O);
 
-		JMenuItem setGurobiPath = new JMenuItem(GraphicalInterfaceConstants.GUROBI_JAR_PATH_OPTIONS_MENU_ITEM);
-		optionsMenu.add(setGurobiPath);
-		setGurobiPath.setMnemonic(KeyEvent.VK_G);
-		setGurobiPath.addActionListener(new ActionListener() {
+		JMenuItem setUpSolver = new JMenuItem(GraphicalInterfaceConstants.SOLVER_OPTIONS_MENU_ITEM);
+		optionsMenu.add(setUpSolver);
+		setUpSolver.setMnemonic(KeyEvent.VK_S);
+		setUpSolver.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
-				getGurobiPathInterface().setSize(600, 150);
-				getGurobiPathInterface().topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_DEFAULT);
-				getGurobiPathInterface().setVisible(true);
+				getSolverSetUpDialog().setSize(GraphicalInterfaceConstants.SOLVER_DIALOG_WIDTH, GraphicalInterfaceConstants.SOLVER_DIALOG_HEIGHT);
+				getSolverSetUpDialog().topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_DEFAULT);
+				getSolverSetUpDialog().setVisible(true);
 				//loadGurobiPathInterface();
 			}    	     
 		});
@@ -10307,38 +10306,38 @@ public class GraphicalInterface extends JFrame {
 	// Gurobi path methods
 	/******************************************************************************/
 
-	public static void loadGurobiPathInterface(boolean visible) {
-		GurobiPathInterface gpi = new GurobiPathInterface();
-		setGurobiPathInterface(gpi);
-		gpi.setIconImages(icons);					
-		gpi.setSize(700, 150);
-		gpi.setResizable(false);
-		gpi.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		gpi.setLocationRelativeTo(null);		
-		gpi.setAlwaysOnTop(true);	
-		gpi.setModal(true);
+	public static void loadSolverSetUpDialog(boolean visible) {
+		SolverSetUpDialog solvSetUpDlg = new SolverSetUpDialog();
+		setSolverSetUpDialog(solvSetUpDlg);
+		solvSetUpDlg.setIconImages(icons);					
+		solvSetUpDlg.setSize(GraphicalInterfaceConstants.SOLVER_DIALOG_WIDTH, GraphicalInterfaceConstants.SOLVER_DIALOG_HEIGHT);
+		solvSetUpDlg.setResizable(false);
+		solvSetUpDlg.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		solvSetUpDlg.setLocationRelativeTo(null);		
+		solvSetUpDlg.setAlwaysOnTop(true);	
+		solvSetUpDlg.setModal(true);
 		if (System.getProperty("os.name").equals("Windows 7") || System.getProperty("os.name").equals("Windows 8")
 				|| System.getProperty("os.name").equals("Windows Vista") || System.getProperty("os.name").equals("Windows XP")
 				|| System.getProperty("os.name").equals("Linux")) {
-			gpi.textField.setText(findGurobiPath());
+			solvSetUpDlg.textField.setText(findGurobiPath());
 			if (gurobiPathFound) {
-				gpi.topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_FOUND_LABEL);
+				solvSetUpDlg.topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_FOUND_LABEL);
 				setGurobiPath(findGurobiPath());
 			} else {
-				gpi.topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_NOT_FOUND_LABEL);
+				solvSetUpDlg.topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_NOT_FOUND_LABEL);
 			}
 		} else {
-			gpi.topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_DEFAULT);
+			solvSetUpDlg.topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_DEFAULT);
 		}
-		gpi.fileButton.addActionListener(fileButtonActionListener);
-		gpi.okButton.addActionListener(gpiOKActionListener);
-		gpi.cancelButton.addActionListener(gpiCancelActionListener);
-		gpi.addWindowListener(new WindowAdapter() {
+		solvSetUpDlg.fileButton.addActionListener(fileButtonActionListener);
+		solvSetUpDlg.okButton.addActionListener(solvOKActionListener);
+		solvSetUpDlg.cancelButton.addActionListener(solvCancelActionListener);
+		solvSetUpDlg.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent evt) {
-				gpiCloseAction();	        	
+				solvCloseAction();	        	
 			}
 		});	
-		gpi.setVisible(visible);
+		solvSetUpDlg.setVisible(visible);
 		gurobiPathErrorShown = false;
 		openGurobiPathFilechooser = true;
 		gurobiFileChooserShown = false; 
@@ -10346,7 +10345,7 @@ public class GraphicalInterface extends JFrame {
 
 	static ActionListener fileButtonActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
-			getGurobiPathInterface().setAlwaysOnTop(false);
+			getSolverSetUpDialog().setAlwaysOnTop(false);
 			JTextArea output = null;
 			JFileChooser fileChooser = new JFileChooser(); 
 			fileChooser.setDialogTitle(GraphicalInterfaceConstants.GUROBI_JAR_PATH_FILE_CHOOSER_TITLE);
@@ -10363,31 +10362,31 @@ public class GraphicalInterface extends JFrame {
 				//... The user selected a file, get it, use it.          	
 				File file = fileChooser.getSelectedFile();
 				String rawPathName = file.getAbsolutePath();
-				getGurobiPathInterface().textField.setText(rawPathName);
+				getSolverSetUpDialog().textField.setText(rawPathName);
 				if (!rawPathName.endsWith(".jar")) {
-					getGurobiPathInterface().setAlwaysOnTop(false);
+					getSolverSetUpDialog().setAlwaysOnTop(false);
 					JOptionPane.showMessageDialog(null,                
 							"Not a Valid Jar File.",                
 							"Invalid Jar File",                                
 							JOptionPane.ERROR_MESSAGE);
-					getGurobiPathInterface().setAlwaysOnTop(true);
+					getSolverSetUpDialog().setAlwaysOnTop(true);
 				} else {
 					setGurobiPath(rawPathName);
 					curSettings.add("LastGurobi", rawPathName);
 					gurobiPathSelected = true;
 				}					
 			}
-			getGurobiPathInterface().setAlwaysOnTop(true);
+			getSolverSetUpDialog().setAlwaysOnTop(true);
 		}
 	};
 
-	static ActionListener gpiOKActionListener = new ActionListener() {
+	static ActionListener solvOKActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			String lastGurobi_path = curSettings.get("LastGurobi");
 			if (lastGurobi_path == null) {
 				lastGurobi_path = ".";
 			}
-			setGurobiPath(getGurobiPathInterface().textField.getText());
+			setGurobiPath(getSolverSetUpDialog().textField.getText());
 			String path = getGurobiPath();
 			//System.out.println(path);
 			curSettings.add("LastGurobi", path);
@@ -10395,19 +10394,19 @@ public class GraphicalInterface extends JFrame {
 			gurobiPathSelected = false;
 			fbaItem.setEnabled(true);
 			gdbbItem.setEnabled(true);
-			getGurobiPathInterface().setVisible(false);
-			getGurobiPathInterface().dispose();
+			getSolverSetUpDialog().setVisible(false);
+			getSolverSetUpDialog().dispose();
 		}
 	};
 
-	static ActionListener gpiCancelActionListener = new ActionListener() {
+	static ActionListener solvCancelActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
-			gpiCloseAction();
+			solvCloseAction();
 		}
 	};
 
-	public static void gpiCloseAction() {
-		getGurobiPathInterface().setAlwaysOnTop(false);
+	public static void solvCloseAction() {
+		getSolverSetUpDialog().setAlwaysOnTop(false);
 		String lastGurobi_path = curSettings.get("LastGurobi");
 		if (!gurobiPathErrorShown && lastGurobi_path == null) {
 			JOptionPane.showMessageDialog(null,                
@@ -10417,8 +10416,8 @@ public class GraphicalInterface extends JFrame {
 		}
 		gurobiPathErrorShown = true;
 		hasGurobiPath = false;	
-		getGurobiPathInterface().setVisible(false);
-		getGurobiPathInterface().dispose();
+		getSolverSetUpDialog().setVisible(false);
+		getSolverSetUpDialog().dispose();
 	}
 
 	public static String findGurobiPath() {
@@ -10454,7 +10453,7 @@ public class GraphicalInterface extends JFrame {
 			//File f = new File("none");
 			if (f.exists()) {
 				gurobiPathFound = true;
-				getGurobiPathInterface().topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_FOUND_LABEL);
+				getSolverSetUpDialog().topLabel.setText(GraphicalInterfaceConstants.GUROBI_JAR_PATH_FOUND_LABEL);
 			} else {
 				gurobiPathFound = false;
 			}
@@ -10518,7 +10517,7 @@ public class GraphicalInterface extends JFrame {
 			String lastGurobi_path = curSettings.get("LastGurobi");
 			if (lastGurobi_path == null) {
 				openGurobiPathFilechooser = true;
-				loadGurobiPathInterface(true);
+				loadSolverSetUpDialog(true);
 			} else {
 				setGurobiPath(lastGurobi_path);
 			}

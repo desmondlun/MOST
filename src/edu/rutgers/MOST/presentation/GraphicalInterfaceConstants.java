@@ -406,15 +406,17 @@ public class GraphicalInterfaceConstants {
     public static final String EDIT_OPT_TABLE_ERROR = "Results Tables Are Not Editable";
     public static final String EDIT_OPT_TABLE_ERROR_TITLE = "Read-Only Table";
     
-    // Gurobi 
-    public static final String GUROBI_JAR_PATH_INTERFACE_TITLE = "Gurobi Jar Path Locator";
+    // Solver and Gurobi set up
+    public static final int SOLVER_DIALOG_WIDTH = 600;
+    public static final int SOLVER_DIALOG_HEIGHT = 150;
+    public static final String SOLVER_INTERFACE_TITLE = "Set Up Solver";
     public static final String GUROBI_JAR_PATH_NOT_FOUND_LABEL = "Gurobi Jar Path Not Found. Click Load Gurobi Jar Path to Browse For Path";
     public static final String GUROBI_JAR_PATH_FOUND_LABEL = "Gurobi Jar Path Found. Click 'OK' if Correct or Click 'Load Gurobi Jar Path' if Not Correct.";
     public static final String GUROBI_JAR_PATH_BUTTON = "Load Gurobi Jar Path";
     public static final String NO_GUROBI_JAR_PATH_ERROR = "There is no Gurobi Jar path set.\n FBA and GDBB will not function";
     public static final String NO_GUROBI_JAR_PATH_ERROR_TITLE = "No Gurobi Jar Path";
     public static final String GUROBI_JAR_PATH_FILE_CHOOSER_TITLE = "Browse For Gurobi Jar Path";
-    public static final String GUROBI_JAR_PATH_OPTIONS_MENU_ITEM = "Set Gurobi Jar Path";
+    public static final String SOLVER_OPTIONS_MENU_ITEM = "Set Up Solver";
     public static final String GUROBI_JAR_PATH_DEFAULT = "Browse for Gurobi Path";
     
     public static final String GUROBI_KEY_ERROR_TITLE = "Gurobi Key Error";
