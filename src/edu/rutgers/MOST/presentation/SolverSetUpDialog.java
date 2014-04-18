@@ -31,8 +31,8 @@ public class SolverSetUpDialog  extends JDialog {
 	 */
 	private static final long serialVersionUID = 1L;
 	public static JLabel solverSelectionLabel = new JLabel(GraphicalInterfaceConstants.SOLVER_SELECTION_LABEL);
-	private JRadioButton glpkRadioButton = new JRadioButton(GraphicalInterfaceConstants.GLPK_SOLVER_BUTTON_LABEL);
-	private JRadioButton gurobiRadioButton = new JRadioButton(GraphicalInterfaceConstants.GUROBI_SOLVER_BUTTON_LABEL);
+	public JRadioButton glpkRadioButton = new JRadioButton(GraphicalInterfaceConstants.GLPK_SOLVER_BUTTON_LABEL);
+	public JRadioButton gurobiRadioButton = new JRadioButton(GraphicalInterfaceConstants.GUROBI_SOLVER_BUTTON_LABEL);
 	public static JButton fileButton = new JButton(GraphicalInterfaceConstants.GUROBI_JAR_PATH_BUTTON);
 	public static JButton okButton = new JButton("    OK    ");
 	public static JButton cancelButton = new JButton("  Cancel  ");
