@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.optimization.FBA.FBA;
+import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 public class SolverFactory {
@@ -23,8 +24,12 @@ public class SolverFactory {
 		Format formatter;
 		formatter = new SimpleDateFormat("_yyMMdd_HHmmss");
 		String dateTimeStamp = formatter.format(date);
-		
-		Solver solver = new GurobiSolver();
+		Solver solver = null;
+		if (GraphicalInterface.curSettings.get("SolverType").equals(GraphicalInterfaceConstants.GLPK_SOLVER_TYPE)) {
+			solver = new GLPKSolver();
+		} else if (GraphicalInterface.curSettings.get("SolverType").equals(GraphicalInterfaceConstants.GUROBI_SOLVER_TYPE)) {
+			solver = new GurobiSolver();
+		}		
 		//Solver solver = new GurobiSolver(config.getModelName() + dateTimeStamp + GraphicalInterfaceConstants.MIP_SUFFIX + ".log");
 		return solver;
 	}
