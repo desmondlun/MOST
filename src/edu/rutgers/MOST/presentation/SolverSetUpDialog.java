@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -61,6 +62,8 @@ public class SolverSetUpDialog  extends JDialog {
 
 		getRootPane().setDefaultButton(okButton);
 		
+		disableGurobiComponents();
+		
 		//textField.setText("");
 
 	    fileSelected = false;
@@ -95,6 +98,15 @@ public class SolverSetUpDialog  extends JDialog {
 		gurobiButtonPanel.setLayout(new BoxLayout(gurobiButtonPanel, BoxLayout.X_AXIS));
 		gurobiButtonPanel.add(gurobiRadioButton);
 		gurobiButtonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
+		
+		glpkRadioButton.setMnemonic(KeyEvent.VK_L);
+		gurobiRadioButton.setMnemonic(KeyEvent.VK_U);
+		
+		//Group the radio buttons.
+		ButtonGroup group = new ButtonGroup();
+		group.add(glpkRadioButton);
+		group.add(gurobiRadioButton);
+		glpkRadioButton.setSelected(true);
 		
 		hbSolverSelection.add(solverSelectionPanel);		
 		hbSolverSelection.add(glpkButtonPanel);
@@ -151,6 +163,9 @@ public class SolverSetUpDialog  extends JDialog {
 		JLabel blank2 = new JLabel("      ");
 		JLabel blank3 = new JLabel("      ");
 		
+		fileButton.setMnemonic(KeyEvent.VK_G);
+		clearButton.setMnemonic(KeyEvent.VK_E);
+		
 		hbMetab.add(blank2);
 		hbMetab.add(fileButton);
 		hbMetab.add(textPanel);
@@ -171,6 +186,18 @@ public class SolverSetUpDialog  extends JDialog {
 		vb.add(hbMetab);
 		vb.add(hbButton);
 		add(vb);	
+		
+		glpkRadioButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				disableGurobiComponents();
+			}
+		});
+		
+		gurobiRadioButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				enableGurobiComponents();
+			}
+		});
 		
 		ActionListener fileButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
@@ -202,6 +229,20 @@ public class SolverSetUpDialog  extends JDialog {
 		clearButton.addActionListener(clearButtonActionListener);
 		
 	} 	
+	
+	public void enableGurobiComponents() {
+		fileButton.setEnabled(true);
+		clearButton.setEnabled(true);
+		textField.setForeground(Color.BLACK);
+		gurobiLabel.setForeground(Color.BLACK);
+	}
+	
+	public void disableGurobiComponents() {
+		fileButton.setEnabled(false);
+		clearButton.setEnabled(false);
+		textField.setForeground(GraphicalInterfaceConstants.FORMULA_BAR_NONEDITABLE_COLOR);
+		gurobiLabel.setForeground(GraphicalInterfaceConstants.FORMULA_BAR_NONEDITABLE_COLOR);
+	}
 	
 	public static void main(String[] args) throws Exception {
 		curSettings = new SettingsFactory();
