@@ -1,7 +1,7 @@
 1. Change version in about box - GraphicalInterfaceConstants.ABOUT_BOX_VERSION_TEXT
 Change download links in download.html and Installing_MOST.html
 
-2. Create a folder MOST_distXXXXXX where XXXXXX is the date.  The etc folder, ModelCollection.csv,
+2. Create a folder MOST_distXXXXXX where XXXXXX is the date.  The dll folder, etc folder, ModelCollection.csv,
 and README must be placed in this folder.
 
 3. Right click on the MOST project folder in Eclipse and select

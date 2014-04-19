@@ -9791,7 +9791,8 @@ public class GraphicalInterface extends JFrame {
 			deleteUnusedItem.setEnabled(true);
 		}
 		maybeDisplaySuspiciousMetabMessage(statusBarRow());
-		if (hasGurobiPath) {
+		//if (hasGurobiPath) {
+		if (curSettings.get("SolverType") != null) {	
 			fbaItem.setEnabled(true);
 			gdbbItem.setEnabled(true);
 		}		
@@ -10385,7 +10386,7 @@ public class GraphicalInterface extends JFrame {
 	static ActionListener solvOKActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			if (getSolverSetUpDialog().glpkRadioButton.isSelected()) {
-				curSettings.add("SolverType", GraphicalInterfaceConstants.GLPK_SOLVER_TYPE);
+				curSettings.add("SolverType", GraphicalInterfaceConstants.GLPK_SOLVER_TYPE);			
 			} else {
 				String lastGurobi_path = curSettings.get("LastGurobi");
 				if (lastGurobi_path == null) {
@@ -10511,8 +10512,21 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 	
+	// copies DLLs needed for GLPK to folder in java library path
+	public static void copyDLLs() {
+		String homeDrive = System.getenv("HOMEDRIVE");
+		Utilities u = new Utilities();
+		File f1 = new File(homeDrive + "/Program Files/Java/jre7/bin/glpk_4_53.dll");
+		if (!f1.exists()) {
+			u.copyFileWithExtension("dll/glpk_4_53", homeDrive + "/Program Files/Java/jre7/bin/glpk_4_53", ".dll");
+		}
+		File f2 = new File(homeDrive + "/Program Files/Java/jre7/bin/glpk_4_53_java.dll");
+		if (!f2.exists()) {
+			u.copyFileWithExtension("dll/glpk_4_53_java", homeDrive + "/Program Files/Java/jre7/bin/glpk_4_53_java", ".dll");
+		}	
+	}
+	
 	public static void main(String[] args) {
-	//public static void main(String[] args) throws Exception {
 		ResizableDialog dialog = new ResizableDialog("Error", "Error", "Error");
 		dialog.setLocationRelativeTo(null);
 		try {
@@ -10523,8 +10537,9 @@ public class GraphicalInterface extends JFrame {
 			icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
 			icons.add(new ImageIcon("etc/most32.jpg").getImage());
 			
+			copyDLLs();
+			
 			String solverType = curSettings.get("SolverType");
-			File f = new File(GraphicalInterfaceConstants.GLPK_SOLVER_TYPE);
 			if (solverType == null) {
 				openGurobiPathFilechooser = true;
 				loadSolverSetUpDialog(true);
@@ -10554,11 +10569,6 @@ public class GraphicalInterface extends JFrame {
 			
 			// selected row default at first row
 			statusBar.setText("Row 1");
-			
-//			Map<String, String> env = System.getenv();
-//	        for (String envName : env.keySet()) {
-//	            System.out.format("%s=%s%n", envName, env.get(envName));
-//	        }
 		} catch (Exception e) {
 			e.printStackTrace();
 			StringWriter errors = new StringWriter();

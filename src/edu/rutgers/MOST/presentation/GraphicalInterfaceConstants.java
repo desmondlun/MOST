@@ -423,7 +423,7 @@ public class GraphicalInterfaceConstants {
     public static final String GUROBI_JAR_PATH_DEFAULT = "Browse for Gurobi Path";
     // Used in settings.xml, since path must exist for settings to not return null,
     // use an existing file to mark solver as GLPK or Gurobi
-    public static final String GLPK_SOLVER_TYPE = "lib/glpk-java.jar";
+    public static final String GLPK_SOLVER_TYPE = "dll";
     public static final String GUROBI_SOLVER_TYPE = ".";
     
     public static final String GUROBI_KEY_ERROR_TITLE = "Gurobi Key Error";
