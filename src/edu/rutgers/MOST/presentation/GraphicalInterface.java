@@ -10516,13 +10516,23 @@ public class GraphicalInterface extends JFrame {
 	public static void copyDLLs() {
 		String homeDrive = System.getenv("HOMEDRIVE");
 		Utilities u = new Utilities();
+		String os = System.getProperty("os.arch"); 
+        System.out.println(os);
+        String path = "dll/";
+        if (os.contains("64")) {
+        	path += "64bit";
+        } else {
+        	path += "32bit";
+        }
+		System.out.println(path);
+        
 		File f1 = new File(homeDrive + "/Program Files/Java/jre7/bin/glpk_4_53.dll");
 		if (!f1.exists()) {
-			u.copyFileWithExtension("dll/glpk_4_53", homeDrive + "/Program Files/Java/jre7/bin/glpk_4_53", ".dll");
+			u.copyFileWithExtension(path + "/glpk_4_53", homeDrive + "/Program Files/Java/jre7/bin/glpk_4_53", ".dll");
 		}
 		File f2 = new File(homeDrive + "/Program Files/Java/jre7/bin/glpk_4_53_java.dll");
 		if (!f2.exists()) {
-			u.copyFileWithExtension("dll/glpk_4_53_java", homeDrive + "/Program Files/Java/jre7/bin/glpk_4_53_java", ".dll");
+			u.copyFileWithExtension(path + "/glpk_4_53_java", homeDrive + "/Program Files/Java/jre7/bin/glpk_4_53_java", ".dll");
 		}	
 	}
 	
