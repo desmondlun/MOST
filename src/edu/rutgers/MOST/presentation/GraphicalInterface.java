@@ -6404,7 +6404,7 @@ public class GraphicalInterface extends JFrame {
 				columnIndex == GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN) {
 			if (validator.isNumber(value)) {
 				if (columnIndex == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN && getSelectionMode() != 2) {
-					System.out.println(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN).toString());
+					//System.out.println(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN).toString());
 					Double lowerBound = Double.valueOf(value);
 					Double upperBound = Double.valueOf((String) (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));
 					if (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN).toString().compareTo("false") == 0 && lowerBound < 0) {					
@@ -10517,14 +10517,12 @@ public class GraphicalInterface extends JFrame {
 		String homeDrive = System.getenv("HOMEDRIVE");
 		Utilities u = new Utilities();
 		String os = System.getProperty("os.arch"); 
-        System.out.println(os);
         String path = "dll/";
         if (os.contains("64")) {
         	path += "64bit";
         } else {
         	path += "32bit";
         }
-		System.out.println(path);
         
 		File f1 = new File(homeDrive + "/Program Files/Java/jre7/bin/glpk_4_53.dll");
 		if (!f1.exists()) {
