@@ -3,18 +3,6 @@ package edu.rutgers.MOST.optimization.solvers;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Vector;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.gnu.glpk.GLPK;
-import org.gnu.glpk.GLPKConstants;
-import org.gnu.glpk.GlpkCallback;
-import org.gnu.glpk.GlpkCallbackListener;
-import org.gnu.glpk.SWIGTYPE_p_double;
-import org.gnu.glpk.SWIGTYPE_p_int;
-import org.gnu.glpk.glp_iocp;
-import org.gnu.glpk.glp_prob;
-import org.gnu.glpk.glp_tree;
 
 import edu.rutgers.MOST.data.Solution;
 import edu.rutgers.MOST.optimization.GDBB.GDBB;
@@ -22,13 +10,9 @@ import gurobi.GRB;
 import gurobi.GRBCallback;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
-import gurobi.GRBExpr;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
 import gurobi.GRBLinExpr;
-import gurobi.GRB.DoubleAttr;
-import gurobi.GRB.DoubleParam;
-import gurobi.GRB.IntParam;
 
 public class GurobiSolver extends Solver
 {
@@ -43,7 +27,6 @@ public class GurobiSolver extends Solver
 	private double objval;
 	private GRBModel model;
 	private GRBEnv env;
-	private double obj;
 	private ObjType objType;
 	private SolverKind solverKind = SolverKind.FBASolver; //default may change in SetVar()
 	
@@ -96,11 +79,14 @@ public class GurobiSolver extends Solver
 	{
 		try
 		{
+			//set up environment and the model/problem objects
 			env = new GRBEnv();
 			env.set( GRB.DoubleParam.IntFeasTol, 1.0E-9 );
 			env.set( GRB.DoubleParam.FeasibilityTol, 1.0E-9 );
 			env.set( GRB.IntParam.OutputFlag, 0 );
 			model = new GRBModel( env );
+			
+			//set the callback
 			model.setCallback( new GRBCallback(){
 				@Override
 				protected void callback()
@@ -110,13 +96,17 @@ public class GurobiSolver extends Solver
 						if( abort )
 							this.abort();
 						else if( this.where == GRB.CB_SIMPLEX )
-							objval = getDoubleInfo(GRB.CB_SPX_OBJVAL);
+							objval = getDoubleInfo(GRB.CB_SPX_OBJVAL); //FBA objective
 						else if( this.where == GRB.CB_MIPSOL )
 						{
-							GDBB.intermediateSolution.add( new Solution( 
-									this.getDoubleInfo( GRB.CB_MIPSOL_OBJ ),
-									this.getSolution( model.getVars() ) ) );
-							objval = getDoubleInfo( GRB.CB_MIPSOL_OBJ );
+							//GDBB intermediate solutions
+							if( solverKind == SolverKind.GDBBSolver )
+							{
+								GDBB.intermediateSolution.add( new Solution( 
+										this.getDoubleInfo( GRB.CB_MIPSOL_OBJ ),
+										this.getSolution( model.getVars() ) ) );
+							}
+							objval = getDoubleInfo( GRB.CB_MIPSOL_OBJ ); //MIP objective
 						}
 					}
 					catch( GRBException e )
@@ -147,9 +137,9 @@ public class GurobiSolver extends Solver
 	@Override
 	public void setVar( String varName, VarType types, double lb, double ub )
 	{
-		//column definitions
 		try
 		{
+			//column definitions
 			if( varName == null || types == null || model == null)
 				return;
 			vars.add( model.addVar( lb, ub, 0.0, getGRBVarType( types ), varName ) );
@@ -169,14 +159,16 @@ public class GurobiSolver extends Solver
 	@Override
 	public void setObj( Map< Integer, Double > map )
 	{
-		//objective definition	
 		try
 		{
+			//objective definition
 			GRBLinExpr expr = new GRBLinExpr();
 			
+			//add the terms
 			for( Entry< Integer, Double > entry : map.entrySet() )
 				expr.addTerm( entry.getValue(), vars.get( entry.getKey() ) );
 			
+			//set the objective
 			model.setObjective( expr, getGRBObjType( objType ) );
 		}
 		catch( GRBException e )
@@ -189,39 +181,44 @@ public class GurobiSolver extends Solver
 	public void addConstraint( Map< Integer, Double > map, ConType con,
 			double value )
 	{
-		//row definitions
 		try
 		{
+			//row definitions
 			GRBLinExpr expr = new GRBLinExpr();
 	
 			for( Entry< Integer, Double > entry : map.entrySet() )
 			{
+				//add the terms in the expression
 				int key = entry.getKey();
 				double kvalue = entry.getValue();
 				expr.addTerm( kvalue, vars.get( key ) );
 			}
+			//add the constraint
 			model.addConstr( expr, getGRBConType( con ), value, null );
 		}
 		catch( GRBException e )
 		{
 			e.printStackTrace();
 		}
-		
 	}
 
 	@Override
 	public double optimize()
-	{
-		//optimize the solution and return the objective value
-		
+	{		
 		try
-		{			
+		{	
+			//preform the optimization and get the objective value
 			model.optimize();
 			objval = model.get( GRB.DoubleAttr.ObjVal );
+			
+			//get the flux values
+			for( GRBVar var : vars )
+				soln.add( var.get( GRB.DoubleAttr.X ) );
 			
 			//clean up
 			model.dispose();
 			env.dispose();
+			vars.clear();
 		}
 		catch( GRBException e )
 		{
