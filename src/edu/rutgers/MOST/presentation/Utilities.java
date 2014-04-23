@@ -2,10 +2,6 @@ package edu.rutgers.MOST.presentation;
 
 import java.awt.Image;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -89,43 +85,6 @@ public class Utilities {
             //System.out.println("Error renmaing file");
         }
     }
-	
-	public void copyFileWithExtension(String oldFile, String newFile, String extension) {
-
-		File sourceFile = new File(oldFile + ".dll");
-		File destFile = new File(newFile + ".dll");
-		try{
-			copyFile(sourceFile, destFile);
-		}
-		catch(IOException exc){
-
-			exc.printStackTrace();
-
-		}
-	}
-	
-	public static void copyFile(File sourceFile, File destFile) throws IOException {
-		if(!destFile.exists()) {
-			destFile.createNewFile();
-		}
-
-		FileChannel source = null;
-		FileChannel destination = null;
-
-		try {
-			source = new FileInputStream(sourceFile).getChannel();
-			destination = new FileOutputStream(destFile).getChannel();
-			destination.transferFrom(source, 0, source.size());
-		}
-		finally {
-			if(source != null) {
-				source.close();
-			}
-			if(destination != null) {
-				destination.close();
-			}
-		}
-	}
 	
 	public String lastPath(String path, JFileChooser fileChooser) {
 		// based on http://stackoverflow.com/questions/1503555/how-to-find-my-documents-folder

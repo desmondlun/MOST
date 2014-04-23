@@ -119,7 +119,7 @@ public class GraphicalInterfaceConstants {
     //metabolite column filtering names
     /*****************************************************************************/
     public static final String[] METAB_ABBREVIATION_FILTER =
-    {"abbrev", "id"
+    {"abbreviation", "id"
     };
     
     public static final String[] METAB_ABBREVIATION_NOT_FILTER =
@@ -150,7 +150,7 @@ public class GraphicalInterfaceConstants {
     //reaction column filtering names  
     /*****************************************************************************/
     public static final String[] ABBREVIATION_COLUMN_FILTER =
-    {"abbrev", "reaction id"
+    {"abbreviation", "reaction id"
     };
     
     public static final String[] ABBREVIATION_COLUMN_NOT_FILTER =
@@ -406,25 +406,16 @@ public class GraphicalInterfaceConstants {
     public static final String EDIT_OPT_TABLE_ERROR = "Results Tables Are Not Editable";
     public static final String EDIT_OPT_TABLE_ERROR_TITLE = "Read-Only Table";
     
-    // Solver and Gurobi set up
-    public static final int SOLVER_DIALOG_WIDTH = 500;
-    public static final int SOLVER_DIALOG_HEIGHT = 190;
-    public static final String SOLVER_DIALOG_TITLE = "Set Up Solver";
-    public static final String SOLVER_SELECTION_LABEL = "Select a Solver:";
-    public static final String GLPK_SOLVER_BUTTON_LABEL = "GLPK";
-    public static final String GUROBI_SOLVER_BUTTON_LABEL = "Gurobi";
-    public static final String GUROBI_JAR_PATH_NOT_FOUND_LABEL = "Gurobi Jar Path Not Found. Click 'Load Gurobi Jar Path' to Browse For Path";
-    public static final String GUROBI_JAR_PATH_FOUND_LABEL = "Gurobi Jar Path Found. Click 'OK' if Correct or Click 'Load Gurobi Jar Path'.";
+    // Gurobi 
+    public static final String GUROBI_JAR_PATH_INTERFACE_TITLE = "Gurobi Jar Path Locator";
+    public static final String GUROBI_JAR_PATH_NOT_FOUND_LABEL = "Gurobi Jar Path Not Found. Click Load Gurobi Jar Path to Browse For Path";
+    public static final String GUROBI_JAR_PATH_FOUND_LABEL = "Gurobi Jar Path Found. Click 'OK' if Correct or Click 'Load Gurobi Jar Path' if Not Correct.";
     public static final String GUROBI_JAR_PATH_BUTTON = "Load Gurobi Jar Path";
-    public static final String NO_GUROBI_JAR_PATH_ERROR = "Gurobi has been selected but there is no Gurobi Jar path set.\n Either choose GLPK as a Solver or Browse for Gurobi Jar path. \n Otherwise FBA and GDBB will not be available since no Solver has been Set Up.";
+    public static final String NO_GUROBI_JAR_PATH_ERROR = "There is no Gurobi Jar path set.\n FBA and GDBB will not function";
     public static final String NO_GUROBI_JAR_PATH_ERROR_TITLE = "No Gurobi Jar Path";
     public static final String GUROBI_JAR_PATH_FILE_CHOOSER_TITLE = "Browse For Gurobi Jar Path";
-    public static final String SOLVER_OPTIONS_MENU_ITEM = "Set Up Solver";
+    public static final String GUROBI_JAR_PATH_OPTIONS_MENU_ITEM = "Set Gurobi Jar Path";
     public static final String GUROBI_JAR_PATH_DEFAULT = "Browse for Gurobi Path";
-    // Used in settings.xml, since path must exist for settings to not return null,
-    // use an existing file to mark solver as GLPK or Gurobi
-    public static final String GLPK_SOLVER_TYPE = "dll";
-    public static final String GUROBI_SOLVER_TYPE = ".";
     
     public static final String GUROBI_KEY_ERROR_TITLE = "Gurobi Key Error";
     public static final String GUROBI_KEY_ERROR = "Gurobi Key Error";
