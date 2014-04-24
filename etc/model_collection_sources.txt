@@ -5,7 +5,8 @@ http://dx.doi.org/10.1128%2FJB.185.21.6400-6408.2003  Escherichia coli K-12 MG16
 
 
 doi:10.1186/gb-2003-4-9-r54               Escherichia coli K-12 MG1655 Reed et al., 2003      gb-2003-4-9-r54.pdf          http://dx.doi.org/10.1186/gb-2003-4-9-r54
-       Escherichia coli K-12 Orth et al, 2011           http://dx.doi.org/10.1038/msb.2011.65
+Egen  2012 http://dx.doi.org/10.1093/bioinformatics/bts255       
+Escherichia coli K-12 Orth et al, 2011           http://dx.doi.org/10.1038/msb.2011.65
 http://dx.doi.org/10.1038%2Fmsb4100155       Escherichia coli K-12 Feist et al., 2007         msb4100155.pdf                
 doi: 10.1128/JB.187.16.5818-5830.2005      Helicobacter pylori 26695 Thiele et al., 2005       J. Bacteriol.-2005-Thiele-5818-30.pdf     http://dx.doi.org/10.1128/JB.187.16.5818-5830.2005
 doi:10.1186/1752-0509-1-26             Mycobacterium tuberculosis H37Rv Jamshidi and Palsson, 2007          1752-0509-1-26.pdf     http://dx.doi.org/10.1186/1752-0509-1-26
@@ -21,6 +22,7 @@ Aspergillus nidulans FGSC A4 David et al., 2008
 doi:10.1038/nbt1282         Aspergillus niger CBS 513.88 Andersen et al., 2008       nbt1282.pdf
 doi:10.1186/1471-2164-9-245          Aspergillus oryzae RIB40 Vongsangnak et al., 2008         1471-2164-9-245.pdf
 doi:10.1186/1752-0509-3-4        Chlamydomonas reinhardtii Boyle and Morgan, 2009                 1752-0509-3-4.pdf
+                                      change to Chang et al., 2011   msb201152.pdf
 doi: 10.1073/pnas.0610772104       Homo sapiens Duarte et al., 2007        PNAS-2007-Duarte-1777-82.pdf
 doi:  10.1038/msb4100046        Methanosarcina barkeri Feist et al., 2006         msb4100046.pdf
 
@@ -29,7 +31,11 @@ iCB925    1752-0509-5-130.pdf
 iJO1366     535.full.pdf
 
 DOI: 10.1038/msb.2011.65
-  http://dx.doi.org/10.1038/msb.2011.65
+  http://dx.doi.org/10.1038/msb.2011.65             iJO1366 Orth et al
 
+iJR904 Escherichia coliK-12   Reedet al., 2003 http://dx.doi.org/10.1186/gb-2003-4-9-r54
+
+add?
+Archer et al 2011 Escherichia coli W (ATCC 9637) Archer et al., 2011  1471-2164-12-9.pdf
 
 https://www.google.com/search?q=iJO1366+Escherichia+coli+K-12+Henry+et+al.%2C+2006&ie=utf-8&oe=utf-8&aq=t&rls=org.mozilla:en-US:official&client=firefox-a

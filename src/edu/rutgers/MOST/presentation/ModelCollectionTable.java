@@ -120,9 +120,7 @@ class ModelCollectionTable
 		// Set the frame characteristics
 		setTitle(ModelCollectionConstants.TITLE);
 		//setSize( 700, 500 );
-		//setSize( 700, 326 );
-		//setSize( 750, 286 );
-		setSize( 750, 266 );
+		setSize(ModelCollectionConstants.WIDTH, ModelCollectionConstants.HEIGHT);
 		
 		setBackground( Color.gray );
 		
@@ -554,7 +552,7 @@ class ModelCollectionTable
 	
 	public static void main( String args[] )
 	{
-		File f = new File("ModelCollection.csv");
+		File f = new File(ModelCollectionConstants.MODEL_COLLECTION_FILE_NAME);
 		ModelCollectionTable mainFrame	= new ModelCollectionTable(f);
 		mainFrame.setVisible( true );
 	}
