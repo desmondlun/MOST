@@ -970,7 +970,7 @@ public class GraphicalInterface extends JFrame {
 		aboutDialog.setModal(true);
 		aboutDialog.licenseButton.addActionListener(new OpenUrlAction());
 		
-		File f = new File(ModelCollectionConstants.MODEL_COLLECTION_FILE_NAME);
+		File f = new File("ModelCollection.csv");
 		ModelCollectionTable mcTable = new ModelCollectionTable(f);
 		mcTable.setIconImages(icons);
 		mcTable.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
