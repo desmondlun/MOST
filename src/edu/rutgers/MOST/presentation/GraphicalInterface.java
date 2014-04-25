@@ -2205,26 +2205,8 @@ public class GraphicalInterface extends JFrame {
 
 		viewHelpTopics.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
-				java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
-				if( !desktop.isSupported( java.awt.Desktop.Action.BROWSE ) ) {
-					//System.err.println( "Desktop doesn't support the browse action (fatal)" );
-					//System.exit( 1 );
-					JOptionPane.showMessageDialog(null,                
-							"Default Browser Error. Default Browser May Not Be Set On This System.",                
-							"Default Browser Error",                                
-							JOptionPane.ERROR_MESSAGE); 
-				} else {
-					try{ 
-						String url = GraphicalInterfaceConstants.HELP_TOPICS_URL;  
-						java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));  
-					}  
-					catch (java.io.IOException e) {  
-						JOptionPane.showMessageDialog(null,                
-								GraphicalInterfaceConstants.URL_NOT_FOUND_MESSAGE,                
-								GraphicalInterfaceConstants.URL_NOT_FOUND_TITLE,                                
-								JOptionPane.ERROR_MESSAGE);   
-					}
-				}				
+				setUrlString(GraphicalInterfaceConstants.HELP_TOPICS_URL);
+				openURL();				
 			}    	     
 		});
 
@@ -10536,28 +10518,30 @@ public class GraphicalInterface extends JFrame {
 	
 	class OpenUrlAction implements ActionListener {
 		@Override public void actionPerformed(ActionEvent e) {
-			java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
-			if( !desktop.isSupported( java.awt.Desktop.Action.BROWSE ) ) {
-				//System.err.println( "Desktop doesn't support the browse action (fatal)" );
-				//System.exit( 1 );
-				JOptionPane.showMessageDialog(null,                
-						"Default Browser Error. Default Browser May Not Be Set On This System.",                
-						"Default Browser Error",                                
-						JOptionPane.ERROR_MESSAGE); 
-			} else {
-				try{ 
-					//String url = getUrlString();
-					//String url = GraphicalInterfaceConstants.ABOUT_LICENSE_URL;  
-					java.awt.Desktop.getDesktop().browse(java.net.URI.create(getUrlString()));  
-				}  
-				catch (java.io.IOException e1) {  
-					JOptionPane.showMessageDialog(null,                
-							GraphicalInterfaceConstants.URL_NOT_FOUND_MESSAGE,                
-							GraphicalInterfaceConstants.URL_NOT_FOUND_TITLE,                                
-							JOptionPane.ERROR_MESSAGE);   
-				}
-			}			
+			openURL();	
 		}
+	}
+	
+	public void openURL() {
+		java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+		if( !desktop.isSupported( java.awt.Desktop.Action.BROWSE ) ) {
+			//System.err.println( "Desktop doesn't support the browse action (fatal)" );
+			//System.exit( 1 );
+			JOptionPane.showMessageDialog(null,                
+					"Default Browser Error. Default Browser May Not Be Set On This System.",                
+					"Default Browser Error",                                
+					JOptionPane.ERROR_MESSAGE); 
+		} else {
+			try{ 
+				java.awt.Desktop.getDesktop().browse(java.net.URI.create(getUrlString()));  
+			}  
+			catch (java.io.IOException e1) {  
+				JOptionPane.showMessageDialog(null,                
+						GraphicalInterfaceConstants.URL_NOT_FOUND_MESSAGE,                
+						GraphicalInterfaceConstants.URL_NOT_FOUND_TITLE,                                
+						JOptionPane.ERROR_MESSAGE);   
+			}
+		}		
 	}
 	
 	public static void main(String[] args) {
