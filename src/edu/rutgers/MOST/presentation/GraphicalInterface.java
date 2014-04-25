@@ -290,7 +290,7 @@ public class GraphicalInterface extends JFrame {
 	// components
 	/*****************************************************************************/		
 
-	public final AboutDialog aboutDialog = new AboutDialog();
+	private static AboutDialog aboutDialog = new AboutDialog();
 	
 	private static AddMetaboliteRowsDialog addMetaboliteRowsDialog;
 	
@@ -429,7 +429,28 @@ public class GraphicalInterface extends JFrame {
 		return reactionEditor;
 	}	
 
+	private static SuspiciousMetabolitesDialog suspiciousMetabolitesDialog = new SuspiciousMetabolitesDialog();
+
+	public static SuspiciousMetabolitesDialog getSuspiciousMetabolitesDialog() {
+		return suspiciousMetabolitesDialog;
+	}
+
+	public static void setSuspiciousMetabolitesDialog(
+			SuspiciousMetabolitesDialog suspiciousMetabolitesDialog) {
+		GraphicalInterface.suspiciousMetabolitesDialog = suspiciousMetabolitesDialog;
+	}
+
 	private DynamicTreePanel treePanel;
+	
+	private String urlString;
+	
+	public String getUrlString() {
+		return urlString;
+	}
+
+	public void setUrlString(String urlString) {
+		this.urlString = urlString;
+	}
 
 	/*****************************************************************************/
 	// end components
@@ -987,6 +1008,17 @@ public class GraphicalInterface extends JFrame {
 				getModelCollectionTable().dispose();
 			}
 		});	
+		
+		SuspiciousMetabolitesDialog suspiciousMetabolitesDialog = new SuspiciousMetabolitesDialog();
+		suspiciousMetabolitesDialog.setIconImages(icons);
+		suspiciousMetabolitesDialog.setSize(GraphicalInterfaceConstants.SUSPICIOUS_METABOLITES_DIALOG_WIDTH, 
+				GraphicalInterfaceConstants.SUSPICIOUS_METABOLITES_DIALOG_HEIGHT);
+		suspiciousMetabolitesDialog.setResizable(false);
+		suspiciousMetabolitesDialog.setLocationRelativeTo(null);		
+		suspiciousMetabolitesDialog.setVisible(false);	
+		suspiciousMetabolitesDialog.setModal(true);
+		suspiciousMetabolitesDialog.messageButton.addActionListener(new OpenUrlAction());
+		setSuspiciousMetabolitesDialog(suspiciousMetabolitesDialog);
 		
 		setTitle(GraphicalInterfaceConstants.TITLE);
 		LocalConfig.getInstance().setModelName(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME);
@@ -2181,18 +2213,18 @@ public class GraphicalInterface extends JFrame {
 							"Default Browser Error. Default Browser May Not Be Set On This System.",                
 							"Default Browser Error",                                
 							JOptionPane.ERROR_MESSAGE); 
-				}
-
-				try{ 
-					String url = GraphicalInterfaceConstants.HELP_TOPICS_URL;  
-					java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));  
-				}  
-				catch (java.io.IOException e) {  
-					JOptionPane.showMessageDialog(null,                
-							GraphicalInterfaceConstants.HELP_URL_NOT_FOUND_MESSAGE,                
-							GraphicalInterfaceConstants.HELP_URL_NOT_FOUND_TITLE,                                
-							JOptionPane.ERROR_MESSAGE);   
-				}
+				} else {
+					try{ 
+						String url = GraphicalInterfaceConstants.HELP_TOPICS_URL;  
+						java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));  
+					}  
+					catch (java.io.IOException e) {  
+						JOptionPane.showMessageDialog(null,                
+								GraphicalInterfaceConstants.URL_NOT_FOUND_MESSAGE,                
+								GraphicalInterfaceConstants.URL_NOT_FOUND_TITLE,                                
+								JOptionPane.ERROR_MESSAGE);   
+					}
+				}				
 			}    	     
 		});
 
@@ -2202,10 +2234,7 @@ public class GraphicalInterface extends JFrame {
 
 		aboutBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
-//				JOptionPane.showMessageDialog(null,                
-//						GraphicalInterfaceConstants.ABOUT_BOX_TEXT,                
-//						GraphicalInterfaceConstants.ABOUT_BOX_TITLE,                                
-//						JOptionPane.INFORMATION_MESSAGE);
+                setUrlString(GraphicalInterfaceConstants.ABOUT_LICENSE_URL);
 				aboutDialog.setVisible(true);
 			}    	     
 		});
@@ -3064,6 +3093,10 @@ public class GraphicalInterface extends JFrame {
 			setUpMetabolitesTable(reader.getMetabolitesTableModel());
 			LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), reader.getMetabolitesTableModel());
 			setUpTables();
+			if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
+				setUrlString(GraphicalInterfaceConstants.SUSPICIOUS_METABOLITES_URL);
+				getSuspiciousMetabolitesDialog().setVisible(true);
+			}
 		}
 	};
 
@@ -10503,16 +10536,27 @@ public class GraphicalInterface extends JFrame {
 	
 	class OpenUrlAction implements ActionListener {
 		@Override public void actionPerformed(ActionEvent e) {
-			try{ 
-				String url = GraphicalInterfaceConstants.ABOUT_LICENSE_URL;  
-				java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));  
-			}  
-			catch (java.io.IOException e1) {  
+			java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+			if( !desktop.isSupported( java.awt.Desktop.Action.BROWSE ) ) {
+				//System.err.println( "Desktop doesn't support the browse action (fatal)" );
+				//System.exit( 1 );
 				JOptionPane.showMessageDialog(null,                
-						GraphicalInterfaceConstants.HELP_URL_NOT_FOUND_MESSAGE,                
-						GraphicalInterfaceConstants.HELP_URL_NOT_FOUND_TITLE,                                
-						JOptionPane.ERROR_MESSAGE);   
-			}
+						"Default Browser Error. Default Browser May Not Be Set On This System.",                
+						"Default Browser Error",                                
+						JOptionPane.ERROR_MESSAGE); 
+			} else {
+				try{ 
+					//String url = getUrlString();
+					//String url = GraphicalInterfaceConstants.ABOUT_LICENSE_URL;  
+					java.awt.Desktop.getDesktop().browse(java.net.URI.create(getUrlString()));  
+				}  
+				catch (java.io.IOException e1) {  
+					JOptionPane.showMessageDialog(null,                
+							GraphicalInterfaceConstants.URL_NOT_FOUND_MESSAGE,                
+							GraphicalInterfaceConstants.URL_NOT_FOUND_TITLE,                                
+							JOptionPane.ERROR_MESSAGE);   
+				}
+			}			
 		}
 	}
 	

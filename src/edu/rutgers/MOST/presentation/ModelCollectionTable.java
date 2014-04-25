@@ -533,16 +533,16 @@ class ModelCollectionTable
 				catch (java.io.IOException e1) {  
 					setAlwaysOnTop(false);
 					JOptionPane.showMessageDialog(null,                
-							GraphicalInterfaceConstants.HELP_URL_NOT_FOUND_MESSAGE,                
-							GraphicalInterfaceConstants.HELP_URL_NOT_FOUND_TITLE,                                
+							GraphicalInterfaceConstants.URL_NOT_FOUND_MESSAGE,                
+							GraphicalInterfaceConstants.URL_NOT_FOUND_TITLE,                                
 							JOptionPane.ERROR_MESSAGE);
 					setAlwaysOnTop(true);
 				}
 	    	} else {
 	    		setAlwaysOnTop(false);
 				JOptionPane.showMessageDialog(null,                
-						GraphicalInterfaceConstants.HELP_URL_NOT_FOUND_MESSAGE,                
-						GraphicalInterfaceConstants.HELP_URL_NOT_FOUND_TITLE,                                
+						GraphicalInterfaceConstants.URL_NOT_FOUND_MESSAGE,                
+						GraphicalInterfaceConstants.URL_NOT_FOUND_TITLE,                                
 						JOptionPane.ERROR_MESSAGE);
 				setAlwaysOnTop(true);
 	    	}

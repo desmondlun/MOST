@@ -333,8 +333,6 @@ public class GraphicalInterfaceConstants {
     
     // help
     public static final String HELP_TOPICS_URL = "http://most.ccib.rutgers.edu/help.html";
-    public static final String HELP_URL_NOT_FOUND_TITLE = "URL Not Found";
-    public static final String HELP_URL_NOT_FOUND_MESSAGE = "This URL may not exist. Check internet connection.";
     
     // about
     public static final String ABOUT_BOX_TITLE = "About MOST";
@@ -342,6 +340,17 @@ public class GraphicalInterfaceConstants {
     public static final String ABOUT_BOX_VERSION_TEXT = "Version: alpha-6";
     
     public static final String ABOUT_LICENSE_URL = "http://most.ccib.rutgers.edu/help.html#about";
+    
+    public static final String SUSPICIOUS_METABOLITES_TITLE = "Suspicious Metabolites Warning";
+    public static final String SUSPICIOUS_METABOLITES_MESSAGE = "Model contains suspicious metabolites. "
+    		+ "This is usually due to invalid spacing in reaction equations. Click URL below for more information.";
+    public static final String SUSPICIOUS_METABOLITES_LINK = "<HTML><FONT color=\"#000099\"><U>More Information</U></FONT></HTML>";
+    public static final String SUSPICIOUS_METABOLITES_URL = "http://most.ccib.rutgers.edu/Edit_Menu.html#suspicious";
+    public static final int SUSPICIOUS_METABOLITES_DIALOG_WIDTH = 360;
+    public static final int SUSPICIOUS_METABOLITES_DIALOG_HEIGHT = 180;
+    
+    public static final String URL_NOT_FOUND_TITLE = "URL Not Found";
+    public static final String URL_NOT_FOUND_MESSAGE = "URL may not exist. Check internet connection.";
     
     // other
     public static final String[] REVERSIBLE_ARROWS =

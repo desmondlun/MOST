@@ -11,11 +11,10 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-public class AboutDialog  extends JDialog {
+public class AboutDialog extends JDialog {
 
 	/**
 	 * 
@@ -61,21 +60,6 @@ public class AboutDialog  extends JDialog {
 		versionLabelPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
 		hbVersionLabel.add(versionLabelPanel);
-		
-//		class OpenUrlAction implements ActionListener {
-//			@Override public void actionPerformed(ActionEvent e) {
-//				try{ 
-//					String url = GraphicalInterfaceConstants.ABOUT_LICENSE_URL;  
-//					java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));  
-//				}  
-//				catch (java.io.IOException e1) {  
-//					JOptionPane.showMessageDialog(null,                
-//							GraphicalInterfaceConstants.HELP_URL_NOT_FOUND_MESSAGE,                
-//							GraphicalInterfaceConstants.HELP_URL_NOT_FOUND_TITLE,                                
-//							JOptionPane.ERROR_MESSAGE);   
-//				}
-//			}
-//		}
 		
 		// based on http://stackoverflow.com/questions/527719/how-to-add-hyperlink-in-jlabel
 		// making a button into a link
