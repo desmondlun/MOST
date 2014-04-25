@@ -24,6 +24,9 @@ doi:10.1186/1752-0509-3-4        Chlamydomonas reinhardtii Boyle and Morgan, 200
 doi: 10.1073/pnas.0610772104       Homo sapiens Duarte et al., 2007        PNAS-2007-Duarte-1777-82.pdf
 doi:  10.1038/msb4100046        Methanosarcina barkeri Feist et al., 2006         msb4100046.pdf
 
+iCB925    1752-0509-5-130.pdf
+
+iJO1366     535.full.pdf
 
 DOI: 10.1038/msb.2011.65
   http://dx.doi.org/10.1038/msb.2011.65

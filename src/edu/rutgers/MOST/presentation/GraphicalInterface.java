@@ -14,7 +14,6 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeCellRenderer;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.log4j.Logger;
@@ -4809,15 +4808,19 @@ public class GraphicalInterface extends JFrame {
 		if (reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
 		//if (reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REVERSIBLE_COLUMN || reactionsTable.getSelectedColumn() == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
 			formulaBar.setEditable(false);
+			formulaBar.setForeground(GraphicalInterfaceConstants.FORMULA_BAR_NONEDITABLE_COLOR);
 			formulaBar.setBackground(Color.WHITE);
 			formulaBarPasteItem.setEnabled(false);
 			pastebutton.setEnabled(false);
-		}  else {
+		} else {
 			if (isRoot) {
+				formulaBar.setForeground(Color.BLACK);
 				formulaBar.setEditable(true);
 				formulaBarPasteItem.setEnabled(true);
 				pastebutton.setEnabled(true);
-			}					
+			} else {
+				formulaBar.setForeground(GraphicalInterfaceConstants.FORMULA_BAR_NONEDITABLE_COLOR);
+			}
 		}
 	}
 
@@ -4905,6 +4908,18 @@ public class GraphicalInterface extends JFrame {
 	};
 
 	ColorHighlighter participating = new ColorHighlighter(participatingPredicate, Color.GREEN, null);
+	
+	HighlightPredicate nonEditablePredicate = new HighlightPredicate() {
+		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
+			if (adapter.column == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN ||
+					!isRoot) {									
+				return true;
+			}						
+			return false;
+		}
+	};
+
+	ColorHighlighter nonEditable = new ColorHighlighter(nonEditablePredicate, null, GraphicalInterfaceConstants.NONEDITABLE_COLOR);
 
 	public void setReactionsTableLayout() {
 		reactionsTable.getSelectionModel().addListSelectionListener(new ReactionsRowListener());
@@ -4925,7 +4940,8 @@ public class GraphicalInterface extends JFrame {
 
 		reactionsTable.addHighlighter(participating);
 		reactionsTable.addHighlighter(reactionsSelectedArea);
-		reactionsTable.addHighlighter(reactionFindAll);	
+		reactionsTable.addHighlighter(reactionFindAll);
+		reactionsTable.addHighlighter(nonEditable);
 
 		// these columns have names that are too long to fit in cell and need tooltips
 		// also KO has Knockout as tooltip
@@ -5173,11 +5189,13 @@ public class GraphicalInterface extends JFrame {
 	public void enableOrDisableMetabolitesItems() {
 		if (metabolitesTable.getSelectedRow() > -1 && metabolitesTable.getSelectedColumn() > 0) {
 			if (isRoot) {
+				formulaBar.setForeground(Color.BLACK);
 				formulaBar.setEditable(true);
 				formulaBarPasteItem.setEnabled(true);
 				pastebutton.setEnabled(true);
 			} else {
 				formulaBar.setEditable(false);
+				formulaBar.setForeground(GraphicalInterfaceConstants.FORMULA_BAR_NONEDITABLE_COLOR);
 				formulaBar.setBackground(Color.WHITE);
 				formulaBarPasteItem.setEnabled(false);
 				pastebutton.setEnabled(false);
@@ -5282,6 +5300,17 @@ public class GraphicalInterface extends JFrame {
 
 	ColorHighlighter metaboliteFindAll = new ColorHighlighter(metaboliteFindAllPredicate, GraphicalInterfaceConstants.FIND_ALL_COLOR, null);
 
+	HighlightPredicate nonEditableMetabPredicate = new HighlightPredicate() {
+		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
+			if (!isRoot) {									
+				return true;
+			}						
+			return false;
+		}
+	};
+
+	ColorHighlighter nonEditableMetab = new ColorHighlighter(nonEditableMetabPredicate, null, GraphicalInterfaceConstants.NONEDITABLE_COLOR);
+	
 	public void setMetabolitesTableLayout() {
 		metabolitesTable.getSelectionModel().addListSelectionListener(new MetabolitesRowListener());
 		metabolitesTable.getColumnModel().getSelectionModel().
@@ -5296,6 +5325,7 @@ public class GraphicalInterface extends JFrame {
 		metabolitesTable.addHighlighter(suspicious);
 		metabolitesTable.addHighlighter(metabolitesSelectedArea);
 		metabolitesTable.addHighlighter(metaboliteFindAll);
+		metabolitesTable.addHighlighter(nonEditableMetab);
 
 		ColumnHeaderToolTips tips = new ColumnHeaderToolTips();		
 
@@ -6241,9 +6271,9 @@ public class GraphicalInterface extends JFrame {
 											showPasteOutOfRangeError();				
 										} else {
 											if (j < cells.length) {
-												updateReactionsCellIfPasteValid(cells[j], startRow+i, startCol+j);
+												updateReactionsCellIfPasteValid(cells[j], pasteRows.get(q*numberOfClipboardRows() + i), startCol+j);
 											} else {
-												updateReactionsCellIfPasteValid("", startRow+i, startCol+j);
+												updateReactionsCellIfPasteValid("", pasteRows.get(q*numberOfClipboardRows() + i), startCol+j);
 											} 	
 										}								
 									}
@@ -6254,7 +6284,7 @@ public class GraphicalInterface extends JFrame {
 										if (startCol + j > reactionsTable.getColumnCount()) {
 											showPasteOutOfRangeError();			
 										} else {
-											updateReactionsCellIfPasteValid("", startRow+i, startCol+j);
+											updateReactionsCellIfPasteValid("", pasteRows.get(q*numberOfClipboardRows() + i), startCol+j);
 										}									
 									}
 								}									
@@ -6373,6 +6403,7 @@ public class GraphicalInterface extends JFrame {
 				columnIndex == GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN) {
 			if (validator.isNumber(value)) {
 				if (columnIndex == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN && getSelectionMode() != 2) {
+					System.out.println(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN).toString());
 					Double lowerBound = Double.valueOf(value);
 					Double upperBound = Double.valueOf((String) (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));
 					if (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN).toString().compareTo("false") == 0 && lowerBound < 0) {					
@@ -7243,9 +7274,9 @@ public class GraphicalInterface extends JFrame {
 											showPasteOutOfRangeError();				
 										} else {
 											if (j < cells.length) {
-												updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), startCol+j);
+												updateMetabolitesCellIfPasteValid(cells[j], pasteRows.get(q*numberOfClipboardRows() + i), startCol+j);
 											} else {
-												updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
+												updateMetabolitesCellIfPasteValid("", pasteRows.get(q*numberOfClipboardRows() + i), startCol+j);
 											} 
 										}									
 									}
@@ -7256,7 +7287,7 @@ public class GraphicalInterface extends JFrame {
 										if (startCol + j > metabolitesTable.getColumnCount()) {
 											showPasteOutOfRangeError();			
 										} else {
-											updateMetabolitesCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
+											updateMetabolitesCellIfPasteValid("", pasteRows.get(q*numberOfClipboardRows() + i), startCol+j);
 										}									
 									}
 								}									
