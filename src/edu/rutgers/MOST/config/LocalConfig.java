@@ -75,6 +75,16 @@ public class LocalConfig {
 		return progress;
 	}
 	
+    private static ArrayList<String> invalidReactions = new ArrayList<String>();
+	
+	public ArrayList<String> getInvalidReactions() {
+		return invalidReactions;
+	}
+	
+	public void setInvalidReactions(ArrayList<String> invalidReactions) {
+		this.invalidReactions = invalidReactions;
+	}
+	
 	private static File metabolitesCSVFile;
 
 	public void setMetabolitesCSVFile(File metabolitesCSVFile) {

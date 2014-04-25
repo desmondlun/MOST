@@ -241,6 +241,9 @@ public class TextReactionsModelReader {
 						equn = parser.getEquation();
 						updateReactionEquation(reactionEqunAbbr, id, equn, reacRow);
 					} else {
+						if (reactionEqunAbbr != null && reactionEqunAbbr.trim().length() > 0) {
+							LocalConfig.getInstance().getInvalidReactions().add(reactionEqunAbbr);
+						}
 						reacRow.add(reactionEqunAbbr);
 						reacRow.add(reactionEqunAbbr);
 						reacRow.add(GraphicalInterfaceConstants.REVERSIBLE_DEFAULT);

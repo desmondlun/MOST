@@ -1067,6 +1067,8 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().setOptimizationFilesList(optimizationFilesList);
 		Map<String, Object> metabDisplayCollectionMap = new HashMap<String, Object>();
 		LocalConfig.getInstance().setMetabDisplayCollectionMap(metabDisplayCollectionMap);
+		ArrayList<String> invalidReactions = new ArrayList<String>();
+		LocalConfig.getInstance().setInvalidReactions(invalidReactions);
 
 		// meta column lists
 		ArrayList<String> reactionsMetaColumnNames = new ArrayList<String>();
@@ -4524,7 +4526,8 @@ public class GraphicalInterface extends JFrame {
 		gdbbProcessed = false;
 	}
 
-	public void clearConfigLists() {		
+	public void clearConfigLists() {	
+		LocalConfig.getInstance().getInvalidReactions().clear();
 		LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().clear();
 		LocalConfig.getInstance().getMetaboliteIdNameMap().clear();
 		LocalConfig.getInstance().getMetaboliteUsedMap().clear();
@@ -4909,6 +4912,17 @@ public class GraphicalInterface extends JFrame {
 
 	ColorHighlighter participating = new ColorHighlighter(participatingPredicate, Color.GREEN, null);
 	
+	HighlightPredicate invalidReactionPredicate = new HighlightPredicate() {
+		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
+			if (adapter.getValue() != null && LocalConfig.getInstance().getInvalidReactions().contains(adapter.getValue().toString())) {			
+				return true;
+			}					
+			return false;
+		}
+	};
+	
+	ColorHighlighter invalidReaction = new ColorHighlighter(invalidReactionPredicate, Color.RED, null);
+	
 	HighlightPredicate nonEditablePredicate = new HighlightPredicate() {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
 			if (adapter.column == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN ||
@@ -4941,6 +4955,7 @@ public class GraphicalInterface extends JFrame {
 		reactionsTable.addHighlighter(participating);
 		reactionsTable.addHighlighter(reactionsSelectedArea);
 		reactionsTable.addHighlighter(reactionFindAll);
+		reactionsTable.addHighlighter(invalidReaction);
 		reactionsTable.addHighlighter(nonEditable);
 
 		// these columns have names that are too long to fit in cell and need tooltips

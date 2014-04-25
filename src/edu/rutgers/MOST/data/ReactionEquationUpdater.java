@@ -51,17 +51,19 @@ public class ReactionEquationUpdater {
 		ArrayList<String> newReactantsList = new ArrayList<String>();
 		ArrayList<String> newProductsList = new ArrayList<String>();
 		if (oldEquation != null && oldEquation.trim().length() > 0) {
-			parser.reactionList(oldEquation);
-			SBMLReactionEquation oldEqun = parser.getEquation();
-			
-			for (int i = 0; i < oldEqun.getReactants().size(); i++){
-				String reactant = oldEqun.getReactants().get(i).getMetaboliteAbbreviation();
-				oldReactantsList.add(reactant);
-			}
-			for (int i = 0; i < oldEqun.getProducts().size(); i++){
-				String product = oldEqun.getProducts().get(i).getMetaboliteAbbreviation();
-				oldProductsList.add(product);
-			}
+			if (parser.isValid(oldEquation.trim())) {
+				parser.reactionList(oldEquation);
+				SBMLReactionEquation oldEqun = parser.getEquation();
+				
+				for (int i = 0; i < oldEqun.getReactants().size(); i++){
+					String reactant = oldEqun.getReactants().get(i).getMetaboliteAbbreviation();
+					oldReactantsList.add(reactant);
+				}
+				for (int i = 0; i < oldEqun.getProducts().size(); i++){
+					String product = oldEqun.getProducts().get(i).getMetaboliteAbbreviation();
+					oldProductsList.add(product);
+				}
+			}			
 		}
 		if (newEquation != null && newEquation.trim().length() > 0) {
 			parser.reactionList(newEquation);
