@@ -6862,6 +6862,25 @@ public class GraphicalInterface extends JFrame {
 			}
 		});
 		contextMenu.add(unhighlightParticipatingReactionsMenu);
+		
+		contextMenu.addSeparator();
+
+		final JMenuItem ignoreSuspiciousMenu = new JMenuItem("Ignore Suspicious Metabolite");
+		
+		if (LocalConfig.getInstance().getSuspiciousMetabolites().contains(id)) {
+			ignoreSuspiciousMenu.setEnabled(true);
+		} else {
+			ignoreSuspiciousMenu.setEnabled(false);
+		}
+		
+		ignoreSuspiciousMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				LocalConfig.getInstance().getSuspiciousMetabolites().remove(LocalConfig.getInstance().getSuspiciousMetabolites().indexOf(id));
+				maybeDisplaySuspiciousMetabMessage(statusBarRow());
+			}
+		});
+		
+		contextMenu.add(ignoreSuspiciousMenu);
 
 		return contextMenu;
 	}
