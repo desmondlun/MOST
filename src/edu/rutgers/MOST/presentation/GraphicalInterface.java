@@ -3055,30 +3055,29 @@ public class GraphicalInterface extends JFrame {
 	ActionListener okButtonCSVReacLoadActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			getReactionColumnNameInterface().getColumnIndices();
-			getReactionColumnNameInterface().setVisible(false);
-			getReactionColumnNameInterface().dispose();
-
-			DynamicTreePanel.treePanel.clear();
-			listModel.clear();
-			setFileType(GraphicalInterfaceConstants.CSV_FILE_TYPE);
-
+			
 			if (!LocalConfig.getInstance().hasMetabolitesFile) {
 				curSettings.add("LastCSVMetabolites", "none");
 				loadSetUp();
 			}
 			saveDisabled = false;
 			TextReactionsModelReader reader = new TextReactionsModelReader();
-			reader.load(LocalConfig.getInstance().getReactionsCSVFile());	
-			setUpReactionsTable(reader.getReactionsTableModel());
-			LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), reader.getReactionsTableModel());
-			// sets updated model if any metabolites added in reactions load
-			setUpMetabolitesTable(reader.getMetabolitesTableModel());
-			LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), reader.getMetabolitesTableModel());
-			setUpTables();
-			if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
-				setUrlString(GraphicalInterfaceConstants.SUSPICIOUS_METABOLITES_URL);
-				getSuspiciousMetabolitesDialog().setVisible(true);
-			}
+			if (getReactionColumnNameInterface().validColumns) {
+				getReactionColumnNameInterface().setVisible(false);
+				getReactionColumnNameInterface().dispose();
+
+				DynamicTreePanel.treePanel.clear();
+				listModel.clear();
+				setFileType(GraphicalInterfaceConstants.CSV_FILE_TYPE);
+				
+				reader.load(LocalConfig.getInstance().getReactionsCSVFile());	
+				setUpReactionsTable(reader.getReactionsTableModel());
+				LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), reader.getReactionsTableModel());
+				// sets updated model if any metabolites added in reactions load
+				setUpMetabolitesTable(reader.getMetabolitesTableModel());
+				LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), reader.getMetabolitesTableModel());
+				setUpTables();
+			}			
 		}
 	};
 

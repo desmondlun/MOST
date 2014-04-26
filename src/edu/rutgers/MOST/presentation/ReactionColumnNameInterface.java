@@ -46,6 +46,8 @@ public class ReactionColumnNameInterface  extends JDialog {
 	public JButton prevRowButton = new JButton("Previous Row");
 	public JButton nextRowButton = new JButton(" Next Row ");
 	public JLabel rowLabel = new JLabel();
+	
+	public boolean validColumns;
 
 	private static ArrayList<String> columnNamesFromFile;
 
@@ -62,6 +64,8 @@ public class ReactionColumnNameInterface  extends JDialog {
 		prevRowButton.setEnabled(false);
 		LocalConfig.getInstance().setReactionsNextRowCorrection(0);
 		rowLabel.setText("   row " + (LocalConfig.getInstance().getReactionsNextRowCorrection() + 1));
+		
+		validColumns = true;
 		
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
 		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
@@ -957,6 +961,7 @@ public class ReactionColumnNameInterface  extends JDialog {
 					ColumnInterfaceConstants.BLANK_REACTION_FIELDS_ERROR_MESSAGE,
 					ColumnInterfaceConstants.BLANK_REACTION_FIELDS_ERROR_TITLE,                                
 					JOptionPane.ERROR_MESSAGE);
+			validColumns = false;
 		} else if (cbReactionAbbreviation.getSelectedItem().toString().toLowerCase().equals(GraphicalInterfaceConstants.METAB_ABBREVIATION_NOT_FILTER[0]) ||
 				cbReactionAbbreviation.getSelectedItem().toString().toLowerCase().equals(GraphicalInterfaceConstants.METAB_ABBREVIATION_NOT_FILTER[1]) ||
 				cbReactionAbbreviation.getSelectedItem().toString().toLowerCase().equals(GraphicalInterfaceConstants.METAB_ABBREVIATION_NOT_FILTER[2])) {
@@ -964,7 +969,9 @@ public class ReactionColumnNameInterface  extends JDialog {
 					"Invalid name for Reaction Abbreviation column.",
 					"Column Name Error",                                
 					JOptionPane.ERROR_MESSAGE);
+			validColumns = false;
 		} else {
+			validColumns = true;
 			ArrayList<String> metaColumnNames = new ArrayList<String>();
 			ArrayList<Integer> usedIndices = new ArrayList<Integer>();
 			ArrayList<Integer> metaColumnIndexList = new ArrayList<Integer>();

@@ -181,9 +181,15 @@ public class TextMetabolitesModelReader {
 					
 					metabRow.add(dataArray[LocalConfig.getInstance().getMetaboliteNameColumnIndex()]);
 					metaboliteIdNameMap.put(new Integer(id), dataArray[LocalConfig.getInstance().getMetaboliteNameColumnIndex()]);
-					//metaboliteName = dataArray[LocalConfig.getInstance().getMetaboliteNameColumnIndex()];
-					//chargeString = dataArray[LocalConfig.getInstance().getChargeColumnIndex()];	
-					metabRow.add(dataArray[LocalConfig.getInstance().getChargeColumnIndex()]);	
+					
+					// This code is necessary so that if charge column is not in model
+					// no error is thrown, just a column of all blank values
+					if (LocalConfig.getInstance().getChargeColumnIndex() > -1) {
+						metabRow.add(dataArray[LocalConfig.getInstance().getChargeColumnIndex()]);
+					} else {
+						metabRow.add("");
+					}	
+					
 					if (LocalConfig.getInstance().getCompartmentColumnIndex() > -1) {
 						compartment = dataArray[LocalConfig.getInstance().getCompartmentColumnIndex()];	
 					}

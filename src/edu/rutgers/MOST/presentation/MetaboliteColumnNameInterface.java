@@ -38,9 +38,9 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 	public JButton nextRowButton = new JButton(" Next Row ");
 	public JLabel rowLabel = new JLabel();
 	
-	private static ArrayList<String> columnNamesFromFile;
-	
 	public boolean validColumns;
+	
+	private static ArrayList<String> columnNamesFromFile;
 
 	public static ArrayList<String> getColumnNamesFromFile() {
 		return columnNamesFromFile;
