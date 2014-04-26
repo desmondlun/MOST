@@ -3077,6 +3077,10 @@ public class GraphicalInterface extends JFrame {
 				setUpMetabolitesTable(reader.getMetabolitesTableModel());
 				LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), reader.getMetabolitesTableModel());
 				setUpTables();
+				if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
+					setUrlString(GraphicalInterfaceConstants.SUSPICIOUS_METABOLITES_URL);
+					getSuspiciousMetabolitesDialog().setVisible(true);
+				}
 			}			
 		}
 	};
