@@ -151,53 +151,46 @@ public class GurobiSolver extends Solver
 			case GRB.Error.INTERNAL:
 				errMsg = "Gurobi has encountered an internal error!";
 				break;
-				default:
-					errMsg = "Gurobi encountered an error optimizing the model";
+			default:
+				errMsg = "Gurobi encountered an error optimizing the model";
 			}
 			LocalConfig.getInstance().hasValidGurobiKey = false;
 			if( GraphicalInterface.getGdbbDialog() != null )
 				GraphicalInterface.getGdbbDialog().setVisible( false );
 
 			Object[] options = { "    OK    " };
-			JOptionPane
-					.showOptionDialog(
-							null,
-							"Error: " + errMsg,
-							GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE,
-							JOptionPane.YES_NO_OPTION,
-							JOptionPane.QUESTION_MESSAGE, null, options,
-							options[0] );
+			JOptionPane.showOptionDialog( null, "Error: " + errMsg,
+					GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE,
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+					null, options, options[0] );
 			LocalConfig.getInstance().getOptimizationFilesList().clear();
 			e.printStackTrace();
 		}
-		catch( UnsatisfiedLinkError except )
+		catch ( UnsatisfiedLinkError except )
 		{
 			String msg1 = "Java could not link to the Gurobi dependencies";
 			String msg2 = "Please check if your Gurobi environment variables match the location of Gurobi dependencies";
-			String msg3 = "Please also make sure the bit-version of Gurobi matches the bit-version of your JVM";
-			String msg4 = "The current JVM specs are: " + System.getProperty("java.runtime.version");
+			String msg3 = "Your " + System.getProperty( "sun.arch.data.model" )
+					+ " bit JVM is trying to launch "
+					+ System.getProperty( "sun.arch.data.model" )
+					+ " bit Gurobi";
+			String msg4 = "The current JVM specs are: "
+					+ System.getProperty( "java.runtime.version" );
 			Object[] options = { "    OK    " };
-			JOptionPane
-					.showOptionDialog(
-							null,
-							msg1 + "\n" + msg2 + "\n" + msg3 + "\n" + msg4,
-							GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE,
-							JOptionPane.YES_NO_OPTION,
-							JOptionPane.QUESTION_MESSAGE, null, options,
-							options[0] );
+			JOptionPane.showOptionDialog( null, msg1 + "\n" + msg2 + "\n"
+					+ msg3 + "\n" + msg4,
+					GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE,
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+					null, options, options[0] );
 			except.printStackTrace();
 		}
-		catch( Exception except )
+		catch ( Exception except )
 		{
 			Object[] options = { "    OK    " };
-			JOptionPane
-					.showOptionDialog(
-							null,
-							except.getMessage(),
-							GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE,
-							JOptionPane.YES_NO_OPTION,
-							JOptionPane.QUESTION_MESSAGE, null, options,
-							options[0] );
+			JOptionPane.showOptionDialog( null, except.getMessage(),
+					GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE,
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+					null, options, options[0] );
 			except.printStackTrace();
 		}
 
