@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
-
 import edu.rutgers.MOST.data.*;
 import edu.rutgers.MOST.optimization.solvers.*;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
@@ -18,8 +16,6 @@ import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 import org.apache.commons.lang3.time.StopWatch;
 
 public class GDBB extends Thread {
-
-	static Logger log = Logger.getLogger(GDBB.class);
 
 	private GDBBModel model;
 	private static Solver solver;
@@ -451,15 +447,10 @@ public class GDBB extends Thread {
 
 //  public ArrayList<Double> run() {
 	public void run() {
-		log.debug("setEnv");
 		this.setEnv(model.getTimeLimit(), model.getThreadNum());
-		log.debug("Set Vars");
 		this.setVars();
-		log.debug("setConstraints");
 		this.setConstraints();
-		log.debug("setSyntheticObjective");
 		this.setSyntheticObjective();
-		log.debug("optimize");
 		this.maxObj = GDBB.getSolver().optimize();
 		solution = GDBB.getSolver().getSoln();
 	}
