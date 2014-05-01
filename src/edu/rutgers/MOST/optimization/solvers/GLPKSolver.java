@@ -1,11 +1,6 @@
 package edu.rutgers.MOST.optimization.solvers;
 
-import java.awt.HeadlessException;
 import java.lang.reflect.Field;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.FileSystems;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -125,58 +120,36 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 
 	public GLPKSolver()
 	{
-		String dependsFolder = "";
+		String dependsFolder = "etc/lib/";
 		Object[] options = { "    OK    " };
 		if( System.getProperty( "os.name" ).toLowerCase().contains( "windows" ) )
 		{
-			dependsFolder = "etc/lib/win"
+			dependsFolder += "win"
 					+ System.getProperty( "sun.arch.data.model" );
-			try
-			{
-				addLibraryPath( dependsFolder );
-				@SuppressWarnings( "unused" )
-				int x = GLPKConstants.GLP_JAVA_A_X;
-			}
-			catch ( UnsatisfiedLinkError | Exception  except )
-			{
-				JOptionPane
-						.showOptionDialog(
-								null,
-								"The dynamic link library for GLPK 4.53 for Java could not be "
-										+ "loaded from "
-										+ Paths.get( dependsFolder )
-												.toAbsolutePath().toString(),
-								GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE,
-								JOptionPane.YES_NO_OPTION,
-								JOptionPane.QUESTION_MESSAGE, null, options,
-								options[0] );
-
-				except.printStackTrace();
-			}
 		}
 		else
+			dependsFolder += "unix";
+		
+		try
 		{
-			// try to load Linux / OS X library
-			try
-			{
-				@SuppressWarnings( "unused" )
-				int x = GLPKConstants.GLP_JAVA_A_X;
-			}
-			catch ( UnsatisfiedLinkError | Exception except )
-			{
-				JOptionPane
-				.showOptionDialog(
-						null,
-						"Please install GLPK 4.53",
-						GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE,
-						JOptionPane.YES_NO_OPTION,
-						JOptionPane.QUESTION_MESSAGE, null, options,
-						options[0] );
-
-		except.printStackTrace();
-
+			addLibraryPath( dependsFolder );
+			@SuppressWarnings( "unused" )
+			int x = GLPKConstants.GLP_JAVA_A_X;
+		}
+		catch ( UnsatisfiedLinkError | Exception  except )
+		{
+			JOptionPane
+					.showOptionDialog(
+							null,
+							"The dynamic link library for GLPK 4.53 for Java could not be "
+									+ "loaded from "
+									+ Paths.get( dependsFolder )
+											.toAbsolutePath().toString(),
+							GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE,
+							JOptionPane.YES_NO_OPTION,
+							JOptionPane.QUESTION_MESSAGE, null, options,
+							options[0] );
 				except.printStackTrace();
-			}
 		}
 	}
 	@Override
