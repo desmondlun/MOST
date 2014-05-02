@@ -426,6 +426,7 @@ public class GraphicalInterfaceConstants {
     public static final String GUROBI_MINIMUM_VERSION = "5xx";
     public static final String GUROBI_NOT_INSTALLED_SUFFIX =  " or better if you would like to use Gurobi.";
     public static final String GUROBI_INSTALLED_MESSAGE = "Gurobi has been installed on this computer and is available for selection as a solver";
+    public static final String SOLVER_OPTIONS_MENU_ITEM = "Set Up Solver";
     
     // Gurobi 
     public static final String GUROBI_JAR_PATH_INTERFACE_TITLE = "Gurobi Jar Path Locator";

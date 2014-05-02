@@ -37,16 +37,6 @@ public class SolverSetUpDialog  extends JDialog {
 	public static JButton cancelButton = new JButton("  Cancel  ");
 	public static JLabel gurobiLabel = new JLabel();
 	
-	private String gurobiLabelText;
-
-	public String getGurobiLabelText() {
-		return gurobiLabelText;
-	}
-
-	public void setGurobiLabelText(String gurobiLabelText) {
-		this.gurobiLabelText = gurobiLabelText;
-	}
-	
 	public SolverSetUpDialog() {
 
 		setTitle(GraphicalInterfaceConstants.SOLVER_DIALOG_TITLE);		
@@ -109,7 +99,8 @@ public class SolverSetUpDialog  extends JDialog {
 		hbGurobiLabel.add(labelPanel);
 		
 		gurobiLabel.setMinimumSize(new Dimension(200, 15));
-		gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_PREFIX + GraphicalInterfaceConstants.GUROBI_MINIMUM_VERSION + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_SUFFIX + "</HTML>");
+		//gurobiLabel.setText(getGurobiLabelText());
+		//gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_PREFIX + GraphicalInterfaceConstants.GUROBI_MINIMUM_VERSION + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_SUFFIX + "</HTML>");
 		//gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_INSTALLED_MESSAGE + "</HTML>");
 		
 		okButton.setMnemonic(KeyEvent.VK_O);
@@ -152,7 +143,7 @@ public class SolverSetUpDialog  extends JDialog {
 		
 		ActionListener cancelButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
-				
+				setVisible(false);
 			}
 		}; 
 		
