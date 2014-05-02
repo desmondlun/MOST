@@ -405,7 +405,17 @@ public class GraphicalInterface extends JFrame {
 
 	public static ReactionEditor getReactionEditor() {
 		return reactionEditor;
-	}	
+	}
+	
+	public static String solverName;
+
+	public static String getSolverName() {
+		return solverName;
+	}
+
+	public static void setSolverName(String solverName) {
+		GraphicalInterface.solverName = solverName;
+	}
 
 	private static SuspiciousMetabolitesDialog suspiciousMetabolitesDialog = new SuspiciousMetabolitesDialog();
 
@@ -856,6 +866,8 @@ public class GraphicalInterface extends JFrame {
 		gi = this;
 
 		isRoot = true;
+		
+		setSolverName(GraphicalInterfaceConstants.DEFAULT_SOLVER_NAME);
 
 		// Tree Panel
 		treePanel = new DynamicTreePanel(new DynamicTree() {
@@ -9845,6 +9857,8 @@ public class GraphicalInterface extends JFrame {
 			deleteUnusedItem.setEnabled(true);
 		}
 		maybeDisplaySuspiciousMetabMessage(statusBarRow());	
+		fbaItem.setEnabled(true);
+		gdbbItem.setEnabled(true);
 		addReacRowItem.setEnabled(true);
 		addReacRowsItem.setEnabled(true);
 		addMetabRowItem.setEnabled(true);
@@ -10380,9 +10394,11 @@ public class GraphicalInterface extends JFrame {
 	static ActionListener solvOKActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			if (getSolverSetUpDialog().glpkRadioButton.isSelected()) {
-				//System.out.println("GLPK");			
+				//System.out.println("GLPK");		
+				setSolverName("GLPK");
 			} else if (getSolverSetUpDialog().gurobiRadioButton.isSelected()) {
 				//System.out.println("Gurobi");
+				setSolverName("Gurobi");
 			}
 			getSolverSetUpDialog().setVisible(false);
 		}

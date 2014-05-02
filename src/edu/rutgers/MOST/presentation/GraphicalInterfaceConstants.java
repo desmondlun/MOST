@@ -428,6 +428,11 @@ public class GraphicalInterfaceConstants {
     public static final String GUROBI_INSTALLED_MESSAGE = "Gurobi has been installed on this computer and is available for selection as a solver";
     public static final String SOLVER_OPTIONS_MENU_ITEM = "Set Up Solver";
     
+    // use GLPK as default solver since it is free and always available
+    public static final String DEFAULT_SOLVER_NAME = "GLPK";
+    public static final String GLPK_SOLVER_NAME = "GLPK";
+    public static final String GUROBI_SOLVER_NAME = "Gurobi";
+    
     // Gurobi 
     public static final String GUROBI_KEY_ERROR_TITLE = "Gurobi Key Error";
     public static final String GUROBI_KEY_ERROR = "Gurobi Key Error";
