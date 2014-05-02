@@ -31,9 +31,9 @@ public class ModelCollectionConstants {
 	
 	public static final int DEFAULT_WIDTH = 70; //columns with no assigned width use default
 	public static final int MODEL_VERSION_COLUMN = visibleColumnsList.indexOf("Model Version");
-	public static final int MODEL_VERSION_WIDTH = 100; 
+	public static final int MODEL_VERSION_WIDTH = 200; 
 	public static final int ORGANISM_NAME_COLUMN = visibleColumnsList.indexOf("Organism Name");
-	public static final int ORGANISM_NAME_WIDTH = 200; 
+	public static final int ORGANISM_NAME_WIDTH = 250; 
 	public static final int GENES_COLUMN = visibleColumnsList.indexOf("Genes");
 	public static final int REACTIONS_COLUMN = visibleColumnsList.indexOf("Reactions");
 	public static final int METABOLITES_COLUMN = visibleColumnsList.indexOf("Metabolites");

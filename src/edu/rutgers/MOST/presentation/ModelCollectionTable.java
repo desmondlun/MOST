@@ -227,6 +227,10 @@ class ModelCollectionTable
 		bottomPanel.add(bottomRightPanel, BorderLayout.EAST);
 		topPanel.add( bottomPanel, BorderLayout.SOUTH );
 		
+		//from http://www.java2s.com/Tutorial/Java/0240__Swing/thelastcolumnismovedtothefirstposition.htm
+		// columns cannot be rearranged by dragging
+		table.getTableHeader().setReorderingAllowed(false); 
+		
 		int r = table.getModel().getColumnCount();	
 		for (int i = 0; i < r; i++) {
 			//set background of id column to grey
