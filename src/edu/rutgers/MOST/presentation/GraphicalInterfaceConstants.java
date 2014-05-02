@@ -423,22 +423,12 @@ public class GraphicalInterfaceConstants {
     public static final String GLPK_SOLVER_BUTTON_LABEL = "GLPK";
     public static final String GUROBI_SOLVER_BUTTON_LABEL = "Gurobi";
     public static final String GUROBI_NOT_INSTALLED_PREFIX = "No Gurobi installation detected. Please install Gurobi version ";
-    public static final String GUROBI_MINIMUM_VERSION = "5xx";
+    public static final String GUROBI_MINIMUM_VERSION = "562";
     public static final String GUROBI_NOT_INSTALLED_SUFFIX =  " or better if you would like to use Gurobi.";
     public static final String GUROBI_INSTALLED_MESSAGE = "Gurobi has been installed on this computer and is available for selection as a solver";
     public static final String SOLVER_OPTIONS_MENU_ITEM = "Set Up Solver";
     
     // Gurobi 
-    public static final String GUROBI_JAR_PATH_INTERFACE_TITLE = "Gurobi Jar Path Locator";
-    public static final String GUROBI_JAR_PATH_NOT_FOUND_LABEL = "Gurobi Jar Path Not Found. Click Load Gurobi Jar Path to Browse For Path";
-    public static final String GUROBI_JAR_PATH_FOUND_LABEL = "Gurobi Jar Path Found. Click 'OK' if Correct or Click 'Load Gurobi Jar Path' if Not Correct.";
-    public static final String GUROBI_JAR_PATH_BUTTON = "Load Gurobi Jar Path";
-    public static final String NO_GUROBI_JAR_PATH_ERROR = "There is no Gurobi Jar path set.\n FBA and GDBB will not function";
-    public static final String NO_GUROBI_JAR_PATH_ERROR_TITLE = "No Gurobi Jar Path";
-    public static final String GUROBI_JAR_PATH_FILE_CHOOSER_TITLE = "Browse For Gurobi Jar Path";
-    public static final String GUROBI_JAR_PATH_OPTIONS_MENU_ITEM = "Set Gurobi Jar Path";
-    public static final String GUROBI_JAR_PATH_DEFAULT = "Browse for Gurobi Path";
-    
     public static final String GUROBI_KEY_ERROR_TITLE = "Gurobi Key Error";
     public static final String GUROBI_KEY_ERROR = "Gurobi Key Error";
         

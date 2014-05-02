@@ -2176,13 +2176,22 @@ public class GraphicalInterface extends JFrame {
 			public void actionPerformed(ActionEvent a) {
 				String gurobiPath = findGurobiPath();
 				if (gurobiPath != null && gurobiPath.contains("gurobi")) {
-					getSolverSetUpDialog().gurobiRadioButton.setEnabled(true);
-					getSolverSetUpDialog().gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_INSTALLED_MESSAGE + "</HTML>");
+					// 6 is length of "gurobi"
+					int startIndex = gurobiPath.lastIndexOf("gurobi") + 6;
+					String version = gurobiPath.substring(startIndex, gurobiPath.lastIndexOf("\\"));
+					//System.out.println(version);
+					int versionNum = Integer.valueOf(version);
+					int minVersion = Integer.valueOf(GraphicalInterfaceConstants.GUROBI_MINIMUM_VERSION);
+					if (versionNum >= minVersion) {
+						// Gurobi OK
+						enableGurobiItems();
+					} else {
+						// Gurobi version not sufficient
+						disableGurobiItems();
+					}
 				} else {
-					getSolverSetUpDialog().gurobiRadioButton.setEnabled(false);
-					// this ensures that if Gurobi is not installed, GLPK button will be selected
-					getSolverSetUpDialog().gurobiRadioButton.setSelected(true);
-					getSolverSetUpDialog().gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_PREFIX + GraphicalInterfaceConstants.GUROBI_MINIMUM_VERSION + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_SUFFIX + "</HTML>");
+					// Gurobi not installed
+					disableGurobiItems();
 				}
 				getSolverSetUpDialog().setVisible(true);
 			}    	     
@@ -10351,7 +10360,7 @@ public class GraphicalInterface extends JFrame {
 		String gurobiPath = "";
 
 		String variable = System.getenv("GUROBI_HOME");  
-		if (variable != null) {
+		if (variable != null && variable.contains("gurobi")) {
 			if (System.getProperty("os.name").equals("Linux")) {
 				// path behavior not consistent, 32 bit Gurobi environmental variable
 				// returns full path, 64 bit only relative path
@@ -10371,13 +10380,25 @@ public class GraphicalInterface extends JFrame {
 	static ActionListener solvOKActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			if (getSolverSetUpDialog().glpkRadioButton.isSelected()) {
-				System.out.println("GLPK");			
+				//System.out.println("GLPK");			
 			} else if (getSolverSetUpDialog().gurobiRadioButton.isSelected()) {
-				System.out.println("Gurobi");
+				//System.out.println("Gurobi");
 			}
 			getSolverSetUpDialog().setVisible(false);
 		}
 	};
+	
+	public void enableGurobiItems() {
+		getSolverSetUpDialog().gurobiRadioButton.setEnabled(true);
+		getSolverSetUpDialog().gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_INSTALLED_MESSAGE + "</HTML>");
+	}
+	
+	public void disableGurobiItems() {
+		getSolverSetUpDialog().gurobiRadioButton.setEnabled(false);
+		// this ensures that if Gurobi is not installed, GLPK button will be selected
+		getSolverSetUpDialog().glpkRadioButton.setSelected(true);
+		getSolverSetUpDialog().gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_PREFIX + GraphicalInterfaceConstants.GUROBI_MINIMUM_VERSION + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_SUFFIX + "</HTML>");
+	}
 	
 	/******************************************************************************/
 	// end Solver Set Up methods
