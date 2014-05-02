@@ -1365,6 +1365,7 @@ public class GraphicalInterface extends JFrame {
 						}
 						outputText.append("Maximum objective: "	+ maxObj + "\n");
 						//outputText.append("Maximum objective: "	+ fba.getMaxObj() + "\n");
+						outputText.append("Solver = " + getSolverName());
 						
 						File file = new File(u.createLogFileName(optimizeName + ".log"));
 						writer = new BufferedWriter(new FileWriter(file));
@@ -6451,7 +6452,7 @@ public class GraphicalInterface extends JFrame {
 				columnIndex == GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN) {
 			if (validator.isNumber(value)) {
 				if (columnIndex == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN && getSelectionMode() != 2) {
-					System.out.println(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN).toString());
+					//System.out.println(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN).toString());
 					Double lowerBound = Double.valueOf(value);
 					Double upperBound = Double.valueOf((String) (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));
 					if (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN).toString().compareTo("false") == 0 && lowerBound < 0) {					
@@ -10099,7 +10100,8 @@ public class GraphicalInterface extends JFrame {
 								text.append("Knockouts:");
 								if (kString != null) {
 									text.append(kString);
-								}	
+								}
+								text.append("\nSolver = " + getSolverName());
 
 								Utilities u = new Utilities();
 								File file = new File(u.createLogFileName(solution.getSolutionName() + ".log"));
