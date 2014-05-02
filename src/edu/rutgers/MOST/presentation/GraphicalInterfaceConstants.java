@@ -415,6 +415,18 @@ public class GraphicalInterfaceConstants {
     public static final String EDIT_OPT_TABLE_ERROR = "Results Tables Are Not Editable";
     public static final String EDIT_OPT_TABLE_ERROR_TITLE = "Read-Only Table";
     
+    // Solver and Gurobi set up
+    public static final int SOLVER_DIALOG_WIDTH = 400;
+    public static final int SOLVER_DIALOG_HEIGHT = 165;
+    public static final String SOLVER_DIALOG_TITLE = "Set Up Solver";
+    public static final String SOLVER_SELECTION_LABEL = "Select a Solver:";
+    public static final String GLPK_SOLVER_BUTTON_LABEL = "GLPK";
+    public static final String GUROBI_SOLVER_BUTTON_LABEL = "Gurobi";
+    public static final String GUROBI_NOT_INSTALLED_PREFIX = "No Gurobi installation detected. Please install Gurobi version ";
+    public static final String GUROBI_MINIMUM_VERSION = "5xx";
+    public static final String GUROBI_NOT_INSTALLED_SUFFIX =  " or better if you would like to use Gurobi.";
+    public static final String GUROBI_INSTALLED_MESSAGE = "Gurobi has been installed on this computer and is available for selection as a solver";
+    
     // Gurobi 
     public static final String GUROBI_JAR_PATH_INTERFACE_TITLE = "Gurobi Jar Path Locator";
     public static final String GUROBI_JAR_PATH_NOT_FOUND_LABEL = "Gurobi Jar Path Not Found. Click Load Gurobi Jar Path to Browse For Path";

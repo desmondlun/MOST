@@ -10601,7 +10601,7 @@ public class GraphicalInterface extends JFrame {
 //	            System.out.format("%s=%s%n", envName, env.get(envName));
 //	        }
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
 			dialog.setErrorMessage(errors.toString());

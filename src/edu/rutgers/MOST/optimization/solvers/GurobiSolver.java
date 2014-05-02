@@ -164,6 +164,8 @@ public class GurobiSolver extends Solver
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
 					null, options, options[0] );
 			LocalConfig.getInstance().getOptimizationFilesList().clear();
+			// Do we really want to ever print stack trace? Need dialog to display this
+			// printout as a message if one of the above conditions are not met.
 			e.printStackTrace();
 		}
 		catch ( UnsatisfiedLinkError except )
@@ -182,6 +184,8 @@ public class GurobiSolver extends Solver
 					GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE,
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
 					null, options, options[0] );
+			// Do we really want to ever print stack trace? Need dialog to display this
+			// printout as a message if one of the above conditions are not met.
 			except.printStackTrace();
 		}
 		catch ( Exception except )
