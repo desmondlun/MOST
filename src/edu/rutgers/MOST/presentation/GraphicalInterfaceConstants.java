@@ -279,7 +279,7 @@ public class GraphicalInterfaceConstants {
     
     // invalid reactions
     public static final String INVALID_REACTIONS_ENTRY_ERROR_TITLE = "Invalid Reaction";
-    public static final String INVALID_REACTIONS_ENTRY_ERROR_MESSAGE = "Invalid Reaction Format"; 
+    public static final String INVALID_REACTIONS_ENTRY_ERROR_MESSAGE = "Invalid Reaction Format. This is probably a result of incorrect spacing.\nFor example, a -> b is valid, a->b is not valid."; 
     public static final String EQUATION_NAMES_ERROR_TITLE = "Equation Not Editable";
     public static final String EQUATION_NAMES_ERROR_MESSAGE = "Reaction equation with names is not editable";
     

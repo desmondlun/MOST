@@ -3724,7 +3724,8 @@ public class GraphicalInterface extends JFrame {
 							GraphicalInterfaceConstants.INVALID_REACTIONS_ENTRY_ERROR_TITLE,                               
 							JOptionPane.ERROR_MESSAGE);
 					setFindReplaceAlwaysOnTop(true);
-					reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
+					LocalConfig.getInstance().getInvalidReactions().add(newValue);
+					reactionsTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 					reactionUpdateValid = false;
 				} else {
 					updateReactionEquation(rowIndex, id, oldValue, newValue);
@@ -5269,7 +5270,7 @@ public class GraphicalInterface extends JFrame {
 		}
 	};
 
-	ColorHighlighter suspicious = new ColorHighlighter(suspiciousPredicate, Color.RED, null);
+	ColorHighlighter suspicious = new ColorHighlighter(suspiciousPredicate, Color.ORANGE, null);
 
 	HighlightPredicate unusedPredicate = new HighlightPredicate() {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
