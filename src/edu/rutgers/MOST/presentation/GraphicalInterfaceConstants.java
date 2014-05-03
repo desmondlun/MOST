@@ -422,9 +422,9 @@ public class GraphicalInterfaceConstants {
     public static final String SOLVER_SELECTION_LABEL = "Select a Solver:";
     public static final String GLPK_SOLVER_BUTTON_LABEL = "GLPK";
     public static final String GUROBI_SOLVER_BUTTON_LABEL = "Gurobi";
-    public static final String GUROBI_NOT_INSTALLED_PREFIX = "No Gurobi installation detected. Please install Gurobi version ";
-    public static final String GUROBI_MINIMUM_VERSION = "562";
-    public static final String GUROBI_NOT_INSTALLED_SUFFIX =  " or better if you would like to use Gurobi.";
+    public static final String GUROBI_NOT_INSTALLED_PREFIX = "No Gurobi installation detected. Please install Gurobi ";
+    public static final String GUROBI_MINIMUM_VERSION = "5.6.2 ";
+    public static final String GUROBI_NOT_INSTALLED_SUFFIX =  " bit version if you would like to use Gurobi.";
     public static final String GUROBI_INSTALLED_MESSAGE = "Gurobi has been installed on this computer and is available for selection as a solver";
     public static final String SOLVER_OPTIONS_MENU_ITEM = "Set Up Solver";
     

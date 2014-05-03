@@ -49,6 +49,7 @@ import edu.rutgers.MOST.data.UndoConstants;
 import edu.rutgers.MOST.logic.ReactionParser;
 import edu.rutgers.MOST.optimization.FBA.FBA;
 import edu.rutgers.MOST.optimization.GDBB.GDBB;
+import edu.rutgers.MOST.optimization.solvers.GurobiSolver;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -2194,19 +2195,12 @@ public class GraphicalInterface extends JFrame {
 		setUpSolver.setMnemonic(KeyEvent.VK_S);
 		setUpSolver.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
-				String gurobiPath = findGurobiPath();
-				if (gurobiPath != null && gurobiPath.contains("gurobi")) {
-					// 6 is length of "gurobi"
-					int startIndex = gurobiPath.lastIndexOf("gurobi") + 6;
-					String version = gurobiPath.substring(startIndex, gurobiPath.lastIndexOf("\\"));
-					//System.out.println(version);
-					int versionNum = Integer.valueOf(version);
-					int minVersion = Integer.valueOf(GraphicalInterfaceConstants.GUROBI_MINIMUM_VERSION);
-					if (versionNum >= minVersion) {
-						// Gurobi OK
+				String variable = System.getenv("GUROBI_HOME");  
+				if (variable != null) {
+					GurobiSolver solver = new GurobiSolver();
+					if (solver.isGurobiLinked()) {
 						enableGurobiItems();
 					} else {
-						// Gurobi version not sufficient
 						disableGurobiItems();
 					}
 				} else {
@@ -10424,7 +10418,7 @@ public class GraphicalInterface extends JFrame {
 		getSolverSetUpDialog().gurobiRadioButton.setEnabled(false);
 		// this ensures that if Gurobi is not installed, GLPK button will be selected
 		getSolverSetUpDialog().glpkRadioButton.setSelected(true);
-		getSolverSetUpDialog().gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_PREFIX + GraphicalInterfaceConstants.GUROBI_MINIMUM_VERSION + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_SUFFIX + "</HTML>");
+		getSolverSetUpDialog().gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_PREFIX + GraphicalInterfaceConstants.GUROBI_MINIMUM_VERSION + System.getProperty("sun.arch.data.model") + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_SUFFIX + "</HTML>");
 	}
 	
 	/******************************************************************************/

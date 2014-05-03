@@ -35,7 +35,7 @@ public class GurobiSolver extends Solver
 	private SolverKind solverKind = SolverKind.FBASolver; // default may change
 															// in Callback (constructor)
 
-	static boolean isGurobiLinked()
+	public static boolean isGurobiLinked()
 	{
 		try
 		{
