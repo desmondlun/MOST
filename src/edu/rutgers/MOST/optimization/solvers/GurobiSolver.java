@@ -35,6 +35,26 @@ public class GurobiSolver extends Solver
 	private SolverKind solverKind = SolverKind.FBASolver; // default may change
 															// in Callback (constructor)
 
+	static boolean isGurobiLinked()
+	{
+		try
+		{
+			try
+			{
+				GRBEnv env = new GRBEnv();
+				env.dispose();
+			}
+			catch( GRBException e ) //necessary due to throws declaration
+			{
+			}
+		}
+		catch( UnsatisfiedLinkError except )
+		{
+			return false; //gurobi does not link
+		}
+		
+		return true; //gurobi does link
+	}
 	private void promptGRBError( GRBException e )
 	{
 		abort();
@@ -123,6 +143,24 @@ public class GurobiSolver extends Solver
 
 	public GurobiSolver()
 	{
+		if( !isGurobiLinked() )
+		{
+			String msg1 = "Java could not link to the Gurobi dependencies";
+			String msg2 = "Please check if your Gurobi environment variables match the location of Gurobi dependencies";
+			String msg3 = "Your " + System.getProperty( "sun.arch.data.model" )
+					+ " bit JVM is trying to launch "
+					+ System.getProperty( "sun.arch.data.model" )
+					+ " bit Gurobi";
+			String msg4 = "The current JVM specs are: "
+					+ System.getProperty( "java.runtime.version" );
+			Object[] options = { "    OK    " };
+			JOptionPane.showOptionDialog( null, msg1 + "\n" + msg2 + "\n"
+					+ msg3 + "\n" + msg4,
+					"Linking Error",
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+					null, options, options[0] );
+			return;
+		}
 		try
 		{
 			// set up environment and the model/problem objects
@@ -169,23 +207,6 @@ public class GurobiSolver extends Solver
 		catch ( GRBException e )
 		{
 			promptGRBError( e );
-		}
-		catch ( UnsatisfiedLinkError except )
-		{
-			String msg1 = "Java could not link to the Gurobi dependencies";
-			String msg2 = "Please check if your Gurobi environment variables match the location of Gurobi dependencies";
-			String msg3 = "Your " + System.getProperty( "sun.arch.data.model" )
-					+ " bit JVM is trying to launch "
-					+ System.getProperty( "sun.arch.data.model" )
-					+ " bit Gurobi";
-			String msg4 = "The current JVM specs are: "
-					+ System.getProperty( "java.runtime.version" );
-			Object[] options = { "    OK    " };
-			JOptionPane.showOptionDialog( null, msg1 + "\n" + msg2 + "\n"
-					+ msg3 + "\n" + msg4,
-					"Linking Error",
-					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-					null, options, options[0] );
 		}
 		catch ( Exception except ) //unexpected
 		{
