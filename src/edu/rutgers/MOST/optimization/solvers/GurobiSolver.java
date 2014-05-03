@@ -33,8 +33,49 @@ public class GurobiSolver extends Solver
 	private GRBEnv env;
 	private ObjType objType;
 	private SolverKind solverKind = SolverKind.FBASolver; // default may change
-															// in SetVar()
+															// in Callback (constructor)
 
+	private void promptGRBError( GRBException e )
+	{
+		abort();
+		String errMsg;
+		int code = e.getErrorCode();
+		switch( code )
+		{
+		case GRB.Error.NO_LICENSE:
+			errMsg = "No validation file - run 'grbgetkey' to refresh it.";
+			LocalConfig.getInstance().hasValidGurobiKey = false;
+			break;
+		case GRB.Error.FAILED_TO_CREATE_MODEL:
+			errMsg = "Gurobi failed to create the model";
+		case GRB.Error.NOT_SUPPORTED:
+			errMsg = "This optimization is not supported by Gurobi";
+			break;
+		case GRB.Error.INVALID_ARGUMENT:
+			errMsg = "Gurobi encountered an invalid argument";
+			break;
+		case GRB.Error.IIS_NOT_INFEASIBLE:
+			errMsg = "Gurobi determined the IIS is not feasable";
+			break;
+		case GRB.Error.NUMERIC:
+			errMsg = "Gurobi encountered a numerical error while optimizing the model";
+			break;
+		case GRB.Error.INTERNAL:
+			errMsg = "Gurobi has encountered an internal error!";
+			break;
+		default:
+			errMsg = "Gurobi encountered an error optimizing the model\nError Code: " + code;
+		}
+		if( GraphicalInterface.getGdbbDialog() != null )
+			GraphicalInterface.getGdbbDialog().setVisible( false );
+
+		Object[] options = { "    OK    " };
+		JOptionPane.showOptionDialog( null, "Error: " + errMsg,
+				GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE,
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+				null, options, options[0] );
+		LocalConfig.getInstance().getOptimizationFilesList().clear();
+	}
 	private char getGRBVarType( VarType type )
 	{
 		switch( type )
@@ -127,46 +168,7 @@ public class GurobiSolver extends Solver
 		}
 		catch ( GRBException e )
 		{
-			abort();
-			String errMsg;
-			switch( e.getErrorCode() )
-			{
-			case GRB.Error.NO_LICENSE:
-				errMsg = "No validation file - run 'grbgetkey' to refresh it.";
-				break;
-			case GRB.Error.FAILED_TO_CREATE_MODEL:
-				errMsg = "Gurobi failed to create the model";
-			case GRB.Error.NOT_SUPPORTED:
-				errMsg = "This optimization is not supported by Gurobi";
-				break;
-			case GRB.Error.INVALID_ARGUMENT:
-				errMsg = "Gurobi encountered an invalid argument";
-				break;
-			case GRB.Error.IIS_NOT_INFEASIBLE:
-				errMsg = "Gurobi determined the IIS is not feasable";
-				break;
-			case GRB.Error.NUMERIC:
-				errMsg = "Gurobi encountered a numerical error while optimizing the model";
-				break;
-			case GRB.Error.INTERNAL:
-				errMsg = "Gurobi has encountered an internal error!";
-				break;
-			default:
-				errMsg = "Gurobi encountered an error optimizing the model";
-			}
-			LocalConfig.getInstance().hasValidGurobiKey = false;
-			if( GraphicalInterface.getGdbbDialog() != null )
-				GraphicalInterface.getGdbbDialog().setVisible( false );
-
-			Object[] options = { "    OK    " };
-			JOptionPane.showOptionDialog( null, "Error: " + errMsg,
-					GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE,
-					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-					null, options, options[0] );
-			LocalConfig.getInstance().getOptimizationFilesList().clear();
-			// Do we really want to ever print stack trace? Need dialog to display this
-			// printout as a message if one of the above conditions are not met.
-			e.printStackTrace();
+			promptGRBError( e );
 		}
 		catch ( UnsatisfiedLinkError except )
 		{
@@ -181,21 +183,18 @@ public class GurobiSolver extends Solver
 			Object[] options = { "    OK    " };
 			JOptionPane.showOptionDialog( null, msg1 + "\n" + msg2 + "\n"
 					+ msg3 + "\n" + msg4,
-					GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE,
+					"Linking Error",
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
 					null, options, options[0] );
-			// Do we really want to ever print stack trace? Need dialog to display this
-			// printout as a message if one of the above conditions are not met.
-			except.printStackTrace();
 		}
-		catch ( Exception except )
+		catch ( Exception except ) //unexpected
 		{
 			Object[] options = { "    OK    " };
 			JOptionPane.showOptionDialog( null, except.getMessage(),
-					GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE,
+					"Unexpected Error",
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
 					null, options, options[0] );
-			except.printStackTrace();
+			except.printStackTrace(); //because it's unexpected
 		}
 
 	}
@@ -299,7 +298,8 @@ public class GurobiSolver extends Solver
 		}
 		catch ( GRBException e )
 		{
-			e.printStackTrace();
+			promptGRBError( e );
+			return Double.NaN;
 		}
 
 		return objval;
