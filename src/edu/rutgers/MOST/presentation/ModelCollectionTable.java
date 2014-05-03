@@ -202,12 +202,18 @@ class ModelCollectionTable
 				}
 				reader.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				JOptionPane.showMessageDialog(null,                
+						"File Not Found Error.",                
+						"Error",                                
+						JOptionPane.ERROR_MESSAGE);
+				//e.printStackTrace();
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null,                
+					"File Not Found Error.",                
+					"Error",                                
+					JOptionPane.ERROR_MESSAGE);
+			//e.printStackTrace();
 		}	
 		
 		ArrayList<Integer> visibleColumns = visibleColumnList();
@@ -425,9 +431,17 @@ class ModelCollectionTable
 					r.close();
 					return (buf.toString());
 				} catch (IOException ex) {
-					ex.printStackTrace();
+					JOptionPane.showMessageDialog(null,                
+							"Clipboard Error.",                
+							"Error",                                
+							JOptionPane.ERROR_MESSAGE);
+					//ex.printStackTrace();
 				} catch (UnsupportedFlavorException ex) {
-					ex.printStackTrace();
+					JOptionPane.showMessageDialog(null,                
+							"Clipboard Error. Unsupported Flavor",                
+							"Error",                                
+							JOptionPane.ERROR_MESSAGE);
+					//ex.printStackTrace();
 				}
 			}
 		}

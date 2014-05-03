@@ -1381,7 +1381,11 @@ public class GraphicalInterface extends JFrame {
 						writer.write(outputText.toString());
 
 					} catch (FileNotFoundException e) {
-						e.printStackTrace();
+						JOptionPane.showMessageDialog(null,                
+								"File Not Found.",                
+								"Error",                                
+								JOptionPane.ERROR_MESSAGE);
+						//e.printStackTrace();
 					} catch (IOException e) {
 						e.printStackTrace();
 					} finally {
@@ -1390,7 +1394,11 @@ public class GraphicalInterface extends JFrame {
 								writer.close();
 							}
 						} catch (IOException e) {
-							e.printStackTrace();
+							JOptionPane.showMessageDialog(null,                
+									"File Not Found.",                
+									"Error",                                
+									JOptionPane.ERROR_MESSAGE);
+							//e.printStackTrace();
 						}
 					}
 					loadOutputPane(u.createLogFileName(optimizeName + ".log"));
@@ -3286,8 +3294,11 @@ public class GraphicalInterface extends JFrame {
 				} 
 			}				
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null,                
+					"Unable to Write File.",                
+					"Error",                                
+					JOptionPane.ERROR_MESSAGE);
+			//e.printStackTrace();
 		}	
 	}
 	
@@ -3629,8 +3640,11 @@ public class GraphicalInterface extends JFrame {
 								jWrite.formConnect(LocalConfig.getInstance());
 								
 							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								JOptionPane.showMessageDialog(null,                
+										"Unable to Write Files.",                
+										"Error",                                
+										JOptionPane.ERROR_MESSAGE);
+								//e.printStackTrace();
 							}
 						} 
 					}
@@ -6036,8 +6050,11 @@ public class GraphicalInterface extends JFrame {
 							oldMetaboliteUsedMap = (Map<String, Object>) (ObjectCloner.deepCopy(LocalConfig.getInstance().getMetaboliteUsedMap()));
 						}
 					} catch (Exception e3) {
-						// TODO Auto-generated catch block
-						e3.printStackTrace();
+						JOptionPane.showMessageDialog(null,                
+								"Error Deleting Row.",                
+								"Error",                                
+								JOptionPane.ERROR_MESSAGE);
+						//e3.printStackTrace();
 					}
 					// copy old model for undo/redo
 					DefaultTableModel oldReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
@@ -7703,9 +7720,17 @@ public class GraphicalInterface extends JFrame {
 					r.close();
 					return (buf.toString());
 				} catch (IOException ex) {
-					ex.printStackTrace();
+					JOptionPane.showMessageDialog(null,                
+							"Clipboard Error.",                
+							"Error",                                
+							JOptionPane.ERROR_MESSAGE);
+					//ex.printStackTrace();
 				} catch (UnsupportedFlavorException ex) {
-					ex.printStackTrace();
+					JOptionPane.showMessageDialog(null,                
+							"Clipboard Error. Unsupported Flavor",                
+							"Error",                                
+							JOptionPane.ERROR_MESSAGE);
+					//ex.printStackTrace();
 				}
 			}
 		}
@@ -7871,8 +7896,11 @@ public class GraphicalInterface extends JFrame {
 			undoItem.setOldSuspiciousMetabolites(oldSuspiciousMetabolites);
 			undoItem.setOldUnusedList(oldUnusedList);
 		} catch (Exception e3) {
-			// TODO Auto-generated catch block
-			e3.printStackTrace();
+			JOptionPane.showMessageDialog(null,                
+					"Error Creating Undo Item.",                
+					"Error",                                
+					JOptionPane.ERROR_MESSAGE);
+			//e3.printStackTrace();
 		}
 		return undoItem;
     	
@@ -7905,8 +7933,11 @@ public class GraphicalInterface extends JFrame {
 			undoItem.setOldSuspiciousMetabolites(oldSuspiciousMetabolites);
 			undoItem.setOldUnusedList(oldUnusedList);
 		} catch (Exception e3) {
-			// TODO Auto-generated catch block
-			e3.printStackTrace();
+			JOptionPane.showMessageDialog(null,                
+					"Error Creating Undo Item.",                
+					"Error",                                
+					JOptionPane.ERROR_MESSAGE);
+			//e3.printStackTrace();
 		}
 	}
 
@@ -7938,8 +7969,11 @@ public class GraphicalInterface extends JFrame {
 			undoItem.setNewSuspiciousMetabolites(newSuspiciousMetabolites);
 			undoItem.setNewUnusedList(newUnusedList);
 		} catch (Exception e3) {
-			// TODO Auto-generated catch block
-			e3.printStackTrace();
+			JOptionPane.showMessageDialog(null,                
+					"Error Creating Undo Item.",                
+					"Error",                                
+					JOptionPane.ERROR_MESSAGE);
+			//e3.printStackTrace();
 		}
 	}
 	
@@ -7953,8 +7987,11 @@ public class GraphicalInterface extends JFrame {
 			undoItem.setOldMetaboliteUsedMap(oldMetaboliteUsedMap);
 			//System.out.println("old " + oldMetaboliteUsedMap);
 		} catch (Exception e3) {
-			// TODO Auto-generated catch block
-			e3.printStackTrace();
+			JOptionPane.showMessageDialog(null,                
+					"Error Creating Undo Item.",                
+					"Error",                                
+					JOptionPane.ERROR_MESSAGE);
+			//e3.printStackTrace();
 		}
 	}
 
@@ -7968,8 +8005,11 @@ public class GraphicalInterface extends JFrame {
 			undoItem.setNewMetaboliteUsedMap(newMetaboliteUsedMap);
 			//System.out.println("new " + newMetaboliteUsedMap);
 		} catch (Exception e3) {
-			// TODO Auto-generated catch block
-			e3.printStackTrace();
+			JOptionPane.showMessageDialog(null,                
+					"Error Creating Undo Item.",                
+					"Error",                                
+					JOptionPane.ERROR_MESSAGE);
+			//e3.printStackTrace();
 		}
 	}
 
@@ -8636,8 +8676,11 @@ public class GraphicalInterface extends JFrame {
 			updateUndoButton();
 			clearRedoButton();
 		} catch (Exception e3) {
-			// TODO Auto-generated catch block
-			e3.printStackTrace();
+			JOptionPane.showMessageDialog(null,                
+					"Error Creating Undo Item.",                
+					"Error",                                
+					JOptionPane.ERROR_MESSAGE);
+			//e3.printStackTrace();
 		}
     }
     
@@ -10111,16 +10154,28 @@ public class GraphicalInterface extends JFrame {
 								writer.write(text.toString()); 
 								output = text.toString();
 							} catch (FileNotFoundException e) {
-								e.printStackTrace();
+								JOptionPane.showMessageDialog(null,                
+										"File Not Found Error.",                
+										"Error",                                
+										JOptionPane.ERROR_MESSAGE);
+								//e.printStackTrace();
 							} catch (IOException e) {
-								e.printStackTrace();
+								JOptionPane.showMessageDialog(null,                
+										"File Not Found Error.",                  
+										"Error",                                
+										JOptionPane.ERROR_MESSAGE);
+								//e.printStackTrace();
 							} finally {
 								try {
 									if (writer != null) {
 										writer.close();
 									}
 								} catch (IOException e) {
-									e.printStackTrace();
+									JOptionPane.showMessageDialog(null,                
+											"File Not Found Error.",                  
+											"Error",                                
+											JOptionPane.ERROR_MESSAGE);
+									//e.printStackTrace();
 								}
 							}
 							if (gdbbTimer.isRunning()) {
@@ -10153,7 +10208,11 @@ public class GraphicalInterface extends JFrame {
 							GDBB.getSolver().setAbort(false);
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						JOptionPane.showMessageDialog(null,                
+								"Solver Error.",                
+								"Error",                                
+								JOptionPane.ERROR_MESSAGE);
+						//e.printStackTrace();
 					}
 				}
 			} catch (Exception e) {
@@ -10203,7 +10262,11 @@ public class GraphicalInterface extends JFrame {
                 
 				DynamicTreePanel.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);	
 			} catch (Exception e) {
-				e.printStackTrace();
+				JOptionPane.showMessageDialog(null,                
+						"Solver Error.",                
+						"Error",                                
+						JOptionPane.ERROR_MESSAGE);
+				//e.printStackTrace();
 			}
 		}
 
@@ -10269,7 +10332,11 @@ public class GraphicalInterface extends JFrame {
 				setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
 				gdbbRunning = false;
 			} catch (Exception e) {
-				e.printStackTrace();
+				JOptionPane.showMessageDialog(null,                
+						"Solver Error.",                
+						"Error",                                
+						JOptionPane.ERROR_MESSAGE);
+				//e.printStackTrace();
 			}
 		}
 
@@ -10290,9 +10357,11 @@ public class GraphicalInterface extends JFrame {
 			copyFile(sourceFile, destFile);
 		}
 		catch(IOException exc){
-
-			exc.printStackTrace();
-
+			JOptionPane.showMessageDialog(null,                
+					"Log File Error.",                
+					"Error",                                
+					JOptionPane.ERROR_MESSAGE);
+			//exc.printStackTrace();
 		}
 	}
 	

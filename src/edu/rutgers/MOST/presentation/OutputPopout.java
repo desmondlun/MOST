@@ -278,9 +278,17 @@ public class OutputPopout extends JFrame {
 					r.close();
 					return (buf.toString());
 				} catch (IOException ex) {
-					ex.printStackTrace();
+					JOptionPane.showMessageDialog(null,                
+							"Clipboard Error.",                
+							"Error",                                
+							JOptionPane.ERROR_MESSAGE);
+					//ex.printStackTrace();
 				} catch (UnsupportedFlavorException ex) {
-					ex.printStackTrace();
+					JOptionPane.showMessageDialog(null,                
+							"Clipboard Error. Unsupported Flavor",                
+							"Error",                                
+							JOptionPane.ERROR_MESSAGE);
+					//ex.printStackTrace();
 				}
 			}
 		}

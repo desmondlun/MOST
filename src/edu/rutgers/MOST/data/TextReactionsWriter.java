@@ -1,10 +1,12 @@
 package edu.rutgers.MOST.data;
 
 import java.io.*;
+
+import javax.swing.JOptionPane;
+
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
-
 import au.com.bytecode.opencsv.CSVWriter;
 
 //TODO: account for hidden columns
@@ -174,8 +176,11 @@ public class TextReactionsWriter {
 			}	
 			writer.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null,                
+					"File Not Found Error.",                
+					"Error",                                
+					JOptionPane.ERROR_MESSAGE);
+			//e.printStackTrace();
 		}
 	}
 

@@ -14,9 +14,11 @@ import javax.swing.border.BevelBorder;
 
 //based on code from http://www.java2s.com/Code/Java/Swing-JFC/CreateaProgressBar.htm
 public class ProgressBar extends JFrame {
-
-	//public JButton cancelButton = new JButton("  Cancel  ");
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public JProgressBar progress = new JProgressBar(0, 100);
 	public ProgressBar() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -24,14 +26,9 @@ public class ProgressBar extends JFrame {
 		progress.setValue(0);
 		progress.setStringPainted(true);
 		pane.add(progress);
-		/*
-		JPanel pane2 = new JPanel();
-		pane2.add(cancelButton);
-		pane.add(pane2);
-		*/
+		
 		setContentPane(pane);
 		setUndecorated(true);
-		//pane.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED, Color.LIGHT_GRAY, Color.GRAY));
 		pane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2, false));
 	}
 }

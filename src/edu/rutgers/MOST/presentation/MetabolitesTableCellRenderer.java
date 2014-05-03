@@ -7,6 +7,8 @@ import java.awt.Insets;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import edu.rutgers.MOST.config.LocalConfig;
+
 public class MetabolitesTableCellRenderer extends DefaultTableCellRenderer{
 	/**
 	 * 
@@ -21,13 +23,9 @@ public class MetabolitesTableCellRenderer extends DefaultTableCellRenderer{
 		int viewRow = table.convertRowIndexToModel(row);
 		int id = Integer.valueOf(table.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN).toString());	
 		// TODO need nameid map, reverse look up too slow
-		/*
 		if (LocalConfig.getInstance().getSuspiciousMetabolites().contains(id)) {
 			tooltip = "Suspicious metabolite";
-		} else if (LocalConfig.getInstance().getDuplicateIds().contains(id)) {
-			tooltip = "Duplicate metabolite";
-		}
-		*/
+		} 
 		if (isSelected) {
 			//cell.setBackground(new Color(180, 216, 231));
 		}  
