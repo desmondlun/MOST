@@ -347,6 +347,8 @@ public class ReactionParser {
 		if (reactant.contains("+")) {
 			if ((isNumber(reactant.substring(reactant.lastIndexOf("+") + 1, reactant.length()))) || reactant.endsWith("+")) {
 				return false;
+			} else if (reactant.length() > 4 && reactant.endsWith("]") && reactant.indexOf("[") == reactant.length() - 3 && reactant.indexOf("+") == reactant.length() - 4) {
+				return false;
 			} else {
 				return true;
 			}
