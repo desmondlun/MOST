@@ -39,6 +39,7 @@ import edu.rutgers.MOST.data.SBMLModelReader;
 import edu.rutgers.MOST.data.SBMLProduct;
 import edu.rutgers.MOST.data.SBMLReactant;
 import edu.rutgers.MOST.data.SBMLReactionEquation;
+import edu.rutgers.MOST.data.SettingsConstants;
 import edu.rutgers.MOST.data.SettingsFactory;
 import edu.rutgers.MOST.data.Solution;
 import edu.rutgers.MOST.data.TextMetabolitesModelReader;
@@ -10476,12 +10477,38 @@ public class GraphicalInterface extends JFrame {
 		}		
 	}
 	
+	// Deletes FBA and GDBB log files that are not deleted on close of MOST, when close action is due
+	// to a crash or outage, etc. Normally MOST deletes these files in the Exit action.
+	public static void cleanupTemporaryDirectory() {
+		String tempFilesDir = "";
+		if (System.getProperty("os.name").equals("Windows 7") || System.getProperty("os.name").equals("Windows 8") || System.getProperty("os.name").equals("Windows Vista")) {
+			tempFilesDir = SettingsConstants.SETTINGS_PATH_PREFIX_WINDOWS_7 + System.getProperty("user.name") + SettingsConstants.SETTINGS_PATH_SUFFIX_WINDOWS_7 + SettingsConstants.FOLDER_NAME;
+		} else if (System.getProperty("os.name").equals("Windows XP")) {
+			tempFilesDir = SettingsConstants.SETTINGS_PATH_PREFIX_WINDOWS_XP + System.getProperty("user.name") + SettingsConstants.SETTINGS_PATH_SUFFIX_WINDOWS_XP + SettingsConstants.FOLDER_NAME;
+		}
+		// based on http://stackoverflow.com/questions/4917326/how-to-iterate-over-the-files-of-a-certain-directory-in-java
+		File dir = new File(tempFilesDir);
+		File[] directoryListing = dir.listFiles();
+		if (directoryListing != null) {
+			for (File child : directoryListing) {
+				Utilities u = new Utilities();
+				if (child.getName().startsWith(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX) ||
+						child.getName().startsWith(GraphicalInterfaceConstants.GDBB_PREFIX)) {
+					System.out.println(child.getAbsolutePath());
+					u.deleteFileIfExists(child.getAbsolutePath());
+				}
+			}
+		} 
+	}
+	
 	public static void main(String[] args) {
 	//public static void main(String[] args) throws Exception {
 		ResizableDialog dialog = new ResizableDialog("Error", "Error", "Error");
 		dialog.setLocationRelativeTo(null);
 		try {
 			curSettings = new SettingsFactory();
+			
+			cleanupTemporaryDirectory();
 
 			//based on code from http://stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
 			final ArrayList<Image> icons = new ArrayList<Image>(); 
