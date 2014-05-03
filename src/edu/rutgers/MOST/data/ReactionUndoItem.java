@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
 import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
 
@@ -518,8 +519,11 @@ public class ReactionUndoItem implements UndoItem {
 				LocalConfig.getInstance().setMetaboliteUsedMap(metaboliteUsedMap);
 			}
 		} catch (Exception e3) {
-			// TODO Auto-generated catch block
-			e3.printStackTrace();
+			JOptionPane.showMessageDialog(null,                
+					"Undo Error.",                
+					"Error",                                
+					JOptionPane.ERROR_MESSAGE);
+			//e3.printStackTrace();
 		}
 	}
 	
@@ -532,8 +536,11 @@ public class ReactionUndoItem implements UndoItem {
 				LocalConfig.getInstance().setMetaboliteUsedMap(metaboliteUsedMap);
 			}
 		} catch (Exception e3) {
-			// TODO Auto-generated catch block
-			e3.printStackTrace();
+			JOptionPane.showMessageDialog(null,                
+					"Redo Error.",                
+					"Error",                                
+					JOptionPane.ERROR_MESSAGE);
+			//e3.printStackTrace();
 		}
 	}
 	
