@@ -2206,8 +2206,7 @@ public class GraphicalInterface extends JFrame {
 			public void actionPerformed(ActionEvent a) {
 				String variable = System.getenv("GUROBI_HOME");  
 				if (variable != null) {
-					GurobiSolver solver = new GurobiSolver();
-					if (solver.isGurobiLinked()) {
+					if (GurobiSolver.isGurobiLinked()) {
 						enableGurobiItems();
 					} else {
 						disableGurobiItems();
