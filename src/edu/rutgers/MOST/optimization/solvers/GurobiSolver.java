@@ -186,12 +186,10 @@ public class GurobiSolver extends Solver
 						else if( this.where == GRB.CB_MIPSOL )
 						{
 							// GDBB intermediate solutions
-							if( solverKind == SolverKind.GDBBSolver )
-							{
+							solverKind = SolverKind.GDBBSolver;
 								GDBB.intermediateSolution.add( new Solution(
 										this.getDoubleInfo( GRB.CB_MIPSOL_OBJ ),
 										this.getSolution( model.getVars() ) ) );
-							}
 							objval = getDoubleInfo( GRB.CB_MIPSOL_OBJ ); // MIP
 																			// objective
 						}
