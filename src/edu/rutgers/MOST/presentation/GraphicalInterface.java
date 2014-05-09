@@ -2204,15 +2204,10 @@ public class GraphicalInterface extends JFrame {
 		setUpSolver.setMnemonic(KeyEvent.VK_S);
 		setUpSolver.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
-				String variable = System.getenv("GUROBI_HOME");  
-				if (variable != null) {
-					if (GurobiSolver.isGurobiLinked()) {
-						enableGurobiItems();
-					} else {
-						disableGurobiItems();
-					}
-				} else {
-					// Gurobi not installed
+				if(GurobiSolver.isGurobiLinked()){
+					enableGurobiItems();
+				}
+				else {
 					disableGurobiItems();
 				}
 				getSolverSetUpDialog().setVisible(true);
