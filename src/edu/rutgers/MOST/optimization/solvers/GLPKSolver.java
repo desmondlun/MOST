@@ -120,15 +120,17 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 
 	public GLPKSolver()
 	{
-		String dependsFolder = "etc/lib/";
+		String dependsFolder = "lib/";
 		Object[] options = { "    OK    " };
 		if( System.getProperty( "os.name" ).toLowerCase().contains( "windows" ) )
 		{
 			dependsFolder += "win"
 					+ System.getProperty( "sun.arch.data.model" );
 		}
+		else if( System.getProperty( "os.name" ).toLowerCase().contains( "mac os x" ) )
+			dependsFolder += "mac";
 		else
-			dependsFolder += "unix";
+			dependsFolder += "linux";
 		
 		try
 		{
@@ -145,7 +147,7 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 									+ "loaded from "
 									+ Paths.get( dependsFolder )
 											.toAbsolutePath().toString(),
-							GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE,
+							"GLPK unresolved dependency error",
 							JOptionPane.YES_NO_OPTION,
 							JOptionPane.QUESTION_MESSAGE, null, options,
 							options[0] );
