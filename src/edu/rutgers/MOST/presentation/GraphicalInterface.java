@@ -546,6 +546,8 @@ public class GraphicalInterface extends JFrame {
 	// menu items
 	/*****************************************************************************/
 
+	public final JMenuItem loadSBMLItem = new JMenuItem("Load SBML");
+	public final JMenuItem loadCSVItem = new JMenuItem("Load CSV");
 	public final JMenuItem loadExistingItem = new JMenuItem(GraphicalInterfaceConstants.LOAD_FROM_MODEL_COLLECTION_TABLE_TITLE);
 	public final JMenuItem saveItem = new JMenuItem("Save");
 	public final JMenuItem saveSBMLItem = new JMenuItem("Save As SBML");
@@ -572,6 +574,7 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem editorMenu = new JMenuItem("Launch Reaction Editor");
 	public final JMenuItem unsortReacMenuItem = new JMenuItem("Unsort Reactions Table");
 	public final JMenuItem unsortMetabMenuItem = new JMenuItem("Unsort Metabolites Table");
+	public final JMenuItem setUpSolver = new JMenuItem(GraphicalInterfaceConstants.SOLVER_OPTIONS_MENU_ITEM);
 
 	public final JMenuItem formulaBarCutItem = new JMenuItem("Cut");
 	public final JMenuItem formulaBarCopyItem = new JMenuItem("Copy");
@@ -1269,12 +1272,10 @@ public class GraphicalInterface extends JFrame {
 		JMenu modelMenu = new JMenu("Model");
 		modelMenu.setMnemonic(KeyEvent.VK_M);
 
-		JMenuItem loadSBMLItem = new JMenuItem("Load SBML");
 		modelMenu.add(loadSBMLItem);
 		loadSBMLItem.setMnemonic(KeyEvent.VK_L);
 		loadSBMLItem.addActionListener(new LoadSBMLAction());
 
-		JMenuItem loadCSVItem = new JMenuItem("Load CSV");
 		modelMenu.add(loadCSVItem);
 		loadCSVItem.setMnemonic(KeyEvent.VK_V);
 		loadCSVItem.addActionListener(new LoadCSVAction());
@@ -2200,7 +2201,6 @@ public class GraphicalInterface extends JFrame {
 		JMenu optionsMenu = new JMenu("Options");
 		optionsMenu.setMnemonic(KeyEvent.VK_O);
 
-		JMenuItem setUpSolver = new JMenuItem(GraphicalInterfaceConstants.SOLVER_OPTIONS_MENU_ITEM);
 		optionsMenu.add(setUpSolver);
 		setUpSolver.setMnemonic(KeyEvent.VK_S);
 		setUpSolver.addActionListener(new ActionListener() {
@@ -2941,6 +2941,7 @@ public class GraphicalInterface extends JFrame {
 						LocalConfig.getInstance().setModelName(filename);
 						LocalConfig.getInstance().setProgress(0);
 						progressBar.setVisible(true);
+						disableLoadItems();
 
 						timer.start();
 
@@ -3156,6 +3157,7 @@ public class GraphicalInterface extends JFrame {
 					LocalConfig.getInstance().setModelName(getModelCollectionTable().getFileName());
 					LocalConfig.getInstance().setProgress(0);
 					progressBar.setVisible(true);
+					disableLoadItems();
 
 					timer.start();
 
@@ -3167,7 +3169,7 @@ public class GraphicalInterface extends JFrame {
 					// add loading code here
 				}
 
-				loadExistingItem.setEnabled(true);					
+				//loadExistingItem.setEnabled(true);					
 			}			
 		}
 	};
@@ -4422,8 +4424,9 @@ public class GraphicalInterface extends JFrame {
 		if (getFindReplaceDialog() != null) {
 			getFindReplaceDialog().dispose();
 		}
-		findReplaceItem.setEnabled(true);
-		findbutton.setEnabled(true);
+		// need to make sure the two lines below are not necessary before removing
+//		findReplaceItem.setEnabled(true);
+//		findbutton.setEnabled(true);
 		clearOutputPane();
 		if (getPopout() != null) {
 			popout.dispose();
@@ -9900,6 +9903,41 @@ public class GraphicalInterface extends JFrame {
 
 		}
 	}
+	
+	public void enableLoadItems() {
+		loadSBMLItem.setEnabled(true);
+		loadCSVItem.setEnabled(true);
+		loadExistingItem.setEnabled(true);
+		clearItem.setEnabled(true);
+		saveItem.setEnabled(true);
+		saveSBMLItem.setEnabled(true);
+		if (tabbedPane.getSelectedIndex() == 0) {
+			saveCSVReactionsItem.setEnabled(true);
+		} else if (tabbedPane.getSelectedIndex() == 1) {
+			saveCSVMetabolitesItem.setEnabled(true);
+		}
+		findReplaceItem.setEnabled(true);
+		selectAllItem.setEnabled(true);
+	    setUpSolver.setEnabled(true);
+		enableMenuItems();
+	}
+	
+	// grays out load items so user cannot load a model while a model is loading.
+	// only necessary for sbml, csv load too fast 
+	public void disableLoadItems() {
+		loadSBMLItem.setEnabled(false);
+		loadCSVItem.setEnabled(false);
+		loadExistingItem.setEnabled(false);
+		clearItem.setEnabled(false);
+		saveItem.setEnabled(false);
+		saveSBMLItem.setEnabled(false);
+		saveCSVMetabolitesItem.setEnabled(false);
+		saveCSVReactionsItem.setEnabled(false);
+		findReplaceItem.setEnabled(false);	
+		selectAllItem.setEnabled(false);
+	    setUpSolver.setEnabled(false);
+		disableMenuItems();
+	}
 
 	// enables menu items when main file is selected in analysis pane
 	public void enableMenuItems() {
@@ -9931,6 +9969,35 @@ public class GraphicalInterface extends JFrame {
 			redoItem.setEnabled(true);
 		}
 	}
+	
+	// disables menu items when optimization is selected in analysis pane (tree)
+	public void disableMenuItems() {
+		clearItem.setEnabled(false);
+		highlightUnusedMetabolitesItem.setEnabled(false);
+		deleteUnusedItem.setEnabled(false);
+		findSuspiciousItem.setEnabled(false);
+		fbaItem.setEnabled(false);
+		gdbbItem.setEnabled(false);
+		addReacRowItem.setEnabled(false);
+		addReacRowsItem.setEnabled(false);
+		addMetabRowItem.setEnabled(false);
+		addMetabRowsItem.setEnabled(false);
+		addReacColumnItem.setEnabled(false);
+		addMetabColumnItem.setEnabled(false);
+		reactionsTableEditable = false;
+		tabbedPane.setSelectedIndex(0);
+		formulaBar.setEditable(false);
+		formulaBar.setBackground(Color.WHITE);
+		editorMenu.setEnabled(false);
+		getFindReplaceDialog().replaceButton.setEnabled(false);
+		getFindReplaceDialog().replaceAllButton.setEnabled(false);
+		//getFindReplaceDialog().replaceFindButton.setEnabled(false);
+		pastebutton.setEnabled(false);
+		disableOptionComponent(undoSplitButton, undoLabel, undoGrayedLabel);
+		disableOptionComponent(redoSplitButton, redoLabel, redoGrayedLabel);
+		undoItem.setEnabled(false);
+		redoItem.setEnabled(false);
+	}
 
 	public void maybeDisplaySuspiciousMetabMessage(String row) {
 		try {
@@ -9960,35 +10027,6 @@ public class GraphicalInterface extends JFrame {
 			}
 		}
 		return row;
-	}
-	
-	// disables menu items when optimization is selected in analysis pane (tree)
-	public void disableMenuItems() {
-		clearItem.setEnabled(false);
-		highlightUnusedMetabolitesItem.setEnabled(false);
-		deleteUnusedItem.setEnabled(false);
-		findSuspiciousItem.setEnabled(false);
-		fbaItem.setEnabled(false);
-		gdbbItem.setEnabled(false);
-		addReacRowItem.setEnabled(false);
-		addReacRowsItem.setEnabled(false);
-		addMetabRowItem.setEnabled(false);
-		addMetabRowsItem.setEnabled(false);
-		addReacColumnItem.setEnabled(false);
-		addMetabColumnItem.setEnabled(false);
-		reactionsTableEditable = false;
-		tabbedPane.setSelectedIndex(0);
-		formulaBar.setEditable(false);
-		formulaBar.setBackground(Color.WHITE);
-		editorMenu.setEnabled(false);
-		getFindReplaceDialog().replaceButton.setEnabled(false);
-		getFindReplaceDialog().replaceAllButton.setEnabled(false);
-		//getFindReplaceDialog().replaceFindButton.setEnabled(false);
-		pastebutton.setEnabled(false);
-		disableOptionComponent(undoSplitButton, undoLabel, undoGrayedLabel);
-		disableOptionComponent(redoSplitButton, redoLabel, redoGrayedLabel);
-		undoItem.setEnabled(false);
-		redoItem.setEnabled(false);
 	}
 
 	public void addReactionColumnCloseAction() {
@@ -10044,7 +10082,8 @@ public class GraphicalInterface extends JFrame {
 						JOptionPane.ERROR_MESSAGE);					
 				//e.printStackTrace();					
 				progress = 100;
-				progressBar.setVisible(false);		
+				progressBar.setVisible(false);
+				enableLoadItems();
 			} catch (XMLStreamException e) {
 				JOptionPane.showMessageDialog(null,                
 						"This File is not a Valid SBML File.",                
@@ -10054,6 +10093,7 @@ public class GraphicalInterface extends JFrame {
 				//e.printStackTrace();
 				progress = 100;
 				progressBar.setVisible(false);
+				enableLoadItems();
 			}	
 			while (progress < 100) {
 				try {
@@ -10415,6 +10455,7 @@ public class GraphicalInterface extends JFrame {
 				progressBar.setVisible(false);
 				progressBar.progress.setIndeterminate(true);
 				saveSBML = false;
+				enableLoadItems();
 			}
 		}
 	}
