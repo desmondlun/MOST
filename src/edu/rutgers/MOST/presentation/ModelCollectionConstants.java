@@ -47,6 +47,6 @@ public class ModelCollectionConstants {
 	// each model added will increase height by 20 (cell height). Maximum height should
 	// be ~500 for the best appearance. Additional models will add scroll bar.
 	// height = 266 is for 9 models, w/ no scroll bar and no cut off of any cells - exact fit
-	public static final int HEIGHT = 426;
+	public static final int HEIGHT = 446;
 	
 }

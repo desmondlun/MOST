@@ -4,7 +4,6 @@ iRC1080_autotrophic,Chlamydomonas reinhardtii,1080,2190,1068,"Chang et al., 2011
 iRC1080_heterotrophic,Chlamydomonas reinhardtii,1080,2190,1068,"Chang et al., 2011",sbml/Chlamydomonas reinhardtii,sbml,http://dx.doi.org/10.1038/msb.2011.52
 iRC1080_mixotrophic,Chlamydomonas reinhardtii,1080,2190,1068,"Chang et al., 2011",sbml/Chlamydomonas reinhardtii,sbml,http://dx.doi.org/10.1038/msb.2011.52
 iCB925,Clostridium beijerinckii NCIMB 8052,925,938,881,"Milne et al., 2011",sbml/Clostridium beijerinckii,sbml,http://dx.doi.org/10.1186/1752-0509-5-130
-ecoli_core_model,Escherichia coli,,,,,,,
 Ec_iAF1260_anaerobic_glc10_acetate,Escherichia coli K-12 MG1655,1260,2077,1039,"Egen and Lun, 2012",sbml/E. Coli,sbml,http://dx.doi.org/10.1093/bioinformatics/bts255
 Ec_iAF1260_anaerobic_glc10_succinate,Escherichia coli K-12 MG1655,1260,2077,1039,"Egen and Lun, 2012",sbml/E. Coli,sbml,http://dx.doi.org/10.1093/bioinformatics/bts255
 iAF1260,Escherichia coli K-12 MG1655,1260,2077,1039,"Feist et al., 2007",sbml/E. Coli,sbml,http://dx.doi.org/10.1038%2Fmsb4100155
