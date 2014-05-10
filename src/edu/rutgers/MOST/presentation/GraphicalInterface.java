@@ -25,6 +25,7 @@ import org.sbml.jsbml.SBMLDocument;
 import org.sbml.jsbml.SBMLReader;
 
 import edu.rutgers.MOST.config.LocalConfig;
+import edu.rutgers.MOST.data.ConfigProperties;
 import edu.rutgers.MOST.data.FBAModel;
 import edu.rutgers.MOST.data.GDBBModel;
 import edu.rutgers.MOST.data.JSBMLWriter;
@@ -204,6 +205,9 @@ public class GraphicalInterface extends JFrame {
 	private Task task;	
 	public final ProgressBar progressBar = new ProgressBar();	
 	javax.swing.Timer timer = new javax.swing.Timer(100, new TimeListener());
+	
+	// used to save solver selection
+	public static ConfigProperties configProp;
 
 	/*****************************************************************************/
 	// boolean values
@@ -10469,12 +10473,12 @@ public class GraphicalInterface extends JFrame {
 	
 	static ActionListener solvOKActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
-			if (getSolverSetUpDialog().glpkRadioButton.isSelected()) {
-				//System.out.println("GLPK");		
-				setSolverName("GLPK");
+			if (getSolverSetUpDialog().glpkRadioButton.isSelected()) {		
+				setSolverName(GraphicalInterfaceConstants.GLPK_SOLVER_NAME);
+				configProp.writeToFile(GraphicalInterfaceConstants.GLPK_SOLVER_NAME);
 			} else if (getSolverSetUpDialog().gurobiRadioButton.isSelected()) {
-				//System.out.println("Gurobi");
-				setSolverName("Gurobi");
+				setSolverName(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
+				configProp.writeToFile(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
 			}
 			getSolverSetUpDialog().setVisible(false);
 		}

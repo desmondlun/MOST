@@ -2,7 +2,7 @@
 Change download links in download.html and Installing_MOST.html
 
 2. Create a folder MOST_distXXXXXX where XXXXXX is the date.  The dll folder, etc folder, ModelCollection.csv,
-and README must be placed in this folder.
+and README must be placed in this folder. The backup folder should be removed from etc.
 
 3. Right click on the MOST project folder in Eclipse and select
 Export -> Runnable Jar. Select "Extract required libraries into generated jar.
