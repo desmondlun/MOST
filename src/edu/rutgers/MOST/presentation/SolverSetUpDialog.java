@@ -1,6 +1,5 @@
 package edu.rutgers.MOST.presentation;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -18,11 +17,6 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
-import edu.rutgers.MOST.data.SettingsFactory;
 
 public class SolverSetUpDialog  extends JDialog {
 

@@ -402,6 +402,8 @@ public class GraphicalInterfaceConstants {
     public static final Color NONEDITABLE_COLOR = Color.GRAY;
     // Gray was not obvious enough visual clue to indicate formula bar is not editable
     public static final Color FORMULA_BAR_NONEDITABLE_COLOR = Color.LIGHT_GRAY;
+    // this shade of gray matches color when labeled components are grayed out
+    public static final Color GRAYED_LABEL_COLOR = new Color(150,150,150);
     
     // directories used for writing log files
     public static final String SETTINGS_PATH_PREFIX_WINDOWS_7 = "C:\\Users\\";
@@ -432,6 +434,8 @@ public class GraphicalInterfaceConstants {
     public static final String DEFAULT_SOLVER_NAME = "GLPK";
     public static final String GLPK_SOLVER_NAME = "GLPK";
     public static final String GUROBI_SOLVER_NAME = "Gurobi";
+    
+    public static final String GLPK_NO_MULTIPLE_THREADS_TOOLTIP = "GLPK does not support multiple threads.";
     
     // Gurobi 
     public static final String GUROBI_KEY_ERROR_TITLE = "Gurobi Key Error";

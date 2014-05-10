@@ -1463,6 +1463,11 @@ public class GraphicalInterface extends JFrame {
         			gdbbDialog.setLocationRelativeTo(null);
         			gdbbDialog.setAlwaysOnTop(true);
         			setGdbbDialog(gdbbDialog);
+        			if (getSolverName() == GraphicalInterfaceConstants.GLPK_SOLVER_NAME) {
+        				getGdbbDialog().disableThreadsCombo();
+        			} else if (getSolverName() == GraphicalInterfaceConstants.GUROBI_SOLVER_NAME) {
+        				getGdbbDialog().enableThreadsCombo();
+        			}
         			gdbbDialog.addWindowListener(new WindowAdapter() {
         				public void windowClosing(WindowEvent evt) {
         					if (gdbbTimer.isRunning()) {
@@ -1544,7 +1549,8 @@ public class GraphicalInterface extends JFrame {
         							gdbbTask.getModel().setTimeLimit((new Double(getGdbbDialog().getFiniteTimeString())).doubleValue());
         						}
 
-        						gdbbTask.getModel().setThreadNum((Integer)getGdbbDialog().cbNumThreads.getSelectedItem());
+        						//gdbbTask.getModel().setThreadNum((Integer)getGdbbDialog().cbNumThreads.getSelectedItem());
+        						gdbbTask.getModel().setThreadNum(getGdbbDialog().selectedNumberOfThreads());
         						gdbbTask.execute();
         						gdbbRunning = true;
         						gdbbProcessed = false;
@@ -1561,11 +1567,7 @@ public class GraphicalInterface extends JFrame {
         			};
 
         			gdbbDialog.stopButton.addActionListener(stopButtonActionListener);
-        			try {
-        				gdbbDialog.setVisible(true);
-        			} catch (Exception e) {
-        				
-        			}
+        			gdbbDialog.setVisible(true);
         		} catch (Exception e) {
         			
         		}
@@ -10071,7 +10073,9 @@ public class GraphicalInterface extends JFrame {
 				
 		GDBBTask() {
 			model = new GDBBModel(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN]);
-			//model = new GDBBModel(getGdbbDialog().getReactionNameDBColumnMapping().get((String)getGdbbDialog().cbSynObj.getSelectedItem()));
+			// not necessary since only one column is selectable, but in future, could add column selection
+			// this is just a reminder of what method exists in old repos to implement that functionality
+			//model = new GDBBModel(getGdbbDialog().getReactionNameDBColumnMapping().getSelectedSynObjColumn();
 		}
 
 		@Override
