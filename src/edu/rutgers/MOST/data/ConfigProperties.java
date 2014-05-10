@@ -13,14 +13,14 @@ import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 // based on http://www.mkyong.com/java/java-properties-file-examples/
 public class ConfigProperties {
-	private String solverName;
-	
+	private static String solverName;
+
 	public String getSolverName() {
 		return solverName;
 	}
 
-	public void setSolverName(String solverName) {
-		this.solverName = solverName;
+	public static void setSolverName(String solverName) {
+		ConfigProperties.solverName = solverName;
 	}
 
 	private static String propertiesPath() {
@@ -40,12 +40,12 @@ public class ConfigProperties {
 		} else {
 			fileName = "config.properties";
 		}
-		
+
 		return fileName;
 	}
-	
+
 	public static void writeToFile(String solverName) {
-		
+
 		Properties prop = new Properties();
 		OutputStream output = null;
 
@@ -54,7 +54,7 @@ public class ConfigProperties {
 
 			// set the properties value
 			prop.setProperty("solver", solverName);
-			
+
 			// save properties
 			prop.store(output, null);
 
@@ -65,27 +65,23 @@ public class ConfigProperties {
 				try {
 					output.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 
 		}
 	}
-	
+
 	public static void readFile() {
 		Properties prop = new Properties();
 		InputStream input = null;
-	 
+
 		try {
-	 
+
 			input = new FileInputStream(propertiesPath());
-	 
-			// load a properties file
 			prop.load(input);
-	 
-			// get the property value and print it out
-			System.out.println(prop.getProperty("solver"));
-	 
+			setSolverName(prop.getProperty("solver"));
+
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
@@ -93,19 +89,19 @@ public class ConfigProperties {
 				try {
 					input.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 		}
 	}
-	
+
 	public boolean fileExists() {
 		File f = new File(propertiesPath());
 		return f.exists();
 	}
 
 	public static void main(String[] args) {
-        writeToFile(GraphicalInterfaceConstants.DEFAULT_SOLVER_NAME);
-        readFile();
+		writeToFile(GraphicalInterfaceConstants.DEFAULT_SOLVER_NAME);
+		readFile();
 	}
 }

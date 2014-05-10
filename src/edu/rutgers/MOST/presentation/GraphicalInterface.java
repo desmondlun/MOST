@@ -205,9 +205,6 @@ public class GraphicalInterface extends JFrame {
 	private Task task;	
 	public final ProgressBar progressBar = new ProgressBar();	
 	javax.swing.Timer timer = new javax.swing.Timer(100, new TimeListener());
-	
-	// used to save solver selection
-	public static ConfigProperties configProp;
 
 	/*****************************************************************************/
 	// boolean values
@@ -876,8 +873,6 @@ public class GraphicalInterface extends JFrame {
 		gi = this;
 
 		isRoot = true;
-		
-		setSolverName(GraphicalInterfaceConstants.DEFAULT_SOLVER_NAME);
 
 		// Tree Panel
 		treePanel = new DynamicTreePanel(new DynamicTree() {
@@ -2215,6 +2210,17 @@ public class GraphicalInterface extends JFrame {
 				}
 				else {
 					disableGurobiItems();
+				}
+				ConfigProperties configProp = new ConfigProperties();
+				if (configProp.fileExists()) {
+					configProp.readFile();
+					if (configProp.getSolverName() != null) {
+						if (configProp.getSolverName().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
+							getSolverSetUpDialog().glpkRadioButton.setSelected(true);
+						} else if (configProp.getSolverName().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
+							getSolverSetUpDialog().gurobiRadioButton.setSelected(true);
+						}
+					}
 				}
 				getSolverSetUpDialog().setVisible(true);
 			}    	     
@@ -10473,6 +10479,7 @@ public class GraphicalInterface extends JFrame {
 	
 	static ActionListener solvOKActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
+			ConfigProperties configProp = new ConfigProperties();
 			if (getSolverSetUpDialog().glpkRadioButton.isSelected()) {		
 				setSolverName(GraphicalInterfaceConstants.GLPK_SOLVER_NAME);
 				configProp.writeToFile(GraphicalInterfaceConstants.GLPK_SOLVER_NAME);
@@ -10572,6 +10579,21 @@ public class GraphicalInterface extends JFrame {
 		} 
 	}
 	
+	public static void getSolverFromConfigProperties() {
+		ConfigProperties configProp = new ConfigProperties();
+		setSolverName(GraphicalInterfaceConstants.DEFAULT_SOLVER_NAME);
+		if (configProp.fileExists()) {
+			configProp.readFile();
+			if (configProp.getSolverName() != null) {
+				if (configProp.getSolverName().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
+					setSolverName(GraphicalInterfaceConstants.GLPK_SOLVER_NAME);
+				} else if (configProp.getSolverName().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
+					setSolverName(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
+				}
+			} 
+		}
+	}
+	
 	public static void main(String[] args) {
 	//public static void main(String[] args) throws Exception {
 		ResizableDialog dialog = new ResizableDialog("Error", "Error", "Error");
@@ -10580,6 +10602,7 @@ public class GraphicalInterface extends JFrame {
 			curSettings = new SettingsFactory();
 			
 			cleanupTemporaryDirectory();
+			getSolverFromConfigProperties();
 
 			//based on code from http://stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
 			final ArrayList<Image> icons = new ArrayList<Image>(); 
