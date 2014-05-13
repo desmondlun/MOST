@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 import org.sbml.jsbml.*;
+
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 import edu.rutgers.MOST.presentation.ProgressConstants;
@@ -393,12 +394,23 @@ public class SBMLModelReader {
 						if (reactions.get(j).getKineticLaw().getLocalParameter("LOWER_BOUND").getValue() < 0.0 && reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
 							lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT_IRREVERBIBLE_STRING;
 						}
-					} 
+					} else if (reactions.get(j).getKineticLaw().getListOfLocalParameters().get(k).getName().matches("LOWER_BOUND")) {
+						lowerBound = Double.toString(reactions.get(j).getKineticLaw().getListOfLocalParameters().get(k).getValue());
+						// corrects lower bound reversible error in file
+						// TODO : add error message here?
+//						if (reactions.get(j).getKineticLaw().getLocalParameter("LOWER_BOUND").getValue() < 0.0 && reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
+//							lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT_IRREVERBIBLE_STRING;
+//						}
+					}
 					if (reactions.get(j).getKineticLaw().getListOfLocalParameters().get(k).getId().matches("UPPER_BOUND")) {
 						upperBound = Double.toString(reactions.get(j).getKineticLaw().getLocalParameter("UPPER_BOUND").getValue());			
-					} 
+					} else if (reactions.get(j).getKineticLaw().getListOfLocalParameters().get(k).getName().matches("UPPER_BOUND")) {
+						upperBound = Double.toString(reactions.get(j).getKineticLaw().getListOfLocalParameters().get(k).getValue());
+					}
 					if (reactions.get(j).getKineticLaw().getListOfLocalParameters().get(k).getId().matches("OBJECTIVE_COEFFICIENT")) {
 						biologicalObjective = Double.toString(reactions.get(j).getKineticLaw().getLocalParameter("OBJECTIVE_COEFFICIENT").getValue());			
+					} else if (reactions.get(j).getKineticLaw().getListOfLocalParameters().get(k).getName().matches("OBJECTIVE_COEFFICIENT")) {
+						biologicalObjective = Double.toString(reactions.get(j).getKineticLaw().getListOfLocalParameters().get(k).getValue());
 					}
 				}
 			} 

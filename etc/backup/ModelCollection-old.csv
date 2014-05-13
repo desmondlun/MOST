@@ -1,6 +1,6 @@
 Model Version,Organism Name,Year,Genes,Reactions,Metabolites,Reference,Path,Type
 AbyMBEL891,Acinetobacter baumannii AYE ,2008,650,891,701,"Durot et al., 2008",sbml/Acinetobacter baumannii,sbml
-AraGEM,Arabidopsis thaliana,2009,0,1406,1253,"Poolman et al., 2009",sbml/Arabidopsis thaliana,sbml
+AraGEM,Arabidopsis thaliana,2009,1419,1567,1748,"Poolman et al., 2009",sbml/Arabidopsis thaliana,sbml
 iHD666,Aspergillus nidulans FGSC A4,2008,666,1213,732,"David et al., 2008",sbml/Aspergillus nidulans,sbml
 iMA871,Aspergillus niger CBS 513.88,2008,871,2240,1045,"Andersen et al., 2008",sbml/Aspergillus niger,sbml
 AORYZAE,Aspergillus oryzae RIB40,2008,1314,2127,1073,"Vongsangnak et al., 2008",sbml/Aspergillus oryzae,sbml
