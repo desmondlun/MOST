@@ -1,5 +1,7 @@
 package edu.rutgers.MOST.optimization.solvers;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -23,7 +25,7 @@ import org.gnu.glpk.glp_tree;
 
 import edu.rutgers.MOST.data.Solution;
 import edu.rutgers.MOST.optimization.GDBB.GDBB;
-import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
+import edu.rutgers.MOST.presentation.ResizableDialog;
 
 public class GLPKSolver extends Solver implements GlpkCallbackListener
 {
@@ -91,8 +93,9 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 	private ArrayList< Double > soln = new ArrayList< Double >();
 	private double objval;
 	private glp_prob problem_tmp;
-	private SolverKind solverKind = SolverKind.FBASolver; // default may change
-															// in SetVar()
+	private SolverKind solverKind = SolverKind.FBASolver;
+	private ResizableDialog dialog = new ResizableDialog( "Error",
+			"GLPK Solver Error", "GLPK Solver Error" );
 
 	private static void addLibraryPath( String pathToAdd ) throws Exception
 	{
@@ -117,6 +120,14 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 		newPaths[newPaths.length - 1] = pathToAdd;
 		usrPathsField.set( null, newPaths );
 	}
+	private void processStackTrace( Exception except )
+	{
+		except.printStackTrace();
+		StringWriter errors = new StringWriter();
+		except.printStackTrace( new PrintWriter( errors ) );
+		dialog.setErrorMessage( errors.toString() );
+		dialog.setVisible( true );
+	}
 
 	public GLPKSolver()
 	{
@@ -124,34 +135,27 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 		Object[] options = { "    OK    " };
 		if( System.getProperty( "os.name" ).toLowerCase().contains( "windows" ) )
 		{
-			dependsFolder += "win"
-					+ System.getProperty( "sun.arch.data.model" );
+			dependsFolder += "win" + System.getProperty( "sun.arch.data.model" );
 		}
-		else if( System.getProperty( "os.name" ).toLowerCase().contains( "mac os x" ) )
+		else if( System.getProperty( "os.name" ).toLowerCase()
+				.contains( "mac os x" ) )
 			dependsFolder += "mac";
 		else
 			dependsFolder += "linux";
-		
+
 		try
 		{
 			addLibraryPath( dependsFolder );
 			@SuppressWarnings( "unused" )
 			int x = GLPKConstants.GLP_JAVA_A_X;
 		}
-		catch ( UnsatisfiedLinkError | Exception  except )
+		catch ( UnsatisfiedLinkError | Exception except )
 		{
-			JOptionPane
-					.showOptionDialog(
-							null,
-							"The dynamic link library for GLPK 4.53 for Java could not be "
-									+ "loaded from "
-									+ Paths.get( dependsFolder )
-											.toAbsolutePath().toString(),
-							"GLPK unresolved dependency error",
-							JOptionPane.YES_NO_OPTION,
-							JOptionPane.QUESTION_MESSAGE, null, options,
-							options[0] );
-				except.printStackTrace();
+			processStackTrace( new Exception(
+					"The dynamic link library for GLPK 4.53 for Java could not be "
+							+ "loaded from "
+							+ Paths.get( dependsFolder ).toAbsolutePath()
+									.toString() ) );
 		}
 	}
 	@Override
