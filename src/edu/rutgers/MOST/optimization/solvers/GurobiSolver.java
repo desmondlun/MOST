@@ -1,16 +1,25 @@
 package edu.rutgers.MOST.optimization.solvers;
 
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
+import edu.rutgers.MOST.presentation.ResizableDialog;
+import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.Solution;
 import edu.rutgers.MOST.optimization.GDBB.GDBB;
-import edu.rutgers.MOST.presentation.GraphicalInterface;
-import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
+
 import gurobi.GRB;
 import gurobi.GRBCallback;
 import gurobi.GRBEnv;
@@ -32,8 +41,9 @@ public class GurobiSolver extends Solver
 	private GRBModel model;
 	private GRBEnv env;
 	private ObjType objType;
-	private SolverKind solverKind = SolverKind.FBASolver; // default may change
-															// in Callback (constructor)
+	private SolverKind solverKind = SolverKind.FBASolver;
+	private ResizableDialog dialog = new ResizableDialog( "Error",
+			"Gurobi Solver Error", "Gurobi Solver Error" );
 
 	public static boolean isGurobiLinked()
 	{
@@ -44,16 +54,24 @@ public class GurobiSolver extends Solver
 				GRBEnv env = new GRBEnv();
 				env.dispose();
 			}
-			catch( GRBException e ) //necessary due to throws declaration
+			catch ( GRBException e ) // necessary due to throws declaration
 			{
 			}
 		}
-		catch( UnsatisfiedLinkError except )
+		catch ( UnsatisfiedLinkError except )
 		{
-			return false; //gurobi does not link
+			return false; // gurobi does not link
 		}
-		
-		return true; //gurobi does link
+
+		return true; // gurobi does link
+	}
+	private void processStackTrace( Exception e )
+	{
+		e.printStackTrace();
+		StringWriter errors = new StringWriter();
+		e.printStackTrace( new PrintWriter( errors ) );
+		dialog.setErrorMessage( errors.toString() );
+		dialog.setVisible( true );
 	}
 	private void promptGRBError( GRBException e )
 	{
@@ -84,16 +102,13 @@ public class GurobiSolver extends Solver
 			errMsg = "Gurobi has encountered an internal error!";
 			break;
 		default:
-			errMsg = "Gurobi encountered an error optimizing the model\nError Code: " + code;
+			errMsg = "Gurobi encountered an error optimizing the model\nError Code: "
+					+ code;
 		}
 		if( GraphicalInterface.getGdbbDialog() != null )
 			GraphicalInterface.getGdbbDialog().setVisible( false );
 
-		Object[] options = { "    OK    " };
-		JOptionPane.showOptionDialog( null, "Error: " + errMsg,
-				GraphicalInterfaceConstants.GUROBI_KEY_ERROR_TITLE,
-				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-				null, options, options[0] );
+		processStackTrace( new Exception( errMsg ) );
 		LocalConfig.getInstance().getOptimizationFilesList().clear();
 	}
 	private char getGRBVarType( VarType type )
@@ -143,6 +158,31 @@ public class GurobiSolver extends Solver
 
 	public GurobiSolver()
 	{
+		// set the dialog
+		final ArrayList< Image > icons = new ArrayList< Image >();
+		icons.add( new ImageIcon( "etc/most16.jpg" ).getImage() );
+		icons.add( new ImageIcon( "etc/most32.jpg" ).getImage() );
+		dialog.setIconImages( icons );
+		dialog.setLocationRelativeTo( null );
+		dialog.setVisible( false );
+		dialog.setDefaultCloseOperation( javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE );
+		dialog.addWindowListener( new WindowAdapter()
+		{
+			public void windowClosing( WindowEvent evt )
+			{
+				dialog.setVisible( false );
+			}
+		} );
+
+		dialog.OKButton.addActionListener( new ActionListener()
+		{
+			public void actionPerformed( ActionEvent ae )
+			{
+				dialog.setVisible( false );
+			}
+
+		} );
+
 		if( !isGurobiLinked() )
 		{
 			String msg1 = "Java could not link to the Gurobi dependencies";
@@ -155,8 +195,7 @@ public class GurobiSolver extends Solver
 					+ System.getProperty( "java.runtime.version" );
 			Object[] options = { "    OK    " };
 			JOptionPane.showOptionDialog( null, msg1 + "\n" + msg2 + "\n"
-					+ msg3 + "\n" + msg4,
-					"Linking Error",
+					+ msg3 + "\n" + msg4, "Linking Error",
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
 					null, options, options[0] );
 			return;
@@ -187,16 +226,16 @@ public class GurobiSolver extends Solver
 						{
 							// GDBB intermediate solutions
 							solverKind = SolverKind.GDBBSolver;
-								GDBB.intermediateSolution.add( new Solution(
-										this.getDoubleInfo( GRB.CB_MIPSOL_OBJ ),
-										this.getSolution( model.getVars() ) ) );
+							GDBB.intermediateSolution.add( new Solution( this
+									.getDoubleInfo( GRB.CB_MIPSOL_OBJ ), this
+									.getSolution( model.getVars() ) ) );
 							objval = getDoubleInfo( GRB.CB_MIPSOL_OBJ ); // MIP
 																			// objective
 						}
 					}
 					catch ( GRBException e )
 					{
-						e.printStackTrace();
+						processStackTrace( e );
 					}
 				}
 
@@ -206,14 +245,9 @@ public class GurobiSolver extends Solver
 		{
 			promptGRBError( e );
 		}
-		catch ( Exception except ) //unexpected
+		catch ( Exception except ) // unexpected
 		{
-			Object[] options = { "    OK    " };
-			JOptionPane.showOptionDialog( null, except.getMessage(),
-					"Unexpected Error",
-					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-					null, options, options[0] );
-			except.printStackTrace(); //because it's unexpected
+			processStackTrace( except );
 		}
 
 	}
@@ -242,7 +276,7 @@ public class GurobiSolver extends Solver
 		}
 		catch ( GRBException e )
 		{
-			e.printStackTrace();
+			processStackTrace( e );
 		}
 
 	}
@@ -268,7 +302,7 @@ public class GurobiSolver extends Solver
 		}
 		catch ( GRBException e )
 		{
-			e.printStackTrace();
+			processStackTrace( e );
 		}
 
 	}
@@ -293,7 +327,7 @@ public class GurobiSolver extends Solver
 		}
 		catch ( GRBException e )
 		{
-			e.printStackTrace();
+			processStackTrace( e );
 		}
 	}
 
