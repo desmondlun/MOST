@@ -1032,9 +1032,14 @@ public class GraphicalInterface extends JFrame {
 		solvSetUpDlg.setResizable(false);
 		solvSetUpDlg.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		solvSetUpDlg.setLocationRelativeTo(null);		
-		solvSetUpDlg.setAlwaysOnTop(true);	
 		solvSetUpDlg.setModal(true);
 		solvSetUpDlg.okButton.addActionListener(solvOKActionListener);
+		solvSetUpDlg.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent evt) {
+				getSolverSetUpDialog().setVisible(false);
+				getSolverSetUpDialog().dispose();
+			}
+		});	
 		
 		setTitle(GraphicalInterfaceConstants.TITLE);
 		LocalConfig.getInstance().setModelName(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME);
@@ -1461,7 +1466,6 @@ public class GraphicalInterface extends JFrame {
         			gdbbDialog.setResizable(false);
         			gdbbDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         			gdbbDialog.setLocationRelativeTo(null);
-        			gdbbDialog.setAlwaysOnTop(true);
         			setGdbbDialog(gdbbDialog);
         			if (getSolverName() == GraphicalInterfaceConstants.GLPK_SOLVER_NAME) {
         				getGdbbDialog().disableThreadsCombo();
@@ -1471,7 +1475,6 @@ public class GraphicalInterface extends JFrame {
         			gdbbDialog.addWindowListener(new WindowAdapter() {
         				public void windowClosing(WindowEvent evt) {
         					if (gdbbTimer.isRunning()) {
-        						getGdbbDialog().setAlwaysOnTop(false);
         						Object[] options = {"    Yes    ", "    No    ",};
         						int choice = JOptionPane.showOptionDialog(null, 
         								GDBBConstants.FRAME_CLOSE_MESSAGE, 
@@ -1485,7 +1488,6 @@ public class GraphicalInterface extends JFrame {
         						if (choice == JOptionPane.NO_OPTION) {
 
         						}
-        						getGdbbDialog().setAlwaysOnTop(true);
         					} else {
         						getGdbbDialog().setVisible(false);
         						getGdbbDialog().dispose();
@@ -1517,7 +1519,6 @@ public class GraphicalInterface extends JFrame {
         						}
         					}        				
         					if (!isValid) {
-        						getGdbbDialog().setAlwaysOnTop(false);
         						JOptionPane.showMessageDialog(null,                
         								GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_TITLE,                
         								GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_MESSAGE,                               
@@ -1528,7 +1529,6 @@ public class GraphicalInterface extends JFrame {
         						if (!finiteTimeIsInteger) {
         							getGdbbDialog().setFiniteTimeDefaultValue();
         						}
-        						getGdbbDialog().setAlwaysOnTop(true);
         					} else {
         						// run gdbb
         						getGdbbDialog().disableComponents();
@@ -1767,7 +1767,7 @@ public class GraphicalInterface extends JFrame {
 				getAddReactionRowsDialog().setSize(220, 150);
 				getAddReactionRowsDialog().setResizable(false);
 				getAddReactionRowsDialog().setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-				getAddReactionRowsDialog().setAlwaysOnTop(true);
+				//getAddReactionRowsDialog().setAlwaysOnTop(true);
 				getAddReactionRowsDialog().setModal(true);
 				getAddReactionRowsDialog().setLocationRelativeTo(null);
 				getAddReactionRowsDialog().addWindowListener(new WindowAdapter() {
@@ -1784,28 +1784,28 @@ public class GraphicalInterface extends JFrame {
 				EntryValidator validator = new EntryValidator();
 				// check if integer
 				if (!validator.isInteger(getAddReactionRowsDialog().textField.getText())) {
-					getAddReactionRowsDialog().setAlwaysOnTop(false);
-					getAddReactionRowsDialog().setModal(false);
+//					getAddReactionRowsDialog().setAlwaysOnTop(false);
+//					getAddReactionRowsDialog().setModal(false);
 					JOptionPane.showMessageDialog(null,                
 							GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_TITLE,                
 							GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_MESSAGE,                                
 							JOptionPane.ERROR_MESSAGE);
-					getAddReactionRowsDialog().setAlwaysOnTop(true);
-					getAddReactionRowsDialog().setModal(true);
+//					getAddReactionRowsDialog().setAlwaysOnTop(true);
+//					getAddReactionRowsDialog().setModal(true);
 					getAddReactionRowsDialog().textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
 					getAddReactionRowsDialog().textField.selectAll();
 				} else {
 					int numRows = Integer.valueOf(getAddReactionRowsDialog().textField.getText());
 					// check that value in acceptable range
 					if (numRows >= GraphicalInterfaceConstants.MAX_NUM_ADD_ROWS || numRows <= 0) {
-						getAddReactionRowsDialog().setAlwaysOnTop(false);
-						getAddReactionRowsDialog().setModal(false);
+//						getAddReactionRowsDialog().setAlwaysOnTop(false);
+//						getAddReactionRowsDialog().setModal(false);
 						JOptionPane.showMessageDialog(null,                
 								GraphicalInterfaceConstants.ADD_ROWS_OUT_OF_RANGE_MESSAGE,                
 								GraphicalInterfaceConstants.ADD_ROWS_OUT_OF_RANGE_TITLE,                                
 								JOptionPane.ERROR_MESSAGE);
-						getAddReactionRowsDialog().setAlwaysOnTop(true);
-						getAddReactionRowsDialog().setModal(true);
+//						getAddReactionRowsDialog().setAlwaysOnTop(true);
+//						getAddReactionRowsDialog().setModal(true);
 						getAddReactionRowsDialog().textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
 						getAddReactionRowsDialog().textField.selectAll();
 					} else {
@@ -1884,7 +1884,7 @@ public class GraphicalInterface extends JFrame {
 				getAddMetaboliteRowsDialog().setSize(220, 150);
 				getAddMetaboliteRowsDialog().setResizable(false);
 				getAddMetaboliteRowsDialog().setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-				getAddMetaboliteRowsDialog().setAlwaysOnTop(true);
+				//getAddMetaboliteRowsDialog().setAlwaysOnTop(true);
 				getAddMetaboliteRowsDialog().setModal(true);
 				getAddMetaboliteRowsDialog().setLocationRelativeTo(null);
 				getAddMetaboliteRowsDialog().addWindowListener(new WindowAdapter() {
@@ -1901,28 +1901,28 @@ public class GraphicalInterface extends JFrame {
 				EntryValidator validator = new EntryValidator();
 				// check if integer
 				if (!validator.isInteger(getAddMetaboliteRowsDialog().textField.getText())) {
-					getAddMetaboliteRowsDialog().setAlwaysOnTop(false);
-					getAddMetaboliteRowsDialog().setModal(false);
+//					getAddMetaboliteRowsDialog().setAlwaysOnTop(false);
+//					getAddMetaboliteRowsDialog().setModal(false);
 					JOptionPane.showMessageDialog(null,                
 							GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_TITLE,                
 							GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_MESSAGE,                                
 							JOptionPane.ERROR_MESSAGE);
-					getAddMetaboliteRowsDialog().setAlwaysOnTop(true);
-					getAddMetaboliteRowsDialog().setModal(true);
+//					getAddMetaboliteRowsDialog().setAlwaysOnTop(true);
+//					getAddMetaboliteRowsDialog().setModal(true);
 					getAddMetaboliteRowsDialog().textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
 					getAddMetaboliteRowsDialog().textField.selectAll();
 				} else {
 					int numRows = Integer.valueOf(getAddMetaboliteRowsDialog().textField.getText());
 					// check that value in acceptable range
 					if (numRows >= GraphicalInterfaceConstants.MAX_NUM_ADD_ROWS || numRows <= 0) {
-						getAddMetaboliteRowsDialog().setAlwaysOnTop(false);
-						getAddMetaboliteRowsDialog().setModal(false);
+//						getAddMetaboliteRowsDialog().setAlwaysOnTop(false);
+//						getAddMetaboliteRowsDialog().setModal(false);
 						JOptionPane.showMessageDialog(null,                
 								GraphicalInterfaceConstants.ADD_ROWS_OUT_OF_RANGE_MESSAGE,                
 								GraphicalInterfaceConstants.ADD_ROWS_OUT_OF_RANGE_TITLE,                                
 								JOptionPane.ERROR_MESSAGE);
-						getAddMetaboliteRowsDialog().setAlwaysOnTop(true);
-						getAddMetaboliteRowsDialog().setModal(true);
+//						getAddMetaboliteRowsDialog().setAlwaysOnTop(true);
+//						getAddMetaboliteRowsDialog().setModal(true);
 						getAddMetaboliteRowsDialog().textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
 						getAddMetaboliteRowsDialog().textField.selectAll();
 					} else {
@@ -1982,7 +1982,7 @@ public class GraphicalInterface extends JFrame {
 				reactionColAddRenameInterface.setSize(350, 150);
 				reactionColAddRenameInterface.setResizable(false);
 				reactionColAddRenameInterface.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-				reactionColAddRenameInterface.setAlwaysOnTop(true);
+				//reactionColAddRenameInterface.setAlwaysOnTop(true);
 				reactionColAddRenameInterface.setModal(true);
 				reactionColAddRenameInterface.setLocationRelativeTo(null);
 				reactionColAddRenameInterface.addWindowListener(new WindowAdapter() {
@@ -1999,14 +1999,14 @@ public class GraphicalInterface extends JFrame {
 				// allows table to scroll to make added column visible
 				addReacColumn = true;
 				if (getReactionColAddRenameInterface().isColumnDuplicate()) {
-					reactionColAddRenameInterface.setAlwaysOnTop(false);
-					reactionColAddRenameInterface.setModal(false);
+//					reactionColAddRenameInterface.setAlwaysOnTop(false);
+//					reactionColAddRenameInterface.setModal(false);
 					JOptionPane.showMessageDialog(null,                
 							"Column Name Already Exists.",                
 							"Duplicate ColumnName",                                
 							JOptionPane.ERROR_MESSAGE);
-					reactionColAddRenameInterface.setAlwaysOnTop(true);
-					reactionColAddRenameInterface.setModal(true);
+//					reactionColAddRenameInterface.setAlwaysOnTop(true);
+//					reactionColAddRenameInterface.setModal(true);
 				} else {
 					// copy old model for undo/redo
 					DefaultTableModel oldReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
@@ -2065,7 +2065,7 @@ public class GraphicalInterface extends JFrame {
 				metaboliteColAddRenameInterface.setSize(350, 150);
 				metaboliteColAddRenameInterface.setResizable(false);
 				metaboliteColAddRenameInterface.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-				metaboliteColAddRenameInterface.setAlwaysOnTop(true);
+				//metaboliteColAddRenameInterface.setAlwaysOnTop(true);
 				metaboliteColAddRenameInterface.setModal(true);
 				metaboliteColAddRenameInterface.setLocationRelativeTo(null);
 				metaboliteColAddRenameInterface.addWindowListener(new WindowAdapter() {
@@ -2082,14 +2082,14 @@ public class GraphicalInterface extends JFrame {
 				// allows table to scroll to make added column visible
 				addMetabColumn = true;
 				if (getMetaboliteColAddRenameInterface().isColumnDuplicate()) {
-					metaboliteColAddRenameInterface.setAlwaysOnTop(false);
-					metaboliteColAddRenameInterface.setModal(false);
+//					metaboliteColAddRenameInterface.setAlwaysOnTop(false);
+//					metaboliteColAddRenameInterface.setModal(false);
 					JOptionPane.showMessageDialog(null,                
 							"Column Name Already Exists.",                
 							"Duplicate ColumnName",                                
 							JOptionPane.ERROR_MESSAGE);
-					metaboliteColAddRenameInterface.setAlwaysOnTop(true);
-					metaboliteColAddRenameInterface.setModal(true);
+//					metaboliteColAddRenameInterface.setAlwaysOnTop(true);
+//					metaboliteColAddRenameInterface.setModal(true);
 				} else {
 					// copy old model for undo/redo
 					DefaultTableModel oldMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());			
