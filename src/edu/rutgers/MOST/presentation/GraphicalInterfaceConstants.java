@@ -337,7 +337,7 @@ public class GraphicalInterfaceConstants {
     // about
     public static final String ABOUT_BOX_TITLE = "About MOST";
     public static final String ABOUT_BOX_TEXT = "MOST - Metabolic Optimization and Simulation Tool.";	
-    public static final String ABOUT_BOX_VERSION_TEXT = "Version: alpha-6";
+    public static final String ABOUT_BOX_VERSION_TEXT = "Version: alpha-7";
     
     public static final String ABOUT_LICENSE_URL = "http://most.ccib.rutgers.edu/help.html#about";
     

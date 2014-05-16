@@ -1,0 +1,21 @@
+Model Version,Organism Name,Genes,Reactions,Metabolites,Reference,Path,Filename,Type,URL
+iBsu1103,Bacillus subtilis 168,1103,1437,1138,"Henry et al., 2009",sbml/Bacillus subtilis,iBsu1103,sbml,http://dx.doi.org/10.1186/gb-2009-10-6-r69
+iRC1080_autotrophic,Chlamydomonas reinhardtii,1080,2190,1068,"Chang et al., 2011",sbml/Chlamydomonas reinhardtii,iRC1080_autotrophic,sbml,http://dx.doi.org/10.1038/msb.2011.52
+iRC1080_heterotrophic,Chlamydomonas reinhardtii,1080,2190,1068,"Chang et al., 2011",sbml/Chlamydomonas reinhardtii,iRC1080_heterotrophic,sbml,http://dx.doi.org/10.1038/msb.2011.52
+iRC1080_mixotrophic,Chlamydomonas reinhardtii,1080,2190,1068,"Chang et al., 2011",sbml/Chlamydomonas reinhardtii,iRC1080_mixotrophic,sbml,http://dx.doi.org/10.1038/msb.2011.52
+iCB925,Clostridium beijerinckii NCIMB 8052,925,938,881,"Milne et al., 2011",sbml/Clostridium beijerinckii,iCB925,sbml,http://dx.doi.org/10.1186/1752-0509-5-130
+iAI549,Dehalococcoides ethenogenes,,,,,sbml/Dehalococcoides ethenogenes,iAI549modified,sbml,
+ecoli_core_model,Escherichia coli,134,95,72,"Orth et al, 2010",sbml/E. Coli,ecoli_core_model,sbml,http://dx.doi.org/10.1128/ecosalplus.10.2.1 
+Ec_iAF1260_anaerobic_glc10_acetate,Escherichia coli K-12 MG1655,1260,2077,1039,"Egen and Lun, 2012",sbml/E. Coli,Ec_iAF1260_anaerobic_glc10_acetate,sbml,http://dx.doi.org/10.1093/bioinformatics/bts255
+Ec_iAF1260_anaerobic_glc10_succinate,Escherichia coli K-12 MG1655,1260,2077,1039,"Egen and Lun, 2012",sbml/E. Coli,Ec_iAF1260_anaerobic_glc10_succinate,sbml,http://dx.doi.org/10.1093/bioinformatics/bts255
+iAF1260,Escherichia coli K-12 MG1655,1260,2077,1039,"Feist et al., 2007",sbml/E. Coli,iAF1260,sbml,http://dx.doi.org/10.1038%2Fmsb4100155
+iJO1366,Escherichia coli K-12 MG1655,1366,2251,1136,"Orth et al, 2011",sbml/E. Coli,iJO1366,sbml,http://dx.doi.org/10.1038/msb.2011.65
+iJR904,Escherichia coli K-12 MG1655,904,931,625,"Reed et al., 2003",sbml/E. Coli,iJR904,sbml,http://dx.doi.org/10.1186/gb-2003-4-9-r54
+iCA1273,Escherichia coli W (ATCC 9637),1273,2477,1111,"Archer et al., 2011",sbml/E. Coli,iCA1273,sbml,http://dx.doi.org/10.1186/1471-2164-12-9
+iIT341,Helicobacter pylori 26695,341,476,485,"Thiele et al., 2005",sbml/Helicobacter pylori,iIT341,sbml,http://dx.doi.org/10.1128/JB.187.16.5818-5830.2005
+iYL1228,Klebsiella pneumoniae MGH 78578,1228,1970,1658,"Liao et al, 2011",sbml/Klebsiella pneumoniae,iYL1228,sbml,http://dx.doi.org/10.1128/JB.01218-10
+iAC560,Leishmania major,560,1112,1101,"Chivali et al., 2008",sbml/Leishmania major,iAC560modified,sbml,http://dx.doi.org/10.1038/msb.2008.15
+iNJ661,Mycobacterium tuberculosis H37Rv,661,939,828,"Jamshidi and Palsson, 2007",sbml/Mycobacterium tuberculosis,iNJ661,sbml,http://dx.doi.org/10.1186/1752-0509-1-26
+iND750,Saccharomyces cerevisiae,750,1149,646,"Duarte et al., 2004",sbml/Saccharomyces cerevisiae,iND750,sbml,http://dx.doi.org/10.1101%2Fgr.2250904
+iRR1083,Salmonella typhimurium LT2,1083,1087,744,"Raghunathan et al., 2009",sbml/Salmonella typhimurium,iRR1083,sbml,http://dx.doi.org/10.1186/1752-0509-3-38
+iSB619,Staphylococcus aureus N315,619,724,571,"Becker and Palsson, 2005",sbml/Staphylococcus aureus,iSB619,sbml,http://dx.doi.org/10.1186/1471-2180-5-8
