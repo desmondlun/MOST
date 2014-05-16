@@ -1,22 +1,26 @@
 package edu.rutgers.MOST.data;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
+import edu.rutgers.MOST.presentation.ResizableDialog;
 
 public class ReactionFactory {
 	private String sourceType;
 	private Map<Object, Object> reactionsIdPositionMap;
 	private static String columnName;
+	private ResizableDialog dialog = new ResizableDialog( "Error",
+			"Error", "Error" );
 
 	public ReactionFactory(String sourceType) {
 		this.sourceType = sourceType;
@@ -118,7 +122,7 @@ public class ReactionFactory {
 			try {
 				reactionsOptModel.setValueAt(fluxes.get(i).toString(), rowNum, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN);
 			} catch (Exception e) {
-				e.printStackTrace();
+				processStackTrace(e);
 			}			
 		}
 	}
@@ -132,7 +136,6 @@ public class ReactionFactory {
 		Vector<String> geneAssocaitons = getGeneAssociations();
 		ArrayList<Integer> rowList = new ArrayList<Integer>();
 
-		String queryKVector = "";
 		for (int i = 0; i < geneAssocaitons.size(); i++) {
 			for (int j = 0; j < uniqueGeneAssociations.size(); j++) {
 				if (geneAssocaitons.elementAt(i).equals(uniqueGeneAssociations.elementAt(j))) {
@@ -146,7 +149,6 @@ public class ReactionFactory {
 
 			if(kVector.get(i).doubleValue() != 0.0) {
 				rowList.add(i);
-				//queryKVector += " when " + (i + 1) + " then " + "\"" + GraphicalInterfaceConstants.BOOLEAN_VALUES[1] + "\"";
 			}
 		}
 
@@ -158,19 +160,23 @@ public class ReactionFactory {
 		//			}
 
 		DefaultTableModel reactionsOptModel = (DefaultTableModel) GraphicalInterface.reactionsTable.getModel();
-		Vector<ModelReaction> reactions = getAllReactions();
-		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
-		for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
-			reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
-		}
-		LocalConfig.getInstance().setGdbbKnockoutsList(rowList);
-		for (int j = 0; j < rowList.size(); j++) {
-			int id = ((SBMLReaction) reactions.get(rowList.get(j))).getId();
-			String row = (reactionsIdRowMap.get(Integer.toString(id))).toString();
-			int rowNum = Integer.valueOf(row);	
-			reactionsOptModel.setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[1], rowNum, GraphicalInterfaceConstants.KO_COLUMN);
-			//reactionsOptModel.setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[1], rowList.get(j), GraphicalInterfaceConstants.KO_COLUMN);
-		}	
+		setKnockoutValues(rowList, reactionsOptModel);
+//		Vector<ModelReaction> reactions = getAllReactions();
+//		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
+//		for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
+//			reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
+//		}
+//		LocalConfig.getInstance().setGdbbKnockoutsList(rowList);
+//		for (int j = 0; j < rowList.size(); j++) {
+//			int id = ((SBMLReaction) reactions.get(rowList.get(j))).getId();
+//			String row = (reactionsIdRowMap.get(Integer.toString(id))).toString();
+//			int rowNum = Integer.valueOf(row);	
+//			try {
+//				reactionsOptModel.setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[1], rowNum, GraphicalInterfaceConstants.KO_COLUMN);
+//			} catch (Exception e) {
+//				processStackTrace(e);
+//			}	
+//		}	
 
 		return knockoutGenes;
 	}
@@ -182,6 +188,27 @@ public class ReactionFactory {
 			reactionsOptModel.setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[0], h, GraphicalInterfaceConstants.KO_COLUMN);
 		}
 		// set knockouts to true
+		setKnockoutValues(rowList, reactionsOptModel);
+//		Vector<ModelReaction> reactions = getAllReactions();
+//		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
+//		for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
+//			reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
+//		}
+//		LocalConfig.getInstance().setGdbbKnockoutsList(rowList);
+//		for (int j = 0; j < rowList.size(); j++) {
+//			int id = ((SBMLReaction) reactions.get(rowList.get(j))).getId();
+//			String row = (reactionsIdRowMap.get(Integer.toString(id))).toString();
+//			int rowNum = Integer.valueOf(row);	
+//			try {
+//				reactionsOptModel.setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[1], rowNum, GraphicalInterfaceConstants.KO_COLUMN);
+//			} catch (Exception e) {
+//				processStackTrace(e);
+//			}	
+//		}	
+	}
+
+	// updates knockout values in reactions table
+	public void setKnockoutValues(ArrayList<Integer> rowList, DefaultTableModel reactionsOptModel) {
 		Vector<ModelReaction> reactions = getAllReactions();
 		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
 		for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
@@ -192,10 +219,14 @@ public class ReactionFactory {
 			int id = ((SBMLReaction) reactions.get(rowList.get(j))).getId();
 			String row = (reactionsIdRowMap.get(Integer.toString(id))).toString();
 			int rowNum = Integer.valueOf(row);	
-			reactionsOptModel.setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[1], rowNum, GraphicalInterfaceConstants.KO_COLUMN);
-		}	
+			try {
+				reactionsOptModel.setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[1], rowNum, GraphicalInterfaceConstants.KO_COLUMN);
+			} catch (Exception e) {
+				processStackTrace(e);
+			}	
+		}
 	}
-
+	
 	/**
 	 * @param args
 	 */
@@ -282,6 +313,14 @@ public class ReactionFactory {
 
 	public void setColumnName(String columnName) {
 		ReactionFactory.columnName = columnName;
+	}
+	
+	private void processStackTrace( Exception e ) {
+		e.printStackTrace();
+		StringWriter errors = new StringWriter();
+		e.printStackTrace( new PrintWriter( errors ) );
+		dialog.setErrorMessage( errors.toString() );
+		dialog.setVisible( true );
 	}
 
 	public static void main(String[] args) {
