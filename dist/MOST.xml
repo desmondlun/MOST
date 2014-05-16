@@ -2,7 +2,7 @@
   <dontWrapJar>true</dontWrapJar>
   <headerType>gui</headerType>
   <jar>MOST.jar</jar>
-  <outfile>C:\Users\Rutgers\Documents\MOST_dist032914\MOST.exe</outfile>
+  <outfile>C:\Users\Rutgers\Documents\MOST_dist051614\MOST.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir></chdir>
@@ -10,9 +10,9 @@
   <downloadUrl>http://java.com/download</downloadUrl>
   <supportUrl></supportUrl>
   <customProcName>false</customProcName>
-  <stayAlive>true</stayAlive>
+  <stayAlive>false</stayAlive>
   <manifest></manifest>
-  <icon>C:\Users\Rutgers\Documents\MOST_dist032914\etc\most32.ico</icon>
+  <icon>C:\Users\Rutgers\Documents\MOST_dist051614\etc\most32.ico</icon>
   <jre>
     <path></path>
     <minVersion>1.7.0</minVersion>

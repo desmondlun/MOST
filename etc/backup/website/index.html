@@ -29,8 +29,6 @@ A{text-decoration:none}
 
 	<br>
 
-	<blockquote><font size=4>MOST is Software for Engineering Microbes to Produce Fuels, Drugs, and Other Biochemicals</font></blockquote>
-
 	<blockquote>MOST is distributed for free on the <a href="https://github.com/desmondlun/MOST/blob/master/README.md">
 	GNU General Public License</a>.</blockquote>
 
@@ -40,21 +38,36 @@ A{text-decoration:none}
 
 	<br>
 
-	<blockquote>Bacteria and other microbes can be used to produce fuels, drugs, and other biochemicals. Naturally they 
-	produce small amounts of these products, but they can be genetically engineered to produce larger amounts. Bacteria 
-	can live off of sugars, plant matter, or just carbon dioxide and solar energy. Therefore microbes provide an inexpensive 
-	way to create these valuable products.</blockquote>
+               <blockquote><font size=4>MOST: A software environment for metabolic modeling and strain design.</font></blockquote>
 
-	<blockquote>MOST (Metabolic Optimization and Simulation Tool) is a software package that can be used to create 
-	mathematical models of these organisms and run analyses on these models to predict strategies for engineering these 
-	microbes to produce desired products in greater abundance. Other software exists that can build models and perform 
-	similar analyses, but MOST is easier to use than much of the software that exists today in that it employs Microsoft 
-	Excel-like spreadsheet editing functions, as well as functions geared towards the purpose of creating and editing 
-	these models. MOST also implements a technique called GDBB that calculates these predictions many times faster 
-	than other methods and produces better results. For example, one particular analysis that requires 24 hours using 
-	another method is performed by GDBB in 81 seconds! Until now, GDBB was only available in a command line program 
-	that requires programming knowledge to use. MOST is the only software package available that implements GDBB in 
-	an intuitive user-friendly interface.</blockquote>
+	<blockquote>MOST is a standalone software package that can be used to create constraint-based models of 
+                metabolism, load existing models, export models, and run analyses on these models to predict the production 
+                of desired compounds by microbes under genetic manipulations.</blockquote>
+
+                <blockquote>Key features:</blockquote>
+
+	<ul style="padding-left:80px"><li style="padding-left:20px;padding-right:80px"><p>MOST implements GDBB (Genetic Design through Branch and Bound) in an intuitive user-friendly interface with 
+                Excel-like editing functionality, as well as implementing FBA (Flux Balance Analysis). GDBB is currently the 
+                fastest algorithm for finding gene knockouts predicted by FBA to increase production of desired products, but GDBB 
+                has only been available on a command line interface which is difficult to use for those without programming knowledge.</p></li>
+                
+                <li style="padding-left:20px;padding-right:80px"><p>MOST requires a Mixed Integer Linear Program solver (MILP) to run FBA and GDBB. MOST offers a choice of 
+                solvers, either Gurobi solver which is free for academic use, or GLPK (GNU Linear Programming Kit), a free solver.</p></li>
+
+                <li style="padding-left:20px;padding-right:80px"><p>MOST loads SBML files and CSV files, and also saves files in these formats. MOST can correct the syntax of a model, 
+	if necessary, so that it conforms to SBML specifications, when saving a model in SBML format.</p></li>  
+
+	<li style="padding-left:20px;padding-right:80px"><p>MOST includes standard spreadsheet editing functions, such as Copy and Paste, 
+	and also includes functions that are more specialized for model building and editing, such as a Reaction Editor 
+	that can be used to construct reaction equations from an existing table of metabolites.</p></li>
+
+ 	<li style="padding-left:20px;padding-right:80px"><p>MOST provides menu items to highlight participating reactions and to 
+	highlight unused metabolites or delete all unused metabolites.</p></li>
+
+	<li style="padding-left:20px;padding-right:80px"><p>MOST provides error checking and helps the user to fix errors.</p></li>   
+ 
+                <li style="padding-left:20px;padding-right:80px"><p>MOST implements undo and redo, so if an entry is mistakenly changed, reverting to the old value is simple.
+                </p></li></ul>
 
 </body>
 </html>
