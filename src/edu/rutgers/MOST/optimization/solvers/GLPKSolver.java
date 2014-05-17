@@ -126,6 +126,8 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 		StringWriter errors = new StringWriter();
 		except.printStackTrace( new PrintWriter( errors ) );
 		dialog.setErrorMessage( errors.toString() );
+		// centers dialog
+		dialog.setLocationRelativeTo(null);
 		dialog.setVisible( true );
 	}
 

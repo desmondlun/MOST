@@ -320,6 +320,8 @@ public class ReactionFactory {
 		StringWriter errors = new StringWriter();
 		e.printStackTrace( new PrintWriter( errors ) );
 		dialog.setErrorMessage( errors.toString() );
+		// centers dialog
+		dialog.setLocationRelativeTo(null);
 		dialog.setVisible( true );
 	}
 

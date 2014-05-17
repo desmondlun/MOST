@@ -71,6 +71,8 @@ public class GurobiSolver extends Solver
 		StringWriter errors = new StringWriter();
 		e.printStackTrace( new PrintWriter( errors ) );
 		dialog.setErrorMessage( errors.toString() );
+		// centers dialog
+		dialog.setLocationRelativeTo(null);
 		dialog.setVisible( true );
 	}
 	private void promptGRBError( GRBException e )
