@@ -54,8 +54,6 @@ A{text-decoration:none}
 	<p><font size=2>Setting up Gurobi</font></p>
 
 	<ul><li><font size=2><a href="#gurobi">Install Gurobi</a></font></li>
-	<li><font size=2><a href="#jar">Locate Jar</a></font></li>
-	<li><font size=2><a href="#update">Gurobi Updates</a></font></li>
 	<li><font size=2><a href="#issues">Known Issues</a></font></li></ul>
 
 	<p><font size=2><a href="Model_Menu.html">Model Menu</a></font></p>
@@ -96,7 +94,7 @@ A{text-decoration:none}
 
 	<p><font size=2><a href="Options_Menu.html">Options Menu</a></font></p>
 
-	<ul><li><font size=2><a href="Options_Menu.html#setGurobi">Set Gurobi Jar Path</a></font></li></ul>
+	<ul><li><font size=2><a href="Options_Menu.html#setSolver">Set Up Solver</a></font></li></ul>
 
 	<p><font size=2><a href="Toolbar.html">Toolbar</a></font></p>
 
@@ -133,45 +131,29 @@ A{text-decoration:none}
 	<p align=center><font size=5></font></p>
 	<p align=center><font size=5>Setting Up Gurobi</font></p>
 
+	<p> Check if Gurobi is installed:</p>
+
+	<blockquote>Click Options -> Set Up Solver. If Gurobi is already installed, and the version of Gurobi is
+                5.6.2 or better the dialog will display the following message:</blockquote>
+
+	<p align="center"><img src ="images/gurobi_sufficient.jpg" alt="Image - Gurobi Sufficient" border="0"></p>
+
+	<blockquote>Otherwise the following message will be displayed: (The message may say 32 or 64 bit
+	depending on the version of Java installed.)</blockquote>
+
+	<p align="center"><img src ="images/gurobi_insufficient.jpg" alt="Image - Gurobi Insufficient" border="0"></p>
+
+	<blockquote>If Gurobi is installed and the version is 5.6.2 or better, just click the Gurobi button, then OK, and Gurobi
+	is set up as a solver. If a license for Gurobi is not installed, a 
+	license can be downloaded at the Gurobi site <a href="http://www.gurobi.com">www.gurobi.com</a>. Otherwise
+	follow the instructions below to install Gurobi.</blockquote>
+
 	<p><a name="gurobi">  Install Gurobi:</a></p>
-	<blockquote>MOST uses Gurobi Optimization for the FBA and GDBB functions. Gurobi jar file and
+	<blockquote>Gurobi jar file and
 	license can be downloaded at the Gurobi site <a href="http://www.gurobi.com">www.gurobi.com</a>.
 	It is important that the installation instructions given on the Gurobi site for your operating system are 
 	followed, so that the Gurobi native-code library and Gurobi JNI library can be found by MOST.
 	See <a href="#issues">Known Issues</a>.</blockquote>
-
-	<br>
-	<p><a name="jar">  Locate Gurobi Jar File:</a></p>
-	<blockquote>In order for the Gurobi Solver to work, the Gurobi jar file must be located. When MOST 
-	is first installed, the Gurobi Jar Path interface will appear, and if the Gurobi Jar path has been located, 
-	the interface will appear as below:</blockquote>
-
-	<p align="center"><img src ="images/gurobi.jpg" alt="Image - Gurobi" border="0"></p>
-
-	<blockquote>If this path is correct, click “OK”, otherwise a different path can be located by 
-	clicking “Load Gurobi Jar Path”.</blockquote>
-
-	<blockquote>If the Gurobi Jar path cannot be located automatically, the interface will appear as below:
-	</blockquote>
-
-	<p align="center"><img src ="images/gurobi2.jpg" alt="Image - Gurobi2" border="0"></p>
-
-	<blockquote>The Gurobi Jar Path can be located by clicking “Load Gurobi Jar Path”.</blockquote>
-
-	<blockquote>If it is not desired to set up Gurobi at this time, click the “Cancel” button or “X” (frame close button).
-	</blockquote>
-
-	<blockquote>The message below will appear:</blockquote>
-
-	<p align="center"><img src ="images/gurobi3.jpg" alt="Image - Gurobi3" border="0"></p>
-
-	<blockquote>FBA and GDBB items in the “Analysis” menu will be grayed out. MOST will still be functional for loading, 
-	editing and saving files.</blockquote>
-
-	<br>
-	<p><a name="update"> Gurobi Updates:</a></p>
-	<blockquote>If the Gurobi jar is updated or was not located in the above steps, the Gurobi Jar Path can be 
-	changed by clicking Options -> Set Gurobi Jar Path (Alt+O then Alt+G).</blockquote>
 
 	<br>
 	<p><a name="issues"> Known Issues:</a></p>

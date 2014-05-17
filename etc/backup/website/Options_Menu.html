@@ -54,8 +54,6 @@ A{text-decoration:none}
 	<p><font size=2><a href="Setup_Gurobi.html">Setting up Gurobi</a></font></p>
 
 	<ul><li><font size=2><a href="Setup_Gurobi.html#gurobi">Install Gurobi</a></font></li>
-	<li><font size=2><a href="Setup_Gurobi.html#jar">Locate Jar</a></font></li>
-	<li><font size=2><a href="Setup_Gurobi.html#update">Gurobi Updates</a></font></li>
 	<li><font size=2><a href="Setup_Gurobi.html#issues">Known Issues</a></font></li></ul>
 
 	<p><font size=2><a href="Model_Menu.html">Model Menu</a></font></p>
@@ -96,7 +94,7 @@ A{text-decoration:none}
 
 	<p><font size=2>Options Menu</font></p>
 
-	<ul><li><font size=2><a href="#setGurobi">Set Gurobi Jar Path</a></font></li></ul>
+	<ul><li><font size=2><a href="#setSolver">Set Up Solver</a></font></li></ul>
 
 	<p><font size=2><a href="Toolbar.html">Toolbar</a></font></p>
 
@@ -131,14 +129,25 @@ A{text-decoration:none}
 
 	<td width=600 valign=top>
 	<p align=center><font size=5></font></p>
-	<p align=center><font size=5>Toolbar</font></p>
+	<p align=center><font size=5>Options</font></p>
 
 	<br>
-	<p><a name="setGurobi">  Set Gurobi Jar Path:</a></p>
-	<blockquote>If Gurobi is updated or the Gurobi Jar path has not been set, this menu item will open
-	the Gurobi Jar Path Dialog. Browse for the Gurobi Jar and click OK.</blockquote>
+	<p><a name="setSolver">  Set Up Solver:</a></p>
+	<blockquote>Click Options -> Set Up Solver to select beween GLPK and Gurobi solvers. Gurobi selection is not enabled
+	if Gurobi 5.6.2 or better is not installed. If Gurobi is already installed, and the version of Gurobi is
+                5.6.2 or better the dialog will display the following message:</blockquote>
 
-	<p align="center"><img src ="images/gurobi.jpg" alt="Image - Gurobi" border="0"></p>
+	<p align="center"><img src ="images/gurobi_sufficient.jpg" alt="Image - Gurobi Sufficient" border="0"></p>
+
+	<blockquote>Otherwise the following message will be displayed: (The message may say 32 or 64 bit
+	depending on the version of Java installed.)</blockquote>
+
+	<p align="center"><img src ="images/gurobi_insufficient.jpg" alt="Image - Gurobi Insufficient" border="0"></p>
+
+	<blockquote>If Gurobi is installed and the version is 5.6.2 or better, just click the Gurobi button, then OK, and Gurobi
+	is set up as a solver. If a license for Gurobi is not installed, a 
+	license can be downloaded at the Gurobi site <a href="http://www.gurobi.com">www.gurobi.com</a>. Otherwise
+	follow the Gurobi installation instructions <a href="Setup_Gurobi.html#gurobi">here</a>.</blockquote>
 
 	</td>
 	</tr>

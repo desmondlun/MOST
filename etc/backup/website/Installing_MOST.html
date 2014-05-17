@@ -55,8 +55,6 @@ A{text-decoration:none}
 	<p><font size=2><a href="Setup_Gurobi.html">Setting up Gurobi</a></font></p>
 
 	<ul><li><font size=2><a href="Setup_Gurobi.html#gurobi">Install Gurobi</a></font></li>
-	<li><font size=2><a href="Setup_Gurobi.html#jar">Locate Jar</a></font></li>
-	<li><font size=2><a href="Setup_Gurobi.html#update">Gurobi Updates</a></font></li>
 	<li><font size=2><a href="Setup_Gurobi.html#issues">Known Issues</a></font></li></ul>
 
 	<p><font size=2><a href="Model_Menu.html">Model Menu</a></font></p>
@@ -97,7 +95,7 @@ A{text-decoration:none}
 
 	<p><font size=2><a href="Options_Menu.html">Options Menu</a></font></p>
 
-	<ul><li><font size=2><a href="Options_Menu.html#setGurobi">Set Gurobi Jar Path</a></font></li></ul>
+	<ul><li><font size=2><a href="Options_Menu.html#setSolver">Set Up Solver</a></font></li></ul>
 
 	<p><font size=2><a href="Toolbar.html">Toolbar</a></font></p>
 
@@ -137,10 +135,14 @@ A{text-decoration:none}
 	<p></p>
 	<p><a name="req">  Requirements:</a></p>
 	<p>  Java JRE 1.7. <a href="http://java.com/download">java.com/download</a>.</p>
-	<blockquote>To determine if Java is installed and what version is installed, visit the <a href="download.html">Software
+	<blockquote>To determine if Java is installed and the installed version, visit the <a href="download.html#java">Software
 	</a> page.</blockquote>
 
-	<p>  Gurobi jar file and license. <a href="http://www.gurobi.com">www.gurobi.com</a> if FBA or GDBB are to be run.</p>
+                <p> Solver:</p>
+                <blockquote>MOST requires a Mixed Integer Linear Program solver (MILP) to run FBA and GDBB. MOST includes 
+	(GNU Linear Programming Kit), a free solver. Gurobi is free for academic use and can also be used by MOST as a solver. 
+	See <a href="Setup_Gurobi.html">Setting up Gurobi</a> for
+	instructions on setting up Gurobi as a solver.</blockquote>
 	
 	<br>
 	<p><a name="win"> Windows:</a></p>
@@ -175,15 +177,13 @@ A{text-decoration:none}
 	<blockquote>Gurobi installation instructions can be found <a href="http://www.gurobi.com/documentation/5.6/quick-start-guide/installation_windows">
 	here</a>.</blockquote>
 
-	<blockquote>In order to run Gurobi, you also need to install the Gurobi JNI library. See topic #42 on the 
-	<a href="http://www.gurobi.com/resources/faqs">Gurobi FAQ's page</a> for installation instructions.</blockquote>
-
 	<br>
 
 	<p><a name="issues"> Known Issues:</a></p>
 
-	<blockquote>Windows 8 is known to have issues with using the installer. If the installer will not work, download
-	the <a href="MOST_alpha-7.zip" target="_blank">MOST Executable Jar</a> and extract it into a directory, then double-click on the MOST.jar file to run MOST.</blockquote>
+	<blockquote>Some programs or operating system permissions may prevent the MOST installer from working correctly. 
+	If the installer will not work, download the <a href="MOST_alpha-7.zip" target="_blank">MOST Executable Jar</a> and 
+                extract it into a directory, then double-click on the MOST.jar file to run MOST.</blockquote>
 
 	<br>
 	<p><a name="linux">  Linux:</a></p>
