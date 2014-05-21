@@ -303,7 +303,7 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 		parm.setTol_int( 1e-6 );
 		/* int glpkres = */// GLPK.glp_simplex( problem, null );
 		if( GLPK.glp_intopt( problem, parm ) != 0 )
-			return Double.NaN; /* problem could not be solved */
+			objval = Double.NaN;
 
 		// clean up
 		GlpkCallback.removeListener( this );
