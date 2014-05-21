@@ -340,11 +340,14 @@ public class GurobiSolver extends Solver
 		{
 			// preform the optimization and get the objective value
 			model.optimize();
-			objval = model.get( GRB.DoubleAttr.ObjVal );
-
-			// get the flux values
-			for( GRBVar var : vars)
-				soln.add( var.get( GRB.DoubleAttr.X ) );
+			if( !abort )
+			{
+				objval = model.get( GRB.DoubleAttr.ObjVal );
+	
+				// get the flux values
+				for( GRBVar var : vars)
+					soln.add( var.get( GRB.DoubleAttr.X ) );
+			}
 
 			// clean up
 			model.dispose();
