@@ -301,9 +301,35 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 		GLPK.glp_init_iocp( parm );
 		parm.setPresolve( GLPK.GLP_ON );
 		parm.setTol_int( 1e-6 );
-		/* int glpkres = */// GLPK.glp_simplex( problem, null );
-		if( GLPK.glp_intopt( problem, parm ) != 0 )
-			objval = Double.NaN;
+		try
+		{
+			/* int optres = */// GLPK.glp_simplex( problem, null );
+			int optres = GLPK.glp_intopt( problem, parm );
+			if( optres != 0 )
+			{
+				objval = Double.NaN;
+				
+				if( optres == GLPKConstants.GLP_EBOUND )
+					throw new Exception( "Double-bounded variables are set to invalid bounds" );
+				else if( optres == GLPKConstants.GLP_EROOT )
+					throw new Exception( "optimal basis for initial LP relaxation is not provided" );
+				else if( optres == GLPKConstants.GLP_ENOPFS )
+					throw new Exception( "LP relaxation of MIP problem has no primal feasable solution" );
+				else if( optres == GLPKConstants.GLP_ENODFS )
+					throw new Exception( "LP relaxation of the MIP problem instance has no dual feasible solution" );
+				else if( optres == GLPKConstants.GLP_EFAIL )
+					throw new Exception( "The search was prematurely terminated due to the solver failure." );
+				else if( optres == GLPKConstants.GLP_EMIPGAP )
+					throw new Exception( "The relative mip gap tolerance has been reached." );
+				else if( optres == GLPKConstants.GLP_ETMLIM )
+					throw new Exception( "The time limit has been exceeded" );
+				else if( optres == GLPKConstants.GLP_ESTOP ); //terminated by application, no real exception thrown
+			}
+		}
+		catch( Exception except )
+		{
+			processStackTrace( except );
+		}
 
 		// clean up
 		GlpkCallback.removeListener( this );
