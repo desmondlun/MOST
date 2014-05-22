@@ -1,0 +1,19 @@
+This document describes changes made in models so that they will optimize, or sources/ original names of renamed models.
+
+e_coli_core.xml - boundary conditions set to true for metabolites ending with "_b"
+
+Leishmania major iAC560.xml changed lower bounds of reversible reactions to -999999.0, set biological objective of 
+biomass reaction (row 162) to 1.0. Original model renamed to iAC560-original.xml.
+
+Dehalococcoides ethenogenes iAI549.xml changed lower bounds of reversible reactions to -999999.0, set biological objective of 
+biomass reaction (row 81) to 1.0. Original model renamed to iAI549-original.xml.
+
+Thermotoga maritima 1174671 TM_minimal_medium_glc.xml - boundary conditions set to true for metabolites ending with "_b" 
+original model renamed 1174671 TM_minimal_medium_glc-original.xml
+
+Many models downloaded from this website below have names that do not match the model name, and these have been renamed.
+http://systemsbiology.ucsd.edu/InSilicoOrganisms/OtherOrganisms
+
+Plasmodium falciparum msb201060-s4.xml - boundary conditions set to true for metabolites ending with "_b" 
+original model renamed msb201060-s4-original.xml
+

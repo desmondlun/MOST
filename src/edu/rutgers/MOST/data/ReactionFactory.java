@@ -322,6 +322,7 @@ public class ReactionFactory {
 		dialog.setErrorMessage( errors.toString() );
 		// centers dialog
 		dialog.setLocationRelativeTo(null);
+		dialog.setModal(true);
 		dialog.setVisible( true );
 	}
 

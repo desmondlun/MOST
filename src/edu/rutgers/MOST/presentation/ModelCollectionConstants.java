@@ -38,7 +38,7 @@ public class ModelCollectionConstants {
 	public static final int REACTIONS_COLUMN = visibleColumnsList.indexOf("Reactions");
 	public static final int METABOLITES_COLUMN = visibleColumnsList.indexOf("Metabolites");
 	public static final int REFERENCE_COLUMN = visibleColumnsList.indexOf("Reference");
-	public static final int REFERENCE_WIDTH = 200; 
+	public static final int REFERENCE_WIDTH = 220; 
 	public static final int PATH_COLUMN = visibleColumnsList.size() + invisibleColumnsList.indexOf("Path");
 	public static final int TYPE_COLUMN = visibleColumnsList.size() + invisibleColumnsList.indexOf("Type");
 	public static final int URL_COLUMN = visibleColumnsList.size() + invisibleColumnsList.indexOf("URL");

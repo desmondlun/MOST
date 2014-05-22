@@ -541,7 +541,12 @@ class ModelCollectionTable
 	
 	AbstractHyperlinkAction<Object> simpleAction = new AbstractHyperlinkAction<Object>(null) {
 
-	    public void actionPerformed(ActionEvent e) {
+	    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public void actionPerformed(ActionEvent e) {
 	    	if (table.getModel().getValueAt(table.getSelectedRow(), ModelCollectionConstants.URL_COLUMN) != null &&
 	    			((String) table.getModel().getValueAt(table.getSelectedRow(), ModelCollectionConstants.URL_COLUMN)).trim().length() > 0) {
 	    		try{ 
