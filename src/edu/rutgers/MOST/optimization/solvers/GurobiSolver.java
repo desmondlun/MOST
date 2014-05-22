@@ -73,7 +73,7 @@ public class GurobiSolver extends Solver
 		dialog.setErrorMessage( errors.toString() );
 		// centers dialog
 		dialog.setLocationRelativeTo(null);
-		dialog.setModal(true);
+		dialog.setModal(true);		
 		dialog.setVisible( true );
 	}
 	private void promptGRBError( GRBException e )

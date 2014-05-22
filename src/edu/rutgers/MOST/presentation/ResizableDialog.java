@@ -124,6 +124,7 @@ public class ResizableDialog extends JDialog
                 	//JTextArea textArea = new JTextArea();                	                	
                 	DetailsButton.setText("<< Details");
                 	textArea.setText(getErrorMessage());
+                	textArea.setCaretPosition(0);
                 	//add reaction field to scroll pane		
             		JScrollPane scrollPane = new JScrollPane(textArea);
             		scrollPane.setBorder(BorderFactory.createEmptyBorder(10,10,10,20));
@@ -270,6 +271,7 @@ public class ResizableDialog extends JDialog
   	      Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
   	            selection, selection);
   	}
+  	
 
     public static void main(String[] args) {
     	final ArrayList<Image> icons = new ArrayList<Image>(); 
