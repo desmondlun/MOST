@@ -316,7 +316,7 @@ public class ReactionFactory {
 	}
 	
 	private void processStackTrace( Exception e ) {
-		e.printStackTrace();
+		//e.printStackTrace();
 		StringWriter errors = new StringWriter();
 		e.printStackTrace( new PrintWriter( errors ) );
 		dialog.setErrorMessage( errors.toString() );

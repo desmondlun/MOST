@@ -122,7 +122,7 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 	}
 	private void processStackTrace( Exception except )
 	{
-		except.printStackTrace();
+		//except.printStackTrace();
 		StringWriter errors = new StringWriter();
 		except.printStackTrace( new PrintWriter( errors ) );
 		dialog.setErrorMessage( errors.toString() );
