@@ -3,6 +3,8 @@ package edu.rutgers.MOST.presentation;
 import javax.swing.*;  
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 
 import java.awt.*;  
 import java.awt.datatransfer.DataFlavor;
@@ -120,13 +122,13 @@ public class ResizableDialog extends JDialog
             	Label.setText(getErrorDescription());
             	// Add or remove some stuff!  
                 if(!messageShown) {
-                	JTextArea textArea = createTextArea();
-                	//JTextArea textArea = new JTextArea();                	                	
+                	JTextPane textPane = createTextPane();
+                	//JTextPane textPane = new JTextPane();                	                	
                 	DetailsButton.setText("<< Details");
-                	textArea.setText(getErrorMessage());
-                	textArea.setCaretPosition(0);
+                	textPane.setText(getErrorMessage());
+                	textPane.setCaretPosition(0);
                 	//add reaction field to scroll pane		
-            		JScrollPane scrollPane = new JScrollPane(textArea);
+            		JScrollPane scrollPane = new JScrollPane(textPane);
             		scrollPane.setBorder(BorderFactory.createEmptyBorder(10,10,10,20));
             		scrollPane.setPreferredSize(new Dimension(500, 200));
                 	MessagePanel.add(scrollPane);
@@ -136,7 +138,7 @@ public class ResizableDialog extends JDialog
                 	Component[] old = MessagePanel.getComponents();  
                     for( Component c : old )  
                     {   
-                        if( c instanceof JTextArea )  
+                        if( c instanceof JTextPane )  
                         {  
                         	MessagePanel.remove(c);  
                         } 
@@ -160,13 +162,14 @@ public class ResizableDialog extends JDialog
         pack();  
     }                                                                                                  
     
-    public JTextArea createTextArea() {
-    	final JTextArea textArea = new JTextArea();
+    public JTextPane createTextPane() {
+    	final JTextPane textPane = new JTextPane();
 
-    	textArea.setSize(200, 200);
-    	textArea.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
-    	//textArea.setFont(new Font("monospaced", Font.PLAIN, 14));
-    	textArea.setEditable(false);
+    	textPane.setContentType("text/html");
+    	textPane.setSize(200, 200);
+    	textPane.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+    	//textPane.setFont(new Font("monospaced", Font.PLAIN, 14));
+    	textPane.setEditable(false);
 
     	final JPopupMenu popupMenu = new JPopupMenu(); 
     	copyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
@@ -175,30 +178,30 @@ public class ResizableDialog extends JDialog
 		copyItem.setEnabled(true);
 		copyItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 	
-				setClipboardContents(textArea.getSelectedText());							
+				setClipboardContents(textPane.getSelectedText());							
 			}
 		});
 		popupMenu.add(selectAllItem);
 		selectAllItem.setEnabled(true);
 		selectAllItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 
-				textArea.selectAll();							
+				textPane.selectAll();							
 			}
 		});
 		
-		textArea.addMouseListener(new MouseAdapter() {
+		textPane.addMouseListener(new MouseAdapter() {
 
 			public void mousePressed(MouseEvent e)  {check(e);}
 			public void mouseReleased(MouseEvent e) {check(e);}
 
 			public void check(MouseEvent e) {
 				if (e.isPopupTrigger()) { //if the event shows the menu
-					popupMenu.show(textArea, e.getX(), e.getY()); 
+					popupMenu.show(textPane, e.getX(), e.getY()); 
 				}
 			}
 		});	
 		
-		textArea.getDocument().addDocumentListener(new DocumentListener() {
+		textPane.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
 				fieldChangeAction();
 			}
@@ -209,7 +212,7 @@ public class ResizableDialog extends JDialog
 				fieldChangeAction();
 			}
 			public void fieldChangeAction() {
-				if (textArea.getText().length() > 0) {
+				if (textPane.getText().length() > 0) {
 					copyItem.setEnabled(true);
 					selectAllItem.setEnabled(true);
 				} else {
@@ -219,7 +222,36 @@ public class ResizableDialog extends JDialog
 			}
 		});
 		
-		return textArea;
+		textPane.addHyperlinkListener(new HyperlinkListener() {
+			
+			@Override
+			public void hyperlinkUpdate(HyperlinkEvent e) {
+				// TODO Auto-generated method stub
+				if (HyperlinkEvent.EventType.ACTIVATED == e.getEventType()) {
+					java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+					if( !desktop.isSupported( java.awt.Desktop.Action.BROWSE ) ) {
+						//System.err.println( "Desktop doesn't support the browse action (fatal)" );
+						//System.exit( 1 );
+						JOptionPane.showMessageDialog(null,                
+								"Default Browser Error. Default Browser May Not Be Set On This System.",                
+								"Default Browser Error",                                
+								JOptionPane.ERROR_MESSAGE); 
+					} else {
+						try{ 
+							java.awt.Desktop.getDesktop().browse(java.net.URI.create(e.getURL().toString()));  
+						}  
+						catch (java.io.IOException e1) {  
+							JOptionPane.showMessageDialog(null,                
+									GraphicalInterfaceConstants.URL_NOT_FOUND_MESSAGE,                
+									GraphicalInterfaceConstants.URL_NOT_FOUND_TITLE,                                
+									JOptionPane.ERROR_MESSAGE);   
+						}
+					}	
+	            }
+			}
+		});
+		
+		return textPane;
     	
     }
     
@@ -278,7 +310,8 @@ public class ResizableDialog extends JDialog
 		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
 		icons.add(new ImageIcon("etc/most32.jpg").getImage());
     	
-    	ResizableDialog r = new ResizableDialog("Error", "Error message", "Testing\nTesting\nTesting\nTesting");
+		ResizableDialog r = new ResizableDialog("Error", "Error message", "<html><p>test <a href=" + "http://www.google.com" + ">google</a></html>");
+		//ResizableDialog r = new ResizableDialog("Error", "Error message", "Testing\nTesting\nTesting\nTesting");
     	
     	r.setIconImages(icons);
     	r.setDefaultCloseOperation(DISPOSE_ON_CLOSE);

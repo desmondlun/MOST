@@ -14,12 +14,12 @@ import java.util.Map.Entry;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
+import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 import edu.rutgers.MOST.presentation.ResizableDialog;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.Solution;
 import edu.rutgers.MOST.optimization.GDBB.GDBB;
-
 import gurobi.GRB;
 import gurobi.GRBCallback;
 import gurobi.GRBEnv;
@@ -70,7 +70,7 @@ public class GurobiSolver extends Solver
 		//e.printStackTrace();
 		StringWriter errors = new StringWriter();
 		e.printStackTrace( new PrintWriter( errors ) );
-		dialog.setErrorMessage( errors.toString() );
+		dialog.setErrorMessage( errors.toString() + "</p></html>" );
 		// centers dialog
 		dialog.setLocationRelativeTo(null);
 		dialog.setModal(true);		
@@ -84,29 +84,32 @@ public class GurobiSolver extends Solver
 		switch( code )
 		{
 		case GRB.Error.NO_LICENSE:
-			errMsg = "No validation file - run 'grbgetkey' to refresh it.";
+			errMsg = "<html><p>No validation file - run 'grbgetkey' to refresh it.</p></html>";
 			LocalConfig.getInstance().hasValidGurobiKey = false;
 			break;
 		case GRB.Error.FAILED_TO_CREATE_MODEL:
-			errMsg = "Gurobi failed to create the model";
+			errMsg = "<html><p>Gurobi failed to create the model";
 		case GRB.Error.NOT_SUPPORTED:
-			errMsg = "This optimization is not supported by Gurobi";
+			errMsg = "<html><p>This optimization is not supported by Gurobi";
 			break;
 		case GRB.Error.INVALID_ARGUMENT:
-			errMsg = "Gurobi encountered an invalid argument";
+			errMsg = "<html><p>Gurobi encountered an invalid argument";
 			break;
 		case GRB.Error.IIS_NOT_INFEASIBLE:
-			errMsg = "Gurobi determined the IIS is not feasable";
+			errMsg = "<html><p>Gurobi determined the IIS is not feasable";
 			break;
 		case GRB.Error.NUMERIC:
-			errMsg = "Gurobi encountered a numerical error while optimizing the model";
+			errMsg = "<html><p>Gurobi encountered a numerical error while optimizing the model";
 			break;
 		case GRB.Error.INTERNAL:
-			errMsg = "Gurobi has encountered an internal error!";
+			errMsg = "<html><p>Gurobi has encountered an internal error!";
 			break;
 		default:
-			errMsg = "Gurobi encountered an error optimizing the model\nError Code: "
-					+ code;
+//			errMsg = "Gurobi encountered an error optimizing the model\nError Code: "
+//					+ code;
+			errMsg = "<html><p>Gurobi encountered an error optimizing the model<br>Error Code: "
+					+ code + " - <a href=" + GraphicalInterfaceConstants.GUROBI_ERROR_CODE_URL
+					+ ">" + GraphicalInterfaceConstants.GUROBI_ERROR_CODE_LINK_NAME + "</a><br>";
 		}
 		if( GraphicalInterface.getGdbbDialog() != null )
 			GraphicalInterface.getGdbbDialog().setVisible( false );
