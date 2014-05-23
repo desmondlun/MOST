@@ -107,9 +107,9 @@ public class GurobiSolver extends Solver
 		default:
 //			errMsg = "Gurobi encountered an error optimizing the model\nError Code: "
 //					+ code;
-			errMsg = "<html><p>Gurobi encountered an error optimizing the model<br>Error Code: "
-					+ " - <a href=" + GraphicalInterfaceConstants.GUROBI_ERROR_CODE_URL
-					+ ">" + code + "</a><br>";
+			errMsg = "<html><p>Gurobi encountered an error optimizing the model - <br> "
+					+ " <a href=" + GraphicalInterfaceConstants.GUROBI_ERROR_CODE_URL
+					+ ">Error Code:" + code + "</a><br>";
 		}
 		if( GraphicalInterface.getGdbbDialog() != null )
 			GraphicalInterface.getGdbbDialog().setVisible( false );
