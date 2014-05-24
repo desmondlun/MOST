@@ -2768,12 +2768,14 @@ public class GraphicalInterface extends JFrame {
 					maybeDisplaySuspiciousMetabMessage(reactionRow);
 					// prevents invisible id column from setting id in formulaBar for find events
 					if (reactionsTable.getSelectedRow() > -1 && reactionsTable.getSelectedColumn() > 0) {
+						// this code just sets value in formula bar to match value in selected cell
+						// strange error has occurred here at times, which is why try/catch used here
 						try {
-							
-						} catch (Throwable t) {
 							int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
 							formulaBar.setText((String) reactionsTable.getModel().getValueAt(viewRow, reactionsTable.getSelectedColumn()));
 							setTableCellOldValue(formulaBar.getText());
+						} catch (Throwable t) {
+							formulaBar.setText("");
 						}						
 					} 
 					enableOrDisableReactionsItems();
@@ -4518,6 +4520,7 @@ public class GraphicalInterface extends JFrame {
 			savebutton.setEnabled(true);
 		}
 		tabbedPane.setSelectedIndex(0);
+		metabolitesTable.scrollRectToVisible(metabolitesTable.getCellRect(0, 1, false));
 		scrollToLocation(reactionsTable, 0, 1);
 		
 		try {
