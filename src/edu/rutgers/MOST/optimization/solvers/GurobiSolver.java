@@ -58,7 +58,7 @@ public class GurobiSolver extends Solver
 			{
 			}
 		}
-		catch ( UnsatisfiedLinkError except )
+		catch ( UnsatisfiedLinkError | NoClassDefFoundError except )
 		{
 			return false; // gurobi does not link
 		}
