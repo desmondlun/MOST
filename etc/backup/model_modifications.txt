@@ -11,9 +11,15 @@ biomass reaction (row 81) to 1.0. Original model renamed to iAI549-original.xml.
 Thermotoga maritima 1174671 TM_minimal_medium_glc.xml - boundary conditions set to true for metabolites ending with "_b" 
 original model renamed 1174671 TM_minimal_medium_glc-original.xml
 
-Many models downloaded from this website below have names that do not match the model name, and these have been renamed.
+Vibrio vulnificus VvuMBEL943.xml changed lower bounds of reversible reactions to -999999.0, set biological objective of 
+biomass reaction (row 806) to 1.0. Original model renamed VvuMBEL943-original.xml.
+
+Many models downloaded from this website below have names that do not match the model name, and these have been renamed
+if there is a name for the model.
 http://systemsbiology.ucsd.edu/InSilicoOrganisms/OtherOrganisms
 
 Plasmodium falciparum msb201060-s4.xml - boundary conditions set to true for metabolites ending with "_b" 
 original model renamed msb201060-s4-original.xml
 
+Streptomyces coelicolor - reversible reactions lower bound set to -999999.0 and biomass objective set to 1
+Saved as 1471-2164-11-202-s2.xml. Model has no name - original mode renamed as 1471-2164-11-202-s2-original.xml
