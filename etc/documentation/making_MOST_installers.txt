@@ -1,7 +1,8 @@
 1. Change version in about box - GraphicalInterfaceConstants.ABOUT_BOX_VERSION_TEXT
 
 2. Create a folder MOST_distXXXXXX where XXXXXX is the date.  The etc folder, ModelCollection.csv,
-README, and SOURCES must be placed in this folder. The backup folder should be removed from etc.
+README, and SOURCES must be placed in this folder. The backup folder and documentation folder 
+should be removed from etc.
 Create folder named lib in this folder and copy win32 and win64 folders in lib folder into this folder.
 
 3. Right click on the MOST project folder in Eclipse and select
@@ -12,15 +13,15 @@ in input box. Click Finish.
 Click OK for next two dialogs.
 
 4. Create a folder MOST_alpha-x where x is version. The MOST.jar, etc folder, lib folder, ModelCollection.csv,
-and README, and SOURCES must be placed in this folder. This folder will be used to create a tar.gz
-for Linux and zip file for Windows 8.
+and README, and SOURCES from folder created in step 3 must be placed in this folder. This folder will be used to create a tar.gz
+for Linux and zip file.
 
 5. Create Windows executable:
 Open launch4j
-In Basic Tab - Output file - browse for folder created in step 3. Type in MOST.exe. 
+In Basic Tab - Output file - browse for folder created in step 2. Type in MOST.exe. 
 In Jar runtime path type MOST.jar
 Check - "Don't wrap the jar, launch only" checkbox
-Browse for most32.ico in folder from step 3 etc folder subdirectory.
+Browse for most32.ico in folder from step 3 in etc subdirectory.
 In JRE tab type 1.7.0 in Min JRE version
 
 You can save this set up if desired in folder from step 3.
