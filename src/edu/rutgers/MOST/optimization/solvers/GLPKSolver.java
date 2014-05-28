@@ -301,7 +301,9 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 		glp_iocp parm = new glp_iocp();
 		GLPK.glp_init_iocp( parm );
 		parm.setPresolve( GLPK.GLP_ON );
-		parm.setTol_int( 1e-6 );
+		parm.setTol_int( 1E-9 );
+		parm.setTol_obj( 1E-9 );
+		
 		try
 		{
 			/* int optres = */// GLPK.glp_simplex( problem, null );
