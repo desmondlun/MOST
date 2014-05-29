@@ -31,6 +31,8 @@ If the arrow is clicked, MOST will launch but strangely no icons will exist in
 the toolbar. Instead to test exe, double click newly created exe in folder.
 
 6. Create installer:
+Copy contents from MOST_alpha-x folder into a new folder MOSTWinXXXXXX where XXXXXX is the date.
+Delete linux and mac folders from the lib folder.
 Open InstallSimple.
 Open MOST.ispro in GitHub MOST repository local folder in dist folder
 Click Next until Graphics page is reached
