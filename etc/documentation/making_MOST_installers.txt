@@ -3,7 +3,7 @@
 2. Create a folder MOST_distXXXXXX where XXXXXX is the date.  The etc folder, ModelCollection.csv,
 README, and SOURCES must be placed in this folder. The backup folder and documentation folder 
 should be removed from etc.
-Create folder named lib in this folder and copy win32 and win64 folders in lib folder into this folder.
+Create folder named lib in this folder and copy linux, mac, win32 and win64 folders in lib folder into this folder.
 
 3. Right click on the MOST project folder in Eclipse and select
 Export -> Runnable Jar. Select "Extract required libraries into generated jar.
