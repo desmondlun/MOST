@@ -39,7 +39,7 @@ public class GurobiSolver extends Solver
 	private ArrayList< Double > soln = new ArrayList< Double >();
 	private double objval;
 	private GRBModel model;
-	private GRBEnv env;
+	private GRBEnv env = null;
 	private ObjType objType;
 	private SolverKind solverKind = SolverKind.FBASolver;
 	private ResizableDialog dialog = new ResizableDialog( "Error",
@@ -209,7 +209,8 @@ public class GurobiSolver extends Solver
 		try
 		{
 			// set up environment and the model/problem objects
-			env = new GRBEnv();
+			if( env  == null )
+				env = new GRBEnv();
 			env.set( GRB.DoubleParam.IntFeasTol, 1.0E-9 );
 			env.set( GRB.DoubleParam.FeasibilityTol, 1.0E-9 );
 			env.set( GRB.IntParam.OutputFlag, 0 );
@@ -369,7 +370,22 @@ public class GurobiSolver extends Solver
 	@Override
 	public void setEnv( double timeLimit, int numThreads )
 	{
-		// TODO Auto-generated method stub
+		if( env != null )
+			return;
+		
+		try
+		{
+			env = new GRBEnv();
+			env.set( GRB.DoubleParam.Heuristics, 1.0 );
+			env.set( GRB.DoubleParam.ImproveStartGap, Double.POSITIVE_INFINITY );
+			env.set( GRB.DoubleParam.TimeLimit, timeLimit );
+			env.set( GRB.IntParam.MIPFocus, 1 );
+			env.set( GRB.IntParam.Threads, numThreads );
+		}
+		catch ( GRBException e )
+		{
+			promptGRBError( e );
+		}
 	}
 	@Override
 	public void setVars( VarType[] types, double[] lb, double[] ub )
