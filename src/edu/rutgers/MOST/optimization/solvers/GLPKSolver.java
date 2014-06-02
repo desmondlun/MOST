@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 
-import javax.swing.JOptionPane;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.gnu.glpk.GLPK;
 import org.gnu.glpk.GLPKConstants;
@@ -217,8 +215,8 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 			double value )
 	{
 		// row definitions
-		double lb = 0;
-		double ub = 0;
+		double lb = Double.NEGATIVE_INFINITY;
+		double ub = Double.POSITIVE_INFINITY;
 		int type = 0;
 		switch( con )
 		{

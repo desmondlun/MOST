@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Vector;
 import java.util.Map.Entry;
 
 import javax.swing.ImageIcon;
@@ -35,8 +36,60 @@ public class GurobiSolver extends Solver
 		FBASolver, GDBBSolver
 	}
 
-	private ArrayList< GRBVar > vars = new ArrayList< GRBVar >();
+	private class RowEntry
+	{
+		public int idx;
+		public double value;
+
+		RowEntry( int i, double v )
+		{
+			idx = i;
+			value = v;
+		}
+	}
+
+	private class RowType
+	{
+		public double val;
+		public char type;
+		public Vector< RowEntry > entries = new Vector< RowEntry >();
+
+		RowType( double v, char t )
+		{
+			val = v;
+			type = t;
+		}
+	}
+
+	private class ColumnType
+	{
+		public String name;
+		public int kind;
+		public int type;
+		public double lb;
+		public double ub;
+
+		ColumnType( String n, int k, int t, double l, double u )
+		{
+			name = n;
+			kind = k;
+			type = t;
+			lb = l;
+			ub = u;
+		}
+	}
+
+	private class ObjectiveType
+	{
+		int dir;
+		Vector< RowEntry > coefs = new Vector< RowEntry >();
+	}
+
+	private Vector< RowType > rows = new Vector< RowType >();
+	private Vector< ColumnType > columns = new Vector< ColumnType >();
+	private ObjectiveType objective = new ObjectiveType();
 	private ArrayList< Double > soln = new ArrayList< Double >();
+	
 	private double objval;
 	private GRBModel model;
 	private GRBEnv env = null;
@@ -277,11 +330,10 @@ public class GurobiSolver extends Solver
 			// column definitions
 			if( varName == null || types == null || model == null )
 				return;
-			vars.add( model.addVar( lb, ub, 0.0, getGRBVarType( types ),
-					varName ) );
-			model.update();
+			
+			columns.add( new ColumnType( varName, 0, getGRBVarType( types ), lb, ub ) );
 		}
-		catch ( GRBException e )
+		catch ( Exception e )
 		{
 			processStackTrace( e );
 		}
@@ -298,16 +350,11 @@ public class GurobiSolver extends Solver
 		try
 		{
 			// objective definition
-			GRBLinExpr expr = new GRBLinExpr();
-
-			// add the terms
 			for( Entry< Integer, Double > entry : map.entrySet())
-				expr.addTerm( entry.getValue(), vars.get( entry.getKey() ) );
-
-			// set the objective
-			model.setObjective( expr, getGRBObjType( objType ) );
+				objective.coefs.add( new RowEntry( entry.getKey(), entry
+						.getValue() ) );
 		}
-		catch ( GRBException e )
+		catch ( Exception e )
 		{
 			processStackTrace( e );
 		}
@@ -319,20 +366,17 @@ public class GurobiSolver extends Solver
 	{
 		try
 		{
-			// row definitions
-			GRBLinExpr expr = new GRBLinExpr();
-
+			// row / constraint definitions
+			RowType row = new RowType( value, getGRBConType( con ) );
 			for( Entry< Integer, Double > entry : map.entrySet())
 			{
-				// add the terms in the expression
 				int key = entry.getKey();
 				double kvalue = entry.getValue();
-				expr.addTerm( kvalue, vars.get( key ) );
+				row.entries.add( new RowEntry( key, kvalue ) );
 			}
-			// add the constraint
-			model.addConstr( expr, getGRBConType( con ), value, null );
+			rows.add( row );
 		}
-		catch ( GRBException e )
+		catch ( Exception e )
 		{
 			processStackTrace( e );
 		}
@@ -343,6 +387,38 @@ public class GurobiSolver extends Solver
 	{
 		try
 		{
+			ArrayList< GRBVar > vars = new ArrayList< GRBVar >();
+			// add columns
+			for( ColumnType it : columns)
+			{
+				vars.add( model.addVar( it.lb, it.ub, 0.0, (char)it.type,
+						it.name ) );
+				model.update();
+			}
+			columns.clear();
+
+			// add rows / constraints
+			for( RowType it : rows)
+			{
+				GRBLinExpr expr = new GRBLinExpr();
+				for( RowEntry entry : it.entries )
+				{
+					expr.addTerm( entry.value, vars.get( entry.idx ) );
+				}
+				model.addConstr( expr, it.type, it.val, null );
+			}
+			rows.clear();
+			
+			// set the objective
+			GRBLinExpr expr = new GRBLinExpr();
+
+			// add the terms
+			for( RowEntry entry : objective.coefs )
+				expr.addTerm( entry.value, vars.get( entry.idx ) );
+
+			// set the objective
+			model.setObjective( expr, getGRBObjType( objType ) );
+			
 			// preform the optimization and get the objective value
 			model.optimize();
 			if( !abort )
