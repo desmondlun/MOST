@@ -327,7 +327,7 @@ public class GurobiSolver extends Solver
 		{
 			// row / constraint definitions
 			RowType row = new RowType( value, getGRBConType( con ) );
-			for( Entry< Integer, Double > entry : map.entrySet())
+			for( Entry< Integer, Double > entry : map.entrySet() )
 			{
 				int key = entry.getKey();
 				double kvalue = entry.getValue();
@@ -373,6 +373,14 @@ public class GurobiSolver extends Solver
 				}
 				quad_model.addConstr( expr, it.type, it.val, null );
 			}
+			
+			// add the Maximum objective constraint
+			GRBLinExpr maxObj = new GRBLinExpr();
+			for( RowEntry entry : objective.coefs )
+				maxObj.addTerm( entry.value, vars.get( entry.idx ) );
+			GRBVar objValue = quad_model.addVar( objval, this.objval, 0.0, GRB.CONTINUOUS, null );
+			quad_model.update(); // due to adding a new variable
+			quad_model.addConstr( maxObj, GRB.EQUAL, objValue, null );
 			
 			// set the objective
 			GRBQuadExpr expr = new GRBQuadExpr();
@@ -437,7 +445,6 @@ public class GurobiSolver extends Solver
 						processStackTrace( e );
 					}
 				}
-
 			} );
 			
 			// add columns
@@ -471,7 +478,7 @@ public class GurobiSolver extends Solver
 			// set the objective
 			model.setObjective( expr, getGRBObjType( objType ) );
 			
-			// preform the optimization and get the objective value
+			// perform the optimization and get the objective value
 			model.optimize();
 			if( !abort )
 			{
@@ -481,7 +488,7 @@ public class GurobiSolver extends Solver
 				for( GRBVar var : vars)
 					soln.add( var.get( GRB.DoubleAttr.X ) );
 				
-				this.minimizeEuclideanNorm();
+				//this.minimizeEuclideanNorm();  //Uncomment this line for Euclidean Minimization
 			}
 
 			// clean up
