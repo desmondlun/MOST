@@ -32,11 +32,6 @@ import gurobi.GRBLinExpr;
 
 public class GurobiSolver extends Solver
 {
-	private enum SolverKind
-	{
-		FBASolver, GDBBSolver
-	}
-
 	private class RowEntry
 	{
 		public int idx;
@@ -65,15 +60,13 @@ public class GurobiSolver extends Solver
 	private class ColumnType
 	{
 		public String name;
-		public int kind;
 		public int type;
 		public double lb;
 		public double ub;
 
-		ColumnType( String n, int k, int t, double l, double u )
+		ColumnType( String n, int t, double l, double u )
 		{
 			name = n;
-			kind = k;
 			type = t;
 			lb = l;
 			ub = u;
@@ -82,7 +75,6 @@ public class GurobiSolver extends Solver
 
 	private class ObjectiveType
 	{
-		int dir;
 		Vector< RowEntry > coefs = new Vector< RowEntry >();
 	}
 
@@ -94,7 +86,6 @@ public class GurobiSolver extends Solver
 	private double objval;
 	private GRBEnv env = null;
 	private ObjType objType;
-	private SolverKind solverKind = SolverKind.FBASolver;
 	private ResizableDialog dialog = new ResizableDialog( "Error",
 			"Gurobi Solver Error", "Gurobi Solver Error" );
 
@@ -299,7 +290,7 @@ public class GurobiSolver extends Solver
 			if( varName == null || types == null  )
 				return;
 			
-			columns.add( new ColumnType( varName, 0, getGRBVarType( types ), lb, ub ) );
+			columns.add( new ColumnType( varName, getGRBVarType( types ), lb, ub ) );
 		}
 		catch ( Exception e )
 		{
@@ -434,7 +425,6 @@ public class GurobiSolver extends Solver
 						else if( this.where == GRB.CB_MIPSOL )
 						{
 							// GDBB intermediate solutions
-							solverKind = SolverKind.GDBBSolver;
 							GDBB.intermediateSolution.add( new Solution( this
 									.getDoubleInfo( GRB.CB_MIPSOL_OBJ ), this
 									.getSolution( model.getVars() ) ) );
@@ -491,7 +481,7 @@ public class GurobiSolver extends Solver
 				for( GRBVar var : vars)
 					soln.add( var.get( GRB.DoubleAttr.X ) );
 				
-				//this.minimizeEuclideanNorm();
+				this.minimizeEuclideanNorm();
 			}
 
 			// clean up
