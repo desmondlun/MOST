@@ -183,7 +183,8 @@ public class FindReplaceDialog extends JDialog {
 			}
 		});
 		findPasteItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent a) { 	
+			public void actionPerformed(ActionEvent a) { 
+				findField.setText("");
 	            try{
 	                String clip_string = getClipboardContents(FindReplaceDialog.this);
 	                findField.replaceSelection(clip_string.trim());
@@ -274,10 +275,11 @@ public class FindReplaceDialog extends JDialog {
 			}
 		});
 		replacePasteItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent a) { 	
+			public void actionPerformed(ActionEvent a) { 
+				replaceField.setText("");
 				try{
 	                String clip_string = getClipboardContents(FindReplaceDialog.this);
-	                replaceField.replaceSelection(clip_string);
+	                replaceField.replaceSelection(clip_string.trim());
 	                 
 	            }catch(Exception excpt){
 	                 
