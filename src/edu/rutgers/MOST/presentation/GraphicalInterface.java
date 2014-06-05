@@ -277,6 +277,8 @@ public class GraphicalInterface extends JFrame {
 	public boolean gdbbStopped;
 	public boolean gdbbRunning;
 	public boolean gdbbProcessed;
+	// Eflux2
+	public static boolean usingEflux2;
 
 	/*****************************************************************************/
 	// end boolean values
@@ -756,13 +758,14 @@ public class GraphicalInterface extends JFrame {
 		return tableCellOldValue;
 	}    
 
-	public static boolean getFBADialogSelection()
+	public static int promptEflux2Selection()
 	{
 	    JCheckBox checkbox = new JCheckBox( "Minimize Euclidean Norm" );  
-	    String message = "Minimizing the Euclidean Norm finds a unique flux distribution.";  
+	    String message = "Run FBA with E-flux2?";  
 	    Object[] params = { message, checkbox };  
-	    JOptionPane.showConfirmDialog( null, params, "E-flux2", JOptionPane.OK_OPTION );  
-	    return checkbox.isSelected();
+	    int n = JOptionPane.showConfirmDialog( null, params, "Minimizing the Euclidean Norm", JOptionPane.DEFAULT_OPTION); 
+	    usingEflux2 = checkbox.isSelected();
+	    return n;
 	}
 	/*****************************************************************************/
 	// end misc
@@ -1361,6 +1364,9 @@ public class GraphicalInterface extends JFrame {
 				LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
 
 				// Begin optimization
+				if( getSolverName() == GraphicalInterfaceConstants.GUROBI_SOLVER_NAME
+						&& JOptionPane.CLOSED_OPTION == promptEflux2Selection() )
+					return;
 
 				FBAModel model = new FBAModel();
 				log.debug("create an optimize");
@@ -1388,6 +1394,8 @@ public class GraphicalInterface extends JFrame {
 						outputText.append("Maximum objective: "	+ maxObj + "\n");
 						//outputText.append("Maximum objective: "	+ fba.getMaxObj() + "\n");
 						outputText.append("Solver = " + getSolverName());
+						if( usingEflux2 )
+							outputText.append( "\nFlux distributions calculated using E-flux2" );
 						
 						File file = new File(u.createLogFileName(optimizeName + ".log"));
 						writer = new BufferedWriter(new FileWriter(file));
@@ -1439,6 +1447,9 @@ public class GraphicalInterface extends JFrame {
         // Action Listener for GDBB optimization
         gdbbItem.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent a) {
+        		//E-flux2 is disabled for gdbb
+        		usingEflux2 = false;
+        		
         		Utilities u = new Utilities();
 
         		String dateTimeStamp = u.createDateTimeStamp();

@@ -13,7 +13,6 @@ import java.util.Vector;
 import java.util.Map.Entry;
 
 import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
@@ -32,7 +31,7 @@ import gurobi.GRBVar;
 import gurobi.GRBLinExpr;
 
 public class GurobiSolver extends Solver
-{
+{	
 	private class RowEntry
 	{
 		public int idx;
@@ -150,8 +149,6 @@ public class GurobiSolver extends Solver
 			errMsg = "<html><p>Gurobi has encountered an internal error!";
 			break;
 		default:
-//			errMsg = "Gurobi encountered an error optimizing the model\nError Code: "
-//					+ code;
 			errMsg = "<html><p>Gurobi encountered an error optimizing the model - <br> "
 					+ " <a href=" + GraphicalInterfaceConstants.GUROBI_ERROR_CODE_URL
 					+ ">Error Code:" + code + "</a><br>";
@@ -489,7 +486,7 @@ public class GurobiSolver extends Solver
 				// get the flux values
 				for( GRBVar var : vars)
 					soln.add( var.get( GRB.DoubleAttr.X ) );
-				if( GraphicalInterface.getFBADialogSelection() )
+				if( GraphicalInterface.usingEflux2 )
 					this.minimizeEuclideanNorm();
 			}
 
