@@ -5072,6 +5072,7 @@ public class GraphicalInterface extends JFrame {
 			//set background of id column to grey
 			ColorTableCellRenderer reacGreyRenderer = new ColorTableCellRenderer();
 			ReactionsTableCellRenderer reacRenderer = new ReactionsTableCellRenderer();
+			NumberFormatCellRenderer numRenderer = new NumberFormatCellRenderer();
 
 			TableColumn column = reactionsTable.getColumnModel().getColumn(i);
 			column.setPreferredWidth(GraphicalInterfaceConstants.REACTION_META_DEFAULT_WIDTH); 
@@ -5090,6 +5091,9 @@ public class GraphicalInterface extends JFrame {
 				column.setCellRenderer(reacGreyRenderer);
 				//sets color of id column to grey
 				reacGreyRenderer.setHorizontalAlignment(JLabel.CENTER);	
+			} else if (i==GraphicalInterfaceConstants.FLUX_VALUE_COLUMN) {
+				column.setCellRenderer(numRenderer);
+				numRenderer.setHorizontalAlignment(JLabel.RIGHT);
 			} else {
 				column.setCellRenderer(reacRenderer);
 			}

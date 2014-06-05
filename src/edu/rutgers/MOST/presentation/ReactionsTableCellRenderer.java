@@ -1,6 +1,5 @@
 package edu.rutgers.MOST.presentation;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.FontMetrics;
 import java.awt.Insets;
