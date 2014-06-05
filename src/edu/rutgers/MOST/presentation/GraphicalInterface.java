@@ -760,10 +760,9 @@ public class GraphicalInterface extends JFrame {
 
 	public static int promptEflux2Selection()
 	{
-	    JCheckBox checkbox = new JCheckBox( "Minimize Euclidean Norm" );  
-	    String message = "Run FBA with E-flux2?";  
-	    Object[] params = { message, checkbox };  
-	    int n = JOptionPane.showConfirmDialog( null, params, "Minimizing the Euclidean Norm", JOptionPane.DEFAULT_OPTION); 
+	    JCheckBox checkbox = new JCheckBox( "Run FBA with E-flux2 by Minimizing Euclidean Norm?" );  
+	    Object[] params = { checkbox }; //array of options / messages
+	    int n = JOptionPane.showConfirmDialog( null, params, "FBA Options", JOptionPane.DEFAULT_OPTION); 
 	    usingEflux2 = checkbox.isSelected();
 	    return n;
 	}
