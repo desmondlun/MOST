@@ -3158,8 +3158,8 @@ public class GraphicalInterface extends JFrame {
 					setSBMLFile(file);
 					LocalConfig.getInstance().setModelName(getModelCollectionTable().getFileName());
 					LocalConfig.getInstance().setProgress(0);
-					progressBar.setVisible(true);
 					disableLoadItems();
+					progressBar.setVisible(true);
 
 					timer.start();
 
