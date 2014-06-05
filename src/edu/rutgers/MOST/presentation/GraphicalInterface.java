@@ -756,6 +756,14 @@ public class GraphicalInterface extends JFrame {
 		return tableCellOldValue;
 	}    
 
+	public static boolean getFBADialogSelection()
+	{
+	    JCheckBox checkbox = new JCheckBox( "Minimize Euclidean Norm" );  
+	    String message = "Minimizing the Euclidean Norm finds a unique flux distribution.";  
+	    Object[] params = { message, checkbox };  
+	    JOptionPane.showConfirmDialog( null, params, "E-flux2", JOptionPane.OK_OPTION );  
+	    return checkbox.isSelected();
+	}
 	/*****************************************************************************/
 	// end misc
 	/*****************************************************************************/

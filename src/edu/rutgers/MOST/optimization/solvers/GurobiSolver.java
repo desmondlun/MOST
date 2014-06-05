@@ -13,6 +13,7 @@ import java.util.Vector;
 import java.util.Map.Entry;
 
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
@@ -378,7 +379,7 @@ public class GurobiSolver extends Solver
 			GRBLinExpr maxObj = new GRBLinExpr();
 			for( RowEntry entry : objective.coefs )
 				maxObj.addTerm( entry.value, vars.get( entry.idx ) );
-			GRBVar objValue = quad_model.addVar( objval, this.objval, 0.0, GRB.CONTINUOUS, null );
+			GRBVar objValue = quad_model.addVar( this.objval, this.objval, 0.0, GRB.CONTINUOUS, null );
 			quad_model.update(); // due to adding a new variable
 			quad_model.addConstr( maxObj, GRB.EQUAL, objValue, null );
 			
@@ -388,10 +389,11 @@ public class GurobiSolver extends Solver
 				expr.addTerm( 1.0, var, var );
 			quad_model.setObjective( expr );
 			
+			// optimize the model
 			quad_model.optimize();
 			
-			// get the objective 
-			objval = result = quad_model.get( GRB.DoubleAttr.ObjVal );
+			// get min of sum of min v^2
+			// objval = result = quad_model.get( GRB.DoubleAttr.ObjVal );
 			
 			soln.clear();
 			
@@ -487,8 +489,8 @@ public class GurobiSolver extends Solver
 				// get the flux values
 				for( GRBVar var : vars)
 					soln.add( var.get( GRB.DoubleAttr.X ) );
-				
-				//this.minimizeEuclideanNorm();  //Uncomment this line for Euclidean Minimization
+				if( GraphicalInterface.getFBADialogSelection() )
+					this.minimizeEuclideanNorm();
 			}
 
 			// clean up
