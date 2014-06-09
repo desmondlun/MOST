@@ -32,7 +32,7 @@ public class FBA {
 	}
 
 	private void setVars() {
-		Vector<ModelReaction> reactions = this.model.getReactions();
+		Vector< SBMLReaction > reactions = this.model.getReactions();
 		for (int i = 0; i < reactions.size(); i++) {
 			SBMLReaction reac = (SBMLReaction) (reactions.elementAt(i));
 			String varName = Integer.toString((Integer)this.model.getReactionsIdPositionMap().get(reac.getId()));
@@ -52,11 +52,11 @@ public class FBA {
 	}
 	
 	private void setConstraints() {
-		Vector<ModelReaction> reactions = this.model.getReactions();
+		Vector< SBMLReaction > reactions = this.model.getReactions();
 		setConstraints(reactions,ConType.EQUAL,0.0);
 	}	
 	
-	private void setConstraints(Vector<ModelReaction> reactions, ConType conType, double bValue) {
+	private void setConstraints(Vector< SBMLReaction > reactions, ConType conType, double bValue) {
 		ArrayList<Map<Integer, Double>> sMatrix = this.model.getSMatrix();
 		for (int i = 0; i < sMatrix.size(); i++) {
 			FBA.getSolver().addConstraint(sMatrix.get(i), conType, bValue);

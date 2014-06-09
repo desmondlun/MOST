@@ -7,7 +7,7 @@ import java.util.Vector;
 
 public class FBAModel {
 
-	protected Vector<ModelReaction> reactions;
+	protected Vector< SBMLReaction > reactions;
 	protected Vector<ModelMetabolite> metabolites;
 	protected Vector<Double> objective;
 	protected ArrayList<Map<Integer, Double>> sMatrix;
@@ -77,7 +77,7 @@ public class FBAModel {
 //		}
 	}
 	
-	public Vector<ModelReaction> getReactions() {
+	public Vector< SBMLReaction > getReactions() {
 		return this.reactions;
 	}
 	

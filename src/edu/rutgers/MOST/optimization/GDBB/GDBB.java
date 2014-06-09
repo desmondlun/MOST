@@ -14,6 +14,9 @@ import edu.rutgers.MOST.data.*;
 import edu.rutgers.MOST.optimization.solvers.*;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
+
+
+
 //http://commons.apache.org/proper/commons-lang/download_lang.cgi
 import org.apache.commons.lang3.time.StopWatch;
 
@@ -81,7 +84,7 @@ public class GDBB extends Thread {
 
 //      System.out.println("**** Start setting problem variables ****");
 
-		Vector<ModelReaction> reactions = this.model.getReactions();
+		Vector< SBMLReaction > reactions = this.model.getReactions();
 
 		sMatrix = this.model.getSMatrix();
 //      String varName;
@@ -207,11 +210,11 @@ public class GDBB extends Thread {
 	}
 
 	private void setConstraints() {
-		Vector<ModelReaction> reactions = this.model.getReactions();
+		Vector< SBMLReaction > reactions = this.model.getReactions();
 		setConstraints(reactions,ConType.EQUAL,0.0);
 	}        
 
-	private void setConstraints(Vector<ModelReaction> reactions, ConType conType, double bValue) {
+	private void setConstraints(Vector< SBMLReaction > reactions, ConType conType, double bValue) {
 
 		//System.out.println("**** Start problem construction ****");
 

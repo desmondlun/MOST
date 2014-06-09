@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
@@ -34,7 +35,7 @@ public class ReactionFactory {
 		this.reactionsIdPositionMap = reactionsIdPositionMap;
 	}
 
-	public ModelReaction getReactionById(Integer reactionId){
+	public SBMLReaction getReactionById(Integer reactionId){
 		if("SBML".equals(sourceType)){
 			SBMLReaction reaction = new SBMLReaction();
 			reaction.loadById(reactionId);
@@ -43,7 +44,7 @@ public class ReactionFactory {
 		return new SBMLReaction(); //Default behavior.
 	}
 
-	public ModelReaction getReactionByRow(Integer row){
+	public SBMLReaction getReactionByRow(Integer row){
 		if("SBML".equals(sourceType)){
 			SBMLReaction reaction = new SBMLReaction();
 			reaction.loadByRow(row);
@@ -52,8 +53,8 @@ public class ReactionFactory {
 		return new SBMLReaction(); //Default behavior.
 	}
 	
-	public Vector<ModelReaction> getAllReactions() {
-		Vector<ModelReaction> reactions = new Vector<ModelReaction>();
+	public Vector<SBMLReaction> getAllReactions() {
+		Vector<SBMLReaction> reactions = new Vector<SBMLReaction>();
 		Map<Object, Object> reactionsIdPositionMap = new HashMap<Object, Object>();
 		int count = 0;
 
@@ -93,14 +94,47 @@ public class ReactionFactory {
 		return reactions;
 	}
 
+	public void setAllReactions( Vector< SBMLReaction > reactions )
+	{
+		if( !"SBML".equals( sourceType ) )
+			return;
+		for( int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++)
+		{
+//			if (GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN) != null &&
+//					((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN)).trim().length() > 0) {
+			if( ( (String)GraphicalInterface.reactionsTable.getModel().getValueAt( i, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN ) ).length() > 0 )
+			{
+				TableModel tmodel = GraphicalInterface.reactionsTable.getModel();
+				SBMLReaction reaction = reactions.elementAt( i );
+				tmodel.setValueAt( reaction.getId(), i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN );
+				tmodel.setValueAt( reaction.getKnockout(), i, GraphicalInterfaceConstants.KO_COLUMN );
+				tmodel.setValueAt( reaction.getFluxValue(), i, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN );
+				tmodel.setValueAt( reaction.getReactionAbbreviation(), i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN );
+				tmodel.setValueAt( reaction.getReactionName(), i, GraphicalInterfaceConstants.REACTION_NAME_COLUMN );
+				tmodel.setValueAt( reaction.getReactionEqunAbbr(), i, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN );
+				tmodel.setValueAt( reaction.getReversible(), i, GraphicalInterfaceConstants.REVERSIBLE_COLUMN );
+				tmodel.setValueAt( reaction.getLowerBound(), i, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN );
+				tmodel.setValueAt( reaction.getUpperBound(), i, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN );
+				tmodel.setValueAt( reaction.getBiologicalObjective(), i, GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN );
+				tmodel.setValueAt( reaction.getSyntheticObjective(), i, GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN );
+				tmodel.setValueAt( reaction.getGeneAssociation(), i, GraphicalInterfaceConstants.GENE_ASSOCIATION_COLUMN );
+				tmodel.setValueAt( reaction.getProteinAssociation(), i, GraphicalInterfaceConstants.PROTEIN_ASSOCIATION_COLUMN );
+				tmodel.setValueAt( reaction.getSubsystem(), i, GraphicalInterfaceConstants.SUBSYSTEM_COLUMN );
+				tmodel.setValueAt( reaction.getProteinClass(), i, GraphicalInterfaceConstants.PROTEIN_CLASS_COLUMN );
+				reactionsIdPositionMap.put(reaction.getId(), i);
+			}
+		}
+		
+	}
+	
 	public Vector<Double> getObjective() {
-		Vector<ModelReaction> reactions = getAllReactions();
+		Vector<SBMLReaction> reactions = getAllReactions();
 		Vector<Double> objective = new Vector<Double>(reactions.size());
 
 		if("SBML".equals(sourceType)){
 			for (int i = 0; i < reactions.size(); i++) {
-				int id = ((SBMLReaction) reactions.get(i)).getId();
-				Double obj = ((SBMLReaction) reactions.get(i)).getBiologicalObjective();
+				int id = reactions.get(i).getId();
+				Double obj = reactions.get(i).getBiologicalObjective();
 				objective.add((Integer) reactionsIdPositionMap.get(id), obj);
 			}
 		}
@@ -110,7 +144,7 @@ public class ReactionFactory {
 
 	public void setFluxes(ArrayList<Double> fluxes) {
 		DefaultTableModel reactionsOptModel = (DefaultTableModel) GraphicalInterface.reactionsTable.getModel();
-		Vector<ModelReaction> reactions = getAllReactions();
+		Vector<SBMLReaction> reactions = getAllReactions();
 		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
 		for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
 			reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
@@ -209,7 +243,7 @@ public class ReactionFactory {
 
 	// updates knockout values in reactions table
 	public void setKnockoutValues(ArrayList<Integer> rowList, DefaultTableModel reactionsOptModel) {
-		Vector<ModelReaction> reactions = getAllReactions();
+		Vector<SBMLReaction> reactions = getAllReactions();
 		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
 		for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
 			reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
@@ -232,7 +266,7 @@ public class ReactionFactory {
 	 */
 
 	public Vector<String> getGeneAssociations() {
-		Vector<ModelReaction> reactions = getAllReactions();
+		Vector<SBMLReaction> reactions = getAllReactions();
 		Vector<String> geneAssociations = new Vector<String>();
 
 		if("SBML".equals(sourceType)){
@@ -264,7 +298,7 @@ public class ReactionFactory {
 	}
 
 	public Vector<Double> getSyntheticObjectiveVector() {
-		Vector<ModelReaction> reactions = getAllReactions();
+		Vector<SBMLReaction> reactions = getAllReactions();
 		Vector<Double> syntheticObjectiveVector = new Vector<Double>();
 
 		if("SBML".equals(sourceType)){
@@ -280,7 +314,7 @@ public class ReactionFactory {
 	}
 
 	public Vector<String> getReactionAbbreviations() {
-		Vector<ModelReaction> reactions = getAllReactions();
+		Vector<SBMLReaction> reactions = getAllReactions();
 		Vector<String> reactionAbbreviations = new Vector<String>();
 
 		if("SBML".equals(sourceType)){
