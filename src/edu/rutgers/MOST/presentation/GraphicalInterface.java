@@ -1373,6 +1373,10 @@ public class GraphicalInterface extends JFrame {
 				fba.setFBAModel(model);
 				if( usingEflux2 )
 					fba.formatFluxBoundsfromTransciptomicData( chooseCSVFile() );
+	                // uncomment next three lines for proof of concept of adding a new tab at runtime
+//					JScrollPane scrollPaneGene = new JScrollPane();
+//					tabbedPane.addTab("Gene Associations", scrollPaneGene);
+//					tabbedPane.repaint();
 				log.debug("about to optimize");
 				ArrayList<Double> soln = fba.run();
 				log.debug("optimization complete");
