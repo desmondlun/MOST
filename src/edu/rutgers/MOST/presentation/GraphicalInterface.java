@@ -3043,11 +3043,11 @@ public class GraphicalInterface extends JFrame {
 	public static File chooseCSVFile()
 	{
 		String result = new String();
-		String lastSBML_path = curSettings.get("LastSBML");
+		String lastCSV_path = curSettings.get("LastCSV");
 		Utilities u = new Utilities();
 		// if path is null or does not exist, default used, else last path used
 		final JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setCurrentDirectory(new File(u.lastPath(lastSBML_path, fileChooser)));	
+		fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));	
 		fileChooser.setFileSelectionMode( JFileChooser.FILES_ONLY );
 		fileChooser.setDialogTitle( "Load Gene Associations" );
 		fileChooser.setFileFilter( new javax.swing.filechooser.FileFilter()
