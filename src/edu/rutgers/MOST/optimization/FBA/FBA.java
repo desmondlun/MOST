@@ -1,12 +1,16 @@
 package edu.rutgers.MOST.optimization.FBA;
 
+import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
+import au.com.bytecode.opencsv.CSVReader;
 import edu.rutgers.MOST.data.*;
 import edu.rutgers.MOST.optimization.solvers.*;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
@@ -77,6 +81,24 @@ public class FBA {
 
 	public void setFBAModel(FBAModel m) {
 		this.model = m;
+	}
+	
+	public void formatFluxBoundsfromTransciptomicData( File file )
+	{
+		if( file == null || !file.exists() )
+			return;
+		try
+		{
+			CSVReader csvReader = new CSVReader( new FileReader( file ) );
+			List< String[] > all = csvReader.readAll();
+			Map< String, Double > expressionLevels = new HashMap< String, Double >();
+			for( String[] keyval : all )
+				expressionLevels.put( keyval[ 0 ], Double.valueOf( keyval[ 1 ] ) );
+			model.formatFluxBoundsfromTransciptomicData( expressionLevels );
+		}
+		catch ( Exception e )
+		{
+		}
 	}
 
 	public ArrayList<Double> run() {

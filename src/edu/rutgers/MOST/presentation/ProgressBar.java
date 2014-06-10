@@ -3,14 +3,9 @@ package edu.rutgers.MOST.presentation;
 import java.awt.Color;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JRootPane;
-import javax.swing.UIManager;
-import javax.swing.border.BevelBorder;
 
 //based on code from http://www.java2s.com/Code/Java/Swing-JFC/CreateaProgressBar.htm
 public class ProgressBar extends JFrame {

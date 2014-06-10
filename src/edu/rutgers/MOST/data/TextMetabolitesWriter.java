@@ -3,8 +3,6 @@ package edu.rutgers.MOST.data;
 import java.io.*;
 
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
-
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;

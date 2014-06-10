@@ -106,17 +106,17 @@ public class ReactionFactory {
 			{
 				TableModel tmodel = GraphicalInterface.reactionsTable.getModel();
 				SBMLReaction reaction = reactions.elementAt( i );
-				tmodel.setValueAt( reaction.getId(), i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN );
+				tmodel.setValueAt( Integer.toString( reaction.getId() ), i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN );
 				tmodel.setValueAt( reaction.getKnockout(), i, GraphicalInterfaceConstants.KO_COLUMN );
-				tmodel.setValueAt( reaction.getFluxValue(), i, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN );
+				tmodel.setValueAt( Double.toString( reaction.getFluxValue() ), i, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN );
 				tmodel.setValueAt( reaction.getReactionAbbreviation(), i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN );
 				tmodel.setValueAt( reaction.getReactionName(), i, GraphicalInterfaceConstants.REACTION_NAME_COLUMN );
 				tmodel.setValueAt( reaction.getReactionEqunAbbr(), i, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN );
 				tmodel.setValueAt( reaction.getReversible(), i, GraphicalInterfaceConstants.REVERSIBLE_COLUMN );
-				tmodel.setValueAt( reaction.getLowerBound(), i, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN );
-				tmodel.setValueAt( reaction.getUpperBound(), i, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN );
-				tmodel.setValueAt( reaction.getBiologicalObjective(), i, GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN );
-				tmodel.setValueAt( reaction.getSyntheticObjective(), i, GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN );
+				tmodel.setValueAt( Double.toString( reaction.getLowerBound() ), i, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN );
+				tmodel.setValueAt( Double.toString( reaction.getUpperBound() ), i, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN );
+				tmodel.setValueAt( Double.toString( reaction.getBiologicalObjective() ), i, GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN );
+				tmodel.setValueAt( Double.toString( reaction.getSyntheticObjective() ), i, GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN );
 				tmodel.setValueAt( reaction.getGeneAssociation(), i, GraphicalInterfaceConstants.GENE_ASSOCIATION_COLUMN );
 				tmodel.setValueAt( reaction.getProteinAssociation(), i, GraphicalInterfaceConstants.PROTEIN_ASSOCIATION_COLUMN );
 				tmodel.setValueAt( reaction.getSubsystem(), i, GraphicalInterfaceConstants.SUBSYSTEM_COLUMN );

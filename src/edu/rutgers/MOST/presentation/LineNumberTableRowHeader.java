@@ -3,9 +3,6 @@ package edu.rutgers.MOST.presentation;
 import java.awt.*;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;

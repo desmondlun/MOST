@@ -1371,6 +1371,7 @@ public class GraphicalInterface extends JFrame {
 				log.debug("create an optimize");
 				FBA fba = new FBA();
 				fba.setFBAModel(model);
+				fba.formatFluxBoundsfromTransciptomicData( chooseCSVFile() );
 				log.debug("about to optimize");
 				ArrayList<Double> soln = fba.run();
 				log.debug("optimization complete");
@@ -3034,6 +3035,39 @@ public class GraphicalInterface extends JFrame {
 		} 		
 	}
 
+	public static File chooseCSVFile()
+	{
+		String result = new String();
+		String lastSBML_path = curSettings.get("LastSBML");
+		Utilities u = new Utilities();
+		// if path is null or does not exist, default used, else last path used
+		final JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setCurrentDirectory(new File(u.lastPath(lastSBML_path, fileChooser)));	
+		fileChooser.setFileSelectionMode( JFileChooser.FILES_ONLY );
+		fileChooser.setDialogTitle( "Load Gene Associations" );
+		fileChooser.setFileFilter( new javax.swing.filechooser.FileFilter()
+		{
+
+			@Override
+			public boolean accept( File file )
+			{
+				if( file.isDirectory() || (file.exists() && file.getName().toLowerCase().endsWith( ".csv" )) )
+					return true;
+				return false;
+			}
+
+			@Override
+			public String getDescription()
+			{
+				return "csv files";
+			}
+			
+		});
+		if( JFileChooser.APPROVE_OPTION != fileChooser.showOpenDialog( null ) )
+			return null;
+		return fileChooser.getSelectedFile();
+	}
+	
 	public void metaboliteColumnNameCloseAction() {
 		getMetaboliteColumnNameInterface().setVisible(false);
 		getMetaboliteColumnNameInterface().dispose();

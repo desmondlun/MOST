@@ -3,14 +3,12 @@ package edu.rutgers.MOST.config;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
 
 import edu.rutgers.MOST.data.ModelReactionEquation;
-import edu.rutgers.MOST.presentation.GraphicalInterface;
 
 public class LocalConfig {	
 

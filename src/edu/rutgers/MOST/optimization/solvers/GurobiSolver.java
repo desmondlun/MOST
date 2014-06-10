@@ -148,10 +148,13 @@ public class GurobiSolver extends Solver
 		case GRB.Error.INTERNAL:
 			errMsg = "<html><p>Gurobi has encountered an internal error!";
 			break;
+		case 0:
+			errMsg = e.getMessage() + "\n";
+			break;
 		default:
 			errMsg = "<html><p>Gurobi encountered an error optimizing the model - <br> "
 					+ " <a href=" + GraphicalInterfaceConstants.GUROBI_ERROR_CODE_URL
-					+ ">Error Code:" + code + "</a><br>";
+					+ ">Error Code:" + code + "</a><br>\n";
 		}
 		if( GraphicalInterface.getGdbbDialog() != null )
 			GraphicalInterface.getGdbbDialog().setVisible( false );
@@ -416,86 +419,124 @@ public class GurobiSolver extends Solver
 			final GRBModel model = new GRBModel( env );
 			ArrayList< GRBVar > vars = new ArrayList< GRBVar >();
 			
-			// set the callback
-			model.setCallback( new GRBCallback()
+			try
 			{
-				@Override
-				protected void callback()
+				// set the callback
+				model.setCallback( new GRBCallback()
 				{
-					try
+					@Override
+					protected void callback()
 					{
-						if( abort )
-							this.abort();
-						else if( this.where == GRB.CB_SIMPLEX )
-							objval = getDoubleInfo( GRB.CB_SPX_OBJVAL ); // FBA
-																			// objective
-						else if( this.where == GRB.CB_MIPSOL )
+						try
 						{
-							// GDBB intermediate solutions
-							GDBB.intermediateSolution.add( new Solution( this
-									.getDoubleInfo( GRB.CB_MIPSOL_OBJ ), this
-									.getSolution( model.getVars() ) ) );
-							objval = getDoubleInfo( GRB.CB_MIPSOL_OBJ ); // MIP
-																			// objective
+							if( abort )
+								this.abort();
+							else if( this.where == GRB.CB_SIMPLEX )
+								objval = getDoubleInfo( GRB.CB_SPX_OBJVAL ); // FBA
+																				// objective
+							else if( this.where == GRB.CB_MIPSOL )
+							{
+								// GDBB intermediate solutions
+								GDBB.intermediateSolution.add( new Solution( this
+										.getDoubleInfo( GRB.CB_MIPSOL_OBJ ), this
+										.getSolution( model.getVars() ) ) );
+								objval = getDoubleInfo( GRB.CB_MIPSOL_OBJ ); // MIP
+																				// objective
+							}
+						}
+						catch ( GRBException e )
+						{
+							processStackTrace( e );
 						}
 					}
-					catch ( GRBException e )
-					{
-						processStackTrace( e );
-					}
-				}
-			} );
-			
-			// add columns
-			for( ColumnType it : columns)
-			{
-				vars.add( model.addVar( it.lb, it.ub, 0.0, (char)it.type,
-						it.name ) );
-			}
-			model.update();
-			
-
-			// add rows / constraints
-			for( RowType it : rows)
-			{
-				GRBLinExpr expr = new GRBLinExpr();
-				for( RowEntry entry : it.entries )
+				} );
+				
+				// add columns
+				for( ColumnType it : columns)
 				{
-					expr.addTerm( entry.value, vars.get( entry.idx ) );
+					vars.add( model.addVar( it.lb, it.ub, 0.0, (char)it.type,
+							it.name ) );
 				}
-				model.addConstr( expr, it.type, it.val, null );
-			}
-			
-			
-			// set the objective
-			GRBLinExpr expr = new GRBLinExpr();
-
-			// set the terms & coefficients defining the objective function
-			for( RowEntry entry : objective.coefs )
-				expr.addTerm( entry.value, vars.get( entry.idx ) );
-
-			// set the objective
-			model.setObjective( expr, getGRBObjType( objType ) );
-			
-			// perform the optimization and get the objective value
-			model.optimize();
-			if( !abort )
-			{
-				objval = model.get( GRB.DoubleAttr.ObjVal );
+				model.update();
+				
 	
-				// get the flux values
-				for( GRBVar var : vars)
-					soln.add( var.get( GRB.DoubleAttr.X ) );
-				if( GraphicalInterface.usingEflux2 )
-					this.minimizeEuclideanNorm();
+				// add rows / constraints
+				for( RowType it : rows)
+				{
+					GRBLinExpr expr = new GRBLinExpr();
+					for( RowEntry entry : it.entries )
+					{
+						expr.addTerm( entry.value, vars.get( entry.idx ) );
+					}
+					model.addConstr( expr, it.type, it.val, null );
+				}
+				
+				
+				// set the objective
+				GRBLinExpr expr = new GRBLinExpr();
+	
+				// set the terms & coefficients defining the objective function
+				for( RowEntry entry : objective.coefs )
+					expr.addTerm( entry.value, vars.get( entry.idx ) );
+	
+				// set the objective
+				model.setObjective( expr, getGRBObjType( objType ) );
+				
+				// perform the optimization and get the objective value
+				model.optimize();
+				if( !abort )
+				{
+					switch( model.get( GRB.IntAttr.Status ) )
+					{
+					case GRB.LOADED:
+						throw new GRBException( "Model is loaded, but no solution information is available." );
+					case GRB.INFEASIBLE:
+						throw new GRBException( "Model was proven to be infeasible." );
+					case GRB.INF_OR_UNBD:
+						throw new GRBException( "Model was proven to be either infeasible or unbounded." );
+					case GRB.UNBOUNDED:
+						break;
+					case GRB.CUTOFF:
+						break;
+					case GRB.NODE_LIMIT:
+						break;
+					case GRB.TIME_LIMIT:
+						break;
+					case GRB.SOLUTION_LIMIT:
+						break;
+					case GRB.INTERRUPTED:
+						break;
+					case GRB.NUMERIC:
+						throw new GRBException( "Optimization was terminated due to unrecoverable numerical difficulties." );
+					case GRB.SUBOPTIMAL:
+						break;
+					case GRB.INPROGRESS:
+						break;
+						
+						
+					}
+					objval = model.get( GRB.DoubleAttr.ObjVal );
+		
+					// get the flux values
+					for( GRBVar var : vars)
+						soln.add( var.get( GRB.DoubleAttr.X ) );
+					if( GraphicalInterface.usingEflux2 )
+						this.minimizeEuclideanNorm();
+				}
 			}
-
-			// clean up
-			columns.clear();
-			rows.clear();
-			model.dispose();
-			env.dispose();
-			vars.clear();
+			catch( GRBException e )
+			{
+				throw e;
+			}
+			finally
+			{
+				// clean up
+				columns.clear();
+				rows.clear();
+				model.dispose();
+				env.dispose();
+				vars.clear();
+			}
 		}
 		catch ( GRBException e )
 		{

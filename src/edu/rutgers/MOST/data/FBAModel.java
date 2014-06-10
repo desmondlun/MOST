@@ -1,6 +1,7 @@
 package edu.rutgers.MOST.data;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -14,6 +15,7 @@ public class FBAModel {
 	protected ArrayList<Integer> metaboliteInternalIdList;
 	protected ArrayList<Integer> reactionIdList;
 	protected Map<Object, Object> reactionsIdPositionMap;
+	protected ReactionFactory rFactory = new ReactionFactory("SBML");
 	
 	public Map<Object, Object> getReactionsIdPositionMap() {
 		return reactionsIdPositionMap;
@@ -26,7 +28,6 @@ public class FBAModel {
 	protected Map<Object, Object> metaboliteInternalIdMap;
 	
 	public FBAModel() {
-		ReactionFactory rFactory = new ReactionFactory("SBML");
 		this.reactions = rFactory.getAllReactions(); 
 		this.objective = rFactory.getObjective();
 		this.reactionIdList = rFactory.reactionIdList();
@@ -79,6 +80,75 @@ public class FBAModel {
 	
 	public Vector< SBMLReaction > getReactions() {
 		return this.reactions;
+	}
+	
+	public void setReactions( Vector< SBMLReaction > reactions )
+	{
+		this.reactions = reactions;
+		rFactory.setAllReactions( reactions );
+	}
+	
+	public void formatFluxBoundsfromTransciptomicData( final Map< String, Double > data )
+	{
+		
+		try
+		{
+			for( SBMLReaction reaction : reactions )
+			{
+				boolean skip = false;
+				if( reaction.getGeneAssociation().isEmpty() )
+					continue;
+				Vector< String > operations = new Vector< String >();
+				Vector< Double > geneValues = new Vector< Double >();
+				String str = reaction.getGeneAssociation().replace( "(", "" ).replace( ")", "" );
+				Vector< String > expression = new Vector< String >( Arrays.asList( str.split( " " ) ) );
+				for( int i = 0; i < expression.size(); ++i )
+				{
+					if( expression.elementAt( i ).equals( "" ))
+					{
+						expression.remove( i );
+						--i;
+					}
+				}
+				
+				for( String val : expression )
+				{
+					val = val.toLowerCase();
+					if( val.equals( "or" ) || val.equals( "and" ) )
+						operations.add( val );
+					else if( data.containsKey( val ) )
+						geneValues.add( data.get( val ) );
+					else
+					{
+						System.out.println( "The gene \"" + val + "\" is not in the CSV database" );
+						skip = true;
+					}
+				}
+				if( skip ) continue;
+				while( geneValues.size() > 1 )
+				{
+					if( operations.isEmpty() )
+						break;
+					if( operations.firstElement().equals( "or" ) )
+						geneValues.set( 0, geneValues.get( 0 ) + geneValues.get( 1 ) );
+					else
+						geneValues.set( 0, Math.min( geneValues.get( 0 ), geneValues.get( 1 ) ) );
+					geneValues.remove( 1 );
+				}
+				double fluxBound = geneValues.get( 0 );
+				if( reaction.getReversible().toLowerCase().equals( "true" ) )
+					reaction.setLowerBound( -fluxBound );
+				else
+					reaction.setLowerBound( 0 );
+				reaction.setUpperBound( fluxBound );
+			}
+		}
+		catch( Exception e )
+		{
+			e.printStackTrace();
+		}
+		
+		setReactions( reactions );
 	}
 	
 	public int getNumMetabolites() {
