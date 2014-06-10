@@ -1371,7 +1371,8 @@ public class GraphicalInterface extends JFrame {
 				log.debug("create an optimize");
 				FBA fba = new FBA();
 				fba.setFBAModel(model);
-				fba.formatFluxBoundsfromTransciptomicData( chooseCSVFile() );
+				if( usingEflux2 )
+					fba.formatFluxBoundsfromTransciptomicData( chooseCSVFile() );
 				log.debug("about to optimize");
 				ArrayList<Double> soln = fba.run();
 				log.debug("optimization complete");
