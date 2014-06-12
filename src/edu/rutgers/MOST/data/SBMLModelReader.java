@@ -92,6 +92,7 @@ public class SBMLModelReader {
 				for (int u = 0; u < metabolites.get(i).getNotes().getChildCount(); u++) {
 					if (!metabolites.get(i).getNotes().getChildAt(u).getName().isEmpty()) {
 						String noteString = metabolites.get(i).getNotes().getChildAt(u).toXMLString();
+						//System.out.println(noteString);
 						String noteItem = "";
 						//removes xmlns (xml namespace tags)
 						if (noteString.contains("xmlns")) {
@@ -199,7 +200,7 @@ public class SBMLModelReader {
 					}
 				}
 				//System.out.println(metabolitesMetaColumnMap);
-			} 		
+			} 
 			metabRow.add(charge);	
 			metabRow.add(metabolites.get(i).getCompartment());
 			String boundary = "";
@@ -426,26 +427,24 @@ public class SBMLModelReader {
 				for (int u = 0; u < reactions.get(j).getNotes().getChildCount(); u++) {
 					if (!reactions.get(j).getNotes().getChildAt(u).getName().isEmpty()) {
 						String noteString = reactions.get(j).getNotes().getChildAt(u).toXMLString();
-						//System.out.println(noteString);
 						String noteItem = "";
 						//removes xmlns (xml namespace tags)
 						if (noteString.contains("xmlns")) {
-							//System.out.println(noteString);
 							if (!noteString.endsWith("/>")) {
 								noteString = noteString.substring(noteString.indexOf(">") + 1, noteString.lastIndexOf("<"));
-								//System.out.println(noteString);
 								if (noteString.contains("<")) {
 									String endtag = noteString.substring(noteString.lastIndexOf("<"));
 									//System.out.println("endtag " + endtag);
 									String[] nameSpaces = noteString.split(endtag);
 									for (int n = 0; n < nameSpaces.length; n++) {
 										noteItem = nameSpaces[n].substring(nameSpaces[n].indexOf(">") + 1); 
+										System.out.println(noteItem);
 										noteItemList.add(noteItem);										
 									}
 								} else {
 									noteItemList.add(noteString);
 								}
-							} 
+							}
 						} else {
 							if ((noteString.indexOf(">") + 1) < noteString.lastIndexOf("<")) {
 								//for "<>", "</>" types of nodes, tags are removed

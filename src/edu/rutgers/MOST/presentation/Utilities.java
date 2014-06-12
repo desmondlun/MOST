@@ -121,8 +121,12 @@ public class Utilities {
 				}
 				fileName = System.getenv("LOCALAPPDATA") + GraphicalInterfaceConstants.FOLDER_NAME + name;
 			}
-		} else if (System.getProperty("os.name").equals("Mac OS X")) {
-			
+		} else if (System.getProperty( "os.name" ).toLowerCase().contains( "mac os x" )) {
+			File destDir = new File(System.getenv("HOME") + "/Library/" + GraphicalInterfaceConstants.FOLDER_NAME);
+			if (!destDir.exists()) {
+				destDir.mkdir();				
+			}
+			fileName = System.getenv("HOME") + "/Library/" + GraphicalInterfaceConstants.FOLDER_NAME + name;
 		} else if (System.getProperty("os.name").equals("Linux")) {	
 			fileName = name;
 		} else {
