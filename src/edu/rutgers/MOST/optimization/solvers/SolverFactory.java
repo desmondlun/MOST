@@ -1,30 +1,12 @@
 package edu.rutgers.MOST.optimization.solvers;
 
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.apache.log4j.Logger;
-
-import edu.rutgers.MOST.config.LocalConfig;
-import edu.rutgers.MOST.optimization.FBA.FBA;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 public class SolverFactory {
-	static Logger log = Logger.getLogger(SolverFactory.class);
 	
 	public static Solver createSolver(){
-		log.debug("creating a solver");
-		//Create the solver according to the global configuration
-		LocalConfig config = LocalConfig.getInstance();
-		Date date = new Date();
-		Format formatter;
-		formatter = new SimpleDateFormat("_yyMMdd_HHmmss");
-		String dateTimeStamp = formatter.format(date);
-		
 		Solver solver = new GLPKSolver();
 		if (GraphicalInterface.getSolverName().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
 			solver = new GLPKSolver();

@@ -8,16 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
-
 import au.com.bytecode.opencsv.CSVReader;
 import edu.rutgers.MOST.data.*;
 import edu.rutgers.MOST.optimization.solvers.*;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 public class FBA {
-
-	static Logger log = Logger.getLogger(FBA.class);
 	
 	private FBAModel model;
 	private static Solver solver;
@@ -102,13 +98,9 @@ public class FBA {
 	}
 
 	public ArrayList<Double> run() {
-		log.debug("Set Vars");
 		this.setVars();
-		log.debug("setConstraints");
 		this.setConstraints();
-		log.debug("setObjective");
 		this.setObjective();
-		log.debug("optimize");
 		this.maxObj = FBA.getSolver().optimize();
 		
 		return FBA.getSolver().getSoln();

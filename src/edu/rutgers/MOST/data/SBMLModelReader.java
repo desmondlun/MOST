@@ -50,7 +50,6 @@ public class SBMLModelReader {
 
 	@SuppressWarnings("deprecation")
 	public void load(){
-		new SBMLModelReader(doc);
 		//String id = doc.getModel().getId(); 
 		//System.out.println(id);
 		
@@ -643,9 +642,6 @@ public class SBMLModelReader {
 		//System.out.println(LocalConfig.getInstance().getReactionEquationMap());
 		LocalConfig.getInstance().setProgress(100);	
 		//System.out.println("Done");
-
-	}
-	public static void main(String[] args) throws Exception {
 
 	}
 }

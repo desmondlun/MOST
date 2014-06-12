@@ -15,8 +15,6 @@ import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.xml.stream.XMLStreamException;
-
-import org.apache.log4j.Logger;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.ColorHighlighter;
 import org.jdesktop.swingx.decorator.ComponentAdapter;
@@ -108,9 +106,6 @@ public class GraphicalInterface extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	//log4j
-	static Logger log = Logger.getLogger(GraphicalInterface.class);
 
 	public static JToolBar toolbar = new JToolBar("Toolbar", JToolBar.HORIZONTAL);
 	public static JButton savebutton = new JButton(new ImageIcon(GraphicalInterfaceConstants.SAVE_ICON_IMAGE_PATH));
@@ -1368,7 +1363,6 @@ public class GraphicalInterface extends JFrame {
 					return;
 
 				FBAModel model = new FBAModel();
-				log.debug("create an optimize");
 				FBA fba = new FBA();
 				fba.setFBAModel(model);
 				if( usingEflux2 )
@@ -1377,9 +1371,7 @@ public class GraphicalInterface extends JFrame {
 //					JScrollPane scrollPaneGene = new JScrollPane();
 //					tabbedPane.addTab("Genes", scrollPaneGene);
 //					tabbedPane.repaint();
-				log.debug("about to optimize");
 				ArrayList<Double> soln = fba.run();
-				log.debug("optimization complete");
 				//End optimization
 
 				ReactionFactory rFactory = new ReactionFactory("SBML");
@@ -10135,7 +10127,7 @@ public class GraphicalInterface extends JFrame {
 			int progress = 0;
 			SBMLDocument doc = new SBMLDocument();
 			SBMLReader reader = new SBMLReader();
-			try {		  
+			try {
 				doc = reader.readSBML(getSBMLFile());
 				SBMLModelReader modelReader = new SBMLModelReader(doc);
 				modelReader.load();
@@ -10387,8 +10379,6 @@ public class GraphicalInterface extends JFrame {
 			try {
 				//System.out.println("GDBB is done!");
 				soln = gdbb.getSolution();
-
-				log.debug("optimization complete");
 
 				if (soln == null || soln.isEmpty())
 					return;
