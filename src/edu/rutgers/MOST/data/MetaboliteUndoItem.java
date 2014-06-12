@@ -503,6 +503,7 @@ public class MetaboliteUndoItem implements UndoItem {
 //		System.out.println("aft" + LocalConfig.getInstance().getMetaboliteUsedMap());
 	}
 	
+	@SuppressWarnings( "rawtypes" )
 	public static Object getKeyFromValue(Map hm, Object value) {
 		for (Object o : hm.keySet()) {
 			if (hm.get(o).equals(value)) {

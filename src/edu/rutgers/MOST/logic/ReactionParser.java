@@ -95,12 +95,13 @@ public class ReactionParser {
 		return rawSpeciesAndCoeffList;
 	}
 	
+	@SuppressWarnings( "unchecked" )
 	public void createSBMLReactionEquation(ArrayList<ArrayList<String>> rawSpeciesList, String type) {
 		ArrayList<String> stoicAndSpecies[] = new ArrayList[rawSpeciesList.size()];
 		ArrayList<SBMLReactant> reactants = new ArrayList<SBMLReactant>();
 		ArrayList<SBMLProduct> products = new ArrayList<SBMLProduct>();
 		for (int i = 0; i < rawSpeciesList.size(); i++) {
-			stoicAndSpecies[i] = stoicAndSpecies((ArrayList) rawSpeciesList.get(i));
+			stoicAndSpecies[i] = stoicAndSpecies((ArrayList< String >) rawSpeciesList.get(i));
 			if (type == "reactant") {
 				SBMLReactant reac = reactant(stoicAndSpecies[i]);
 				reactants.add(reac);

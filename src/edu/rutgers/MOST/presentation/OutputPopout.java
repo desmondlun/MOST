@@ -172,25 +172,21 @@ public class OutputPopout extends JFrame {
 					}
 					File f = new File(path);
 
-					if (path == null) {
-						done = true;
-					} else {        	    	  
-						if (f.exists()) {
-							int confirmDialog = JOptionPane.showConfirmDialog(fileChooser, "Replace existing file?");
-							if (confirmDialog == JOptionPane.YES_OPTION) {
-								done = true;
-								writeFile(f);
-								setTitle(GraphicalInterfaceConstants.TITLE + " - " + f.getName());
-							} else if (confirmDialog == JOptionPane.NO_OPTION) {        		    	  
-								done = false;
-							} else {
-								done = true;
-							}       		    	  
-						} else {
+					if (f.exists()) {
+						int confirmDialog = JOptionPane.showConfirmDialog(fileChooser, "Replace existing file?");
+						if (confirmDialog == JOptionPane.YES_OPTION) {
 							done = true;
 							writeFile(f);
 							setTitle(GraphicalInterfaceConstants.TITLE + " - " + f.getName());
-						}
+						} else if (confirmDialog == JOptionPane.NO_OPTION) {        		    	  
+							done = false;
+						} else {
+							done = true;
+						}       		    	  
+					} else {
+						done = true;
+						writeFile(f);
+						setTitle(GraphicalInterfaceConstants.TITLE + " - " + f.getName());
 					}	
 				}
 			}

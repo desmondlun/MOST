@@ -3432,26 +3432,22 @@ public class GraphicalInterface extends JFrame {
 				}
 
 				File file = new File(path);
-				if (path == null) {
-					done = true;
-				} else {        	    	  
-					if (file.exists()) {
-						int confirmDialog = JOptionPane.showConfirmDialog(fileChooser, "Replace existing file?");
-						if (confirmDialog == JOptionPane.YES_OPTION) {
-							done = true;
+				if (file.exists()) {
+					int confirmDialog = JOptionPane.showConfirmDialog(fileChooser, "Replace existing file?");
+					if (confirmDialog == JOptionPane.YES_OPTION) {
+						done = true;
 
-							saveMetabolitesTextFile(path, filename);
+						saveMetabolitesTextFile(path, filename);
 
-						} else if (confirmDialog == JOptionPane.NO_OPTION) {        		    	  
-							done = false;
-						} else {
-							done = true;
-						}       		    	  
+					} else if (confirmDialog == JOptionPane.NO_OPTION) {        		    	  
+						done = false;
 					} else {
 						done = true;
-						
-						saveMetabolitesTextFile(path, filename);
-					}
+					}       		    	  
+				} else {
+					done = true;
+					
+					saveMetabolitesTextFile(path, filename);
 				}			                  	  
 			}
 		}
@@ -3542,26 +3538,22 @@ public class GraphicalInterface extends JFrame {
 
 				file = new File(path);
 
-				if (path == null) {
-					done = true;
-				} else {        	    	  
-					if (file.exists()) {
-						int confirmDialog = JOptionPane.showConfirmDialog(fileChooser, "Replace existing file?");
-						if (confirmDialog == JOptionPane.YES_OPTION) {
-							done = true;
-
-							saveReactionsTextFile(path, filename);
-
-						} else if (confirmDialog == JOptionPane.NO_OPTION) {        		    	  
-							done = false;
-						} else {
-							done = true;
-						}       		    	  
-					} else {
+				if (file.exists()) {
+					int confirmDialog = JOptionPane.showConfirmDialog(fileChooser, "Replace existing file?");
+					if (confirmDialog == JOptionPane.YES_OPTION) {
 						done = true;
 
 						saveReactionsTextFile(path, filename);
-					}
+
+					} else if (confirmDialog == JOptionPane.NO_OPTION) {        		    	  
+						done = false;
+					} else {
+						done = true;
+					}       		    	  
+				} else {
+					done = true;
+
+					saveReactionsTextFile(path, filename);
 				}			                  	  
 			}
 		}
@@ -4808,7 +4800,7 @@ public class GraphicalInterface extends JFrame {
 	}
 
 	//used in numerical columns so they are sorted by value and not as strings
-	Comparator numberComparator = new Comparator() {
+	Comparator< ? > numberComparator = new Comparator< Object >() {
 		public int compare(Object o1, Object o2) {
 			Double d1 = Double.valueOf(o1 == null ? "0" : (String)o1);
 			Double d2 = d1;
@@ -6919,11 +6911,11 @@ public class GraphicalInterface extends JFrame {
 
 		final JMenuItem participatingReactionsMenu = new JMenuItem("Highlight Participating Reactions");
 		if (columnIndex == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
-			if (metabAbbrev == null || !LocalConfig.getMetaboliteUsedMap().containsKey(metabAbbrev) || highlightParticipatingRxns) {
+			if (metabAbbrev == null || !LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev) || highlightParticipatingRxns) {
 				participatingReactionsMenu.setEnabled(false);
 			}
 		} else if (columnIndex == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
-			if (metabName == null || !LocalConfig.getMetaboliteUsedMap().containsKey(metabAbbrev) || highlightParticipatingRxns) {
+			if (metabName == null || !LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev) || highlightParticipatingRxns) {
 				participatingReactionsMenu.setEnabled(false);
 			}
 		}		
@@ -6957,7 +6949,7 @@ public class GraphicalInterface extends JFrame {
 		});
 		contextMenu.add(participatingReactionsMenu);
 
-		if (metabAbbrev == null || !LocalConfig.getMetaboliteUsedMap().containsKey(metabAbbrev) || !highlightParticipatingRxns) {
+		if (metabAbbrev == null || !LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev) || !highlightParticipatingRxns) {
 			unhighlightParticipatingReactionsMenu.setEnabled(false);
 		}
 		unhighlightParticipatingReactionsMenu.addActionListener(new ActionListener() {
@@ -8084,7 +8076,7 @@ public class GraphicalInterface extends JFrame {
 		if (undoCount > 0) {
 			enableOptionComponent(undoSplitButton, undoLabel, undoGrayedLabel);
 			undoItem.setEnabled(true);
-			Class cls = LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size()).getClass();
+			Class< ? extends Object > cls = LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size()).getClass();
 			if ((cls.getName().equals("edu.rutgers.MOST.data.ReactionUndoItem"))) {
 				undoSplitButton.setToolTipText("Undo " + ((ReactionUndoItem) LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size())).createUndoDescription() + " (Ctrl+Z)");
 			} else if ((cls.getName().equals("edu.rutgers.MOST.data.MetaboliteUndoItem"))) {
@@ -8104,7 +8096,7 @@ public class GraphicalInterface extends JFrame {
 		if (LocalConfig.getInstance().getRedoItemMap().size() > 0) {
 			enableOptionComponent(redoSplitButton, redoLabel, redoGrayedLabel);
 			redoItem.setEnabled(true);
-			Class cls = LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size()).getClass();
+			Class< ? extends Object > cls = LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size()).getClass();
 			if ((cls.getName().equals("edu.rutgers.MOST.data.ReactionUndoItem"))) {
 				redoSplitButton.setToolTipText("Redo " + ((ReactionUndoItem) LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size())).createUndoDescription() + " (Ctrl+Y)");
 			} else if ((cls.getName().equals("edu.rutgers.MOST.data.MetaboliteUndoItem"))) {
@@ -8141,7 +8133,7 @@ public class GraphicalInterface extends JFrame {
 		}
 		for (int i = undoMap.size() - 1; i > -1; i--) {
 			String item = "";
-			Class cls = undoMap.get(i + 1).getClass();
+			Class< ? extends Object > cls = undoMap.get(i + 1).getClass();
 			if ((cls.getName().equals("edu.rutgers.MOST.data.ReactionUndoItem"))) {
 				item = ((ReactionUndoItem) undoMap.get(i + 1)).createUndoDescription();
 			} else if ((cls.getName().equals("edu.rutgers.MOST.data.MetaboliteUndoItem"))) {
@@ -8157,7 +8149,7 @@ public class GraphicalInterface extends JFrame {
 						int scrollRow = 0;
 						int scrollCol = 1;
 						for (int i = undoMap.size(); i >= Integer.valueOf(menuItem.getName()); i--) {
-							Class cls = undoMap.get(i).getClass();
+							Class< ? extends Object > cls = undoMap.get(i).getClass();
 							if ((cls.getName().equals("edu.rutgers.MOST.data.ReactionUndoItem"))) {
 								int row = ((ReactionUndoItem) undoMap.get(i)).getRow();
 								int id = ((ReactionUndoItem) undoMap.get(i)).getId();
@@ -8193,7 +8185,7 @@ public class GraphicalInterface extends JFrame {
 									updateReactionEquationsForUndo(deleteIds);
 
 									if (reactionsTable.getModel().getRowCount() > LocalConfig.getInstance().getMetaboliteIdNameMap().size()) {
-										if (LocalConfig.getMaxMetabolite() >= Integer.valueOf((String)reactionsTable.getModel().getValueAt(reactionsTable.getModel().getRowCount() - 1, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN))) {
+										if (LocalConfig.getInstance().getMaxMetabolite() >= Integer.valueOf((String)reactionsTable.getModel().getValueAt(reactionsTable.getModel().getRowCount() - 1, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN))) {
 											for (int k = 0; k < deleteMetabRows.size(); k++) {
 												deleteMetabolitesRowById(deleteMetabRows.get(k));
 											}
@@ -8445,7 +8437,7 @@ public class GraphicalInterface extends JFrame {
 	};
 
 	public void undoButtonAction() {
-		Class cls = LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size()).getClass();
+		Class< ? extends Object > cls = LocalConfig.getInstance().getUndoItemMap().get(LocalConfig.getInstance().getUndoItemMap().size()).getClass();
 		if ((cls.getName().equals("edu.rutgers.MOST.data.ReactionUndoItem"))) {
 			reactionUndoButtonAction();		
 		} else if ((cls.getName().equals("edu.rutgers.MOST.data.MetaboliteUndoItem"))) {
@@ -8584,7 +8576,7 @@ public class GraphicalInterface extends JFrame {
     	LocalConfig.getInstance().getUndoItemMap().remove(index);
     	undoCount -= 1;	
     	if (reactionsTable.getModel().getRowCount() > LocalConfig.getInstance().getMetaboliteIdNameMap().size()) {
-			if (LocalConfig.getMaxMetabolite() >= Integer.valueOf((String)reactionsTable.getModel().getValueAt(reactionsTable.getModel().getRowCount() - 1, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN))) {
+			if (LocalConfig.getInstance().getMaxMetabolite() >= Integer.valueOf((String)reactionsTable.getModel().getValueAt(reactionsTable.getModel().getRowCount() - 1, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN))) {
 				for (int k = 0; k < deleteMetabRows.size(); k++) {
 					deleteMetabolitesRowById(deleteMetabRows.get(k));
 				}
@@ -8601,7 +8593,7 @@ public class GraphicalInterface extends JFrame {
 	};
 
 	public void redoButtonAction() {
-		Class cls = LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size()).getClass();
+		Class< ? extends Object > cls = LocalConfig.getInstance().getRedoItemMap().get(LocalConfig.getInstance().getRedoItemMap().size()).getClass();
 		if ((cls.getName().equals("edu.rutgers.MOST.data.ReactionUndoItem"))) {
 			reactionRedoButtonAction();
 		} else if ((cls.getName().equals("edu.rutgers.MOST.data.MetaboliteUndoItem"))) {

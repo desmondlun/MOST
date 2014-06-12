@@ -13,7 +13,7 @@ import javax.swing.table.TableColumnModel;
 //from http://www.java2s.com/Tutorial/Java/0240__Swing/SettingColumnHeaderToolTipsinaJTableComponents.htm
 class ColumnHeaderToolTips extends MouseMotionAdapter {
 	TableColumn curCol;
-	Map tips = new HashMap();
+	Map< TableColumn, String > tips = new HashMap< TableColumn, String >();
 	public void setToolTip(TableColumn col, String tooltip) {
 		if (tooltip == null) {
 			tips.remove(col);

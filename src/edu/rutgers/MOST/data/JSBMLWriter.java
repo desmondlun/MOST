@@ -115,9 +115,9 @@ public class JSBMLWriter implements TreeModelListener{
 	}
 
 	public JSBMLWriter() {
-		metabolitesMap = new HashMap();
-		speciesMap = new HashMap();
-		speciesRefMap = new HashMap();
+		metabolitesMap = new HashMap< Integer, SBMLMetabolite >();
+		speciesMap = new HashMap< String, Species >();
+		speciesRefMap = new HashMap< String, SpeciesReference >();
 	}
 	
 	public void metaMap() {
@@ -329,8 +329,8 @@ public class JSBMLWriter implements TreeModelListener{
 		public ArrayList<Species> allSpecies;
 	
 		public SMetabolites() {
-			allMetabolites = new ArrayList();
-			allSpecies = new ArrayList();
+			allMetabolites = new ArrayList< SBMLMetabolite >();
+			allSpecies = new ArrayList< Species >();
 		}
 		
 		public void setDatabase(String name) {
@@ -358,7 +358,7 @@ public class JSBMLWriter implements TreeModelListener{
 			*/
 			int metabRow = 0;
 			int blankMetabAbbrCount = 1;
-			compartments = new HashMap();
+			compartments = new HashMap< String, Compartment >();
 			for (int i=0; i < length; i++) {
 				SBMLMetabolite curMeta = (SBMLMetabolite) mFactory.getMetaboliteByRow(i);
 				//SBMLMetabolite curMeta = (SBMLMetabolite) mFactory.getMetaboliteById(i);
@@ -481,7 +481,7 @@ public class JSBMLWriter implements TreeModelListener{
 		public ArrayList<SBMLReaction> allReactions;
 	
 		public SReactions() {
-			allReactions = new ArrayList();
+			allReactions = new ArrayList< SBMLReaction >();
 		}
 		public void setModel(Model model) {
 			this.model = model;
@@ -549,7 +549,7 @@ public class JSBMLWriter implements TreeModelListener{
 			*/
 			
 			//The following handles the 1 to 1 relation of instance variables to values 
-			Map<Integer, Map<String, LocalParameter>> allparams = new HashMap();
+			Map<Integer, Map<String, LocalParameter>> allparams = new HashMap< Integer, Map< String, LocalParameter >>();
 			
 			String lowerStr = "LOWER_BOUND";
 			String upperStr = "UPPER_BOUND";
@@ -567,7 +567,7 @@ public class JSBMLWriter implements TreeModelListener{
 				LocalParameter fParaml = new LocalParameter(fluxStr);
 				LocalParameter rParaml = new LocalParameter(redStr);
 				
-				Map<String, LocalParameter> curParams = new HashMap();
+				Map<String, LocalParameter> curParams = new HashMap< String, LocalParameter >();
 				lParaml.setUnits(uD);
 				uParaml.setUnits(uD);
 				fParaml.setUnits(uD);

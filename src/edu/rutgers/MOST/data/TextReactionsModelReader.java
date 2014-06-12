@@ -290,7 +290,7 @@ public class TextReactionsModelReader {
 					// TODO : add error message here?
 					// reversible = false
 					if (lowerBound < 0.0 && reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
-						lowerBound = lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
+						lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
 					} 
 					reacRow.add(Double.toString(lowerBound));
 					if (LocalConfig.getInstance().getUpperBoundColumnIndex() > -1) {

@@ -97,8 +97,8 @@ public class SettingsFactory {
 	    writer.add(startElement);
 
 	    Attribute attribute = xmlEventFactory.createAttribute("version", "1");
-	    List attributeList = Arrays.asList(attribute);
-	    List nsList = Arrays.asList();
+	    List< Attribute > attributeList = Arrays.asList(attribute);
+	    List< ? > nsList = Arrays.asList();
 	    
 	    StartElement startElement2 = xmlEventFactory.createStartElement("", "", "Attributes",
 	        attributeList.iterator(), nsList.iterator());
@@ -176,7 +176,7 @@ public class SettingsFactory {
 
 					//System.out.println("Start Element: " + element.getName());
 
-					Iterator iterator = element.getAttributes();
+					Iterator< ? > iterator = element.getAttributes();
 					while (iterator.hasNext()) {
 						Attribute attribute = (Attribute) iterator.next();
 						QName name = attribute.getName();

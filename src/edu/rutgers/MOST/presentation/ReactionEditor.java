@@ -125,6 +125,7 @@ public class ReactionEditor extends JFrame {
 	}
 
 	// private final JList names;
+	@SuppressWarnings( "rawtypes" )
 	public ReactionEditor() {
 	setTitle("Reaction Editor");
 

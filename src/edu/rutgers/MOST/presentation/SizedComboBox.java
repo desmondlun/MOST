@@ -1,12 +1,14 @@
 package edu.rutgers.MOST.presentation;
 
 import java.awt.Dimension;
+
 import javax.swing.JComboBox;
 
 //from http://www.javakb.com/Uwe/Forum.aspx/java-gui/2584/JComboBox-with-wider-drop-down-popup
 //avoids using tooltips since dropbox resizes for longest component
 //works in FindReplace but for some reason, does not work in ReactionEditor
- public class SizedComboBox extends JComboBox {
+ @SuppressWarnings( "serial" )
+public class SizedComboBox extends JComboBox< Object > {
    private boolean realSize;
 
    // Add whatever constructors you need.

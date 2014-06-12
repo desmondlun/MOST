@@ -579,6 +579,7 @@ public class ReactionUndoItem implements UndoItem {
 		
 	}
 	
+	@SuppressWarnings( "rawtypes" )
 	public static Object getKeyFromValue(Map hm, Object value) {
 		for (Object o : hm.keySet()) {
 			if (hm.get(o).equals(value)) {

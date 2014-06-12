@@ -87,6 +87,7 @@ public class FBA {
 		{
 			CSVReader csvReader = new CSVReader( new FileReader( file ) );
 			List< String[] > all = csvReader.readAll();
+			csvReader.close();
 			Map< String, Double > expressionLevels = new HashMap< String, Double >();
 			for( String[] keyval : all )
 				expressionLevels.put( keyval[ 0 ], Double.valueOf( keyval[ 1 ] ) );
