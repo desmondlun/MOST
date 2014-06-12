@@ -510,6 +510,7 @@ public class ReactionUndoItem implements UndoItem {
 		return columnName;
 	}
 	
+	@SuppressWarnings( "unchecked" )
 	public void restoreOldCollections() {
 		Map<String, Object> metaboliteUsedMap = new HashMap<String, Object>();
 
@@ -527,6 +528,7 @@ public class ReactionUndoItem implements UndoItem {
 		}
 	}
 	
+	@SuppressWarnings( "unchecked" )
 	public void restoreNewCollections() {
 		Map<String, Object> metaboliteUsedMap = new HashMap<String, Object>();
 

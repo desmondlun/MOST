@@ -73,6 +73,7 @@ public class ReactionParser {
 	}
 	
 	//creates list of raw lists of coeff and species from half equations
+	@SuppressWarnings( "unchecked" )
 	public static ArrayList<ArrayList<String>> rawSpeciesAndCoeffList(List<String> halfEquation) {
 		//need to make an array of speciesAndCoeff lists
 		ArrayList<ArrayList<String>> rawSpeciesAndCoeffList = new ArrayList<ArrayList<String>>();

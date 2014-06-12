@@ -6096,6 +6096,7 @@ public class GraphicalInterface extends JFrame {
 			deleteReactionRowMenuItem.setEnabled(false);
 		}
 		deleteReactionRowMenuItem.addActionListener(new ActionListener() {
+			@SuppressWarnings( "unchecked" )
 			public void actionPerformed(ActionEvent ae) {
 				if (reactionsTable.getModel().getRowCount() > 0 && reactionsTable.getSelectedRow() != -1 )
 				{
@@ -7916,7 +7917,8 @@ public class GraphicalInterface extends JFrame {
     	
     }
     
-    public MetaboliteUndoItem createMetaboliteUndoItem(String oldValue, String newValue, 
+    @SuppressWarnings( "unchecked" )
+	public MetaboliteUndoItem createMetaboliteUndoItem(String oldValue, String newValue, 
     		int row, int column, int id, String undoType, String undoItemType) {
     	if (oldValue == null) {
     		oldValue = "";
@@ -7963,6 +7965,7 @@ public class GraphicalInterface extends JFrame {
     	
     }
 
+	@SuppressWarnings( "unchecked" )
 	public void setUndoOldCollections(MetaboliteUndoItem undoItem) {
 		// make deep copies of lists and maps to be restored if undo is executed		
 		ArrayList<Integer> oldBlankMetabIds = new ArrayList<Integer>();
@@ -7998,6 +8001,7 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 
+	@SuppressWarnings( "unchecked" )
 	public void setUndoNewCollections(MetaboliteUndoItem undoItem) {
 		// make deep copies of lists and maps to be restored if redo is executed		
 		ArrayList<Integer> newBlankMetabIds = new ArrayList<Integer>();
@@ -8034,6 +8038,7 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 	
+	@SuppressWarnings( "unchecked" )
 	public void setOldUsedMap(ReactionUndoItem undoItem) {
 		Map<String, Object> oldMetaboliteUsedMap = new HashMap<String, Object>();
 
@@ -8052,6 +8057,7 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 
+	@SuppressWarnings( "unchecked" )
 	public void setNewUsedMap(ReactionUndoItem undoItem) {
 		Map<String, Object> newMetaboliteUsedMap = new HashMap<String, Object>();
 
