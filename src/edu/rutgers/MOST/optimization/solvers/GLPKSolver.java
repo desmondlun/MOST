@@ -46,13 +46,15 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 
 	private class RowType
 	{
+		public double val;
 		public int type;
 		public double lb;
 		public double ub;
 		public Vector< RowEntry > entries = new Vector< RowEntry >();
 
-		RowType( int t, double l, double u )
+		RowType( double v, int t, double l, double u )
 		{
+			val = v;
 			type = t;
 			lb = l;
 			ub = u;
@@ -131,6 +133,7 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 	public GLPKSolver()
 	{
 		String dependsFolder = "lib/";
+		Object[] options = { "    OK    " };
 		if( System.getProperty( "os.name" ).toLowerCase().contains( "windows" ) )
 		{
 			dependsFolder += "win" + System.getProperty( "sun.arch.data.model" );
@@ -231,7 +234,7 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 			break;
 		}
 
-		RowType row = new RowType( type, lb, ub );
+		RowType row = new RowType( value, type, lb, ub );
 		for( Entry< Integer, Double > entry : map.entrySet())
 		{
 			int key = entry.getKey();

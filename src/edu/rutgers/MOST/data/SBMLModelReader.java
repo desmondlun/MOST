@@ -110,6 +110,7 @@ public class SBMLModelReader {
 				}
 
 				if (i == 0) {
+					int metaColCount = 0;
 					//set list of notes names to meta columns			
 					for (int n = 0; n < metabNoteItemList.size(); n++) {
 						if (metabNoteItemList.get(n).contains(":")) {
@@ -166,6 +167,7 @@ public class SBMLModelReader {
 							}
 							if (!contains) {
 								metabolitesMetaColumnNames.add(columnName);
+								metaColCount += 1;
 							}	
 						}
 					}
@@ -461,6 +463,7 @@ public class SBMLModelReader {
 					//System.out.println(noteItemList);
 					//set list of notes names to meta columns							
 					boolean genes = false;
+					int metaColCount = 0;
 					for (int n = 0; n < noteItemList.size(); n++) {
 						if (noteItemList.get(n).contains(":")) {
 							//accounts for condition of multiple ":"
@@ -530,6 +533,7 @@ public class SBMLModelReader {
 							if (!contains) {
 								if (!reactionsMetaColumnNames.contains(columnName)) {
 									reactionsMetaColumnNames.add(columnName);
+									metaColCount += 1;
 								}					
 							}
 						}

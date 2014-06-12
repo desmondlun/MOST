@@ -118,15 +118,18 @@ public class ReactionColAddRenameInterface  extends JDialog {
 
 	public boolean isColumnDuplicate() {
 		String columnName = textField.getText();
+		int columnIndex = -1;
 		boolean duplicate = false;
 		for (int i = 0; i < GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length; i++) {
 			if (GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[i].equals(columnName)) {
 				duplicate = true;
+				columnIndex = i;
 			}
 		}
 		for (int j = 0; j < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); j++) {
 			if (LocalConfig.getInstance().getReactionsMetaColumnNames().get(j).equals(columnName)) {
 				duplicate = true;
+				columnIndex = GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length + j;
 			}
 		}	
 		return duplicate;

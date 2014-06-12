@@ -120,8 +120,9 @@ public class TextReactionsModelReader {
 		CSVReader reader;
 		try {
 			reader = new CSVReader(new FileReader(file), ',');
+			String[] dataArray;
 			try {
-				while ((reader.readNext()) != null) {
+				while ((dataArray = reader.readNext()) != null) {
 					count++; 	
 				}
 				reader.close();
@@ -181,6 +182,7 @@ public class TextReactionsModelReader {
 		CSVReader reader;
 		try {
 			reader = new CSVReader(new FileReader(file), ',');
+			String [] dataArray;
 		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(null,                
 					"File Not Found Error.",                
@@ -212,6 +214,7 @@ public class TextReactionsModelReader {
 					String reactionAbbreviation = "";
 					String reactionName = "";
 					String reactionEqunAbbr = "";
+					String reactionEqunNames = "";
 					String reversible = "";
 					Double lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
 					Double upperBound =	GraphicalInterfaceConstants.UPPER_BOUND_DEFAULT;

@@ -106,8 +106,9 @@ public class TextMetabolitesModelReader {
 		CSVReader reader;
 		try {
 			reader = new CSVReader(new FileReader(file), ',');
+			String [] dataArray;
 			try {
-				while ((reader.readNext()) != null) {
+				while ((dataArray = reader.readNext()) != null) {
 					count++; 	
 				}
 				reader.close();
@@ -149,6 +150,7 @@ public class TextMetabolitesModelReader {
 	
 		try {
 			reader = new CSVReader(new FileReader(file), ',');
+			String [] dataArray;
 		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(null,                
 					"File Not Found Error.",                

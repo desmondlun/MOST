@@ -6,11 +6,13 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JOptionPane;
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
@@ -170,6 +172,22 @@ public class SettingsFactory {
 				if (event.isStartElement()) {
 					StartElement element = (StartElement) event;
 					currentElementValue = element.getName().toString();
+
+
+					//System.out.println("Start Element: " + element.getName());
+
+					Iterator< ? > iterator = element.getAttributes();
+					while (iterator.hasNext()) {
+						Attribute attribute = (Attribute) iterator.next();
+						QName name = attribute.getName();
+						String value = attribute.getValue();
+						//System.out.println("Attribute name/value: " + name + "/" + value);
+					}
+				}
+
+				if (event.isEndElement()) {
+					EndElement element = (EndElement) event;
+					//System.out.println("End element:" + element.getName());
 				}
 
 				if (event.isCharacters()) {
