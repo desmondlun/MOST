@@ -406,11 +406,11 @@ public class GraphicalInterfaceConstants {
     public static final Color GRAYED_LABEL_COLOR = new Color(150,150,150);
     
     // directories used for writing log files
-    public static final String SETTINGS_PATH_PREFIX_WINDOWS_7 = "C:\\Users\\";
+    // The suffix must be used as there are bugs in getting the application data folder
+    // in Windows XP - http://stackoverflow.com/questions/1198911/how-to-get-local-application-data-folder-in-java
 	public static final String SETTINGS_PATH_SUFFIX_WINDOWS_7 = "\\AppData\\Local";
 	
-	public static final String SETTINGS_PATH_PREFIX_WINDOWS_XP = "C:\\Documents and Settings\\";
-	public static final String SETTINGS_PATH_SUFFIX_WINDOWS_XP = "\\Local Settings\\Application Data\\";
+	public static final String SETTINGS_PATH_SUFFIX_WINDOWS_XP = "\\Local Settings\\Application Data";
 	
 	public static final String FOLDER_NAME = "\\MOST\\";
     

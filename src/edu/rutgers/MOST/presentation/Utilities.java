@@ -107,22 +107,29 @@ public class Utilities {
 	
 	public String createLogFileName(String name) {
 		String fileName = "";
-		if (System.getProperty("os.name").equals("Windows 7") || System.getProperty("os.name").equals("Windows 8") || System.getProperty("os.name").equals("Windows Vista")) {
-			File destDir = new File(GraphicalInterfaceConstants.SETTINGS_PATH_PREFIX_WINDOWS_7 + System.getProperty("user.name") + GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_7 + GraphicalInterfaceConstants.FOLDER_NAME);
-			if (!destDir.exists()) {
-				destDir.mkdir();				
+		if (System.getProperty("os.name").contains("Windows")) {
+			if (System.getProperty("os.name").equals("Windows XP")) {
+				File destDir = new File(System.getProperty("user.home") + GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_XP + GraphicalInterfaceConstants.FOLDER_NAME);
+				if (!destDir.exists()) {
+					destDir.mkdir();				
+				}
+				fileName = System.getProperty("user.home") + GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_XP + GraphicalInterfaceConstants.FOLDER_NAME + name;
+			} else {
+				File destDir = new File(System.getenv("LOCALAPPDATA") + GraphicalInterfaceConstants.FOLDER_NAME);
+				if (!destDir.exists()) {
+					destDir.mkdir();				
+				}
+				fileName = System.getenv("LOCALAPPDATA") + GraphicalInterfaceConstants.FOLDER_NAME + name;
 			}
-			fileName = GraphicalInterfaceConstants.SETTINGS_PATH_PREFIX_WINDOWS_7 + System.getProperty("user.name") + GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_7 + GraphicalInterfaceConstants.FOLDER_NAME + name;
-		} else if (System.getProperty("os.name").equals("Windows XP")) {
-			File destDir = new File(GraphicalInterfaceConstants.SETTINGS_PATH_PREFIX_WINDOWS_XP + System.getProperty("user.name") + GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_XP + GraphicalInterfaceConstants.FOLDER_NAME);
-			if (!destDir.exists()) {
-				destDir.mkdir();				
-			}
-			fileName = GraphicalInterfaceConstants.SETTINGS_PATH_PREFIX_WINDOWS_XP + System.getProperty("user.name") + GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_XP + GraphicalInterfaceConstants.FOLDER_NAME + name;
+		} else if (System.getProperty("os.name").equals("Mac OS X")) {
+			
+		} else if (System.getProperty("os.name").equals("Linux")) {	
+			fileName = name;
 		} else {
 			fileName = name;
 		}
 		
+		//System.out.println("util " + fileName);
 		return fileName;
 		
 	}
