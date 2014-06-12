@@ -253,7 +253,7 @@ public class TextReactionsModelReader {
 					if (parser.isValid(reactionEqunAbbr)) {
 						parser.reactionList(reactionEqunAbbr);
 						SBMLReactionEquation equn = new SBMLReactionEquation();
-						equn = parser.getEquation();
+						equn = ReactionParser.getEquation();
 						updateReactionEquation(reactionEqunAbbr, id, equn, reacRow);
 					} else {
 						if (reactionEqunAbbr != null && reactionEqunAbbr.trim().length() > 0) {

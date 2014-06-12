@@ -283,7 +283,7 @@ public class ReactionEditor extends JFrame {
 					if (reactionArea.getText() != null && parser.isValid(reactionArea.getText())) {
 						parser.reactionList(reactionArea.getText().trim());
 						if ((getNumPopulatedReacBoxes() + 1) < getNumReactantFields()) {
-							int index = parser.getEquation().getReactants().size();
+							int index = ReactionParser.getEquation().getReactants().size();
 							if (index == getNumPopulatedReacBoxes() && !reactantsPopulated) {
 								for (int m = 0; m < metabList.size(); m++) {
 									cbReactant[index].addItem(metabList.get(m));
@@ -392,7 +392,7 @@ public class ReactionEditor extends JFrame {
 					if (reactionArea.getText() != null && parser.isValid(reactionArea.getText())) {
 						parser.reactionList(reactionArea.getText().trim());
 						if ((getNumPopulatedProdBoxes() + 1) < getNumProductFields()) {
-							int index = parser.getEquation().getProducts().size();
+							int index = ReactionParser.getEquation().getProducts().size();
 							if (index == getNumPopulatedProdBoxes() && !productsPopulated) {
 								for (int m = 0; m < metabList.size(); m++) {
 									cbProduct[index].addItem(metabList.get(m));
@@ -506,8 +506,8 @@ public class ReactionEditor extends JFrame {
 			// TODO: determine if needed
 			setOldReaction(reactionEquation);
 			parser.reactionList(reactionEquation);
-			reactants = parser.getEquation().getReactants();
-			products = parser.getEquation().getProducts();
+			reactants = ReactionParser.getEquation().getReactants();
+			products = ReactionParser.getEquation().getProducts();
 			//reactions of the type ==> b will have a reactants list of size 0
 			if (reactants.size() == 0) {	
 				for (int m = 0; m < metabList.size(); m++) {

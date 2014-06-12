@@ -3,8 +3,6 @@ package edu.rutgers.MOST.data;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Vector;
-
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
@@ -212,6 +210,7 @@ public class JSBMLWriter implements TreeModelListener{
 	public void setOutFile(File toFile) {
 		outFile = toFile;
 	}
+	@SuppressWarnings( "deprecation" )
 	public void create() throws Exception {
 		level = 3;
 		version = 1;
@@ -309,15 +308,14 @@ public class JSBMLWriter implements TreeModelListener{
 		// For brevity, WE DO NOT PERFORM ERROR CHECKING, but you should,
 		// using the method doc.checkConsistency() and then checking the error log.
 		
-		// Write the SBML document to a file.
-		SBMLWriter sbmlwrite = new SBMLWriter();
+		new SBMLWriter();
 		
 		
 		if (null == outFile) {
-			sbmlwrite.write(doc, "test.xml", "MOST", "1.0");
+			SBMLWriter.write(doc, "test.xml", "MOST", "1.0");
 		}
 		else {
-			sbmlwrite.write(doc, outFile, "MOST", "1.0");
+			SBMLWriter.write(doc, outFile, "MOST", "1.0");
 		}
 		
 		//System.out.println("Successfully outputted to " + outFile);
@@ -402,12 +400,7 @@ public class JSBMLWriter implements TreeModelListener{
 		}
 		
 		public void devModel() {
-			Vector<Species> curSpecies;
-			
-			int count = 0;
-						
 			String comp;
-			Compartment curComp;
 			for (SBMLMetabolite cur : allMetabolites) {
 				comp = cur.getCompartment();
 								
@@ -493,9 +486,7 @@ public class JSBMLWriter implements TreeModelListener{
 			
 			//int length = rFactory.getAllReactions().size();
 			
-			int reacCount = 0;
 			int blankReacAbbrCount = 1;
-			int duplCount = 1;
 			for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
 			//for (int i = 0 ; i< length; i++) {
 				SBMLReaction curReact = (SBMLReaction) rFactory.getReactionByRow(i);
@@ -531,15 +522,12 @@ public class JSBMLWriter implements TreeModelListener{
 		
 		
 		public void devModel() {
-			Vector<Species> curSpecies;
-			
-			int count = 0;
 			//System.out.println();
 			//model.addNamespace("html");
 			//model.addNamespace("html:p");
 			MetaboliteFactory mFactory = new MetaboliteFactory(sourceType);
-			ReactantFactory reFactory = new ReactantFactory(sourceType);
-			ProductFactory prFactory = new ProductFactory(sourceType);			
+			new ReactantFactory(sourceType);
+			new ProductFactory(sourceType);			
 			
 			/*LocalParameter lParaml = new LocalParameter("LOWER_BOUND");
 			LocalParameter uParaml = new LocalParameter("UPPER_BOUND");
@@ -679,7 +667,7 @@ public class JSBMLWriter implements TreeModelListener{
 						SpeciesReference curSpec = new SpeciesReference(); //TODO: Figure spec
 						SBMLReactant curR = ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).reactants.get(r);
 						int inId = curR.getMetaboliteId();
-						SBMLMetabolite sMReactant = (SBMLMetabolite) mFactory.getMetaboliteById(inId);
+						mFactory.getMetaboliteById(inId);
 						String reactAbbrv = curR.getMetaboliteAbbreviation();
 				
 						//Utilities u = new Utilities();
@@ -701,7 +689,7 @@ public class JSBMLWriter implements TreeModelListener{
 						SpeciesReference curSpec = new SpeciesReference(); //TODO: Figure spec
 						SBMLProduct curP = ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).products.get(p);
 						int inId = curP.getMetaboliteId();
-						SBMLMetabolite sMReactant = (SBMLMetabolite) mFactory.getMetaboliteById(inId);
+						mFactory.getMetaboliteById(inId);
 						String reactAbbrv = curP.getMetaboliteAbbreviation();
 						
 						//Utilities u = new Utilities();

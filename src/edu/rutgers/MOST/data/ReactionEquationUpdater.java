@@ -53,7 +53,7 @@ public class ReactionEquationUpdater {
 		if (oldEquation != null && oldEquation.trim().length() > 0) {
 			if (parser.isValid(oldEquation.trim())) {
 				parser.reactionList(oldEquation);
-				SBMLReactionEquation oldEqun = parser.getEquation();
+				SBMLReactionEquation oldEqun = ReactionParser.getEquation();
 				
 				for (int i = 0; i < oldEqun.getReactants().size(); i++){
 					String reactant = oldEqun.getReactants().get(i).getMetaboliteAbbreviation();
@@ -67,7 +67,7 @@ public class ReactionEquationUpdater {
 		}
 		if (newEquation != null && newEquation.trim().length() > 0) {
 			parser.reactionList(newEquation);
-			SBMLReactionEquation newEqun = parser.getEquation();
+			SBMLReactionEquation newEqun = ReactionParser.getEquation();
 			
 			for (int i = 0; i < newEqun.getReactants().size(); i++){
 				String reactant = newEqun.getReactants().get(i).getMetaboliteAbbreviation();

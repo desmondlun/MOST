@@ -9,7 +9,11 @@ import javax.swing.border.TitledBorder;
  
 //from http://www.coderanch.com/t/343889/GUI/java/Drop-Menu-Buttons
 public class OptionComponent extends JPanel {
-    String text;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -3803872184541713763L;
+	String text;
     String imagePath;
     GeneralPath arrow;
     int left;

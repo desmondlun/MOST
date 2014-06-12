@@ -990,8 +990,8 @@ public class GraphicalInterface extends JFrame {
 				csvLoadInterface.setVisible(false);	        	
 			}
 		});			
-		csvLoadInterface.okButton.addActionListener(okButtonCSVLoadActionListener);
-		csvLoadInterface.cancelButton.addActionListener(cancelButtonCSVLoadActionListener);
+		CSVLoadInterface.okButton.addActionListener(okButtonCSVLoadActionListener);
+		CSVLoadInterface.cancelButton.addActionListener(cancelButtonCSVLoadActionListener);
 		
 		aboutDialog.setIconImages(icons);					
 		aboutDialog.setSize(400, 180);
@@ -999,7 +999,7 @@ public class GraphicalInterface extends JFrame {
 		aboutDialog.setLocationRelativeTo(null);		
 		aboutDialog.setVisible(false);	
 		aboutDialog.setModal(true);
-		aboutDialog.licenseButton.addActionListener(new OpenUrlAction());
+		AboutDialog.licenseButton.addActionListener(new OpenUrlAction());
 		
 		File f = new File(ModelCollectionConstants.MODEL_COLLECTION_FILE_NAME);
 		ModelCollectionTable mcTable = new ModelCollectionTable(f);
@@ -1027,7 +1027,7 @@ public class GraphicalInterface extends JFrame {
 		suspiciousMetabolitesDialog.setLocationRelativeTo(null);		
 		suspiciousMetabolitesDialog.setVisible(false);	
 		suspiciousMetabolitesDialog.setModal(true);
-		suspiciousMetabolitesDialog.messageButton.addActionListener(new OpenUrlAction());
+		SuspiciousMetabolitesDialog.messageButton.addActionListener(new OpenUrlAction());
 		setSuspiciousMetabolitesDialog(suspiciousMetabolitesDialog);
 		
 		SolverSetUpDialog solvSetUpDlg = new SolverSetUpDialog();
@@ -1038,7 +1038,7 @@ public class GraphicalInterface extends JFrame {
 		solvSetUpDlg.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		solvSetUpDlg.setLocationRelativeTo(null);		
 		solvSetUpDlg.setModal(true);
-		solvSetUpDlg.okButton.addActionListener(solvOKActionListener);
+		SolverSetUpDialog.okButton.addActionListener(solvOKActionListener);
 		solvSetUpDlg.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent evt) {
 				getSolverSetUpDialog().setVisible(false);
@@ -1799,19 +1799,19 @@ public class GraphicalInterface extends JFrame {
 			public void actionPerformed(ActionEvent prodActionEvent) {	
 				EntryValidator validator = new EntryValidator();
 				// check if integer
-				if (!validator.isInteger(getAddReactionRowsDialog().textField.getText())) {
+				if (!validator.isInteger(AddReactionRowsDialog.textField.getText())) {
 //					getAddReactionRowsDialog().setAlwaysOnTop(false);
 //					getAddReactionRowsDialog().setModal(false);
 					JOptionPane.showMessageDialog(null,                
 							GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_TITLE,                
 							GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_MESSAGE,                                
 							JOptionPane.ERROR_MESSAGE);
-//					getAddReactionRowsDialog().setAlwaysOnTop(true);
+					//					getAddReactionRowsDialog().setAlwaysOnTop(true);
 //					getAddReactionRowsDialog().setModal(true);
-					getAddReactionRowsDialog().textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
-					getAddReactionRowsDialog().textField.selectAll();
+					AddReactionRowsDialog.textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
+					AddReactionRowsDialog.textField.selectAll();
 				} else {
-					int numRows = Integer.valueOf(getAddReactionRowsDialog().textField.getText());
+					int numRows = Integer.valueOf(AddReactionRowsDialog.textField.getText());
 					// check that value in acceptable range
 					if (numRows >= GraphicalInterfaceConstants.MAX_NUM_ADD_ROWS || numRows <= 0) {
 //						getAddReactionRowsDialog().setAlwaysOnTop(false);
@@ -1820,10 +1820,12 @@ public class GraphicalInterface extends JFrame {
 								GraphicalInterfaceConstants.ADD_ROWS_OUT_OF_RANGE_MESSAGE,                
 								GraphicalInterfaceConstants.ADD_ROWS_OUT_OF_RANGE_TITLE,                                
 								JOptionPane.ERROR_MESSAGE);
-//						getAddReactionRowsDialog().setAlwaysOnTop(true);
+
+						//						getAddReactionRowsDialog().setAlwaysOnTop(true);
 //						getAddReactionRowsDialog().setModal(true);
-						getAddReactionRowsDialog().textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
-						getAddReactionRowsDialog().textField.selectAll();
+						AddReactionRowsDialog.textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
+						
+						AddReactionRowsDialog.textField.selectAll();
 					} else {
 						// copy old model for undo/redo
 						DefaultTableModel oldReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());	
@@ -1859,8 +1861,10 @@ public class GraphicalInterface extends JFrame {
 			}
 		};
 
-		getAddReactionRowsDialog().getOkButton().addActionListener(addReacRowsOKButtonActionListener);
-		getAddReactionRowsDialog().getCancelButton().addActionListener(addReacRowsCancelButtonActionListener);
+		
+		AddReactionRowsDialog.getOkButton().addActionListener(addReacRowsOKButtonActionListener);
+		
+		AddReactionRowsDialog.getCancelButton().addActionListener(addReacRowsCancelButtonActionListener);
 
 		editMenu.add(addMetabRowItem); 
 		addMetabRowItem.setMnemonic(KeyEvent.VK_M);
@@ -1916,19 +1920,19 @@ public class GraphicalInterface extends JFrame {
 			public void actionPerformed(ActionEvent prodActionEvent) {	
 				EntryValidator validator = new EntryValidator();
 				// check if integer
-				if (!validator.isInteger(getAddMetaboliteRowsDialog().textField.getText())) {
+				if (!validator.isInteger(AddMetaboliteRowsDialog.textField.getText())) {
 //					getAddMetaboliteRowsDialog().setAlwaysOnTop(false);
 //					getAddMetaboliteRowsDialog().setModal(false);
 					JOptionPane.showMessageDialog(null,                
 							GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_TITLE,                
 							GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_MESSAGE,                                
 							JOptionPane.ERROR_MESSAGE);
-//					getAddMetaboliteRowsDialog().setAlwaysOnTop(true);
+					//					getAddMetaboliteRowsDialog().setAlwaysOnTop(true);
 //					getAddMetaboliteRowsDialog().setModal(true);
-					getAddMetaboliteRowsDialog().textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
-					getAddMetaboliteRowsDialog().textField.selectAll();
+					AddMetaboliteRowsDialog.textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
+					AddMetaboliteRowsDialog.textField.selectAll();
 				} else {
-					int numRows = Integer.valueOf(getAddMetaboliteRowsDialog().textField.getText());
+					int numRows = Integer.valueOf(AddMetaboliteRowsDialog.textField.getText());
 					// check that value in acceptable range
 					if (numRows >= GraphicalInterfaceConstants.MAX_NUM_ADD_ROWS || numRows <= 0) {
 //						getAddMetaboliteRowsDialog().setAlwaysOnTop(false);
@@ -1937,10 +1941,11 @@ public class GraphicalInterface extends JFrame {
 								GraphicalInterfaceConstants.ADD_ROWS_OUT_OF_RANGE_MESSAGE,                
 								GraphicalInterfaceConstants.ADD_ROWS_OUT_OF_RANGE_TITLE,                                
 								JOptionPane.ERROR_MESSAGE);
-//						getAddMetaboliteRowsDialog().setAlwaysOnTop(true);
+						//						getAddMetaboliteRowsDialog().setAlwaysOnTop(true);
 //						getAddMetaboliteRowsDialog().setModal(true);
-						getAddMetaboliteRowsDialog().textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
-						getAddMetaboliteRowsDialog().textField.selectAll();
+						AddMetaboliteRowsDialog.textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
+						
+						AddMetaboliteRowsDialog.textField.selectAll();
 					} else {
 						// copy old model for undo/redo
 						DefaultTableModel oldMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());	
@@ -1978,8 +1983,10 @@ public class GraphicalInterface extends JFrame {
 			}
 		};
 
-		getAddMetaboliteRowsDialog().getOkButton().addActionListener(addMetabRowsOKButtonActionListener);
-		getAddMetaboliteRowsDialog().getCancelButton().addActionListener(addMetabRowsCancelButtonActionListener);
+		
+		AddMetaboliteRowsDialog.getOkButton().addActionListener(addMetabRowsOKButtonActionListener);
+		
+		AddMetaboliteRowsDialog.getCancelButton().addActionListener(addMetabRowsCancelButtonActionListener);
 
 		editMenu.addSeparator();
 
@@ -2027,7 +2034,8 @@ public class GraphicalInterface extends JFrame {
 					// copy old model for undo/redo
 					DefaultTableModel oldReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
 					copyReactionsTableModels(oldReactionsModel);
-					LocalConfig.getInstance().getReactionsMetaColumnNames().add(getReactionColAddRenameInterface().textField.getText());
+					
+					LocalConfig.getInstance().getReactionsMetaColumnNames().add(ReactionColAddRenameInterface.textField.getText());
 					ReactionUndoItem undoItem = createReactionUndoItem("", "", getCurrentReactionsRow(), getCurrentReactionsColumn(), 0, UndoConstants.ADD_COLUMN, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 					setOldUsedMap(undoItem);
 					undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());
@@ -2039,7 +2047,8 @@ public class GraphicalInterface extends JFrame {
 					}
 					undoItem.setOldMetaColumnNames(oldMetaCol);
 					getReactionColAddRenameInterface().addColumn();
-					getReactionColAddRenameInterface().textField.setText("");
+					
+					ReactionColAddRenameInterface.textField.setText("");
 					getReactionColAddRenameInterface().setVisible(false);
 					getReactionColAddRenameInterface().dispose();
 					setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(LocalConfig.getInstance().getModelName()));
@@ -2063,8 +2072,8 @@ public class GraphicalInterface extends JFrame {
 			}
 		};
 
-		reactionColAddRenameInterface.okButton.addActionListener(addColOKButtonActionListener);
-		reactionColAddRenameInterface.cancelButton.addActionListener(addColCancelButtonActionListener);
+		ReactionColAddRenameInterface.okButton.addActionListener(addColOKButtonActionListener);
+		ReactionColAddRenameInterface.cancelButton.addActionListener(addColCancelButtonActionListener);
 
 		editMenu.add(addMetabColumnItem);
 		addMetabColumnItem.setMnemonic(KeyEvent.VK_O);
@@ -2110,7 +2119,7 @@ public class GraphicalInterface extends JFrame {
 					// copy old model for undo/redo
 					DefaultTableModel oldMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());			
 					copyMetabolitesTableModels(oldMetabolitesModel);
-					LocalConfig.getInstance().getMetabolitesMetaColumnNames().add(getMetaboliteColAddRenameInterface().textField.getText());
+					LocalConfig.getInstance().getMetabolitesMetaColumnNames().add(MetaboliteColAddRenameInterface.textField.getText());
 					MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", getCurrentMetabolitesRow(), getCurrentMetabolitesColumn(), 0, UndoConstants.ADD_COLUMN, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);		
 					undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
 					undoItem.setAddedColumnIndex(LocalConfig.getInstance().getMetabolitesMetaColumnNames().size() + GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length);
@@ -2122,7 +2131,8 @@ public class GraphicalInterface extends JFrame {
 					}
 					undoItem.setOldMetaColumnNames(oldMetaCol);
 					getMetaboliteColAddRenameInterface().addColumn();
-					getMetaboliteColAddRenameInterface().textField.setText("");
+					
+					MetaboliteColAddRenameInterface.textField.setText("");
 					getMetaboliteColAddRenameInterface().setVisible(false);
 					getMetaboliteColAddRenameInterface().dispose();
 					setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(LocalConfig.getInstance().getModelName()));					
@@ -2146,8 +2156,8 @@ public class GraphicalInterface extends JFrame {
 			}
 		};
 
-		metaboliteColAddRenameInterface.okButton.addActionListener(addMetabColOKButtonActionListener);
-		metaboliteColAddRenameInterface.cancelButton.addActionListener(addMetabColCancelButtonActionListener);
+		MetaboliteColAddRenameInterface.okButton.addActionListener(addMetabColOKButtonActionListener);
+		MetaboliteColAddRenameInterface.cancelButton.addActionListener(addMetabColCancelButtonActionListener);
 
 		editMenu.addSeparator(); 
 		
@@ -2229,7 +2239,7 @@ public class GraphicalInterface extends JFrame {
 				}
 				ConfigProperties configProp = new ConfigProperties();
 				if (configProp.fileExists()) {
-					configProp.readFile();
+					ConfigProperties.readFile();
 					if (configProp.getSolverName() != null) {
 						if (configProp.getSolverName().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
 							getSolverSetUpDialog().glpkRadioButton.setSelected(true);
@@ -2391,16 +2401,16 @@ public class GraphicalInterface extends JFrame {
 			}
 		};
 
-		findReplaceDialog.findButton.addActionListener(findReactionsButtonActionListener);
-		findReplaceDialog.findAllButton.addActionListener(findAllReactionsButtonActionListener);
-		findReplaceDialog.replaceButton.addActionListener(replaceReactionsButtonActionListener);
-		findReplaceDialog.replaceAllButton.addActionListener(replaceAllReactionsButtonActionListener);
+		FindReplaceDialog.findButton.addActionListener(findReactionsButtonActionListener);
+		FindReplaceDialog.findAllButton.addActionListener(findAllReactionsButtonActionListener);
+		FindReplaceDialog.replaceButton.addActionListener(replaceReactionsButtonActionListener);
+		FindReplaceDialog.replaceAllButton.addActionListener(replaceAllReactionsButtonActionListener);
 		//findReplaceDialog.replaceFindButton.addActionListener(replaceFindReactionsButtonActionListener);
-		findReplaceDialog.doneButton.addActionListener(findDoneButtonActionListener);
-		findReplaceDialog.caseCheckBox.addActionListener(matchCaseActionListener);
-		findReplaceDialog.wrapCheckBox.addActionListener(wrapAroundActionListener);
-		findReplaceDialog.selectedAreaCheckBox.addActionListener(selectedAreaActionListener);
-		findReplaceDialog.backwardsCheckBox.addActionListener(searchBackwardsActionListener);
+		FindReplaceDialog.doneButton.addActionListener(findDoneButtonActionListener);
+		FindReplaceDialog.caseCheckBox.addActionListener(matchCaseActionListener);
+		FindReplaceDialog.wrapCheckBox.addActionListener(wrapAroundActionListener);
+		FindReplaceDialog.selectedAreaCheckBox.addActionListener(selectedAreaActionListener);
+		FindReplaceDialog.backwardsCheckBox.addActionListener(searchBackwardsActionListener);
 
 		KeyStroke reacCopy = KeyStroke.getKeyStroke(KeyEvent.VK_C,ActionEvent.CTRL_MASK,false);       
 		KeyStroke reacPaste = KeyStroke.getKeyStroke(KeyEvent.VK_V,ActionEvent.CTRL_MASK,false); 		
@@ -2498,16 +2508,16 @@ public class GraphicalInterface extends JFrame {
 			}
 		};
 		
-		findReplaceDialog.findButton.addActionListener(findMetabolitesButtonActionListener);
-		findReplaceDialog.findAllButton.addActionListener(findAllMetabolitesButtonActionListener);
-		findReplaceDialog.replaceButton.addActionListener(replaceMetabolitesButtonActionListener);
-		findReplaceDialog.replaceAllButton.addActionListener(replaceAllMetabolitesButtonActionListener);
+		FindReplaceDialog.findButton.addActionListener(findMetabolitesButtonActionListener);
+		FindReplaceDialog.findAllButton.addActionListener(findAllMetabolitesButtonActionListener);
+		FindReplaceDialog.replaceButton.addActionListener(replaceMetabolitesButtonActionListener);
+		FindReplaceDialog.replaceAllButton.addActionListener(replaceAllMetabolitesButtonActionListener);
 		//findReplaceDialog.replaceFindButton.addActionListener(replaceFindMetabolitesButtonActionListener);
-		findReplaceDialog.doneButton.addActionListener(findDoneButtonActionListener);
-		findReplaceDialog.caseCheckBox.addActionListener(matchCaseActionListener);
-		findReplaceDialog.wrapCheckBox.addActionListener(wrapAroundActionListener);
-		findReplaceDialog.selectedAreaCheckBox.addActionListener(selectedAreaActionListener);
-		findReplaceDialog.backwardsCheckBox.addActionListener(searchBackwardsActionListener);
+		FindReplaceDialog.doneButton.addActionListener(findDoneButtonActionListener);
+		FindReplaceDialog.caseCheckBox.addActionListener(matchCaseActionListener);
+		FindReplaceDialog.wrapCheckBox.addActionListener(wrapAroundActionListener);
+		FindReplaceDialog.selectedAreaCheckBox.addActionListener(selectedAreaActionListener);
+		FindReplaceDialog.backwardsCheckBox.addActionListener(searchBackwardsActionListener);
 
 		KeyStroke metabCopy = KeyStroke.getKeyStroke(KeyEvent.VK_C,ActionEvent.CTRL_MASK,false);       
 		KeyStroke metabPaste = KeyStroke.getKeyStroke(KeyEvent.VK_V,ActionEvent.CTRL_MASK,false);
@@ -2978,12 +2988,12 @@ public class GraphicalInterface extends JFrame {
 			saveFile = false;
 			if (openFileChooser) {
 				//setExtension(".csv");	
-				csvLoadInterface.textMetabField.setText("");
-				csvLoadInterface.textReacField.setText("");
+				CSVLoadInterface.textMetabField.setText("");
+				CSVLoadInterface.textReacField.setText("");
 				LocalConfig.getInstance().setMetabolitesCSVFile(null);
 				LocalConfig.getInstance().hasMetabolitesFile = false;
 				LocalConfig.getInstance().hasReactionsFile = false;
-				csvLoadInterface.okButton.setEnabled(false);
+				CSVLoadInterface.okButton.setEnabled(false);
 				csvLoadInterface.setVisible(true);
 			}				
 		}
@@ -3085,8 +3095,8 @@ public class GraphicalInterface extends JFrame {
 				getMetaboliteColumnNameInterface().dispose();
 				
 				reader.load(LocalConfig.getInstance().getMetabolitesCSVFile());	
-				setUpMetabolitesTable(reader.getMetabolitesTableModel());
-				LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), reader.getMetabolitesTableModel());
+				setUpMetabolitesTable(TextMetabolitesModelReader.getMetabolitesTableModel());
+				LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), TextMetabolitesModelReader.getMetabolitesTableModel());
 				if (LocalConfig.getInstance().hasReactionsFile) {
 					loadReactionColumnNameInterface();
 				} else {
@@ -3155,11 +3165,11 @@ public class GraphicalInterface extends JFrame {
 				setFileType(GraphicalInterfaceConstants.CSV_FILE_TYPE);
 				
 				reader.load(LocalConfig.getInstance().getReactionsCSVFile());	
-				setUpReactionsTable(reader.getReactionsTableModel());
-				LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), reader.getReactionsTableModel());
+				setUpReactionsTable(TextReactionsModelReader.getReactionsTableModel());
+				LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), TextReactionsModelReader.getReactionsTableModel());
 				// sets updated model if any metabolites added in reactions load
-				setUpMetabolitesTable(reader.getMetabolitesTableModel());
-				LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), reader.getMetabolitesTableModel());
+				setUpMetabolitesTable(TextReactionsModelReader.getMetabolitesTableModel());
+				LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), TextReactionsModelReader.getMetabolitesTableModel());
 				setUpTables();
 				if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
 					setUrlString(GraphicalInterfaceConstants.SUSPICIOUS_METABOLITES_URL);
@@ -4052,7 +4062,7 @@ public class GraphicalInterface extends JFrame {
 			ArrayList<SBMLProduct> products = new ArrayList<SBMLProduct>();
 			ReactionParser parser = new ReactionParser();
 			parser.reactionList(newEquation.trim());
-			SBMLReactionEquation unprocessedEqun = parser.getEquation();
+			SBMLReactionEquation unprocessedEqun = ReactionParser.getEquation();
 			for (int i = 0; i < updater.getMaybeAddReactants().size(); i++) {
 				maybeAddMetabolite(updater.getMaybeAddReactants().get(i));
 				if (addMetabolite || LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(updater.getMaybeAddReactants().get(i))) {
@@ -4819,8 +4829,10 @@ public class GraphicalInterface extends JFrame {
 				findButtonReactionsClicked = false;
 				throwNotFoundError = false;
 				if (getFindReplaceDialog() != null && !LocalConfig.getInstance().addReactantPromptShown) {
-					getFindReplaceDialog().replaceButton.setEnabled(false);
-					getFindReplaceDialog().replaceAllButton.setEnabled(false);
+					
+					FindReplaceDialog.replaceButton.setEnabled(false);
+					
+					FindReplaceDialog.replaceAllButton.setEnabled(false);
 					//getFindReplaceDialog().replaceFindButton.setEnabled(false);
 				}
 			}
@@ -4873,8 +4885,10 @@ public class GraphicalInterface extends JFrame {
 				findButtonReactionsClicked = false;
 				throwNotFoundError = false;
 				if (getFindReplaceDialog() != null && !LocalConfig.getInstance().addReactantPromptShown) {
-					getFindReplaceDialog().replaceButton.setEnabled(false);
-					getFindReplaceDialog().replaceAllButton.setEnabled(false);
+					
+					FindReplaceDialog.replaceButton.setEnabled(false);
+					
+					FindReplaceDialog.replaceAllButton.setEnabled(false);
 					//getFindReplaceDialog().replaceFindButton.setEnabled(false);
 				}				
 			}
@@ -5223,8 +5237,10 @@ public class GraphicalInterface extends JFrame {
 				findButtonMetabolitesClicked = false;
 				throwNotFoundError = false;
 				if (getFindReplaceDialog() != null && !LocalConfig.getInstance().addReactantPromptShown) {
-					getFindReplaceDialog().replaceButton.setEnabled(false);
-					getFindReplaceDialog().replaceAllButton.setEnabled(false);
+					
+					FindReplaceDialog.replaceButton.setEnabled(false);
+					
+					FindReplaceDialog.replaceAllButton.setEnabled(false);
 					//getFindReplaceDialog().replaceFindButton.setEnabled(false);
 				}
 			}
@@ -5271,8 +5287,10 @@ public class GraphicalInterface extends JFrame {
 				findButtonMetabolitesClicked = false;
 				throwNotFoundError = false;
 				if (getFindReplaceDialog() != null && !LocalConfig.getInstance().addReactantPromptShown) {
-					getFindReplaceDialog().replaceButton.setEnabled(false);
-					getFindReplaceDialog().replaceAllButton.setEnabled(false);
+					
+					FindReplaceDialog.replaceButton.setEnabled(false);
+					
+					FindReplaceDialog.replaceAllButton.setEnabled(false);
 					//getFindReplaceDialog().replaceFindButton.setEnabled(false);
 				}				
 			}
@@ -6859,7 +6877,7 @@ public class GraphicalInterface extends JFrame {
 		ActionListener metabRenameOKButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
 				String newName = "";
-				metaboliteRenameInterface.setNewName(metaboliteRenameInterface.textField.getText());
+				metaboliteRenameInterface.setNewName(MetaboliteRenameInterface.textField.getText());
 				if (metaboliteRenameInterface.getNewName() != null && metaboliteRenameInterface.getNewName().length() > 0) {
 					newName = metaboliteRenameInterface.getNewName();
 					// check if duplicate metabolite
@@ -6893,7 +6911,7 @@ public class GraphicalInterface extends JFrame {
 								metabolitesTable.getModel().setValueAt(newName, viewRow, GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN);
 							}
 						}
-						metaboliteRenameInterface.textField.setText("");
+						MetaboliteRenameInterface.textField.setText("");
 						metaboliteRenameInterface.setVisible(false);
 						metaboliteRenameInterface.dispose();
 						if (undoItem != null) {
@@ -6905,7 +6923,7 @@ public class GraphicalInterface extends JFrame {
 			}
 		};
 		
-		metaboliteRenameInterface.okButton.addActionListener(metabRenameOKButtonActionListener);
+		MetaboliteRenameInterface.okButton.addActionListener(metabRenameOKButtonActionListener);
 
 		contextMenu.addSeparator();
 
@@ -9054,7 +9072,8 @@ public class GraphicalInterface extends JFrame {
 				null, options, options[0]);
 		if (choice == JOptionPane.YES_OPTION) {
 			wrapAround = true; 
-			getFindReplaceDialog().wrapCheckBox.setSelected(true);
+			
+			FindReplaceDialog.wrapCheckBox.setSelected(true);
 			if (searchBackwards) {
 				LocalConfig.getInstance().setReactionsLocationsListCount(getReactionsFindLocationsList().size() - 1);
 			} else {
@@ -9343,7 +9362,8 @@ public class GraphicalInterface extends JFrame {
 					setUpReactionsTable(oldReactionsModel);
 					LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), oldReactionsModel);
 					deleteReactionsPasteUndoItem();
-					getFindReplaceDialog().replaceAllButton.setEnabled(true);
+					
+					FindReplaceDialog.replaceAllButton.setEnabled(true);
 					validPaste = true;
 				}
 			}
@@ -9728,7 +9748,8 @@ public class GraphicalInterface extends JFrame {
 					setUpMetabolitesTable(oldMetabolitesModel);
 					LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), oldMetabolitesModel);
 					deleteMetabolitesPasteUndoItem();
-					getFindReplaceDialog().replaceAllButton.setEnabled(true);
+					
+					FindReplaceDialog.replaceAllButton.setEnabled(true);
 					validPaste = true;
 				}				
 			}
@@ -9767,7 +9788,8 @@ public class GraphicalInterface extends JFrame {
 		try {
 			replaceValue = oldValue.substring(0, replaceLocation) + findReplaceDialog.getReplaceText() + replaceEnd;
 		} catch (Throwable t) {
-			getFindReplaceDialog().replaceButton.setEnabled(false);
+			
+			FindReplaceDialog.replaceButton.setEnabled(false);
 			//getFindReplaceDialog().replaceFindButton.setEnabled(false);
 			return "";
 		}
@@ -10043,8 +10065,10 @@ public class GraphicalInterface extends JFrame {
 		formulaBar.setEditable(false);
 		formulaBar.setBackground(Color.WHITE);
 		editorMenu.setEnabled(false);
-		getFindReplaceDialog().replaceButton.setEnabled(false);
-		getFindReplaceDialog().replaceAllButton.setEnabled(false);
+		
+		FindReplaceDialog.replaceButton.setEnabled(false);
+		
+		FindReplaceDialog.replaceAllButton.setEnabled(false);
 		//getFindReplaceDialog().replaceFindButton.setEnabled(false);
 		pastebutton.setEnabled(false);
 		disableOptionComponent(undoSplitButton, undoLabel, undoGrayedLabel);
@@ -10084,26 +10108,30 @@ public class GraphicalInterface extends JFrame {
 	}
 
 	public void addReactionColumnCloseAction() {
-    	getReactionColAddRenameInterface().textField.setText("");
+    	
+		ReactionColAddRenameInterface.textField.setText("");
     	getReactionColAddRenameInterface().setVisible(false);
     	getReactionColAddRenameInterface().dispose();
 	}
 
 	public void addMetaboliteColumnCloseAction() {
-    	getMetaboliteColAddRenameInterface().textField.setText("");
+    	
+		MetaboliteColAddRenameInterface.textField.setText("");
     	getMetaboliteColAddRenameInterface().setVisible(false);
     	getMetaboliteColAddRenameInterface().dispose();
 	}
 	
 	public void addReactionRowsDialogCloseAction() {
 		
-		getAddReactionRowsDialog().textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
+		
+		AddReactionRowsDialog.textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
 		getAddReactionRowsDialog().setVisible(false);
 		getAddReactionRowsDialog().dispose();		
 	}	
 	
 	public void addMetaboliteRowsDialogCloseAction() {
-		getAddMetaboliteRowsDialog().textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
+		
+		AddMetaboliteRowsDialog.textField.setText(GraphicalInterfaceConstants.DEFAULT_NUM_ADD_ROWS);
 		getAddMetaboliteRowsDialog().setVisible(false);
 		getAddMetaboliteRowsDialog().dispose();	
 	}	
@@ -10575,10 +10603,10 @@ public class GraphicalInterface extends JFrame {
 			ConfigProperties configProp = new ConfigProperties();
 			if (getSolverSetUpDialog().glpkRadioButton.isSelected()) {		
 				setSolverName(GraphicalInterfaceConstants.GLPK_SOLVER_NAME);
-				configProp.writeToFile(GraphicalInterfaceConstants.GLPK_SOLVER_NAME);
+				ConfigProperties.writeToFile(GraphicalInterfaceConstants.GLPK_SOLVER_NAME);
 			} else if (getSolverSetUpDialog().gurobiRadioButton.isSelected()) {
 				setSolverName(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
-				configProp.writeToFile(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
+				ConfigProperties.writeToFile(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
 			}
 			getSolverSetUpDialog().setVisible(false);
 		}
@@ -10586,14 +10614,14 @@ public class GraphicalInterface extends JFrame {
 	
 	public void enableGurobiItems() {
 		getSolverSetUpDialog().gurobiRadioButton.setEnabled(true);
-		getSolverSetUpDialog().gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_INSTALLED_MESSAGE + "</HTML>");
+		SolverSetUpDialog.gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_INSTALLED_MESSAGE + "</HTML>");
 	}
 	
 	public void disableGurobiItems() {
 		getSolverSetUpDialog().gurobiRadioButton.setEnabled(false);
 		// this ensures that if Gurobi is not installed, GLPK button will be selected
 		getSolverSetUpDialog().glpkRadioButton.setSelected(true);
-		getSolverSetUpDialog().gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_PREFIX + GraphicalInterfaceConstants.GUROBI_MINIMUM_VERSION + System.getProperty("sun.arch.data.model") + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_SUFFIX + "</HTML>");
+		SolverSetUpDialog.gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_PREFIX + GraphicalInterfaceConstants.GUROBI_MINIMUM_VERSION + System.getProperty("sun.arch.data.model") + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_SUFFIX + "</HTML>");
 	}
 	
 	/******************************************************************************/
@@ -10676,7 +10704,7 @@ public class GraphicalInterface extends JFrame {
 		ConfigProperties configProp = new ConfigProperties();
 		setSolverName(GraphicalInterfaceConstants.DEFAULT_SOLVER_NAME);
 		if (configProp.fileExists()) {
-			configProp.readFile();
+			ConfigProperties.readFile();
 			if (configProp.getSolverName() != null) {
 				if (configProp.getSolverName().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
 					setSolverName(GraphicalInterfaceConstants.GLPK_SOLVER_NAME);

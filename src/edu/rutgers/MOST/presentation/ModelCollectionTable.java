@@ -143,6 +143,11 @@ class ModelCollectionTable
 		// need tab to skip hidden columns		
 		table.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "actionString");
 		table.getActionMap().put("actionString", new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -5869679654069664250L;
+
 			public void actionPerformed(ActionEvent ae) {
 				// This overrides tab key and performs an action
 				tabToNextVisibleCell(table, getVisibleColumns());
