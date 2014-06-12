@@ -22,7 +22,6 @@ public class GDBB extends Thread {
 
 	private GDBBModel model;
 	private static Solver solver;
-	private Vector<String> varNames;
 	private double maxObj;
 
 //  public static ArrayList<Double> objIntermediate;
@@ -65,7 +64,6 @@ public class GDBB extends Thread {
 
 	public GDBB() {
 		GDBB.setSolver(SolverFactory.createSolver());
-		this.varNames = new Vector<String>();
 		intermediateSolution = new LinkedList<Solution>();
 		reac = new ArrayList<SBMLReaction>();
 	}
@@ -73,7 +71,6 @@ public class GDBB extends Thread {
 	public GDBB(GDBBModel m) {
 		this.model = m;
 		GDBB.setSolver(SolverFactory.createSolver());
-		this.varNames = new Vector<String>();
 	}
 
 	private void setVars() {
@@ -199,8 +196,6 @@ public class GDBB extends Thread {
 		}
 
 		sw.stop();
-		long setVars_time = sw.getNanoTime();
-		//System.out.println("setVars time: " + setVars_time + " ns");
 
 //      System.out.println("**** End setting problem variables ****");
 	}

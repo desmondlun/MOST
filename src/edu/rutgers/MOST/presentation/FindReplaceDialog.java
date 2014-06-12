@@ -621,19 +621,7 @@ public class FindReplaceDialog extends JDialog {
 
     	replaceAllButton.addActionListener(replaceAllButtonActionListener);
     	
-    	ActionListener replaceFindButtonActionListener = new ActionListener() {
-    		public void actionPerformed(ActionEvent ae) {
-    			setReplaceText(replaceField.getText());
-    			setFindText(findField.getText());
-    			if (GraphicalInterface.isRoot) {
-    				replaceButton.setEnabled(true);
-        			//replaceFindButton.setEnabled(true);
-    			}
-    			replaceAllButton.setEnabled(false);
-    			updateComboBox(findBox, LocalConfig.getInstance().getFindEntryList(), findField.getText());  
-    			updateComboBox(replaceBox, LocalConfig.getInstance().getReplaceEntryList(), replaceField.getText()); 
-    		}
-    	};
+    	
 
     	//replaceFindButton.addActionListener(replaceFindButtonActionListener);
     	

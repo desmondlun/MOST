@@ -119,18 +119,15 @@ public class MetaboliteColAddRenameInterface  extends JDialog {
 
 	public boolean isColumnDuplicate() {
 		String columnName = textField.getText();
-		int columnIndex = -1;
 		boolean duplicate = false;
 		for (int i = 0; i < GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length; i++) {
 			if (GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES[i].equals(columnName)) {
 				duplicate = true;
-				columnIndex = i;
 			}
 		}
 		for (int j = 0; j < LocalConfig.getInstance().getMetabolitesMetaColumnNames().size(); j++) {
 			if (LocalConfig.getInstance().getMetabolitesMetaColumnNames().get(j).equals(columnName)) {
 				duplicate = true;
-				columnIndex = GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length + j;
 			}
 		}
 		return duplicate;
