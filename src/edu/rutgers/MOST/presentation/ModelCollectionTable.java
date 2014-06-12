@@ -1,10 +1,7 @@
 package edu.rutgers.MOST.presentation;
 
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -14,7 +11,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -408,58 +404,6 @@ class ModelCollectionTable
 	
 	
 	
-	/***********************************************************************************/
-	//clipboard
-	/***********************************************************************************/
-
-	private static String getClipboardContents(Object requestor) {
-		Transferable t = Toolkit.getDefaultToolkit()
-				.getSystemClipboard().getContents(requestor);
-		if (t != null) {
-			DataFlavor df = DataFlavor.stringFlavor;
-			if (df != null) {
-				try {
-					Reader r = df.getReaderForText(t);
-					char[] charBuf = new char[512];
-					StringBuffer buf = new StringBuffer();
-					int n;
-					while ((n = r.read(charBuf, 0, charBuf.length)) > 0) {
-						buf.append(charBuf, 0, n);
-					}
-					r.close();
-					return (buf.toString());
-				} catch (IOException ex) {
-					JOptionPane.showMessageDialog(null,                
-							"Clipboard Error.",                
-							"Error",                                
-							JOptionPane.ERROR_MESSAGE);
-					//ex.printStackTrace();
-				} catch (UnsupportedFlavorException ex) {
-					JOptionPane.showMessageDialog(null,                
-							"Clipboard Error. Unsupported Flavor",                
-							"Error",                                
-							JOptionPane.ERROR_MESSAGE);
-					//ex.printStackTrace();
-				}
-			}
-		}
-		return null;
-	}
-
-	private static boolean isClipboardContainingText(Object requestor) {
-		Transferable t = Toolkit.getDefaultToolkit()
-				.getSystemClipboard().getContents(requestor);
-		return t != null
-				&& (t.isDataFlavorSupported(DataFlavor.stringFlavor) || t
-						.isDataFlavorSupported(DataFlavor.plainTextFlavor));
-	}
-
-	private static void setClipboardContents(String s) {
-		StringSelection selection = new StringSelection(s);
-		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
-				selection, selection);
-	}
-
 	private String escape(Object cell) { 
 		return cell.toString().replace("\n", " ").replace("\t", " "); 
 	} 

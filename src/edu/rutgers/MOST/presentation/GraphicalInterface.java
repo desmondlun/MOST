@@ -5854,7 +5854,6 @@ public class GraphicalInterface extends JFrame {
 			editorMenu.setEnabled(false);
 		}
 		editorMenu.addActionListener(new ActionListener() {
-			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
 				if (!LocalConfig.getInstance().reactionEditorVisible) {
 					setCurrentReactionsRow(rowIndex);
@@ -7794,6 +7793,7 @@ public class GraphicalInterface extends JFrame {
 		return null;
 	}
 
+	@SuppressWarnings( "deprecation" )
 	private static boolean isClipboardContainingText(Object requestor) {
 		Transferable t = Toolkit.getDefaultToolkit()
 				.getSystemClipboard().getContents(requestor);

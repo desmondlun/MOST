@@ -115,7 +115,6 @@ public class GDBBDialog  extends JDialog {
 		this.finiteTimeString = finiteTimeString;
 	}
 
-	@SuppressWarnings("unchecked")
 	public GDBBDialog() {
 		
 		final ArrayList<Image> icons = new ArrayList<Image>(); 

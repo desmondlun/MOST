@@ -738,14 +738,6 @@ public class FindReplaceDialog extends JDialog {
 		return null;
 	}
 
-	private static boolean isClipboardContainingText(Object requestor) {
-		Transferable t = Toolkit.getDefaultToolkit()
-		.getSystemClipboard().getContents(requestor);
-		return t != null
-		&& (t.isDataFlavorSupported(DataFlavor.stringFlavor) || t
-				.isDataFlavorSupported(DataFlavor.plainTextFlavor));
-	}
-	
 	private static void setClipboardContents(String s) {
 	      StringSelection selection = new StringSelection(s);
 	      Toolkit.getDefaultToolkit().getSystemClipboard().setContents(

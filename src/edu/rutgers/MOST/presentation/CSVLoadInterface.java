@@ -25,7 +25,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import edu.rutgers.MOST.config.LocalConfig;
-import edu.rutgers.MOST.data.SettingsFactory;
 
 public class CSVLoadInterface  extends JDialog {
 
