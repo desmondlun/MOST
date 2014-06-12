@@ -113,7 +113,8 @@ public class FindReplaceDialog extends JDialog {
 
 	private WindowFocusListener windowFocusListener;
 	
-    public FindReplaceDialog() {
+    @SuppressWarnings( "unused" )
+	public FindReplaceDialog() {
     	
     	setMaximumSize(new Dimension(250, 300));
     	setResizable(false);

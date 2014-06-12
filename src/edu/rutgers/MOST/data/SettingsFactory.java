@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JOptionPane;
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
@@ -179,15 +178,12 @@ public class SettingsFactory {
 					Iterator< ? > iterator = element.getAttributes();
 					while (iterator.hasNext()) {
 						Attribute attribute = (Attribute) iterator.next();
-						QName name = attribute.getName();
-						String value = attribute.getValue();
-						//System.out.println("Attribute name/value: " + name + "/" + value);
+						attribute.getName();
+						attribute.getValue();
 					}
 				}
 
 				if (event.isEndElement()) {
-					EndElement element = (EndElement) event;
-					//System.out.println("End element:" + element.getName());
 				}
 
 				if (event.isCharacters()) {

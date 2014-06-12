@@ -120,7 +120,7 @@ public class ReactionEditor extends JFrame {
 	}
 
 	// private final JList names;
-	@SuppressWarnings( { "rawtypes", "unchecked" } )
+	@SuppressWarnings( { "rawtypes", "unchecked", "unused" } )
 	public ReactionEditor() {
 	setTitle("Reaction Editor");
 

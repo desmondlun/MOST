@@ -15,6 +15,7 @@ import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 
 
+
 //http://commons.apache.org/proper/commons-lang/download_lang.cgi
 import org.apache.commons.lang3.time.StopWatch;
 
@@ -22,7 +23,6 @@ public class GDBB extends Thread {
 
 	private GDBBModel model;
 	private static Solver solver;
-	private Vector<String> varNames;
 	private double maxObj;
 
 //  public static ArrayList<Double> objIntermediate;
@@ -65,7 +65,7 @@ public class GDBB extends Thread {
 
 	public GDBB() {
 		GDBB.setSolver(SolverFactory.createSolver());
-		this.varNames = new Vector<String>();
+		new Vector<String>();
 		intermediateSolution = new LinkedList<Solution>();
 		reac = new ArrayList<SBMLReaction>();
 	}
@@ -73,9 +73,10 @@ public class GDBB extends Thread {
 	public GDBB(GDBBModel m) {
 		this.model = m;
 		GDBB.setSolver(SolverFactory.createSolver());
-		this.varNames = new Vector<String>();
+		new Vector<String>();
 	}
 
+	@SuppressWarnings( "unused" )
 	private void setVars() {
 
 //      System.out.println("**** Start setting problem variables ****");
