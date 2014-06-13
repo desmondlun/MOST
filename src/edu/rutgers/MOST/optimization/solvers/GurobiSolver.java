@@ -207,8 +207,9 @@ public class GurobiSolver extends Solver
 		}
 	}
 
-	public GurobiSolver()
+	public GurobiSolver( Algorithm algorithm )
 	{
+		super( algorithm );
 		// set the dialog
 		final ArrayList< Image > icons = new ArrayList< Image >();
 		icons.add( new ImageIcon( "etc/most16.jpg" ).getImage() );
@@ -520,7 +521,7 @@ public class GurobiSolver extends Solver
 					// get the flux values
 					for( GRBVar var : vars)
 						soln.add( var.get( GRB.DoubleAttr.X ) );
-					if( GraphicalInterface.usingEflux2 )
+					if( getAlgorithm() == Algorithm.Eflux2 )
 						this.minimizeEuclideanNorm();
 				}
 			}

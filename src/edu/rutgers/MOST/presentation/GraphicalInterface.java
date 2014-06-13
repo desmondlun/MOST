@@ -15,6 +15,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.text.JTextComponent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.xml.stream.XMLStreamException;
+
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.ColorHighlighter;
 import org.jdesktop.swingx.decorator.ComponentAdapter;
@@ -24,6 +25,7 @@ import org.sbml.jsbml.SBMLReader;
 
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.ConfigProperties;
+import edu.rutgers.MOST.data.Eflux2Model;
 import edu.rutgers.MOST.data.FBAModel;
 import edu.rutgers.MOST.data.GDBBModel;
 import edu.rutgers.MOST.data.JSBMLWriter;
@@ -47,6 +49,7 @@ import edu.rutgers.MOST.data.TextReactionsModelReader;
 import edu.rutgers.MOST.data.TextReactionsWriter;
 import edu.rutgers.MOST.data.UndoConstants;
 import edu.rutgers.MOST.logic.ReactionParser;
+import edu.rutgers.MOST.optimization.Eflux2.Eflux2;
 import edu.rutgers.MOST.optimization.FBA.FBA;
 import edu.rutgers.MOST.optimization.GDBB.GDBB;
 import edu.rutgers.MOST.optimization.solvers.GurobiSolver;
@@ -272,8 +275,6 @@ public class GraphicalInterface extends JFrame {
 	public boolean gdbbStopped;
 	public boolean gdbbRunning;
 	public boolean gdbbProcessed;
-	// Eflux2
-	public static boolean usingEflux2;
 
 	/*****************************************************************************/
 	// end boolean values
@@ -553,6 +554,7 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem clearItem = new JMenuItem("Clear Tables");
 	public final static JMenuItem fbaItem = new JMenuItem("FBA");
 	public final static JMenuItem gdbbItem = new JMenuItem("GDBB");
+	public final static JMenuItem eflux2Item = new JMenuItem( "Eflux2" );
 	public final JCheckBoxMenuItem highlightUnusedMetabolitesItem = new JCheckBoxMenuItem("Highlight Unused Metabolites");
 	public final JMenuItem deleteUnusedItem = new JMenuItem("Delete All Unused Metabolites");
 	public final JMenuItem findSuspiciousItem = new JMenuItem("Find Suspicious Metabolites");
@@ -753,14 +755,6 @@ public class GraphicalInterface extends JFrame {
 		return tableCellOldValue;
 	}    
 
-	public static int promptEflux2Selection()
-	{
-	    JCheckBox checkbox = new JCheckBox( "Run FBA with E-flux2 by Minimizing Euclidean Norm?" );  
-	    Object[] params = { checkbox }; //array of options / messages
-	    int n = JOptionPane.showConfirmDialog( null, params, "FBA Options", JOptionPane.DEFAULT_OPTION); 
-	    usingEflux2 = checkbox.isSelected();
-	    return n;
-	}
 	/*****************************************************************************/
 	// end misc
 	/*****************************************************************************/
@@ -1333,6 +1327,7 @@ public class GraphicalInterface extends JFrame {
 		JMenu analysisMenu = new JMenu("Analysis");
 		analysisMenu.setMnemonic(KeyEvent.VK_A);
 
+		//Analysis --> FBA
 		analysisMenu.add(fbaItem);
 		fbaItem.setMnemonic(KeyEvent.VK_F);
 
@@ -1358,19 +1353,9 @@ public class GraphicalInterface extends JFrame {
 				LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
 
 				// Begin optimization
-				if( getSolverName() == GraphicalInterfaceConstants.GUROBI_SOLVER_NAME
-						&& JOptionPane.CLOSED_OPTION == promptEflux2Selection() )
-					return;
-
 				FBAModel model = new FBAModel();
 				FBA fba = new FBA();
 				fba.setFBAModel(model);
-				if( usingEflux2 )
-					fba.formatFluxBoundsfromTransciptomicData( chooseCSVFile() );
-	                // uncomment next three lines for proof of concept of adding a new tab at runtime
-//					JScrollPane scrollPaneGene = new JScrollPane();
-//					tabbedPane.addTab("Genes", scrollPaneGene);
-//					tabbedPane.repaint();
 				ArrayList<Double> soln = fba.run();
 				//End optimization
 
@@ -1391,8 +1376,6 @@ public class GraphicalInterface extends JFrame {
 						outputText.append("Maximum objective: "	+ maxObj + "\n");
 						//outputText.append("Maximum objective: "	+ fba.getMaxObj() + "\n");
 						outputText.append("Solver = " + getSolverName());
-						if( usingEflux2 )
-							outputText.append( "\nFlux distributions calculated using E-flux2" );
 						
 						File file = new File(u.createLogFileName(optimizeName + ".log"));
 						writer = new BufferedWriter(new FileWriter(file));
@@ -1437,15 +1420,13 @@ public class GraphicalInterface extends JFrame {
 
 		menuBar.add(analysisMenu);
 
+		//Analysis --> GDBB
 		analysisMenu.add(gdbbItem);
         gdbbItem.setMnemonic(KeyEvent.VK_G);
 
-
-        // Action Listener for GDBB optimization
         gdbbItem.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent a) {
         		//E-flux2 is disabled for gdbb
-        		usingEflux2 = false;
         		
         		Utilities u = new Utilities();
 
@@ -1590,6 +1571,102 @@ public class GraphicalInterface extends JFrame {
         	}
         });
 
+        //Analysis --> Eflux2
+        analysisMenu.add( eflux2Item );
+        eflux2Item.setMnemonic( KeyEvent.VK_E );
+        
+        eflux2Item.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) {
+				
+				Utilities u = new Utilities();
+
+				highlightUnusedMetabolites = false;
+				highlightUnusedMetabolitesItem.setState(false);
+
+				String dateTimeStamp = u.createDateTimeStamp();
+				String optimizeName = GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
+						+ LocalConfig.getInstance().getModelName() + dateTimeStamp;
+				setOptimizeName(optimizeName);
+
+				// copy models, run optimization on these model
+				DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
+				DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
+				LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
+				LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
+				setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
+				setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
+				LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
+
+				// Begin optimization
+				Eflux2Model model = new Eflux2Model();
+				Eflux2 eflux2 = new Eflux2();
+				eflux2.setEflux2Model(model);
+				eflux2.formatFluxBoundsfromTransciptomicData( chooseCSVFile() );
+	                // uncomment next three lines for proof of concept of adding a new tab at runtime
+//					JScrollPane scrollPaneGene = new JScrollPane();
+//					tabbedPane.addTab("Genes", scrollPaneGene);
+//					tabbedPane.repaint();
+				ArrayList<Double> soln = eflux2.run();
+				//End optimization
+
+				ReactionFactory rFactory = new ReactionFactory("SBML");
+				rFactory.setFluxes(soln);
+
+				if (LocalConfig.getInstance().hasValidGurobiKey) {
+					Writer writer = null;
+					try {
+						StringBuffer outputText = new StringBuffer();
+						outputText.append("Eflux2\n");
+						outputText.append(LocalConfig.getInstance().getModelName() + "\n");
+						outputText.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions\n");
+						String maxObj = Double.toString(eflux2.getMaxObj());
+						if (maxObj.equals("-0.0")) {
+							maxObj = "0.0";
+						}
+						outputText.append("Maximum objective: "	+ maxObj + "\n");
+						outputText.append("Solver = " + getSolverName());
+						
+						File file = new File(u.createLogFileName(optimizeName + ".log"));
+						writer = new BufferedWriter(new FileWriter(file));
+						writer.write(outputText.toString());
+
+					} catch (FileNotFoundException e) {
+						JOptionPane.showMessageDialog(null,                
+								"File Not Found.",                
+								"Error",                                
+								JOptionPane.ERROR_MESSAGE);
+						//e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} finally {
+						try {
+							if (writer != null) {
+								writer.close();
+							}
+						} catch (IOException e) {
+							JOptionPane.showMessageDialog(null,                
+									"File Not Found.",                
+									"Error",                                
+									JOptionPane.ERROR_MESSAGE);
+							//e.printStackTrace();
+						}
+					}
+					loadOutputPane(u.createLogFileName(optimizeName + ".log"));
+					if (getPopout() != null) {
+						getPopout().load(u.createLogFileName(optimizeName + ".log"), gi.getTitle());
+					}
+					setTitle(GraphicalInterfaceConstants.TITLE + " - " + optimizeName);
+					listModel.addElement(optimizeName);				
+					DynamicTreePanel.treePanel.addObject(new Solution(optimizeName, optimizeName));
+					DynamicTreePanel.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
+				} else {
+					DynamicTreePanel.treePanel.setNodeSelected(0);
+				}
+				LocalConfig.getInstance().hasValidGurobiKey = true;
+			}
+		});
+
+        
 		//Edit menu
 		JMenu editMenu = new JMenu("Edit");
 		editMenu.setMnemonic(KeyEvent.VK_E);
@@ -9993,6 +10070,7 @@ public class GraphicalInterface extends JFrame {
 		maybeDisplaySuspiciousMetabMessage(statusBarRow());	
 		fbaItem.setEnabled(true);
 		gdbbItem.setEnabled(true);
+		eflux2Item.setEnabled( true );
 		addReacRowItem.setEnabled(true);
 		addReacRowsItem.setEnabled(true);
 		addMetabRowItem.setEnabled(true);
@@ -10022,6 +10100,7 @@ public class GraphicalInterface extends JFrame {
 		findSuspiciousItem.setEnabled(false);
 		fbaItem.setEnabled(false);
 		gdbbItem.setEnabled(false);
+		eflux2Item.setEnabled( false );
 		addReacRowItem.setEnabled(false);
 		addReacRowsItem.setEnabled(false);
 		addMetabRowItem.setEnabled(false);

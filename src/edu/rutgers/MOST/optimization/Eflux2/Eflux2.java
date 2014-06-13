@@ -1,29 +1,33 @@
-package edu.rutgers.MOST.optimization.FBA;
+package edu.rutgers.MOST.optimization.Eflux2;
 
+import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import au.com.bytecode.opencsv.CSVReader;
 import edu.rutgers.MOST.data.*;
 import edu.rutgers.MOST.optimization.solvers.*;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
-public class FBA {
+public class Eflux2 {
 	
-	private FBAModel model;
+	private Eflux2Model model;
 	private static Solver solver;
 	private Vector<String> varNames;
 	private double maxObj;
 
-	public FBA() {
-		FBA.setSolver(SolverFactory.createSolver( Algorithm.FBA ));
+	public Eflux2() {
+		Eflux2.setSolver(SolverFactory.createSolver( Algorithm.Eflux2 ));
 		this.varNames = new Vector<String>();
 	}
 
-	public FBA(FBAModel m) {
+	public Eflux2(Eflux2Model m) {
 		this.model = m;
-		FBA.setSolver(SolverFactory.createSolver( Algorithm.FBA ));
+		Eflux2.setSolver(SolverFactory.createSolver( Algorithm.Eflux2 ));
 		this.varNames = new Vector<String>();
 	}
 
@@ -41,7 +45,7 @@ public class FBA {
 				ub = 0;
 			}
 
-			FBA.getSolver().setVar(varName, VarType.CONTINUOUS, lb, ub);
+			Eflux2.getSolver().setVar(varName, VarType.CONTINUOUS, lb, ub);
 
 			this.varNames.add(varName);
 		}
@@ -55,12 +59,12 @@ public class FBA {
 	private void setConstraints(Vector< SBMLReaction > reactions, ConType conType, double bValue) {
 		ArrayList<Map<Integer, Double>> sMatrix = this.model.getSMatrix();
 		for (int i = 0; i < sMatrix.size(); i++) {
-			FBA.getSolver().addConstraint(sMatrix.get(i), conType, bValue);
+			Eflux2.getSolver().addConstraint(sMatrix.get(i), conType, bValue);
 		}
 	}
 
 	private void setObjective() {
-		FBA.getSolver().setObjType(ObjType.Maximize);
+		Eflux2.getSolver().setObjType(ObjType.Maximize);
 		Vector<Double> objective = this.model.getObjective();
 		Map<Integer, Double> map = new HashMap<Integer, Double>();
 		for (int i = 0; i < objective.size(); i++) {
@@ -68,21 +72,39 @@ public class FBA {
 				map.put(i, objective.elementAt(i));
 			}
 		}
-		FBA.getSolver().setObj(map);
+		Eflux2.getSolver().setObj(map);
 	}
 
-	public void setFBAModel(FBAModel m) {
+	public void setEflux2Model(Eflux2Model m) {
 		this.model = m;
 	}
 	
+	public void formatFluxBoundsfromTransciptomicData( File file )
+	{
+		if( file == null || !file.exists() )
+			return;
+		try
+		{
+			CSVReader csvReader = new CSVReader( new FileReader( file ) );
+			List< String[] > all = csvReader.readAll();
+			csvReader.close();
+			Map< String, Double > expressionLevels = new HashMap< String, Double >();
+			for( String[] keyval : all )
+				expressionLevels.put( keyval[ 0 ], Double.valueOf( keyval[ 1 ] ) );
+			model.formatFluxBoundsfromTransciptomicData( expressionLevels );
+		}
+		catch ( Exception e )
+		{
+		}
+	}
 
 	public ArrayList<Double> run() {
 		this.setVars();
 		this.setConstraints();
 		this.setObjective();
-		this.maxObj = FBA.getSolver().optimize();
+		this.maxObj = Eflux2.getSolver().optimize();
 		
-		return FBA.getSolver().getSoln();
+		return Eflux2.getSolver().getSoln();
 	}
 
 	public double getMaxObj() {
@@ -98,6 +120,6 @@ public class FBA {
 	}
 
 	public static void setSolver(Solver solver) {
-		FBA.solver = solver;
+		Eflux2.solver = solver;
 	}
 }

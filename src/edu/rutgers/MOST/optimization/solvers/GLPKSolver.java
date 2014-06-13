@@ -27,11 +27,6 @@ import edu.rutgers.MOST.presentation.ResizableDialog;
 
 public class GLPKSolver extends Solver implements GlpkCallbackListener
 {
-	private enum SolverKind
-	{
-		FBASolver, GDBBSolver
-	}
-
 	private class RowEntry
 	{
 		public int idx;
@@ -89,7 +84,6 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 	private ArrayList< Double > soln = new ArrayList< Double >();
 	private double objval;
 	private glp_prob problem_tmp;
-	private SolverKind solverKind = SolverKind.FBASolver;
 	private ResizableDialog dialog = new ResizableDialog( "Error",
 			"GLPK Solver Error", "GLPK Solver Error" );
 
@@ -128,8 +122,9 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 		dialog.setVisible( true );
 	}
 
-	public GLPKSolver()
+	public GLPKSolver( Algorithm algorithm )
 	{
+		super( algorithm );
 		String dependsFolder = "lib/";
 		if( System.getProperty( "os.name" ).toLowerCase().contains( "windows" ) )
 		{
@@ -175,11 +170,9 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 		switch( types )
 		{
 		case INTEGER:
-			solverKind = SolverKind.GDBBSolver;
 			kind = GLPKConstants.GLP_IV;
 			break;
 		case BINARY:
-			solverKind = SolverKind.GDBBSolver;
 			kind = GLPKConstants.GLP_BV;
 			break;
 		default:
@@ -383,7 +376,7 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 			double[] darray = ArrayUtils.toPrimitive( soln
 					.toArray( new Double[] {} ) );
 			Solution sn = new Solution( objval, darray );
-			if( solverKind == SolverKind.GDBBSolver )
+			if( this.getAlgorithm() == Algorithm.GDBB )
 				GDBB.intermediateSolution.add( sn );
 		}
 	}

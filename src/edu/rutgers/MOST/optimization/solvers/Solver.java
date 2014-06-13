@@ -8,7 +8,12 @@ public abstract class Solver {
 	protected ObjType objType;
 	protected VarType[] varTypes;
 	protected Map<Integer,Double> obj = new HashMap<Integer, Double>();
+	private Algorithm algorithm;
 	
+	public Solver( Algorithm algorithm )
+	{
+		this.setAlgorithm( algorithm );
+	}
 	public abstract String getName();
 	public abstract ArrayList<Double> getSoln(); 
 	
@@ -26,4 +31,12 @@ public abstract class Solver {
 	
 	public boolean abort;
 	public abstract void setAbort(boolean abort);
+	public Algorithm getAlgorithm()
+	{
+		return algorithm;
+	}
+	public void setAlgorithm( Algorithm algorithm )
+	{
+		this.algorithm = algorithm;
+	}
 }

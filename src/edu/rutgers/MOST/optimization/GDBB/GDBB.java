@@ -64,7 +64,7 @@ public class GDBB extends Thread {
 	private ArrayList<SBMLReaction> reac;
 
 	public GDBB() {
-		GDBB.setSolver(SolverFactory.createSolver());
+		GDBB.setSolver(SolverFactory.createSolver( Algorithm.GDBB ));
 		new Vector<String>();
 		intermediateSolution = new LinkedList<Solution>();
 		reac = new ArrayList<SBMLReaction>();
@@ -72,7 +72,7 @@ public class GDBB extends Thread {
 
 	public GDBB(GDBBModel m) {
 		this.model = m;
-		GDBB.setSolver(SolverFactory.createSolver());
+		GDBB.setSolver(SolverFactory.createSolver( Algorithm.GDBB ));
 		new Vector<String>();
 	}
 
