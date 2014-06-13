@@ -107,6 +107,9 @@ public class GraphicalInterfaceConstants {
     // if lower bound default < 0 then reversible must be true
     public static final String REVERSIBLE_DEFAULT = "true";
     public static final String BOUNDARY_DEFAULT = "false";
+    
+    public static final double MIN_DECIMAL_FORMAT = 0.0001;
+    public static final double MAX_DECIMAL_FORMAT =	10000;	
         
     // prefixes and suffixes
     public static final String DB_COPIER_SUFFIX = "_orig";

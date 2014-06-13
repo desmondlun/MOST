@@ -5263,6 +5263,9 @@ public class GraphicalInterface extends JFrame {
 				reacRenderer.setHorizontalAlignment(JLabel.RIGHT); 
 				column.setPreferredWidth(GraphicalInterfaceConstants.DEFAULT_WIDTH);
 			} 
+			if (i==GraphicalInterfaceConstants.FLUX_VALUE_COLUMN) {
+				column.setMinWidth(GraphicalInterfaceConstants.DEFAULT_WIDTH);
+			}
 
 			if (i==GraphicalInterfaceConstants.GENE_ASSOCIATION_COLUMN) {
 				column.setPreferredWidth(GraphicalInterfaceConstants.REACTION_META_DEFAULT_WIDTH);        
