@@ -20,18 +20,22 @@ public class NumberFormatCellRenderer extends DefaultTableCellRenderer{
 
 	public Component getTableCellRendererComponent (JTable table, 
 			Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-		if (Math.abs(Double.valueOf((String) value)) != 0.0 && (Math.abs(Double.valueOf((String) value)) < GraphicalInterfaceConstants.MIN_DECIMAL_FORMAT || Math.abs(Double.valueOf((String) value)) > GraphicalInterfaceConstants.MAX_DECIMAL_FORMAT)) {
-			try {
-				value = sciFormatter.format((Number)Double.valueOf((String) value));
-			} catch (NumberFormatException nfe) {
-				
+		try {
+			if (Math.abs(Double.valueOf((String) value)) != 0.0 && (Math.abs(Double.valueOf((String) value)) < GraphicalInterfaceConstants.MIN_DECIMAL_FORMAT || Math.abs(Double.valueOf((String) value)) > GraphicalInterfaceConstants.MAX_DECIMAL_FORMAT)) {
+				try {
+					value = sciFormatter.format((Number)Double.valueOf((String) value));
+				} catch (NumberFormatException nfe) {
+					
+				}
+			} else {
+				try {
+					value = formatter.format((Number)Double.valueOf((String) value));
+				} catch (NumberFormatException nfe) {
+					
+				}
 			}
-		} else {
-			try {
-				value = formatter.format((Number)Double.valueOf((String) value));
-			} catch (NumberFormatException nfe) {
-				
-			}
+		} catch (NumberFormatException nfe) {
+			
 		}
 		
 		return super.getTableCellRendererComponent(
