@@ -3498,7 +3498,7 @@ public class GraphicalInterface extends JFrame {
 			int retval = fileChooser.showSaveDialog(output);
 			if (retval == JFileChooser.CANCEL_OPTION) {
 				done = true;
-				exit = false;
+				//exit = false;
 			}
 			if (retval == JFileChooser.APPROVE_OPTION) {
 				//... The user selected a file, get it, use it.
@@ -3599,7 +3599,7 @@ public class GraphicalInterface extends JFrame {
 			int retval = fileChooser.showSaveDialog(output);
 			if (retval == JFileChooser.CANCEL_OPTION) {
 				done = true;
-				exit = false;
+				//exit = false;
 			}
 			if (retval == JFileChooser.APPROVE_OPTION) {            	  
 				//... The user selected a file, get it, use it.
@@ -3757,14 +3757,19 @@ public class GraphicalInterface extends JFrame {
 			// interpret the user's choice	  
 			if (choice == JOptionPane.YES_OPTION)
 			{
-				if (LocalConfig.getInstance().metabolitesTableChanged) {
-					saveMetabolitesTextFileChooser();
-					LocalConfig.getInstance().metabolitesTableChanged = false;
-				}
-				if (LocalConfig.getInstance().reactionsTableChanged) {
-					saveReactionsTextFileChooser();
-					LocalConfig.getInstance().reactionsTableChanged = false;
-				}				
+				if (getFileType().equals("csv")) {
+					if (LocalConfig.getInstance().metabolitesTableChanged) {
+						saveMetabolitesTextFileChooser();
+						LocalConfig.getInstance().metabolitesTableChanged = false;
+					}
+					if (LocalConfig.getInstance().reactionsTableChanged) {
+						saveReactionsTextFileChooser();
+						LocalConfig.getInstance().reactionsTableChanged = false;
+					}	
+				} else if (getFileType().equals("sbml")) {
+					saveAsSBML();
+					showJSBMLFileChooser = true;
+				}		
 				if (LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {				
 					for (int i = 0; i < LocalConfig.getInstance().getOptimizationFilesList().size(); i++) {
 						saveOptFile = true;
