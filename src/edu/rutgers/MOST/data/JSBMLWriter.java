@@ -522,12 +522,9 @@ public class JSBMLWriter implements TreeModelListener{
 		
 		
 		public void devModel() {
-			//System.out.println();
 			//model.addNamespace("html");
 			//model.addNamespace("html:p");
-			MetaboliteFactory mFactory = new MetaboliteFactory(sourceType);
-			new ReactantFactory(sourceType);
-			new ProductFactory(sourceType);			
+			MetaboliteFactory mFactory = new MetaboliteFactory(sourceType);	
 			
 			/*LocalParameter lParaml = new LocalParameter("LOWER_BOUND");
 			LocalParameter uParaml = new LocalParameter("UPPER_BOUND");
