@@ -3135,8 +3135,11 @@ public class GraphicalInterface extends JFrame {
 			@Override
 			public boolean accept( File file )
 			{
-				if( file.isDirectory() || (file.exists() && file.getName().toLowerCase().endsWith( ".csv" )) )
+				if( file.isDirectory() || file.exists() && file.getName().toLowerCase().endsWith( ".csv" ) )
+				{
+					curSettings.add( "LastCSV", file.getAbsolutePath() );
 					return true;
+				}
 				return false;
 			}
 
