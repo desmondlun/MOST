@@ -40,11 +40,7 @@ public class Eflux2Model extends FBAModel
 							word += string.charAt( idx++ );
 							return word;
 						default:
-							while( idx < string.length() &&
-									( Character.isAlphabetic( string.charAt( idx ) )
-									|| Character.isDigit( string.charAt( idx ) )
-									|| string.charAt( idx ) == '.' )
-								)
+							while( idx < string.length() && !Character.isWhitespace( string.charAt( idx ) ) )
 							{
 								word += string.charAt( idx++ );
 							}
@@ -137,9 +133,14 @@ public class Eflux2Model extends FBAModel
 					parseParenthesis();
 				else
 				{
-					if( !data.containsKey( lexer.getToken() ) )
-						throw new Exception( "Gene \"" + lexer.getToken() + "\" not in CSV database" );
-					values.add( data.get( lexer.getToken() ) );
+					if( data.containsKey( lexer.getToken() ) )
+						values.add( data.get( lexer.getToken() ) );
+					else
+					{
+						System.out.println( "Gene \"" + lexer.getToken() + "\" not in CSV database, replacing val with infinity" );
+						values.add( Double.POSITIVE_INFINITY );
+					}
+					
 					byteCode.add( "push" );
 					lexer.advance();
 				}
@@ -151,7 +152,7 @@ public class Eflux2Model extends FBAModel
 				lexer.advance();
 				parseExpression();
 				if( !lexer.getToken().equals( ")" ) )
-					throw new Exception( "Parser error: missing \"(\"" );
+					throw new Exception( "Parser error: missing \")\"" );
 				lexer.advance();
 			}
 			
@@ -172,6 +173,7 @@ public class Eflux2Model extends FBAModel
 				}
 				catch( Exception e )
 				{
+					e.printStackTrace();
 				}
 			}
 		}
