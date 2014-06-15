@@ -40,7 +40,12 @@ public class Eflux2Model extends FBAModel
 							word += string.charAt( idx++ );
 							return word;
 						default:
-							while( idx < string.length() && !Character.isWhitespace( string.charAt( idx ) ) )
+							while( idx < string.length() &&
+									( Character.isAlphabetic( string.charAt( idx ) )
+									|| Character.isDigit( string.charAt( idx ) )
+									|| string.charAt( idx ) == '.' 
+									|| string.charAt( idx ) == '_' )
+								)
 							{
 								word += string.charAt( idx++ );
 							}
@@ -165,6 +170,9 @@ public class Eflux2Model extends FBAModel
 				{
 					Interpreter parser = new Interpreter( reaction.getGeneAssociation() );
 					double fluxBound = parser.getValue();
+					if( reaction.getLowerBound() > 0 ||
+							( reaction.getLowerBound() == reaction.getUpperBound() ) )
+						continue;
 					if( reaction.getReversible().toLowerCase().equals( "true" ) )
 						reaction.setLowerBound( -fluxBound );
 					else
