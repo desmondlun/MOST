@@ -370,7 +370,8 @@ public class TextReactionsModelReader {
 				equation.getReactants().get(i).setMetaboliteId(metabId);
 				if (LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(metabId)) {
 					equation.getReactants().get(i).setMetaboliteName(LocalConfig.getInstance().getMetaboliteIdNameMap().get(metabId));
-				}				
+					equation.getReactants().get(i).setCompartment(LocalConfig.getInstance().getMetaboliteIdCompartmentMap().get(metabId));
+				}		
 				reactants.add(equation.getReactants().get(i));
 				if (parser.isSuspicious(equation.getReactants().get(i).getMetaboliteAbbreviation())) {
 					if (!LocalConfig.getInstance().getSuspiciousMetabolites().contains(metabId)) {
@@ -387,6 +388,7 @@ public class TextReactionsModelReader {
 				equation.getProducts().get(i).setMetaboliteId(metabId);
 				if (LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(metabId)) {
 					equation.getProducts().get(i).setMetaboliteName(LocalConfig.getInstance().getMetaboliteIdNameMap().get(metabId));
+					equation.getProducts().get(i).setCompartment(LocalConfig.getInstance().getMetaboliteIdCompartmentMap().get(metabId));
 				}				
 				products.add(equation.getProducts().get(i));
 				if (parser.isSuspicious(equation.getProducts().get(i).getMetaboliteAbbreviation())) {
