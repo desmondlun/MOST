@@ -71,6 +71,7 @@ public class SBMLProduct implements ModelProduct {
 		+ ", reactionId=" + reactionId
 		+ ", metaboliteAbbreviation=" + metaboliteAbbreviation
 		+ ", metaboliteName=" + metaboliteName
+		+ ", compartment=" + compartment
 		+ ", stoic=" + stoic + "]";
 	}
 

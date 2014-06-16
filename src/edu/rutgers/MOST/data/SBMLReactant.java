@@ -71,6 +71,7 @@ public class SBMLReactant implements ModelReactant {
 		+ ", reactionId=" + reactionId
 		+ ", metaboliteAbbreviation=" + metaboliteAbbreviation
 		+ ", metaboliteName=" + metaboliteName
+		+ ", compartment=" + compartment
 		+ ", stoic=" + stoic + "]";
 	}
 

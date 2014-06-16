@@ -70,44 +70,29 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 			String stoicStr = Double.toString(stoic);
 			String metabAbbrev = ((SBMLReactant) reactants.get(r)).getMetaboliteAbbreviation();
 			String metabName = ((SBMLReactant) reactants.get(r)).getMetaboliteName();
+			String compartment = ((SBMLReactant) reactants.get(r)).getCompartment();
+			String name = metaboliteNameString(metabAbbrev, metabName, compartment);
 			if (r == 0) {
 				if (stoic == 1.0) {
 					reacBfr.append(metabAbbrev);
-					if (metabName != null && metabName.trim().length() > 0) {
-						reacNamesBfr.append(metabName);
-					} else {
-						reacNamesBfr.append(metabAbbrev);
-					}									
+					reacNamesBfr.append(name);								
 				} else {
 					if (stoicStr.endsWith(".0")) {
 						stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
 					}
 					reacBfr.append(stoicStr + " " + metabAbbrev);
-					if (metabName != null && metabName.trim().length() > 0) {
-						reacNamesBfr.append(stoicStr + " " + metabName);
-					} else {
-						reacNamesBfr.append(stoicStr + " " + metabAbbrev);
-					}									
+					reacNamesBfr.append(stoicStr + " " + name);								
 				}
-
 			} else {
 				if (stoic == 1.0) {
 					reacBfr.append(" + " + metabAbbrev);
-					if (metabName != null && metabName.trim().length() > 0) {
-						reacNamesBfr.append(" + " + metabName);
-					} else {
-						reacNamesBfr.append(" + " + metabAbbrev);
-					}					
+					reacNamesBfr.append(" + " + name);			
 				} else {
 					if (stoicStr.endsWith(".0")) {
 						stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
 					}
 					reacBfr.append(" + " + stoicStr + " " + metabAbbrev);
-					if (metabName != null && metabName.trim().length() > 0) {
-						reacNamesBfr.append(" + " + stoicStr + " " + metabName);
-					} else {
-						reacNamesBfr.append(" + " + stoicStr + " " + metabAbbrev);
-					}								
+					reacNamesBfr.append(" + " + stoicStr + " " + name);								
 				}				
 			}			
 		}
@@ -117,45 +102,30 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 			String stoicStr = Double.toString(stoic);
 			String metabAbbrev = ((SBMLProduct) products.get(p)).getMetaboliteAbbreviation();
 			String metabName = ((SBMLProduct) products.get(p)).getMetaboliteName();
+			String compartment = ((SBMLProduct) products.get(p)).getCompartment();
+			String name = metaboliteNameString(metabAbbrev, metabName, compartment);
 			if (p == 0) {
 				if (stoic == 1.0) {
 					prodBfr.append(metabAbbrev);
-					if (metabName != null && metabName.trim().length() > 0) {
-						prodNamesBfr.append(metabName);
-					} else {
-						prodNamesBfr.append(metabAbbrev);
-					}									
+					prodNamesBfr.append(name);								
 				} else {
 					if (stoicStr.endsWith(".0")) {
 						stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
 					}
 					prodBfr.append(stoicStr + " " + metabAbbrev);
-					if (metabName != null && metabName.trim().length() > 0) {
-						prodNamesBfr.append(stoicStr + " " + metabName);
-					} else {
-						prodNamesBfr.append(stoicStr + " " + metabAbbrev);
-					}									
+					prodNamesBfr.append(stoicStr + " " + name);								
 				}
 
 			} else {
 				if (stoic == 1.0) {
 					prodBfr.append(" + " + metabAbbrev);
-					if (metabName != null && metabName.trim().length() > 0) {
-						prodNamesBfr.append(" + " + metabName);
-					} else {
-						prodNamesBfr.append(" + " + metabAbbrev);
-					}
-					
+					prodNamesBfr.append(" + " + name);
 				} else {
 					if (stoicStr.endsWith(".0")) {
 						stoicStr = stoicStr.substring(0, stoicStr.length() - 2);
 					}
 					prodBfr.append(" + " + stoicStr + " " + metabAbbrev);
-					if (metabName != null && metabName.trim().length() > 0) {
-						prodNamesBfr.append(" + " + stoicStr + " " + metabName);
-					} else {
-						prodNamesBfr.append(" + " + stoicStr + " " + metabAbbrev);
-					}								
+					prodNamesBfr.append(" + " + stoicStr + " " + name);							
 				}				
 			}			
 		}
@@ -198,6 +168,19 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 				products.remove(i);
 			}
 		}		
+	}
+	
+	public String metaboliteNameString(String metabAbbrev, String metabName, String compartment) {
+		String metaboliteNameString = metabAbbrev;
+		
+		if (metabName != null && metabName.trim().length() > 0) {
+			metaboliteNameString = metabName;
+		}
+		if (compartment != null && compartment.trim().length() > 0) {
+			metaboliteNameString = compartment + "." + metaboliteNameString;
+		}
+		
+		return metaboliteNameString;
 	}
 	
 	@Override
