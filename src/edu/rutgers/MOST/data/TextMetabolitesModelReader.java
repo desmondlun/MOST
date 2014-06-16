@@ -31,6 +31,7 @@ public class TextMetabolitesModelReader {
 	}
 
 	public static Map<Object, String> metaboliteIdNameMap = new HashMap<Object, String>();
+	public static Map<Object, String> metaboliteIdCompartmentMap = new HashMap<Object, String>();
 	
 	public ArrayList<String> columnNamesFromFile(File file, int row) {
 		ArrayList<String> columnNamesFromFile = new ArrayList<String>();
@@ -205,6 +206,9 @@ public class TextMetabolitesModelReader {
 					
 					if (LocalConfig.getInstance().getCompartmentColumnIndex() > -1) {
 						compartment = dataArray[LocalConfig.getInstance().getCompartmentColumnIndex()];	
+						metaboliteIdCompartmentMap.put(new Integer(id), dataArray[LocalConfig.getInstance().getCompartmentColumnIndex()]);
+					} else {
+						metaboliteIdCompartmentMap.put(new Integer(id), "");
 					}
 					metabRow.add(compartment);
 					if (LocalConfig.getInstance().getBoundaryColumnIndex() > -1) {									
@@ -242,7 +246,9 @@ public class TextMetabolitesModelReader {
 		}
 		
 		LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
-		//System.out.println(LocalConfig.getInstance().getMetaboliteIdNameMap());				
+		//System.out.println(LocalConfig.getInstance().getMetaboliteIdNameMap());
+		LocalConfig.getInstance().setMetaboliteIdCompartmentMap(metaboliteIdCompartmentMap);
+		System.out.println(LocalConfig.getInstance().getMetaboliteIdCompartmentMap());
 		LocalConfig.getInstance().hasMetabolitesFile = true;
 		setMetabolitesTableModel(metabTableModel);
 		//System.out.println("Done");		
