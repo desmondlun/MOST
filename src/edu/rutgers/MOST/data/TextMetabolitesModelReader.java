@@ -248,7 +248,7 @@ public class TextMetabolitesModelReader {
 		LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
 		//System.out.println(LocalConfig.getInstance().getMetaboliteIdNameMap());
 		LocalConfig.getInstance().setMetaboliteIdCompartmentMap(metaboliteIdCompartmentMap);
-		System.out.println(LocalConfig.getInstance().getMetaboliteIdCompartmentMap());
+		//System.out.println(LocalConfig.getInstance().getMetaboliteIdCompartmentMap());
 		LocalConfig.getInstance().hasMetabolitesFile = true;
 		setMetabolitesTableModel(metabTableModel);
 		//System.out.println("Done");		

@@ -4155,6 +4155,7 @@ public class GraphicalInterface extends JFrame {
 							unprocessedEqun.getReactants().get(j).setReactionId(reactionId);
 							if (LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(unprocessedEqun.getReactants().get(j).getMetaboliteId())) {
 								unprocessedEqun.getReactants().get(j).setMetaboliteName(LocalConfig.getInstance().getMetaboliteIdNameMap().get(metabId));
+								unprocessedEqun.getReactants().get(j).setCompartment(LocalConfig.getInstance().getMetaboliteIdCompartmentMap().get(metabId));
 							}
 						}
 					}
@@ -4178,6 +4179,7 @@ public class GraphicalInterface extends JFrame {
 							unprocessedEqun.getProducts().get(j).setReactionId(reactionId);
 							if (LocalConfig.getInstance().getMetaboliteIdNameMap().containsKey(unprocessedEqun.getProducts().get(j).getMetaboliteId())) {
 								unprocessedEqun.getProducts().get(j).setMetaboliteName(LocalConfig.getInstance().getMetaboliteIdNameMap().get(metabId));
+								unprocessedEqun.getProducts().get(j).setCompartment(LocalConfig.getInstance().getMetaboliteIdCompartmentMap().get(metabId));
 							}
 						}
 					}
@@ -4478,7 +4480,10 @@ public class GraphicalInterface extends JFrame {
 					metaboliteUpdateValid = false;
 					metabolitesTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.BOUNDARY_COLUMN);
 				}
-			}			
+			}
+		} else if (colIndex == GraphicalInterfaceConstants.COMPARTMENT_COLUMN) {
+			LocalConfig.getInstance().getMetaboliteIdCompartmentMap().put(new Integer(id), newValue); 
+			System.out.println(LocalConfig.getInstance().getMetaboliteIdCompartmentMap());
 		} else {
 			// action for remaining columns
 			metabolitesTable.getModel().setValueAt(newValue, rowIndex, colIndex);
