@@ -172,6 +172,17 @@ public class LocalConfig {
 		this.metaboliteIdNameMap = metaboliteIdNameMap;
 	}
 	
+	private Map<Object, String> metaboliteIdCompartmentMap;
+	
+	public Map<Object, String> getMetaboliteIdCompartmentMap() {
+		return metaboliteIdCompartmentMap;
+	}
+
+	public void setMetaboliteIdCompartmentMap(
+			Map<Object, String> metaboliteIdCompartmentMap) {
+		this.metaboliteIdCompartmentMap = metaboliteIdCompartmentMap;
+	}
+
 	//used for determining id when adding a metabolite when a reaction is
 	//read and metabolite is not present
 	private Integer maxMetabolite;

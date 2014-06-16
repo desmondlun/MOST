@@ -42,6 +42,7 @@ public class SBMLModelReader {
 	public static Map<String, Object> metaboliteAbbreviationIdMap = new HashMap<String, Object>();
 	// id name map used only to set metabolite names in SBMLReactants and SBMLProducts
 	public static Map<Object, String> metaboliteIdNameMap = new HashMap<Object, String>();
+	public static Map<Object, String> metaboliteIdCompartmentMap = new HashMap<Object, String>();
 	private static Map<Object, ModelReactionEquation> reactionEquationMap = new HashMap<Object, ModelReactionEquation>();
 	
 	public SBMLModelReader(SBMLDocument doc) {
@@ -79,6 +80,7 @@ public class SBMLModelReader {
 			metaboliteAbbreviationIdMap.put(metabolites.get(i).getId(), new Integer(i));
 			metabRow.add(metabolites.get(i).getName());	
 			metaboliteIdNameMap.put(new Integer(i), metabolites.get(i).getName());
+			metaboliteIdCompartmentMap.put(new Integer(i), metabolites.get(i).getCompartment());
 			metaboliteNameIdMap.put(metabolites.get(i).getId(), new Integer(i));
 			if (metabolites.get(i).isSetCharge()) {
 				charge = Integer.toString(metabolites.get(i).getCharge());
@@ -324,6 +326,7 @@ public class SBMLModelReader {
 				reactant.setStoic(reactants.get(r).getStoichiometry());
 				reactant.setMetaboliteAbbreviation(reactants.get(r).getSpecies());
 				reactant.setMetaboliteName(metaboliteIdNameMap.get(id));
+				reactant.setCompartment(metaboliteIdCompartmentMap.get(id));
 				//System.out.println(reactant.toString());
 				equnReactants.add(reactant);
 			}
@@ -364,6 +367,7 @@ public class SBMLModelReader {
 				product.setStoic(products.get(p).getStoichiometry());
 				product.setMetaboliteAbbreviation(products.get(p).getSpecies());
 				product.setMetaboliteName(metaboliteIdNameMap.get(id));
+				product.setCompartment(metaboliteIdCompartmentMap.get(id));
 				//System.out.println(product.toString());
 				equnProducts.add(product);
 			}
@@ -633,6 +637,8 @@ public class SBMLModelReader {
 		LocalConfig.getInstance().setMetaboliteAbbreviationIdMap(metaboliteAbbreviationIdMap);
 		//System.out.println(metaboliteNameIdMap);
 		LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
+		LocalConfig.getInstance().setMetaboliteIdCompartmentMap(metaboliteIdCompartmentMap);
+		//System.out.println(LocalConfig.getInstance().getMetaboliteIdCompartmentMap());
 		//System.out.println(LocalConfig.getInstance().getMetaboliteUsedMap());
 		LocalConfig.getInstance().setReactionEquationMap(reactionEquationMap);
 		//System.out.println(LocalConfig.getInstance().getReactionEquationMap());

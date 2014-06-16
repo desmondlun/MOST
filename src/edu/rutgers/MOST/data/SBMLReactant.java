@@ -6,6 +6,7 @@ public class SBMLReactant implements ModelReactant {
 	private Integer metaboliteId;
 	private String metaboliteAbbreviation;
 	private String metaboliteName;
+	private String compartment;
 	private double stoic;
 
 	public Integer getReactionId() {
@@ -38,6 +39,14 @@ public class SBMLReactant implements ModelReactant {
 
 	public void setMetaboliteName(String metaboliteName) {
 		this.metaboliteName = metaboliteName;
+	}
+	
+	public String getCompartment() {
+		return compartment;
+	}
+
+	public void setCompartment(String compartment) {
+		this.compartment = compartment;
 	}
 
 	public void setStoic(double stoic) {
