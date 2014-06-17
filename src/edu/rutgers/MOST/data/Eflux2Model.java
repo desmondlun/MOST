@@ -78,15 +78,15 @@ public class Eflux2Model extends FBAModel
 						values.remove( 0 );
 						break;
 					case "and":
-						stack.set( 0, Math.min( stack.get( 0 ), stack.get( 1 ) ) );
-						stack.remove( 1 );
+						stack.set( stack.size() - 2, Math.min( stack.get( stack.size() - 2 ), stack.get( stack.size() - 1 ) ) );
+						stack.remove( stack.size() - 1 );
 						break;
 					case "or":
-						stack.set( 0, stack.get( 0 ) + stack.get( 1 ) );
-						stack.remove( 1 );
+						stack.set( stack.size() - 2, stack.get( stack.size() - 2 ) +  stack.get( stack.size() - 1 ) );
+						stack.remove( stack.size() - 1 );
 						break;
 					case "negate":
-						stack.set( 0, -stack.get( 0 ) );
+						stack.set( stack.size() - 1, -stack.get( stack.size() - 1 ) );
 						break;
 						default:
 							throw new Exception( "Unsupportd operation \""
@@ -101,13 +101,23 @@ public class Eflux2Model extends FBAModel
 			
 			private void parseExpression() throws Exception
 			{
-				parseOperation();
+				parseOr();
 			}
-			private void parseOperation() throws Exception
+			private void parseOr() throws Exception
+			{
+				parseAnd();
+				while( lexer.getToken().toLowerCase().equals( "or" ) )
+				{
+					String token = lexer.getToken().toLowerCase();
+					lexer.advance();
+					parseAnd();
+					byteCode.add( token );
+				}
+			}
+			private void parseAnd() throws Exception
 			{
 				parsePrefix();
-				while( lexer.getToken().toLowerCase().equals( "or" )
-					|| lexer.getToken().toLowerCase().equals( "and" ) )
+				while( lexer.getToken().toLowerCase().equals( "and" ) )
 				{
 					String token = lexer.getToken().toLowerCase();
 					lexer.advance();
@@ -170,13 +180,8 @@ public class Eflux2Model extends FBAModel
 				{
 					Interpreter parser = new Interpreter( reaction.getGeneAssociation() );
 					double fluxBound = parser.getValue();
-					if( reaction.getLowerBound() > 0 ||
-							( reaction.getLowerBound() == reaction.getUpperBound() ) )
-						continue;
-					if( reaction.getReversible().toLowerCase().equals( "true" ) )
-						reaction.setLowerBound( -fluxBound );
-					else
-						reaction.setLowerBound( 0 );
+					reaction.setLowerBound( reaction.getReversible().
+							toLowerCase().equals( "true" ) ? -fluxBound : 0 );
 					reaction.setUpperBound( fluxBound );
 				}
 				catch( Exception e )
