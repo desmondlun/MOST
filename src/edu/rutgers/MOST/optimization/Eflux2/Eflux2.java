@@ -11,6 +11,7 @@ import java.util.Vector;
 import au.com.bytecode.opencsv.CSVReader;
 import edu.rutgers.MOST.data.*;
 import edu.rutgers.MOST.optimization.solvers.*;
+import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 public class Eflux2 {
@@ -83,6 +84,7 @@ public class Eflux2 {
 	{
 		if( file == null || !file.exists() )
 			return;
+		int i = 0;
 		try
 		{
 		/*	CSVReader csvReader = new CSVReader( new FileReader( file ) );
@@ -92,7 +94,7 @@ public class Eflux2 {
 			for( String[] keyval : all )
 				expressionLevels.put( keyval[ 0 ], Double.valueOf( keyval[ 1 ] ) );
 			model.formatFluxBoundsfromTransciptomicData( expressionLevels );	*/
-			CSVReader csvReader = new CSVReader( new FileReader( file ) );
+		/*	CSVReader csvReader = new CSVReader( new FileReader( file ) );
 			List< String[] > all = csvReader.readAll();
 			csvReader.close();
 			Vector< String > reacts = new Vector< String >();
@@ -104,10 +106,35 @@ public class Eflux2 {
 				lb.add( Double.valueOf( vals[ 1 ].equals( "-Inf" )? "-Infinity" : vals[ 1 ] ) );
 				ub.add( Double.valueOf( vals[ 2 ].equals( "Inf" )? "Infinity" : vals[ 2 ] ) );
 			}
-			model.setBoundaries( reacts, lb, ub );
+			model.setBoundaries( reacts, lb, ub );	*/
+			
+			CSVReader csvReader = new CSVReader( new FileReader( file ), '\t', '\"', 1 );
+			List< String[] > all = csvReader.readAll();
+			csvReader.close();
+			Vector< String > reacts = new Vector< String >();
+			Vector< Double > lb = new Vector< Double >();
+			Vector< Double > ub = new Vector< Double >();
+			Vector< String > ga = new Vector< String >();
+			
+			for( String[] vals : all )
+			{
+				reacts.add( vals[ 0 ] );
+				ga.add( vals[ 6 ] );
+				++i;
+			}
+			model.setBoundaries( reacts, ga );
+			
+			csvReader = new CSVReader( new FileReader( GraphicalInterface.chooseCSVFile() ) );
+			List< String[] > all2 = csvReader.readAll();
+			csvReader.close();
+			Map< String, Double > expressionLevels = new HashMap< String, Double >();
+			for( String[] keyval : all2 )
+				expressionLevels.put( keyval[ 0 ], Double.valueOf( keyval[ 1 ] ) );
+			model.formatFluxBoundsfromTransciptomicData( expressionLevels );
 		}
 		catch ( Exception e )
 		{
+			System.out.println( Integer.toString( i ) );
 			e.printStackTrace();
 		}
 	}
@@ -123,10 +150,6 @@ public class Eflux2 {
 
 	public double getMaxObj() {
 		return this.maxObj;
-	}
-
-	public static void main(String[] argv) {
-		
 	}
 	
 	public static Solver getSolver() {

@@ -39,12 +39,21 @@ public class Eflux2Model extends FBAModel
 						case '-':
 							word += string.charAt( idx++ );
 							return word;
+						case '_':
+							word += string.charAt( idx++ );
+							while( Character.isAlphabetic( string.charAt( idx ) ) )
+								word += string.charAt( idx++ );
+							word += string.charAt( idx++ );
+							if( word.equals( "_OR_" ) )
+								word = "or";
+							else if( word.equals( "_AND_" ) )
+								word = "and";
+							break;
 						default:
 							while( idx < string.length() &&
 									( Character.isAlphabetic( string.charAt( idx ) )
 									|| Character.isDigit( string.charAt( idx ) )
-									|| string.charAt( idx ) == '.' 
-									|| string.charAt( idx ) == '_' )
+									|| string.charAt( idx ) == '.' )
 								)
 							{
 								word += string.charAt( idx++ );
@@ -198,7 +207,7 @@ public class Eflux2Model extends FBAModel
 		setReactions( reactions );
 	}
 
-	public void setBoundaries( Vector< String > reacts, Vector< Double > lb, Vector< Double > ub )
+	public void setBoundaries( Vector< String > reacts, /*Vector< Double > lb, Vector< Double > ub,*/ Vector< String > ga )
 	{
 		for( int i = 0; i < reacts.size(); ++i )
 		{
@@ -207,8 +216,9 @@ public class Eflux2Model extends FBAModel
 			{
 				if( react.getReactionAbbreviation().toLowerCase().contains( name_fm ) )
 				{
-					react.setLowerBound( lb.get( i ) );
-					react.setUpperBound( ub.get( i ) );
+					//react.setLowerBound( lb.get( i ) );
+					//react.setUpperBound( ub.get( i ) );
+					react.setGeneAssociation( ga.get( i ) );
 				}
 			}
 		}
