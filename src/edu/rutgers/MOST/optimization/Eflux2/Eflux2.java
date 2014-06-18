@@ -85,16 +85,30 @@ public class Eflux2 {
 			return;
 		try
 		{
-			CSVReader csvReader = new CSVReader( new FileReader( file ) );
+		/*	CSVReader csvReader = new CSVReader( new FileReader( file ) );
 			List< String[] > all = csvReader.readAll();
 			csvReader.close();
 			Map< String, Double > expressionLevels = new HashMap< String, Double >();
 			for( String[] keyval : all )
 				expressionLevels.put( keyval[ 0 ], Double.valueOf( keyval[ 1 ] ) );
-			model.formatFluxBoundsfromTransciptomicData( expressionLevels );
+			model.formatFluxBoundsfromTransciptomicData( expressionLevels );	*/
+			CSVReader csvReader = new CSVReader( new FileReader( file ) );
+			List< String[] > all = csvReader.readAll();
+			csvReader.close();
+			Vector< String > reacts = new Vector< String >();
+			Vector< Double > lb = new Vector< Double >();
+			Vector< Double > ub = new Vector< Double >();
+			for( String[] vals : all )
+			{
+				reacts.add( vals[ 0 ] );
+				lb.add( Double.valueOf( vals[ 1 ].equals( "-Inf" )? "-Infinity" : vals[ 1 ] ) );
+				ub.add( Double.valueOf( vals[ 2 ].equals( "Inf" )? "Infinity" : vals[ 2 ] ) );
+			}
+			model.setBoundaries( reacts, lb, ub );
 		}
 		catch ( Exception e )
 		{
+			e.printStackTrace();
 		}
 	}
 

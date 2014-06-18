@@ -198,4 +198,21 @@ public class Eflux2Model extends FBAModel
 		setReactions( reactions );
 	}
 
+	public void setBoundaries( Vector< String > reacts, Vector< Double > lb, Vector< Double > ub )
+	{
+		for( int i = 0; i < reacts.size(); ++i )
+		{
+			String name_fm = reacts.get( i ).toLowerCase().replace( '(', '_' ).replace( ')', '_' );
+			for( SBMLReaction react : reactions )
+			{
+				if( react.getReactionAbbreviation().toLowerCase().contains( name_fm ) )
+				{
+					react.setLowerBound( lb.get( i ) );
+					react.setUpperBound( ub.get( i ) );
+				}
+			}
+		}
+		
+		setReactions( reactions );
+	}
 }
