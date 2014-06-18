@@ -189,9 +189,8 @@ public class Eflux2Model extends FBAModel
 				{
 					Interpreter parser = new Interpreter( reaction.getGeneAssociation() );
 					double fluxBound = parser.getValue();
-					reaction.setLowerBound( reaction.getReversible().
-							toLowerCase().equals( "true" ) ? -fluxBound : 0 );
-					reaction.setUpperBound( fluxBound );
+					reaction.setLowerBound( reaction.getLowerBound() >= 0.0 ? 0.0 : -fluxBound );
+					reaction.setUpperBound( reaction.getUpperBound() < 0.0 ? 0.0 : fluxBound  );
 				}
 				catch( Exception e )
 				{
