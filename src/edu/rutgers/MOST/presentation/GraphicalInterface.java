@@ -1572,7 +1572,7 @@ public class GraphicalInterface extends JFrame {
         });
 
         //Analysis --> Eflux2
-        analysisMenu.add( eflux2Item );
+        //analysisMenu.add( eflux2Item );
         eflux2Item.setMnemonic( KeyEvent.VK_E );
         
         eflux2Item.addActionListener(new ActionListener() {
