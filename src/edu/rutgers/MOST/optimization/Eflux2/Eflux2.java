@@ -128,8 +128,22 @@ public class Eflux2 {
 			List< String[] > all2 = csvReader.readAll();
 			csvReader.close();
 			Map< String, Double > expressionLevels = new HashMap< String, Double >();
+			Map< String, Vector< Double > > levels = new HashMap< String, Vector< Double > >();
 			for( String[] keyval : all2 )
-				expressionLevels.put( keyval[ 0 ], Double.valueOf( keyval[ 1 ] ) );
+			{
+				if( !levels.containsKey( keyval[ 0 ] ) )
+					levels.put( keyval[ 0 ], new Vector< Double >() );
+				
+				levels.get( keyval[ 0 ] ).add( Double.valueOf( keyval[ 1 ] ) );
+			}
+			for( String[] keyval : all2 )
+			{
+				Double val = 0.0;
+				for( Double d : levels.get( keyval[ 0 ] ) )
+					val += d;
+				val = val / levels.get( keyval[ 0 ] ).size();
+				expressionLevels.put( keyval[ 0 ], val );
+			}
 			model.formatFluxBoundsfromTransciptomicData( expressionLevels );
 			
 			//read ulbounds
@@ -152,8 +166,8 @@ public class Eflux2 {
 				{
 					if( reaction.getReactionAbbreviation().equals( reacts.get( i ) ) )
 					{
-						if( lb.get( i ) != reaction.getLowerBound()
-							|| ub.get( i ) != reaction.getUpperBound() )
+						if( Math.abs( lb.get( i ) - reaction.getLowerBound() ) > 1.e-6
+							|| Math.abs( ub.get( i ) - reaction.getUpperBound() ) > 1.e-6 )
 						{
 							System.out.println( "Reaction \"" + reacts.get( i ) +"\" does not have correct bounds" );
 						}
