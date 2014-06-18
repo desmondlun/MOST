@@ -205,32 +205,4 @@ public class Eflux2Model extends FBAModel
 		
 		setReactions( reactions );
 	}
-
-	public void setBoundaries( Vector< String > reacts, /*Vector< Double > lb, Vector< Double > ub,*/ Vector< String > ga )
-	{
-	
-		for( SBMLReaction react : reactions )
-		{
-			String name_fm = react.getReactionAbbreviation().replace( "_LPAREN_e_RPAREN_", "(e)" ).replace( "R_", "" ).replace( "_D", "-D" ).replace( "_R", "-R" ).replace( "_S", "-S" ).replace( "-M", "_M" ).replace( "_L", "-L" );
-			for( int i = 0; i < reacts.size(); ++i )
-			{
-				if( reacts.get( i ).equals( name_fm ) )
-				{
-					react.setGeneAssociation( ga.get( i ) );
-					react.setReactionAbbreviation( reacts.get( i ) );
-				}
-				else
-				{
-					name_fm = name_fm.replace( "-L", "_L" ).replace( "-D", "_D" );
-					if( reacts.get( i ).equals( name_fm ) )
-					{
-						react.setGeneAssociation( ga.get( i ) );
-						react.setReactionAbbreviation( reacts.get( i ) );
-					}
-				}
-			}
-		}
-		
-		setReactions( reactions );
-	}
 }
