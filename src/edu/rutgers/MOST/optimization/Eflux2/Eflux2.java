@@ -131,6 +131,35 @@ public class Eflux2 {
 			for( String[] keyval : all2 )
 				expressionLevels.put( keyval[ 0 ], Double.valueOf( keyval[ 1 ] ) );
 			model.formatFluxBoundsfromTransciptomicData( expressionLevels );
+			
+			//read ulbounds
+			csvReader = new CSVReader( new FileReader( GraphicalInterface.chooseCSVFile() ) );
+			all = csvReader.readAll();
+			csvReader.close();
+			reacts = new Vector< String >();
+			lb = new Vector< Double >();
+			ub = new Vector< Double >();
+			for( String[] vals : all )
+			{
+				reacts.add( vals[ 0 ] );
+				lb.add( Double.valueOf( vals[ 1 ].equals( "-Inf" )? "-Infinity" : vals[ 1 ] ) );
+				ub.add( Double.valueOf( vals[ 2 ].equals( "Inf" )? "Infinity" : vals[ 2 ] ) );
+			}
+			//find the differences between the two bounds
+			for( i = 0; i < reacts.size(); ++i )
+			{
+				for( SBMLReaction reaction : model.getReactions() )
+				{
+					if( reaction.getReactionAbbreviation().equals( reacts.get( i ) ) )
+					{
+						if( lb.get( i ) != reaction.getLowerBound()
+							|| ub.get( i ) != reaction.getUpperBound() )
+						{
+							System.out.println( "Reaction \"" + reacts.get( i ) +"\" does not have correct bounds" );
+						}
+					}
+				}
+			}
 		}
 		catch ( Exception e )
 		{

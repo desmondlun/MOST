@@ -209,16 +209,25 @@ public class Eflux2Model extends FBAModel
 
 	public void setBoundaries( Vector< String > reacts, /*Vector< Double > lb, Vector< Double > ub,*/ Vector< String > ga )
 	{
-		for( int i = 0; i < reacts.size(); ++i )
+	
+		for( SBMLReaction react : reactions )
 		{
-			String name_fm = reacts.get( i ).toLowerCase().replace( '(', '_' ).replace( ')', '_' );
-			for( SBMLReaction react : reactions )
+			String name_fm = react.getReactionAbbreviation().replace( "_LPAREN_e_RPAREN_", "(e)" ).replace( "R_", "" ).replace( "_D", "-D" ).replace( "_R", "-R" ).replace( "_S", "-S" ).replace( "-M", "_M" ).replace( "_L", "-L" );
+			for( int i = 0; i < reacts.size(); ++i )
 			{
-				if( react.getReactionAbbreviation().toLowerCase().contains( name_fm ) )
+				if( reacts.get( i ).equals( name_fm ) )
 				{
-					//react.setLowerBound( lb.get( i ) );
-					//react.setUpperBound( ub.get( i ) );
 					react.setGeneAssociation( ga.get( i ) );
+					react.setReactionAbbreviation( reacts.get( i ) );
+				}
+				else
+				{
+					name_fm = name_fm.replace( "-L", "_L" ).replace( "-D", "_D" );
+					if( reacts.get( i ).equals( name_fm ) )
+					{
+						react.setGeneAssociation( ga.get( i ) );
+						react.setReactionAbbreviation( reacts.get( i ) );
+					}
 				}
 			}
 		}
