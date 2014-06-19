@@ -10822,7 +10822,6 @@ public class GraphicalInterface extends JFrame {
 //	        for (String envName : env.keySet()) {
 //	            System.out.format("%s=%s%n", envName, env.get(envName));
 //	        }
-			// test
 		} catch (Exception e) {
 			//e.printStackTrace();
 			StringWriter errors = new StringWriter();
