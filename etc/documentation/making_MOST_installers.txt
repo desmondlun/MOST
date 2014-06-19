@@ -5,6 +5,7 @@ README, and SOURCES must be placed in this folder. The backup folder and documen
 should be removed from etc.
 Create folder named lib in this folder and copy linux, mac, win32 and win64 folders in lib folder into this folder.
 
+Note if Project is loaded through git into Eclipse, you will not be able to make an executable jar.
 3. Right click on the MOST project folder in Eclipse and select
 Export -> Runnable Jar. Select "Extract required libraries into generated jar.
 Locate the correct GraphicalInterface, and browse for folder. 
