@@ -939,7 +939,6 @@ public class GraphicalInterface extends JFrame {
 				} else {
 					saveOptFile = true;
 					if (node.getUserObject().toString() != null) {
-						//System.out.println("else " + node.getUserObject().toString());
 						setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
 						setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
 						setTitle(GraphicalInterfaceConstants.TITLE + " - " + solutionName);
@@ -1444,7 +1443,6 @@ public class GraphicalInterface extends JFrame {
         		LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
         		setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
         		setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
-        		//System.out.println(LocalConfig.getInstance().getReactionsTableModelMap());
 
         		listModel.addElement(optimizeName);
 
@@ -4004,14 +4002,11 @@ public class GraphicalInterface extends JFrame {
 				colIndex == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN || 
 				colIndex == GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN || 
 				colIndex == GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN) {
-			if (newValue.toLowerCase().equals(GraphicalInterfaceConstants.VALID_INFINITY_VALUES[0]) ||
-					newValue.toLowerCase().equals(GraphicalInterfaceConstants.VALID_INFINITY_VALUES[1])) {
+			if (validator.isInvalidInfinityEntry(newValue)) {
 				newValue = GraphicalInterfaceConstants.VALID_INFINITY_ENTRY;
-			} else if (newValue.toLowerCase().equals("-" + GraphicalInterfaceConstants.VALID_INFINITY_VALUES[0]) ||
-					newValue.toLowerCase().equals("-" + GraphicalInterfaceConstants.VALID_INFINITY_VALUES[1])) {
+			} else if (validator.isInvalidNegativeInfinityEntry(newValue)) {
 				newValue = "-" + GraphicalInterfaceConstants.VALID_INFINITY_ENTRY;
 			}
-			System.out.println("in " + newValue);
 			if (!validator.isNumber(newValue)) {
 				if (!replaceAllMode) {
 					setFindReplaceAlwaysOnTop(false);
@@ -6623,7 +6618,13 @@ public class GraphicalInterface extends JFrame {
 	}
 	
 	public void updateReactionsCellIfPasteValid(String value, int row, int col) {
+		EntryValidator validator = new EntryValidator();
 		if (isReactionsEntryValid(row, col, value)) {
+			if (validator.isInvalidInfinityEntry(value)) {
+				value = GraphicalInterfaceConstants.VALID_INFINITY_ENTRY;
+			} else if (validator.isInvalidNegativeInfinityEntry(value)) {
+				value = "-" + GraphicalInterfaceConstants.VALID_INFINITY_ENTRY;
+			} 
 			reactionsTable.setValueAt(value, row, col);	
 			formulaBar.setText("");
 		} else {
@@ -6640,9 +6641,13 @@ public class GraphicalInterface extends JFrame {
 				columnIndex == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN ||
 				columnIndex == GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN ||
 				columnIndex == GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN) {
+			if (validator.isInvalidInfinityEntry(value)) {
+				value = GraphicalInterfaceConstants.VALID_INFINITY_ENTRY;
+			} else if (validator.isInvalidNegativeInfinityEntry(value)) {
+				value = "-" + GraphicalInterfaceConstants.VALID_INFINITY_ENTRY;
+			}
 			if (validator.isNumber(value)) {
 				if (columnIndex == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN && getSelectionMode() != 2) {
-					//System.out.println(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN).toString());
 					Double lowerBound = Double.valueOf(value);
 					Double upperBound = Double.valueOf((String) (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));
 					if (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN).toString().compareTo("false") == 0 && lowerBound < 0) {					
@@ -8155,7 +8160,6 @@ public class GraphicalInterface extends JFrame {
 				oldMetaboliteUsedMap = (Map<String, Object>) (ObjectCloner.deepCopy(LocalConfig.getInstance().getMetaboliteUsedMap()));
 			}
 			undoItem.setOldMetaboliteUsedMap(oldMetaboliteUsedMap);
-			//System.out.println("old " + oldMetaboliteUsedMap);
 		} catch (Exception e3) {
 			JOptionPane.showMessageDialog(null,                
 					"Error Creating Undo Item.",                
@@ -8174,7 +8178,6 @@ public class GraphicalInterface extends JFrame {
 				newMetaboliteUsedMap = (Map<String, Object>) (ObjectCloner.deepCopy(LocalConfig.getInstance().getMetaboliteUsedMap()));
 			}
 			undoItem.setNewMetaboliteUsedMap(newMetaboliteUsedMap);
-			//System.out.println("new " + newMetaboliteUsedMap);
 		} catch (Exception e3) {
 			JOptionPane.showMessageDialog(null,                
 					"Error Creating Undo Item.",                
@@ -9409,6 +9412,18 @@ public class GraphicalInterface extends JFrame {
 						}						
 					}
 					if (isReactionsEntryValid(viewRow, getReactionsFindLocationsList().get(i).get(1), replaceAllValue)) {	
+						EntryValidator validator = new EntryValidator();
+						if (getReactionsFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.FLUX_VALUE_COLUMN ||
+								getReactionsFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN ||
+								getReactionsFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN ||
+								getReactionsFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN ||
+								getReactionsFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN) {
+							if (validator.isInvalidInfinityEntry(replaceAllValue)) {
+								replaceAllValue = GraphicalInterfaceConstants.VALID_INFINITY_ENTRY;
+							} else if (validator.isInvalidNegativeInfinityEntry(replaceAllValue)) {
+								replaceAllValue = "-" + GraphicalInterfaceConstants.VALID_INFINITY_ENTRY;
+							}
+						}
 						reactionsTable.setValueAt(replaceAllValue, viewRow, getReactionsFindLocationsList().get(i).get(1));						
 						if (getReactionsFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
 							int id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));								
@@ -10005,7 +10020,6 @@ public class GraphicalInterface extends JFrame {
 				}
 			}
 			LocalConfig.getInstance().setUnusedList(unusedList);
-			//System.out.println("unused" + unusedList);
 		} catch (Throwable t) {
 //			System.out.println("Error");
 //			Utilities u = new Utilities();
@@ -10308,7 +10322,6 @@ public class GraphicalInterface extends JFrame {
 						if (GDBB.intermediateSolution.size() > 0) {
 							// need to lock if process is busy
 							solution = GDBB.intermediateSolution.poll();
-							//System.out.println("obj" + solution.getObjectiveValue());
 							solutionName = optimizeName + "_" + Double.toString(solution.getObjectiveValue());
 							//listModel.addElement(solutionName);
 							solution.setSolutionName(solutionName);					
@@ -10381,7 +10394,6 @@ public class GraphicalInterface extends JFrame {
 							}
 							if (gdbbTimer.isRunning()) {
 								gdbbItem.setEnabled(false);
-								//System.out.println("add " + solutionName);
 								if (gdbbProcessed) {	
 									listModel.addElement(solutionName);
 									DynamicTreePanel.treePanel.addObject((DefaultMutableTreeNode)DynamicTreePanel.treePanel.getRootNode().getChildAt(DynamicTreePanel.treePanel.getRootNode().getChildCount() - 1), solution, true);
@@ -10437,7 +10449,6 @@ public class GraphicalInterface extends JFrame {
 		@Override
 		protected void process(List<Solution> solutions) {
 			try {
-				//System.out.println("alive " + gdbb.isAlive());
 				Solution solution = solutions.get(solutions.size() - 1);
 				double[] x = solution.getKnockoutVector();
 				solution.getObjectiveValue();
@@ -10456,8 +10467,6 @@ public class GraphicalInterface extends JFrame {
 				rFactory.setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())));
 				rFactory.setKnockouts(soln.subList(knockoutOffset, soln.size()));
 				getGdbbFluxesMap().put(solution.getSolutionName(), new ArrayList<Double>(soln.subList(0, model.getNumReactions())));
-//				System.out.println(solution.getSolutionName());
-//				System.out.println(LocalConfig.getInstance().getGdbbKnockoutsList());
 				LocalConfig.getInstance().getGdbbKnockoutsMap().put(solution.getSolutionName(), LocalConfig.getInstance().getGdbbKnockoutsList());
 				gdbbProcessed = true;
                 
@@ -10774,7 +10783,6 @@ public class GraphicalInterface extends JFrame {
 				Utilities u = new Utilities();
 				if (child.getName().startsWith(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX) ||
 						child.getName().startsWith(GraphicalInterfaceConstants.GDBB_PREFIX)) {
-					System.out.println(child.getAbsolutePath());
 					u.deleteFileIfExists(child.getAbsolutePath());
 				}
 			}

@@ -77,4 +77,20 @@ public class EntryValidator {
 		return false;
 	}
 	
+	public boolean isInvalidInfinityEntry(String value) {
+		if (value.toLowerCase().equals(GraphicalInterfaceConstants.VALID_INFINITY_VALUES[0]) ||
+				value.toLowerCase().equals(GraphicalInterfaceConstants.VALID_INFINITY_VALUES[1])) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean isInvalidNegativeInfinityEntry(String value) {
+		if (value.toLowerCase().equals("-" + GraphicalInterfaceConstants.VALID_INFINITY_VALUES[0]) ||
+				value.toLowerCase().equals("-" + GraphicalInterfaceConstants.VALID_INFINITY_VALUES[1])) {
+			return true;
+		}
+		return false;
+	}
+	
 }
