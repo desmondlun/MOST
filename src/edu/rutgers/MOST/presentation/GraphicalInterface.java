@@ -123,7 +123,8 @@ public class GraphicalInterface extends JFrame {
 	public static JLabel redoGrayedLabel = new JLabel(new ImageIcon(GraphicalInterfaceConstants.REDO_GRAYED_ICON_IMAGE_PATH));
 
 	// Excel calls this a formula bar
-	public static JTextField formulaBar = new JTextField();
+	public static JTextArea formulaBar = new JTextArea();
+	public static JScrollPane formulaPane = new JScrollPane(formulaBar);
 
 	public static JXTable reactionsTable = new JXTable(){  
 		/**
@@ -1064,6 +1065,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().setReactionsLocationsListCount(0);
 		LocalConfig.getInstance().setMetabolitesLocationsListCount(0);
 
+		formulaBar.setLineWrap(true);
 		outputTextArea.setEditable(false);
 
 		listModel.addElement(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME);
@@ -2911,15 +2913,14 @@ public class GraphicalInterface extends JFrame {
 		double border = 10;
 		double size[][] =
 			{{border, TableLayout.FILL, 20, 0.20, border},  //Columns
-				{border, 0.06, 10, 0.04, 10, TableLayout.FILL, 10, 0.17, 5, 0.02, border}}; // Rows
+				{border, 0.06, 10, 0.08, 10, TableLayout.FILL, 10, 0.17, 5, 0.02, border}}; // Rows
 				//{border, 0.06, 10, 0.04, 10, TableLayout.FILL, 10, 0.15, 5, 0.02, border}}; // old value
 
 		setLayout (new TableLayout(size)); 
 
 		add (toolbar, "0, 1, 4, 1");
-		add (formulaBar, "1, 3, 1, 1");
+		add (formulaPane, "1, 3, 1, 1");
 		add (tabbedPane, "1, 5, 1, 1"); // Left
-		//add (rightPane, "3, 3, 1, 7"); // Right
 		add (treePanel, "3, 3, 1, 7"); // Right
 		add (outputPane, "1, 7, 1, 1"); // Bottom
 		add (statusBar, "1, 9, 3, 1");
