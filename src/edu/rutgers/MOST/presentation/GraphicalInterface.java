@@ -4004,6 +4004,14 @@ public class GraphicalInterface extends JFrame {
 				colIndex == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN || 
 				colIndex == GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN || 
 				colIndex == GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN) {
+			if (newValue.toLowerCase().equals(GraphicalInterfaceConstants.VALID_INFINITY_VALUES[0]) ||
+					newValue.toLowerCase().equals(GraphicalInterfaceConstants.VALID_INFINITY_VALUES[1])) {
+				newValue = GraphicalInterfaceConstants.VALID_INFINITY_ENTRY;
+			} else if (newValue.toLowerCase().equals("-" + GraphicalInterfaceConstants.VALID_INFINITY_VALUES[0]) ||
+					newValue.toLowerCase().equals("-" + GraphicalInterfaceConstants.VALID_INFINITY_VALUES[1])) {
+				newValue = "-" + GraphicalInterfaceConstants.VALID_INFINITY_ENTRY;
+			}
+			System.out.println("in " + newValue);
 			if (!validator.isNumber(newValue)) {
 				if (!replaceAllMode) {
 					setFindReplaceAlwaysOnTop(false);

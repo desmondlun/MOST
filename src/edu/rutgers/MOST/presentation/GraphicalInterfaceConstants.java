@@ -245,6 +245,9 @@ public class GraphicalInterfaceConstants {
     public static final String BOOLEAN_VALUE_ERROR_TITLE = "Boolean Value Error";
     public static final String BOOLEAN_VALUE_ERROR_MESSAGE = "Invalid Boolean Value";
     //public static final String BOOLEAN_VALUE_ERROR_MESSAGE = "Invalid entry. Enter \"t\" for \"true\", \"f\" for \"false\"";
+    
+    public static final String[] VALID_INFINITY_VALUES = {"inf", "infinity"};
+    public static final String VALID_INFINITY_ENTRY = "Infinity";
 	
     // lower/upper bound/reversible
     public static final String LOWER_BOUND_ERROR_TITLE = "Lower Bound Error.";
