@@ -11,7 +11,6 @@ import java.util.Vector;
 import au.com.bytecode.opencsv.CSVReader;
 import edu.rutgers.MOST.data.*;
 import edu.rutgers.MOST.optimization.solvers.*;
-import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 public class Eflux2 {

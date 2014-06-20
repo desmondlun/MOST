@@ -1578,6 +1578,12 @@ public class GraphicalInterface extends JFrame {
         eflux2Item.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
 				
+				if( GraphicalInterface.getSolverName().equals( GraphicalInterfaceConstants.GLPK_SOLVER_NAME ) )
+				{
+					JOptionPane.showMessageDialog( null, "GLPK does not support Eflux-2 at this time.\nPlease use Gurobi Solver instead." );
+					return;
+				}
+				
 				Utilities u = new Utilities();
 
 				highlightUnusedMetabolites = false;
@@ -3127,7 +3133,7 @@ public class GraphicalInterface extends JFrame {
 		final JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));	
 		fileChooser.setFileSelectionMode( JFileChooser.FILES_ONLY );
-		fileChooser.setDialogTitle( "Load Gene Associations" );
+		fileChooser.setDialogTitle( "Load Gene Expressions" );
 		fileChooser.setFileFilter( new javax.swing.filechooser.FileFilter()
 		{
 
