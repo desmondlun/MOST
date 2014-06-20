@@ -556,6 +556,7 @@ public class GraphicalInterface extends JFrame {
 	public final static JMenuItem fbaItem = new JMenuItem("FBA");
 	public final static JMenuItem gdbbItem = new JMenuItem("GDBB");
 	public final static JMenuItem eflux2Item = new JMenuItem( "Eflux2" );
+	public final static JMenuItem spotItem = new JMenuItem( "SPOT" );
 	public final JCheckBoxMenuItem highlightUnusedMetabolitesItem = new JCheckBoxMenuItem("Highlight Unused Metabolites");
 	public final JMenuItem deleteUnusedItem = new JMenuItem("Delete All Unused Metabolites");
 	public final JMenuItem findSuspiciousItem = new JMenuItem("Find Suspicious Metabolites");
@@ -1672,6 +1673,17 @@ public class GraphicalInterface extends JFrame {
 			}
 		});
 
+        //Analysis --> SPOT
+        analysisMenu.add( spotItem );
+        spotItem.setMnemonic( KeyEvent.VK_S );
+        
+        spotItem.addActionListener( new ActionListener() {
+			@Override
+			public void actionPerformed( ActionEvent a )
+			{
+				JOptionPane.showMessageDialog( null, "SPOT will be implemented here" );
+			}
+        });
         
 		//Edit menu
 		JMenu editMenu = new JMenu("Edit");
@@ -10116,6 +10128,7 @@ public class GraphicalInterface extends JFrame {
 		fbaItem.setEnabled(true);
 		gdbbItem.setEnabled(true);
 		eflux2Item.setEnabled( true );
+		spotItem.setEnabled( true );
 		addReacRowItem.setEnabled(true);
 		addReacRowsItem.setEnabled(true);
 		addMetabRowItem.setEnabled(true);
@@ -10146,6 +10159,7 @@ public class GraphicalInterface extends JFrame {
 		fbaItem.setEnabled(false);
 		gdbbItem.setEnabled(false);
 		eflux2Item.setEnabled( false );
+		spotItem.setEnabled( false );
 		addReacRowItem.setEnabled(false);
 		addReacRowsItem.setEnabled(false);
 		addMetabRowItem.setEnabled(false);
