@@ -21,8 +21,8 @@ import org.gnu.glpk.glp_iocp;
 import org.gnu.glpk.glp_prob;
 import org.gnu.glpk.glp_tree;
 
+import edu.rutgers.MOST.Analysis.GDBB;
 import edu.rutgers.MOST.data.Solution;
-import edu.rutgers.MOST.optimization.GDBB.GDBB;
 import edu.rutgers.MOST.presentation.ResizableDialog;
 
 public class GLPKSolver extends Solver implements GlpkCallbackListener

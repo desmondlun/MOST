@@ -1,4 +1,4 @@
-package edu.rutgers.MOST.optimization.FBA;
+package edu.rutgers.MOST.Analysis;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 public class FBA {
 	
-	private FBAModel model;
+	private Model model;
 	private Solver solver;
 	private Vector<String> varNames;
 	private double maxObj;
@@ -21,7 +21,7 @@ public class FBA {
 		this.varNames = new Vector<String>();
 	}
 
-	public FBA(FBAModel m) {
+	public FBA(Model m) {
 		this.model = m;
 		this.setSolver(SolverFactory.createSolver( Algorithm.FBA ));
 		this.varNames = new Vector<String>();
@@ -71,7 +71,7 @@ public class FBA {
 		this.getSolver().setObj(map);
 	}
 
-	public void setFBAModel(FBAModel m) {
+	public void setFBAModel(Model m) {
 		this.model = m;
 	}
 	

@@ -23,14 +23,18 @@ import org.jdesktop.swingx.decorator.HighlightPredicate;
 import org.sbml.jsbml.SBMLDocument;
 import org.sbml.jsbml.SBMLReader;
 
+import edu.rutgers.MOST.Analysis.Eflux2;
+import edu.rutgers.MOST.Analysis.FBA;
+import edu.rutgers.MOST.Analysis.GDBB;
+import edu.rutgers.MOST.Analysis.SPOT;
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.ConfigProperties;
 import edu.rutgers.MOST.data.Eflux2Model;
-import edu.rutgers.MOST.data.FBAModel;
 import edu.rutgers.MOST.data.GDBBModel;
 import edu.rutgers.MOST.data.JSBMLWriter;
 import edu.rutgers.MOST.data.MetaboliteFactory;
 import edu.rutgers.MOST.data.MetaboliteUndoItem;
+import edu.rutgers.MOST.data.Model;
 import edu.rutgers.MOST.data.ModelReactionEquation;
 import edu.rutgers.MOST.data.ObjectCloner;
 import edu.rutgers.MOST.data.ReactionEquationUpdater;
@@ -40,6 +44,7 @@ import edu.rutgers.MOST.data.SBMLModelReader;
 import edu.rutgers.MOST.data.SBMLProduct;
 import edu.rutgers.MOST.data.SBMLReactant;
 import edu.rutgers.MOST.data.SBMLReactionEquation;
+import edu.rutgers.MOST.data.SPOTModel;
 import edu.rutgers.MOST.data.SettingsConstants;
 import edu.rutgers.MOST.data.SettingsFactory;
 import edu.rutgers.MOST.data.Solution;
@@ -49,9 +54,6 @@ import edu.rutgers.MOST.data.TextReactionsModelReader;
 import edu.rutgers.MOST.data.TextReactionsWriter;
 import edu.rutgers.MOST.data.UndoConstants;
 import edu.rutgers.MOST.logic.ReactionParser;
-import edu.rutgers.MOST.optimization.Eflux2.Eflux2;
-import edu.rutgers.MOST.optimization.FBA.FBA;
-import edu.rutgers.MOST.optimization.GDBB.GDBB;
 import edu.rutgers.MOST.optimization.solvers.GurobiSolver;
 
 import java.awt.Color;
@@ -1355,7 +1357,7 @@ public class GraphicalInterface extends JFrame {
 				LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
 
 				// Begin optimization
-				FBAModel model = new FBAModel();
+				Model model = new Model();
 				FBA fba = new FBA();
 				fba.setFBAModel(model);
 				ArrayList<Double> soln = fba.run();
@@ -1681,9 +1683,137 @@ public class GraphicalInterface extends JFrame {
 			@Override
 			public void actionPerformed( ActionEvent a )
 			{
-				JOptionPane.showMessageDialog( null, "SPOT will be implemented here" );
+
+				if( GraphicalInterface.getSolverName().equals(
+						GraphicalInterfaceConstants.GLPK_SOLVER_NAME ) )
+				{
+					JOptionPane
+							.showMessageDialog(
+									null,
+									"GLPK does not support Eflux-2 at this time.\nPlease use Gurobi Solver instead." );
+					return;
+				}
+
+				Utilities u = new Utilities();
+
+				highlightUnusedMetabolites = false;
+				highlightUnusedMetabolitesItem.setState( false );
+
+				String dateTimeStamp = u.createDateTimeStamp();
+				String optimizeName = GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
+						+ LocalConfig.getInstance().getModelName()
+						+ dateTimeStamp;
+				setOptimizeName( optimizeName );
+
+				// copy models, run optimization on these model
+				DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel( (DefaultTableModel)metabolitesTable
+						.getModel() );
+				DefaultTableModel reactionsOptModel = copyReactionsTableModel( (DefaultTableModel)reactionsTable
+						.getModel() );
+				LocalConfig.getInstance().getReactionsTableModelMap()
+						.put( optimizeName, reactionsOptModel );
+				LocalConfig.getInstance().getMetabolitesTableModelMap()
+						.put( optimizeName, metabolitesOptModel );
+				setUpReactionsTable( LocalConfig.getInstance()
+						.getReactionsTableModelMap().get( optimizeName ) );
+				setUpMetabolitesTable( LocalConfig.getInstance()
+						.getMetabolitesTableModelMap().get( optimizeName ) );
+				LocalConfig.getInstance().getOptimizationFilesList()
+						.add( optimizeName );
+
+				// Begin optimization
+				SPOTModel model = new SPOTModel();
+				SPOT spot = new SPOT();
+				spot.setSPOTModel( model );
+				spot.formatFluxBoundsfromTransciptomicData( chooseCSVFile() );
+				// uncomment next three lines for proof of concept of adding a
+				// new tab at runtime
+				// JScrollPane scrollPaneGene = new JScrollPane();
+				// tabbedPane.addTab("Genes", scrollPaneGene);
+				// tabbedPane.repaint();
+				ArrayList< Double > soln = spot.run();
+				// End optimization
+
+				ReactionFactory rFactory = new ReactionFactory( "SBML" );
+				rFactory.setFluxes( soln );
+
+				if( LocalConfig.getInstance().hasValidGurobiKey )
+				{
+					Writer writer = null;
+					try
+					{
+						StringBuffer outputText = new StringBuffer();
+						outputText.append( "SPOT\n" );
+						outputText.append( LocalConfig.getInstance()
+								.getModelName() + "\n" );
+						outputText.append( model.getNumMetabolites()
+								+ " metabolites, " + model.getNumReactions()
+								+ " reactions\n" );
+						String maxObj = Double.toString( spot.getMaxObj() );
+						if( maxObj.equals( "-0.0" ) )
+						{
+							maxObj = "0.0";
+						}
+						outputText.append( "Maximum objective: " + maxObj
+								+ "\n" );
+						outputText.append( "Solver = " + getSolverName() );
+
+						File file = new File( u.createLogFileName( optimizeName
+								+ ".log" ) );
+						writer = new BufferedWriter( new FileWriter( file ) );
+						writer.write( outputText.toString() );
+
+					}
+					catch ( FileNotFoundException e )
+					{
+						JOptionPane.showMessageDialog( null, "File Not Found.",
+								"Error", JOptionPane.ERROR_MESSAGE );
+						// e.printStackTrace();
+					}
+					catch ( IOException e )
+					{
+						e.printStackTrace();
+					}
+					finally
+					{
+						try
+						{
+							if( writer != null )
+							{
+								writer.close();
+							}
+						}
+						catch ( IOException e )
+						{
+							JOptionPane.showMessageDialog( null,
+									"File Not Found.", "Error",
+									JOptionPane.ERROR_MESSAGE );
+							// e.printStackTrace();
+						}
+					}
+					loadOutputPane( u.createLogFileName( optimizeName + ".log" ) );
+					if( getPopout() != null )
+					{
+						getPopout().load(
+								u.createLogFileName( optimizeName + ".log" ),
+								gi.getTitle() );
+					}
+					setTitle( GraphicalInterfaceConstants.TITLE + " - "
+							+ optimizeName );
+					listModel.addElement( optimizeName );
+					DynamicTreePanel.treePanel.addObject( new Solution(
+							optimizeName, optimizeName ) );
+					DynamicTreePanel.treePanel
+							.setNodeSelected( GraphicalInterface.listModel
+									.getSize() - 1 );
+				}
+				else
+				{
+					DynamicTreePanel.treePanel.setNodeSelected( 0 );
+				}
+				LocalConfig.getInstance().hasValidGurobiKey = true;
 			}
-        });
+		} );
         
 		//Edit menu
 		JMenu editMenu = new JMenu("Edit");

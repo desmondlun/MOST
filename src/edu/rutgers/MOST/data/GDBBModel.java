@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-public class GDBBModel extends FBAModel {
+public class GDBBModel extends Model {
 
 	protected Vector<Double> syntheticObjective;
 	protected Vector<String> geneAssociations;

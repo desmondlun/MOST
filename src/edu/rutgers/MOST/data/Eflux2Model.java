@@ -2,7 +2,7 @@ package edu.rutgers.MOST.data;
 
 import java.util.Map;
 
-public class Eflux2Model extends FBAModel
+public class Eflux2Model extends Model
 {
 	public void formatFluxBoundsfromTransciptomicData( final Map< String, Double > data )
 	{
