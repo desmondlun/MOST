@@ -12,18 +12,18 @@ import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 public class FBA {
 	
 	private FBAModel model;
-	private static Solver solver;
+	private Solver solver;
 	private Vector<String> varNames;
 	private double maxObj;
 
 	public FBA() {
-		FBA.setSolver(SolverFactory.createSolver( Algorithm.FBA ));
+		this.setSolver(SolverFactory.createSolver( Algorithm.FBA ));
 		this.varNames = new Vector<String>();
 	}
 
 	public FBA(FBAModel m) {
 		this.model = m;
-		FBA.setSolver(SolverFactory.createSolver( Algorithm.FBA ));
+		this.setSolver(SolverFactory.createSolver( Algorithm.FBA ));
 		this.varNames = new Vector<String>();
 	}
 
@@ -41,7 +41,7 @@ public class FBA {
 				ub = 0;
 			}
 
-			FBA.getSolver().setVar(varName, VarType.CONTINUOUS, lb, ub);
+			this.getSolver().setVar(varName, VarType.CONTINUOUS, lb, ub);
 
 			this.varNames.add(varName);
 		}
@@ -55,12 +55,12 @@ public class FBA {
 	private void setConstraints(Vector< SBMLReaction > reactions, ConType conType, double bValue) {
 		ArrayList<Map<Integer, Double>> sMatrix = this.model.getSMatrix();
 		for (int i = 0; i < sMatrix.size(); i++) {
-			FBA.getSolver().addConstraint(sMatrix.get(i), conType, bValue);
+			this.getSolver().addConstraint(sMatrix.get(i), conType, bValue);
 		}
 	}
 
 	private void setObjective() {
-		FBA.getSolver().setObjType(ObjType.Maximize);
+		this.getSolver().setObjType(ObjType.Maximize);
 		Vector<Double> objective = this.model.getObjective();
 		Map<Integer, Double> map = new HashMap<Integer, Double>();
 		for (int i = 0; i < objective.size(); i++) {
@@ -68,7 +68,7 @@ public class FBA {
 				map.put(i, objective.elementAt(i));
 			}
 		}
-		FBA.getSolver().setObj(map);
+		this.getSolver().setObj(map);
 	}
 
 	public void setFBAModel(FBAModel m) {
@@ -80,24 +80,20 @@ public class FBA {
 		this.setVars();
 		this.setConstraints();
 		this.setObjective();
-		this.maxObj = FBA.getSolver().optimize();
+		this.maxObj = this.getSolver().optimize();
 		
-		return FBA.getSolver().getSoln();
+		return this.getSolver().getSoln();
 	}
 
 	public double getMaxObj() {
 		return this.maxObj;
 	}
-
-	public static void main(String[] argv) {
-		
-	}
 	
-	public static Solver getSolver() {
+	public Solver getSolver() {
 		return solver;
 	}
 
-	public static void setSolver(Solver solver) {
-		FBA.solver = solver;
+	public void setSolver(Solver solver) {
+		this.solver = solver;
 	}
 }

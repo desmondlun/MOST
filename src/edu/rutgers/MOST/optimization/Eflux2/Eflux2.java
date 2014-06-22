@@ -16,18 +16,18 @@ import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 public class Eflux2 {
 	
 	private Eflux2Model model;
-	private static Solver solver;
+	private Solver solver;
 	private Vector<String> varNames;
 	private double maxObj;
 
 	public Eflux2() {
-		Eflux2.setSolver(SolverFactory.createSolver( Algorithm.Eflux2 ));
+		this.setSolver(SolverFactory.createSolver( Algorithm.Eflux2 ));
 		this.varNames = new Vector<String>();
 	}
 
 	public Eflux2(Eflux2Model m) {
 		this.model = m;
-		Eflux2.setSolver(SolverFactory.createSolver( Algorithm.Eflux2 ));
+		this.setSolver(SolverFactory.createSolver( Algorithm.Eflux2 ));
 		this.varNames = new Vector<String>();
 	}
 
@@ -45,7 +45,7 @@ public class Eflux2 {
 				ub = 0;
 			}
 
-			Eflux2.getSolver().setVar(varName, VarType.CONTINUOUS, lb, ub);
+			this.getSolver().setVar(varName, VarType.CONTINUOUS, lb, ub);
 
 			this.varNames.add(varName);
 		}
@@ -59,12 +59,12 @@ public class Eflux2 {
 	private void setConstraints(Vector< SBMLReaction > reactions, ConType conType, double bValue) {
 		ArrayList<Map<Integer, Double>> sMatrix = this.model.getSMatrix();
 		for (int i = 0; i < sMatrix.size(); i++) {
-			Eflux2.getSolver().addConstraint(sMatrix.get(i), conType, bValue);
+			this.getSolver().addConstraint(sMatrix.get(i), conType, bValue);
 		}
 	}
 
 	private void setObjective() {
-		Eflux2.getSolver().setObjType(ObjType.Maximize);
+		this.getSolver().setObjType(ObjType.Maximize);
 		Vector<Double> objective = this.model.getObjective();
 		Map<Integer, Double> map = new HashMap<Integer, Double>();
 		for (int i = 0; i < objective.size(); i++) {
@@ -72,7 +72,7 @@ public class Eflux2 {
 				map.put(i, objective.elementAt(i));
 			}
 		}
-		Eflux2.getSolver().setObj(map);
+		this.getSolver().setObj(map);
 	}
 
 	public void setEflux2Model(Eflux2Model m) {
@@ -117,20 +117,20 @@ public class Eflux2 {
 		this.setVars();
 		this.setConstraints();
 		this.setObjective();
-		this.maxObj = Eflux2.getSolver().optimize();
+		this.maxObj = this.getSolver().optimize();
 		
-		return Eflux2.getSolver().getSoln();
+		return this.getSolver().getSoln();
 	}
 
 	public double getMaxObj() {
 		return this.maxObj;
 	}
 	
-	public static Solver getSolver() {
+	public Solver getSolver() {
 		return solver;
 	}
 
-	public static void setSolver(Solver solver) {
-		Eflux2.solver = solver;
+	public void setSolver(Solver solver) {
+		this.solver = solver;
 	}
 }
