@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-class ModelParser
+public class ModelParser
 {
 	private class Lexicon
 	{

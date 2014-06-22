@@ -2,7 +2,6 @@ package edu.rutgers.MOST.Analysis;
 
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,89 +10,14 @@ import java.util.Vector;
 import au.com.bytecode.opencsv.CSVReader;
 import edu.rutgers.MOST.data.*;
 import edu.rutgers.MOST.optimization.solvers.*;
-import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
-public class Eflux2
+public class Eflux2 extends Analysis
 {
-	private Eflux2Model model;
-	private Solver solver;
-	private Vector< String > varNames;
-	private double maxObj;
-
 	public Eflux2()
 	{
-		this.setSolver( SolverFactory.createSolver( Algorithm.Eflux2 ) );
-		this.varNames = new Vector< String >();
+		super( Algorithm.Eflux2 );
 	}
-
-	public Eflux2( Eflux2Model m )
-	{
-		this.model = m;
-		this.setSolver( SolverFactory.createSolver( Algorithm.Eflux2 ) );
-		this.varNames = new Vector< String >();
-	}
-
-	private void setVars()
-	{
-		Vector< SBMLReaction > reactions = this.model.getReactions();
-		for( int i = 0; i < reactions.size(); i++)
-		{
-			SBMLReaction reac = (SBMLReaction)( reactions.elementAt( i ) );
-			String varName = Integer.toString( (Integer)this.model
-					.getReactionsIdPositionMap().get( reac.getId() ) );
-			// String varName = Integer.toString(reac.getId());
-			double lb = reac.getLowerBound();
-			double ub = reac.getUpperBound();
-
-			if( reac.getKnockout().equals(
-					GraphicalInterfaceConstants.BOOLEAN_VALUES[1] ) )
-			{
-				lb = 0;
-				ub = 0;
-			}
-
-			this.getSolver().setVar( varName, VarType.CONTINUOUS, lb, ub );
-
-			this.varNames.add( varName );
-		}
-	}
-
-	private void setConstraints()
-	{
-		Vector< SBMLReaction > reactions = this.model.getReactions();
-		setConstraints( reactions, ConType.EQUAL, 0.0 );
-	}
-
-	private void setConstraints( Vector< SBMLReaction > reactions,
-			ConType conType, double bValue )
-	{
-		ArrayList< Map< Integer, Double >> sMatrix = this.model.getSMatrix();
-		for( int i = 0; i < sMatrix.size(); i++)
-		{
-			this.getSolver().addConstraint( sMatrix.get( i ), conType, bValue );
-		}
-	}
-
-	private void setObjective()
-	{
-		this.getSolver().setObjType( ObjType.Maximize );
-		Vector< Double > objective = this.model.getObjective();
-		Map< Integer, Double > map = new HashMap< Integer, Double >();
-		for( int i = 0; i < objective.size(); i++)
-		{
-			if( objective.elementAt( i ) != 0.0 )
-			{
-				map.put( i, objective.elementAt( i ) );
-			}
-		}
-		this.getSolver().setObj( map );
-	}
-
-	public void setEflux2Model( Eflux2Model m )
-	{
-		this.model = m;
-	}
-
+	
 	public void formatFluxBoundsfromTransciptomicData( File file )
 	{
 		if( file == null || !file.exists() )
@@ -120,7 +44,38 @@ public class Eflux2
 				val = val / levels.get( keyval[0] ).size();
 				expressionLevels.put( keyval[0], val );
 			}
-			model.formatFluxBoundsfromTransciptomicData( expressionLevels );
+			
+			try
+			{
+				for( SBMLReaction reaction : model.getReactions() )
+				{
+					try
+					{
+						ModelParser parser = new ModelParser( reaction.getGeneAssociation(), expressionLevels )
+						{
+							@Override
+							protected Double substitute( String token )
+							{
+								System.out.println( "Gene \"" + token + "\" not in database, replacing val with infinity" );
+								return Double.POSITIVE_INFINITY;
+							}
+						};
+						double fluxBound = parser.getValue();
+						reaction.setLowerBound( reaction.getLowerBound() >= 0.0 ? 0.0 : -fluxBound );
+						reaction.setUpperBound( reaction.getUpperBound() < 0.0 ? 0.0 : fluxBound  );
+					}
+					catch( Exception e )
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+			catch( Exception e )
+			{
+				e.printStackTrace();
+			}
+			
+			model.setReactions( model.getReactions() );
 		}
 		catch ( Exception e )
 		{
@@ -128,28 +83,4 @@ public class Eflux2
 		}
 	}
 
-	public ArrayList< Double > run()
-	{
-		this.setVars();
-		this.setConstraints();
-		this.setObjective();
-		this.maxObj = this.getSolver().optimize();
-
-		return this.getSolver().getSoln();
-	}
-
-	public double getMaxObj()
-	{
-		return this.maxObj;
-	}
-
-	public Solver getSolver()
-	{
-		return solver;
-	}
-
-	public void setSolver( Solver solver )
-	{
-		this.solver = solver;
-	}
 }

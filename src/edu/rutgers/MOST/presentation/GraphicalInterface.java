@@ -29,7 +29,6 @@ import edu.rutgers.MOST.Analysis.GDBB;
 import edu.rutgers.MOST.Analysis.SPOT;
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.ConfigProperties;
-import edu.rutgers.MOST.data.Eflux2Model;
 import edu.rutgers.MOST.data.GDBBModel;
 import edu.rutgers.MOST.data.JSBMLWriter;
 import edu.rutgers.MOST.data.MetaboliteFactory;
@@ -44,7 +43,6 @@ import edu.rutgers.MOST.data.SBMLModelReader;
 import edu.rutgers.MOST.data.SBMLProduct;
 import edu.rutgers.MOST.data.SBMLReactant;
 import edu.rutgers.MOST.data.SBMLReactionEquation;
-import edu.rutgers.MOST.data.SPOTModel;
 import edu.rutgers.MOST.data.SettingsConstants;
 import edu.rutgers.MOST.data.SettingsFactory;
 import edu.rutgers.MOST.data.Solution;
@@ -1359,7 +1357,7 @@ public class GraphicalInterface extends JFrame {
 				// Begin optimization
 				Model model = new Model();
 				FBA fba = new FBA();
-				fba.setFBAModel(model);
+				fba.setModel(model);
 				ArrayList<Double> soln = fba.run();
 				//End optimization
 
@@ -1607,9 +1605,9 @@ public class GraphicalInterface extends JFrame {
 				LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
 
 				// Begin optimization
-				Eflux2Model model = new Eflux2Model();
+				Model model = new Model();
 				Eflux2 eflux2 = new Eflux2();
-				eflux2.setEflux2Model(model);
+				eflux2.setModel(model);
 				eflux2.formatFluxBoundsfromTransciptomicData( chooseCSVFile() );
 	                // uncomment next three lines for proof of concept of adding a new tab at runtime
 //					JScrollPane scrollPaneGene = new JScrollPane();
@@ -1722,9 +1720,9 @@ public class GraphicalInterface extends JFrame {
 						.add( optimizeName );
 
 				// Begin optimization
-				SPOTModel model = new SPOTModel();
+				Model model = new Model();
 				SPOT spot = new SPOT();
-				spot.setSPOTModel( model );
+				spot.setModel( model );
 				spot.formatFluxBoundsfromTransciptomicData( chooseCSVFile() );
 				// uncomment next three lines for proof of concept of adding a
 				// new tab at runtime
@@ -10568,7 +10566,7 @@ public class GraphicalInterface extends JFrame {
 							getGdbbDialog().selectIndefiniteTimeButton();
 							// fixes bug where column header not aligned with columns when gdbb closes
 							reactionsTable.repaint();
-							GDBB.getSolver().setAbort(false);
+							gdbb.getSolver().setAbort(false);
 						}
 					} catch (Exception e) {
 						JOptionPane.showMessageDialog(null,                
@@ -10667,7 +10665,7 @@ public class GraphicalInterface extends JFrame {
 				getGdbbDialog().selectIndefiniteTimeButton();
 				// fixes bug where column header not aligned with columns when gdbb closes
 				reactionsTable.repaint();
-				GDBB.getSolver().setAbort(false);
+				gdbb.getSolver().setAbort(false);
 				// set table model to be loaded when folder GDBB clicked
 				// this will result in the last solution being loaded when folder clicked
 				LocalConfig.getInstance().getMetabolitesTableModelMap().remove(getOptimizeName());
