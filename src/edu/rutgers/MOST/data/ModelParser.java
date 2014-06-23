@@ -40,17 +40,26 @@ public class ModelParser
 					word += string.charAt( idx++ );
 					while( Character.isAlphabetic( string.charAt( idx ) ) )
 						word += string.charAt( idx++ );
-					word += string.charAt( idx++ );
-					if( word.equals( "_OR_" ) )
-						word = "or";
-					else if( word.equals( "_AND_" ) )
-						word = "and";
-					break;
+					if( string.charAt( idx ) == '_' )
+					{
+						word += string.charAt( idx++ );
+						if( word.equals( "_OR_" ) )
+						{
+							word = "or";
+							break;
+						}
+						else if( word.equals( "_AND_" ) )
+						{
+							word = "and";
+							break;
+						}
+					}
 				default:
 					while( idx < string.length() &&
 							( Character.isAlphabetic( string.charAt( idx ) )
 							|| Character.isDigit( string.charAt( idx ) )
-							|| string.charAt( idx ) == '.' )
+							|| string.charAt( idx ) == '.' 
+							|| string.charAt( idx ) == '_' )
 						)
 					{
 						word += string.charAt( idx++ );

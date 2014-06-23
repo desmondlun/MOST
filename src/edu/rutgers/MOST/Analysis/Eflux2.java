@@ -18,7 +18,7 @@ public class Eflux2 extends Analysis
 		super( Algorithm.Eflux2 );
 	}
 	
-	public void formatFluxBoundsfromTransciptomicData( File file )
+	public void formatFluxBoundsfromGeneExpressionData( File file )
 	{
 		if( file == null || !file.exists() )
 			return;

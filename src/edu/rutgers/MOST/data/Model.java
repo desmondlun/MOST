@@ -98,6 +98,11 @@ public class Model
 		// }
 	}
 
+	public void updateFromrFactory()
+	{
+		this.reactions = rFactory.getAllReactions();
+	}
+	
 	public Vector< SBMLReaction > getReactions()
 	{
 		return this.reactions;

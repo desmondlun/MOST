@@ -1608,7 +1608,7 @@ public class GraphicalInterface extends JFrame {
 				Model model = new Model();
 				Eflux2 eflux2 = new Eflux2();
 				eflux2.setModel(model);
-				eflux2.formatFluxBoundsfromTransciptomicData( chooseCSVFile() );
+				eflux2.formatFluxBoundsfromGeneExpressionData( chooseCSVFile( "Load Gene Expressions" ) );
 	                // uncomment next three lines for proof of concept of adding a new tab at runtime
 //					JScrollPane scrollPaneGene = new JScrollPane();
 //					tabbedPane.addTab("Genes", scrollPaneGene);
@@ -1720,20 +1720,20 @@ public class GraphicalInterface extends JFrame {
 						.add( optimizeName );
 
 				// Begin optimization
+				ReactionFactory rFactory = new ReactionFactory( "SBML" );
 				Model model = new Model();
 				SPOT spot = new SPOT();
 				spot.setModel( model );
-				spot.formatFluxBoundsfromTransciptomicData( chooseCSVFile() );
+				spot.formatFluxBoundsfromGeneExpressionData( chooseCSVFile( "Load Gene Expressions" ) );
 				// uncomment next three lines for proof of concept of adding a
 				// new tab at runtime
 				// JScrollPane scrollPaneGene = new JScrollPane();
 				// tabbedPane.addTab("Genes", scrollPaneGene);
 				// tabbedPane.repaint();
-				ArrayList< Double > soln = spot.run();
+				
+				rFactory.setFluxes( spot.run() );
+				Double cosTheta = spot.calculateCorrelations( chooseCSVFile( "Load in Vitro fluxes" ) );
 				// End optimization
-
-				ReactionFactory rFactory = new ReactionFactory( "SBML" );
-				rFactory.setFluxes( soln );
 
 				if( LocalConfig.getInstance().hasValidGurobiKey )
 				{
@@ -1754,6 +1754,7 @@ public class GraphicalInterface extends JFrame {
 						}
 						outputText.append( "Maximum objective: " + maxObj
 								+ "\n" );
+						outputText.append( "Correlation: " + cosTheta + "\n" );
 						outputText.append( "Solver = " + getSolverName() );
 
 						File file = new File( u.createLogFileName( optimizeName
@@ -3264,7 +3265,7 @@ public class GraphicalInterface extends JFrame {
 		} 		
 	}
 
-	public static File chooseCSVFile()
+	public static File chooseCSVFile( String title )
 	{
 		new String();
 		String lastCSV_path = curSettings.get("LastCSV");
@@ -3273,7 +3274,7 @@ public class GraphicalInterface extends JFrame {
 		final JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));	
 		fileChooser.setFileSelectionMode( JFileChooser.FILES_ONLY );
-		fileChooser.setDialogTitle( "Load Gene Expressions" );
+		fileChooser.setDialogTitle( title );
 		fileChooser.setFileFilter( new javax.swing.filechooser.FileFilter()
 		{
 
