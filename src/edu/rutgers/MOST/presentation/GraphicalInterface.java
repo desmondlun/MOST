@@ -969,7 +969,7 @@ public class GraphicalInterface extends JFrame {
 		progressBar.setSize(GraphicalInterfaceConstants.PROGRESS_BAR_WIDTH, GraphicalInterfaceConstants.PROGRESS_BAR_HEIGHT);		
 		progressBar.setResizable(false);
 		progressBar.setTitle("Loading...");
-		progressBar.progress.setIndeterminate(true);
+		//progressBar.progress.setIndeterminate(true);
 		progressBar.setLocationRelativeTo(null);
 		progressBar.setVisible(false);
 
@@ -3192,6 +3192,7 @@ public class GraphicalInterface extends JFrame {
 						LocalConfig.getInstance().setModelName(filename);
 						LocalConfig.getInstance().setProgress(0);
 						progressBar.setVisible(true);
+						progressBar.progress.setIndeterminate(true);
 						disableLoadItems();
 
 						timer.start();
@@ -3445,6 +3446,7 @@ public class GraphicalInterface extends JFrame {
 					LocalConfig.getInstance().setProgress(0);
 					disableLoadItems();
 					progressBar.setVisible(true);
+					progressBar.progress.setIndeterminate(true);
 
 					timer.start();
 
@@ -3581,6 +3583,7 @@ public class GraphicalInterface extends JFrame {
 					LocalConfig.getInstance().setModelName(modelName);
 					LocalConfig.getInstance().setProgress(0);
 					progressBar.setVisible(true);
+					progressBar.progress.setIndeterminate(true);
 
 					timer.start();
 					task = new Task();
@@ -10400,6 +10403,7 @@ public class GraphicalInterface extends JFrame {
 				//e.printStackTrace();					
 				progress = 100;
 				progressBar.setVisible(false);
+				progressBar.progress.setIndeterminate(false);
 				enableLoadItems();
 			} catch (XMLStreamException e) {
 				JOptionPane.showMessageDialog(null,                
@@ -10410,6 +10414,7 @@ public class GraphicalInterface extends JFrame {
 				//e.printStackTrace();
 				progress = 100;
 				progressBar.setVisible(false);
+				progressBar.progress.setIndeterminate(false);
 				enableLoadItems();
 			}	
 			while (progress < 100) {
@@ -10772,8 +10777,9 @@ public class GraphicalInterface extends JFrame {
 				timer.stop();
 				// This appears redundant, but is the only way to not have an extra progress bar on screen
 				progressBar.setVisible(false);
-				progressBar.progress.setIndeterminate(true);
+				//progressBar.progress.setIndeterminate(true);
 				saveSBML = false;
+				progressBar.progress.setIndeterminate(false);
 				enableLoadItems();
 			}
 		}
