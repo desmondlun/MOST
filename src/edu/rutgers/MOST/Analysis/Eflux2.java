@@ -62,7 +62,7 @@ public class Eflux2 extends Analysis
 						};
 						double fluxBound = parser.getValue();
 						reaction.setLowerBound( reaction.getLowerBound() >= 0.0 ? 0.0 : -fluxBound );
-						reaction.setUpperBound( reaction.getUpperBound() < 0.0 ? 0.0 : fluxBound  );
+						reaction.setUpperBound( reaction.getUpperBound() <= 0.0 ? 0.0 : fluxBound  );
 					}
 					catch( Exception e )
 					{
