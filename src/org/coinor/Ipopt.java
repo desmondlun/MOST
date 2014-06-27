@@ -9,10 +9,7 @@
 
 package org.coinor;
 
-
-
 import java.io.File;
-
 
 /**
  * A Java Native Interface for the Ipopt optimization solver.
@@ -185,20 +182,28 @@ public abstract class Ipopt {
 	 * @see #Ipopt()
 	 */
 	public Ipopt(String path, String DLL){
-		// Loads the library
+
+		// Load platform-dependent libraries
 		String dependsFolder = "lib/";
 		if( System.getProperty( "os.name" ).toLowerCase().contains( "windows" ) )
 		{
-			dependsFolder += "win" + System.getProperty( "sun.arch.data.model" );
+			dependsFolder += "win" + System.getProperty( "sun.arch.data.model" ) + "/";
+			System.loadLibrary( dependsFolder + "libiomp5md" );
+			System.loadLibrary( dependsFolder + "IpOptFSS" );
+			System.loadLibrary( dependsFolder + "IpOpt-vc10" );
 		}
 		else if( System.getProperty( "os.name" ).toLowerCase()
 				.contains( "mac os x" ) )
-			dependsFolder += "mac";
+		{
+			dependsFolder += "mac/";
+			System.out.println( "No Mac dylib available yet" );
+		}
 		else
-			dependsFolder += "linux";
-		path = dependsFolder;
-		File file = new File(path, System.mapLibraryName(DLL));
-		System.load(file.getAbsolutePath());
+		{
+			dependsFolder += "linux/";
+		}
+
+		System.loadLibrary( dependsFolder + "jipopt" );
 	}
 
 	/**

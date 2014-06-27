@@ -40,6 +40,11 @@ public class HS071 extends Ipopt {
 		
 		// solve the problem
 		hs071.solve(x);
+		
+
+		// print the status and optimal value
+		System.out.println("Status    = " + hs071.getStatus() );
+		System.out.println("Obj Value = " + hs071.getObjVal() );
 	}
 
 	/**
