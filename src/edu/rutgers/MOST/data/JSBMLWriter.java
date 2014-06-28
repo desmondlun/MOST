@@ -660,9 +660,9 @@ public class JSBMLWriter implements TreeModelListener{
 				}
 						
 				if (LocalConfig.getInstance().getReactionEquationMap().get(cur.getId()) != null) {
-					for (int r = 0; r < ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).reactants.size(); r++) {
+					for (int r = 0; r < ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).getReactants().size(); r++) {
 						SpeciesReference curSpec = new SpeciesReference(); //TODO: Figure spec
-						SBMLReactant curR = ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).reactants.get(r);
+						SBMLReactant curR = ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).getReactants().get(r);
 						int inId = curR.getMetaboliteId();
 						mFactory.getMetaboliteById(inId);
 						String reactAbbrv = curR.getMetaboliteAbbreviation();
@@ -682,9 +682,9 @@ public class JSBMLWriter implements TreeModelListener{
 						curReact.addReactant(curSpec);
 					}
 					
-					for (int p = 0; p < ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).products.size(); p++) {
+					for (int p = 0; p < ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).getProducts().size(); p++) {
 						SpeciesReference curSpec = new SpeciesReference(); //TODO: Figure spec
-						SBMLProduct curP = ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).products.get(p);
+						SBMLProduct curP = ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(cur.getId())).getProducts().get(p);
 						int inId = curP.getMetaboliteId();
 						mFactory.getMetaboliteById(inId);
 						String reactAbbrv = curP.getMetaboliteAbbreviation();

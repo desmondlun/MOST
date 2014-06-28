@@ -429,6 +429,17 @@ public class ReactionUndoItem implements UndoItem {
 				this.newValue = GraphicalInterfaceConstants.BOOLEAN_VALUES[0];
 			}				
 		}
+		if (this.column == GraphicalInterfaceConstants.FLUX_VALUE_COLUMN || 
+				this.column == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN || 
+				this.column == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN || 
+				this.column == GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN || 
+				this.column == GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN) {
+			if (validator.isInvalidInfinityEntry(this.newValue)) {
+				this.newValue = GraphicalInterfaceConstants.VALID_INFINITY_ENTRY;
+			} else if (validator.isInvalidNegativeInfinityEntry(newValue)) {
+				this.newValue = "-" + GraphicalInterfaceConstants.VALID_INFINITY_ENTRY;
+			}
+		}
 		updateCellById(this.newValue, this.id, this.column);
 		
 		if (this.column == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {				

@@ -37,8 +37,8 @@ public class SBMLProductCollection implements ModelProductCollection {
 		for (int i = 0; i < reactionIdList.size(); i++) {
 			int index = reactionIdList.get(i);
 			try {
-				for (int j = 0; j < ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(index)).products.size(); j++) {
-					SBMLProduct product = ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(index)).products.get(j);
+				for (int j = 0; j < ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(index)).getProducts().size(); j++) {
+					SBMLProduct product = ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(index)).getProducts().get(j);
 					this.productList.add(product);
 					//System.out.println(i);
 					//System.out.println(product.getMetaboliteAbbreviation());

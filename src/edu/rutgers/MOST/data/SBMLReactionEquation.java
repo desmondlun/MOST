@@ -6,13 +6,14 @@ import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 public class SBMLReactionEquation implements ModelReactionEquation {
 
-	public ArrayList<SBMLReactant> reactants;
-	public ArrayList<SBMLProduct> products;
-	public String reversible;
-	public String reversibleArrow;
-	public String irreversibleArrow;
+	private ArrayList<SBMLReactant> reactants;
+	private ArrayList<SBMLProduct> products;
+	private String reversible;
+	private String reversibleArrow;
+	private String irreversibleArrow;
 	public String equationAbbreviations;
 	public String equationNames;
+	private ArrayList<String> compartmentList;
 
 	public ArrayList<SBMLReactant> getReactants() {
 		return reactants;
@@ -55,7 +56,14 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 	public void setIrreversibleArrow(String irreversibleArrow) {
 		this.irreversibleArrow = irreversibleArrow;
 	}
+	
+	public ArrayList<String> getCompartmentList() {
+		return compartmentList;
+	}
 
+	public void setCompartmentList(ArrayList<String> compartmentList) {
+		this.compartmentList = compartmentList;
+	}
 
 	public void writeReactionEquation() {
 		StringBuffer reacBfr = new StringBuffer();

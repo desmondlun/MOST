@@ -37,8 +37,8 @@ public class SBMLReactantCollection implements ModelReactantCollection {
 		for (int i = 0; i < reactionIdList.size(); i++) {
 			int index = reactionIdList.get(i);
 			try {
-				for (int j = 0; j < ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(index)).reactants.size(); j++) {
-					SBMLReactant reactant = ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(index)).reactants.get(j);
+				for (int j = 0; j < ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(index)).getReactants().size(); j++) {
+					SBMLReactant reactant = ((SBMLReactionEquation)LocalConfig.getInstance().getReactionEquationMap().get(index)).getReactants().get(j);
 					this.reactantList.add(reactant);
 					//System.out.println(i);
 					//System.out.println(reactant.getMetaboliteAbbreviation());

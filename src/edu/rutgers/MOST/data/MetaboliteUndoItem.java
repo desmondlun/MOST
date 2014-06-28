@@ -460,27 +460,27 @@ public class MetaboliteUndoItem implements UndoItem {
 		for (int i = 0; i < participatingReactions.size(); i++) {
 			SBMLReactionEquation equn = (SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(participatingReactions.get(i));
 			if (column == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
-				for (int j = 0; j < equn.reactants.size(); j++) {
-					if (equn.reactants.get(j).getMetaboliteAbbreviation().equals(oldReactant)) {
-						equn.reactants.get(j).setMetaboliteAbbreviation(newReactant);
+				for (int j = 0; j < equn.getReactants().size(); j++) {
+					if (equn.getReactants().get(j).getMetaboliteAbbreviation().equals(oldReactant)) {
+						equn.getReactants().get(j).setMetaboliteAbbreviation(newReactant);
 					}
 				}
-				for (int j = 0; j < equn.products.size(); j++) {
-					if (equn.products.get(j).getMetaboliteAbbreviation().equals(oldReactant)) {
-						equn.products.get(j).setMetaboliteAbbreviation(newReactant);
+				for (int j = 0; j < equn.getProducts().size(); j++) {
+					if (equn.getProducts().get(j).getMetaboliteAbbreviation().equals(oldReactant)) {
+						equn.getProducts().get(j).setMetaboliteAbbreviation(newReactant);
 					}
 				}
 				equn.writeReactionEquation();
 				GraphicalInterface.updateReactionsCellById(equn.equationAbbreviations, participatingReactions.get(i), GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 			} else if (column == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
-				for (int j = 0; j < equn.reactants.size(); j++) {
-					if (equn.reactants.get(j).getMetaboliteName().equals(oldReactant)) {
-						equn.reactants.get(j).setMetaboliteName(newReactant);
+				for (int j = 0; j < equn.getReactants().size(); j++) {
+					if (equn.getReactants().get(j).getMetaboliteName().equals(oldReactant)) {
+						equn.getReactants().get(j).setMetaboliteName(newReactant);
 					}
 				}
-				for (int j = 0; j < equn.products.size(); j++) {
-					if (equn.products.get(j).getMetaboliteName().equals(oldReactant)) {
-						equn.products.get(j).setMetaboliteName(newReactant);
+				for (int j = 0; j < equn.getProducts().size(); j++) {
+					if (equn.getProducts().get(j).getMetaboliteName().equals(oldReactant)) {
+						equn.getProducts().get(j).setMetaboliteName(newReactant);
 					}
 				}
 				equn.writeReactionEquation();
