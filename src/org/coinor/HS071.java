@@ -107,7 +107,8 @@ public class HS071 extends Ipopt {
 
 	protected boolean eval_grad_f(int n, double[] x, boolean new_x, double[] grad_f) {
 		assert n == this.n;
-
+		
+		/* this is the gradient of the objective function */
 		grad_f[0] = x[0] * x[3] + x[3] * (x[0] + x[1] + x[2]);
 		grad_f[1] = x[0] * x[3];
 		grad_f[2] = x[0] * x[3] + 1;
@@ -120,8 +121,8 @@ public class HS071 extends Ipopt {
 		assert n == this.n;
 		assert m == this.m;
 
-		g[0] = x[0] * x[1] * x[2] * x[3];
-		g[1] = x[0]*x[0] + x[1]*x[1] + x[2]*x[2] + x[3]*x[3];
+		g[0] = x[0] * x[1] * x[2] * x[3]; // function in 1st constraint
+		g[1] = x[0]*x[0] + x[1]*x[1] + x[2]*x[2] + x[3]*x[3]; // function in 2nd constraint
 
 		return true;
 	}
@@ -160,13 +161,13 @@ public class HS071 extends Ipopt {
 		else {
 			/* return the values of the jacobian of the constraints */
 
-			/* this is the gradiant of 1st constraint */
+			/* this is the gradient of 1st constraint */
 			values[0] = x[1]*x[2]*x[3]; /* 0,0 */
 			values[1] = x[0]*x[2]*x[3]; /* 0,1 */
 			values[2] = x[0]*x[1]*x[3]; /* 0,2 */
 			values[3] = x[0]*x[1]*x[2]; /* 0,3 */
 
-			/* this is the gradiant of 2nd constraint */
+			/* this is the gradient of 2nd constraint */
 			values[4] = 2*x[0];         /* 1,0 */
 			values[5] = 2*x[1];         /* 1,1 */
 			values[6] = 2*x[2];         /* 1,2 */
@@ -201,6 +202,8 @@ public class HS071 extends Ipopt {
 		else {
 			/* return the values. This is a symmetric matrix, fill the lower left
 			 * triangle only */
+			
+			/* ::obj_factor * matrix of gradient of obj_func + (sum of ( lambda * matrix of gradient of constraints ) ) */
 
 			/* fill the objective portion */
 			values[0] = obj_factor * (2*x[3]);               /* 0,0 */
