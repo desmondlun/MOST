@@ -137,12 +137,13 @@ public class Model
 	}
 	
 	public int getMatrixIdFromReactionId(String reactionId) {
-		int id = -1;
+		int matrixId = -1;
 		if (LocalConfig.getInstance().getReactionAbbreviationIdMap().containsKey(reactionId)) {
-			id = (int) LocalConfig.getInstance().getReactionAbbreviationIdMap().get(reactionId);
+			int id = (int) LocalConfig.getInstance().getReactionAbbreviationIdMap().get(reactionId);
+			matrixId = (Integer)reactionsIdPositionMap.get(id);
 		}
-		System.out.println(id);
-		return id;
+		System.out.println(matrixId);
+		return matrixId;
 	}
 
 	@Override

@@ -1360,7 +1360,7 @@ public class GraphicalInterface extends JFrame {
 				Model model = new Model();
 				FBA fba = new FBA();
 				fba.setModel(model);
-				System.out.println(model.getMatrixIdFromReactionId("R_ADK1"));
+				//System.out.println(model.getMatrixIdFromReactionId("R_ADK1"));
 				ArrayList<Double> soln = fba.run();
 				//End optimization
 
