@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import edu.rutgers.MOST.config.LocalConfig;
+
 public class Model
 {
 	protected Vector< SBMLReaction > reactions;
@@ -132,6 +134,15 @@ public class Model
 	public ArrayList< Map< Integer, Double >> getSMatrix()
 	{
 		return this.sMatrix;
+	}
+	
+	public int getMatrixIdFromReactionId(String reactionId) {
+		int id = -1;
+		if (LocalConfig.getInstance().getReactionAbbreviationIdMap().containsKey(reactionId)) {
+			id = (int) LocalConfig.getInstance().getReactionAbbreviationIdMap().get(reactionId);
+		}
+		System.out.println(id);
+		return id;
 	}
 
 	@Override

@@ -145,6 +145,7 @@ public class TextReactionsModelReader {
 	public void load(File file){
 		LocalConfig.getInstance().getMetaboliteUsedMap().clear();
 		LocalConfig.getInstance().getSuspiciousMetabolites().clear();
+		LocalConfig.getInstance().getReactionAbbreviationIdMap().clear();
 		
 		DefaultTableModel reacTableModel = new DefaultTableModel();
 		if (LocalConfig.getInstance().hasMetabolitesFile) {
@@ -237,6 +238,7 @@ public class TextReactionsModelReader {
 					} 
 					reacRow.add(Double.toString(fluxValue));
 					reactionAbbreviation = dataArray[LocalConfig.getInstance().getReactionAbbreviationColumnIndex()];
+					LocalConfig.getInstance().getReactionAbbreviationIdMap().put(reactionAbbreviation, id);
 					reacRow.add(reactionAbbreviation);
 					if (LocalConfig.getInstance().getReactionNameColumnIndex() > -1) {
 						reactionName = dataArray[LocalConfig.getInstance().getReactionNameColumnIndex()];
@@ -352,6 +354,7 @@ public class TextReactionsModelReader {
 		GraphicalInterface.showPrompt = true;
 		LocalConfig.getInstance().hasMetabolitesFile = false;
 		setReactionsTableModel(reacTableModel);
+		System.out.println(LocalConfig.getInstance().getReactionAbbreviationIdMap());
 //		System.out.println(LocalConfig.getInstance().getReactionEquationMap());
 //		System.out.println(LocalConfig.getInstance().getMetaboliteUsedMap());
 //		System.out.println(LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());

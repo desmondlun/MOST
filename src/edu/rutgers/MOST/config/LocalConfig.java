@@ -147,8 +147,19 @@ public class LocalConfig {
 	public void setUnusedList(ArrayList<Integer> unusedList) {
 		this.unusedList = unusedList;
 	}
+	
+	public Map<String, Object> reactionAbbreviationIdMap = new HashMap<String, Object>();
     
-    //map used to hold metabolite abbreviation/id pairs, in order to construct reaction_reactant
+    public Map<String, Object> getReactionAbbreviationIdMap() {
+		return reactionAbbreviationIdMap;
+	}
+
+	public void setReactionAbbreviationIdMap(
+			Map<String, Object> reactionAbbreviationIdMap) {
+		this.reactionAbbreviationIdMap = reactionAbbreviationIdMap;
+	}
+
+	//map used to hold metabolite abbreviation/id pairs, in order to construct reaction_reactant
 	//and reaction_product (lookup) tables
     public Map<String, Object> metaboliteAbbreviationIdMap = new HashMap<String, Object>();
 

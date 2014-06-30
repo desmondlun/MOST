@@ -1076,6 +1076,8 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().setMetaboliteAbbreviationIdMap(metaboliteAbbreviationIdMap);
 		Map<Object, String> metaboliteIdNameMap = new HashMap<Object, String>();
 		LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
+		Map<String, Object> reactionAbbreviationIdMap = new HashMap<String, Object>();
+		LocalConfig.getInstance().setReactionAbbreviationIdMap(reactionAbbreviationIdMap);
 		Map<String, Object> metaboliteUsedMap = new HashMap<String, Object>();
 		LocalConfig.getInstance().setMetaboliteUsedMap(metaboliteUsedMap);			
 		ArrayList<Integer> suspiciousMetabolites = new ArrayList<Integer>();
@@ -1358,6 +1360,7 @@ public class GraphicalInterface extends JFrame {
 				Model model = new Model();
 				FBA fba = new FBA();
 				fba.setModel(model);
+				System.out.println(model.getMatrixIdFromReactionId("R_ADK1"));
 				ArrayList<Double> soln = fba.run();
 				//End optimization
 
@@ -4883,6 +4886,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().clear();
 		LocalConfig.getInstance().getMetaboliteIdNameMap().clear();
 		LocalConfig.getInstance().getMetaboliteUsedMap().clear();
+		LocalConfig.getInstance().getReactionAbbreviationIdMap().clear();
 		LocalConfig.getInstance().getSuspiciousMetabolites().clear();
 		LocalConfig.getInstance().getUnusedList().clear();
 		if (!saveSBML) {

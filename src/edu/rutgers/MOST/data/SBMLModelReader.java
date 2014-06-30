@@ -45,6 +45,8 @@ public class SBMLModelReader {
 	public static Map<Object, String> metaboliteIdCompartmentMap = new HashMap<Object, String>();
 	private static Map<Object, ModelReactionEquation> reactionEquationMap = new HashMap<Object, ModelReactionEquation>();
 	
+	public static Map<String, Object> reactionAbbreviationIdMap = new HashMap<String, Object>();
+	
 	public SBMLModelReader(SBMLDocument doc) {
 		this.doc = doc;
 	}
@@ -235,6 +237,8 @@ public class SBMLModelReader {
 		for (int r = 0; r < GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length; r++) {
 			reacTableModel.addColumn(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[r]);
 		}
+		
+		LocalConfig.getInstance().getReactionAbbreviationIdMap().clear();
 
 		ArrayList<String> reactionsMetaColumnNames = new ArrayList<String>();
 		ListOf<Reaction> reactions = doc.getModel().getListOfReactions();
@@ -271,6 +275,7 @@ public class SBMLModelReader {
 			//System.out.println("flux value " + fluxValue);
 
 			reacRow.add(reactions.get(j).getId());
+			reactionAbbreviationIdMap.put(reactions.get(j).getId(), new Integer(j));
 			//System.out.println("reac id " + reactions.get(j).getId());
 			reacRow.add(reactions.get(j).getName());
 			//System.out.println("name " + reactions.get(j).getName());
@@ -642,6 +647,8 @@ public class SBMLModelReader {
 		//System.out.println(LocalConfig.getInstance().getMetaboliteUsedMap());
 		LocalConfig.getInstance().setReactionEquationMap(reactionEquationMap);
 		//System.out.println(LocalConfig.getInstance().getReactionEquationMap());
+		LocalConfig.getInstance().setReactionAbbreviationIdMap(reactionAbbreviationIdMap);
+		System.out.println(reactionAbbreviationIdMap);
 		LocalConfig.getInstance().setProgress(100);	
 		//System.out.println("Done");
 
