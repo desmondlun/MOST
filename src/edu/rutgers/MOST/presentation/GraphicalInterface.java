@@ -1360,7 +1360,6 @@ public class GraphicalInterface extends JFrame {
 				Model model = new Model();
 				FBA fba = new FBA();
 				fba.setModel(model);
-				//System.out.println(model.getMatrixIdFromReactionId("R_ADK1"));
 				ArrayList<Double> soln = fba.run();
 				//End optimization
 
@@ -4150,6 +4149,8 @@ public class GraphicalInterface extends JFrame {
 					reactionsTable.getModel().setValueAt(equn.equationNames, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 				}				
 			}
+		} else if (colIndex == GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN) {
+			LocalConfig.getInstance().getReactionAbbreviationIdMap().put(newValue, id);
 		} else if (colIndex == GraphicalInterfaceConstants.FLUX_VALUE_COLUMN || 
 				colIndex == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN || 
 				colIndex == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN || 

@@ -85,7 +85,7 @@ public class Model
 								.getReactionId() ), product.getStoic() );
 			}
 		}
-
+		
 		// System.out.println(sMatrix);
 
 		// for (int i = 0; i < metabolites.size(); i++) {
@@ -136,13 +136,12 @@ public class Model
 		return this.sMatrix;
 	}
 	
-	public int getMatrixIdFromReactionId(String reactionId) {
+	public int getMatrixIdFromReactionAbbreviation(String reactionAbbreviation) {
 		int matrixId = -1;
-		if (LocalConfig.getInstance().getReactionAbbreviationIdMap().containsKey(reactionId)) {
-			int id = (int) LocalConfig.getInstance().getReactionAbbreviationIdMap().get(reactionId);
+		if (LocalConfig.getInstance().getReactionAbbreviationIdMap().containsKey(reactionAbbreviation)) {
+			int id = (int) LocalConfig.getInstance().getReactionAbbreviationIdMap().get(reactionAbbreviation);
 			matrixId = (Integer)reactionsIdPositionMap.get(id);
 		}
-		System.out.println(matrixId);
 		return matrixId;
 	}
 
