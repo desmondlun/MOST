@@ -15,6 +15,8 @@ import java.util.Map.Entry;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
+import org.coinor.Ipopt;
+
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 import edu.rutgers.MOST.presentation.ResizableDialog;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
@@ -523,6 +525,47 @@ public class GurobiSolver extends Solver
 						soln.add( var.get( GRB.DoubleAttr.X ) );
 					if( getAlgorithm() == Algorithm.Eflux2 )
 						this.minimizeEuclideanNorm();
+					
+					if( getAlgorithm() == Algorithm.SPOT )
+					{
+						// set up the nlp
+						double[] x_L = new double[ this.columns.size() ];
+						double[] x_U = new double[ this.columns.size() ];
+						
+						// set the var upper and lower bounds
+						for( int i = 0; i < this.columns.size(); ++i )
+						{
+							x_L[ i ] = this.columns.get( i ).lb;
+							x_L[ i ] = this.columns.get( i ).ub;
+						}
+						
+						double[] g_L = new double[ this.rows.size() ];
+						double[] g_U = new double[ this.rows.size() ];
+						
+						// set the constraint upper and lower bounds
+						for( int i = 0; i < this.rows.size(); ++i )
+						{
+							if( this.rows.get( i ).type == GRB.LESS_EQUAL )
+							{
+								g_L[ i ] = Double.NEGATIVE_INFINITY;
+								g_U[ i ] = this.rows.get( i ).val;
+							}
+							else if( this.rows.get( i ).type == GRB.EQUAL )
+							{
+								g_L[ i ] = this.rows.get( i ).val;
+								g_U[ i ] = this.rows.get( i  ).val;
+							}
+							else if( this.rows.get( i ).type == GRB.GREATER_EQUAL )
+							{
+								g_L[ i ] = this.rows.get( i ).val;
+								g_U[ i ] = Double.POSITIVE_INFINITY;
+							}
+						}
+						
+						this.create( this.columns.size(), x_L, x_U, this.rows.size(),
+								g_L, g_U, this.getJacobianNonZeros( this.columns.size(), this.rows.size() ),
+								this.getHeissanNonZeros( this.columns.size() ), Ipopt.C_STYLE );
+					}
 				}
 			}
 			catch( GRBException e )
@@ -570,7 +613,6 @@ public class GurobiSolver extends Solver
 	@Override
 	public void setVars( VarType[] types, double[] lb, double[] ub )
 	{
-		// TODO Auto-generated method stub
 	}
 	@Override
 	public void abort()
@@ -586,5 +628,41 @@ public class GurobiSolver extends Solver
 	public void setAbort( boolean abort )
 	{
 		this.abort = abort;
+	}
+	@Override
+	protected boolean eval_f( int n, double[] x, boolean new_x,
+			double[] obj_value )
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	protected boolean eval_grad_f( int n, double[] x, boolean new_x,
+			double[] grad_f )
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	protected boolean eval_g( int n, double[] x, boolean new_x, int m,
+			double[] g )
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	protected boolean eval_jac_g( int n, double[] x, boolean new_x, int m,
+			int nele_jac, int[] iRow, int[] jCol, double[] values )
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	protected boolean eval_h( int n, double[] x, boolean new_x,
+			double obj_factor, int m, double[] lambda, boolean new_lambda,
+			int nele_hess, int[] iRow, int[] jCol, double[] values )
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

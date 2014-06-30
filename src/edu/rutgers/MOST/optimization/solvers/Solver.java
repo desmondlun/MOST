@@ -3,8 +3,10 @@ package edu.rutgers.MOST.optimization.solvers;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import org.coinor.Ipopt;
 
-public abstract class Solver {
+public abstract class Solver extends Ipopt 
+{
 	protected ObjType objType;
 	protected VarType[] varTypes;
 	protected Map<Integer,Double> obj = new HashMap<Integer, Double>();
@@ -38,5 +40,13 @@ public abstract class Solver {
 	public void setAlgorithm( Algorithm algorithm )
 	{
 		this.algorithm = algorithm;
+	}
+	public int getJacobianNonZeros( int varCount, int constraintCount )
+	{
+		return varCount * constraintCount;
+	}
+	public int getHeissanNonZeros( int varCount )
+	{
+		return ( varCount * ( varCount + 1 ) ) / 2;
 	}
 }

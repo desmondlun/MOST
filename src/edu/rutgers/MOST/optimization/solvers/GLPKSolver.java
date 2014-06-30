@@ -380,5 +380,41 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 				GDBB.intermediateSolution.add( sn );
 		}
 	}
+	@Override
+	protected boolean eval_f( int n, double[] x, boolean new_x,
+			double[] obj_value )
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	protected boolean eval_grad_f( int n, double[] x, boolean new_x,
+			double[] grad_f )
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	protected boolean eval_g( int n, double[] x, boolean new_x, int m,
+			double[] g )
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	protected boolean eval_jac_g( int n, double[] x, boolean new_x, int m,
+			int nele_jac, int[] iRow, int[] jCol, double[] values )
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	protected boolean eval_h( int n, double[] x, boolean new_x,
+			double obj_factor, int m, double[] lambda, boolean new_lambda,
+			int nele_hess, int[] iRow, int[] jCol, double[] values )
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 }

@@ -4,5 +4,6 @@ public enum Algorithm
 {
 	FBA,
 	GDBB,
-	Eflux2
+	Eflux2,
+	SPOT
 }

@@ -9,8 +9,6 @@
 
 package org.coinor;
 
-import java.io.File;
-
 /**
  * A Java Native Interface for the Ipopt optimization solver.
  * <p>
