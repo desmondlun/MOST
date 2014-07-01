@@ -1726,15 +1726,15 @@ public class GraphicalInterface extends JFrame {
 				Model model = new Model();
 				SPOT spot = new SPOT();
 				spot.setModel( model );
-				spot.formatFluxBoundsfromGeneExpressionData( chooseCSVFile( "Load Gene Expressions" ) );
 				// uncomment next three lines for proof of concept of adding a
 				// new tab at runtime
 				// JScrollPane scrollPaneGene = new JScrollPane();
 				// tabbedPane.addTab("Genes", scrollPaneGene);
 				// tabbedPane.repaint();
 				
+				Double cosTheta = spot.updateNonlinearSolver( chooseCSVFile( "Load in Vitro fluxes") );
 				rFactory.setFluxes( spot.run() );
-				Double cosTheta = spot.calculateCorrelations( chooseCSVFile( "Load in Vitro fluxes" ) );
+				
 				// End optimization
 
 				if( LocalConfig.getInstance().hasValidGurobiKey )
@@ -10923,7 +10923,7 @@ public class GraphicalInterface extends JFrame {
 						GraphicalInterfaceConstants.URL_NOT_FOUND_TITLE,                                
 						JOptionPane.ERROR_MESSAGE);   
 			}
-		}		
+		}
 	}
 	
 	// Deletes FBA and GDBB log files that are not deleted on close of MOST, when close action is due

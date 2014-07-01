@@ -11,7 +11,7 @@ import edu.rutgers.MOST.data.ModelParser;
 import edu.rutgers.MOST.data.SBMLReaction;
 import au.com.bytecode.opencsv.CSVReader;
 
-public class SPOT extends Eflux2
+public class SPOT extends FBA
 {
 	//calculate correlation between in VITRO and in Silico fluxes
 	public Double calculateCorrelations( File file )
@@ -62,6 +62,43 @@ public class SPOT extends Eflux2
 			lengthInSilico = Math.sqrt( lengthInSilico );
 			
 			result = dotProduct / (lengthInSilico * lengthInVitro );
+		}
+		catch( Exception e )
+		{
+			e.printStackTrace();
+			result = Double.NaN;
+		}
+		return result;
+	}
+
+	public Double updateNonlinearSolver( File file )
+	{
+		if( file == null || !file.exists() )
+			return Double.NaN;
+		Double result;
+		try
+		{
+			//read the CSV file
+			CSVReader csvReader = new CSVReader( new FileReader( file ) );
+			List< String[] > all = csvReader.readAll();
+			csvReader.close();
+			
+			//put the arrays into a hashmap for the modelparser database
+			HashMap< Integer, Double > data = new HashMap< Integer, Double >();
+			model.updateFromrFactory();
+
+			for( String[] keyval : all)
+			{
+				for( SBMLReaction reaction : model.getReactions() )
+				{
+					if( keyval[ 0 ].equals( reaction.getReactionAbbreviation().replace( "R_", "" ) ) )
+					{
+						data.put( reaction.getId(), Double.valueOf( keyval[ 1 ].equals( "NaN" ) ? "0.0" : keyval[ 1 ] ) );
+						break;
+					}
+				}
+			}
+			result = Double.NaN;
 		}
 		catch( Exception e )
 		{

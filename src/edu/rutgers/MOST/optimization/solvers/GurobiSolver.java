@@ -37,12 +37,12 @@ public class GurobiSolver extends Solver
 	private class RowEntry
 	{
 		public int idx;
-		public double value;
+		public double coef;
 
 		RowEntry( int i, double v )
 		{
 			idx = i;
-			value = v;
+			coef = v;
 		}
 	}
 
@@ -77,7 +77,7 @@ public class GurobiSolver extends Solver
 
 	private class ObjectiveType
 	{
-		Vector< RowEntry > coefs = new Vector< RowEntry >();
+		Vector< RowEntry > entries = new Vector< RowEntry >();
 	}
 
 	private Vector< RowType > rows = new Vector< RowType >();
@@ -314,7 +314,7 @@ public class GurobiSolver extends Solver
 		{
 			// objective definition
 			for( Entry< Integer, Double > entry : map.entrySet())
-				objective.coefs.add( new RowEntry( entry.getKey(), entry
+				objective.entries.add( new RowEntry( entry.getKey(), entry
 						.getValue() ) );
 		}
 		catch ( Exception e )
@@ -373,15 +373,15 @@ public class GurobiSolver extends Solver
 				GRBLinExpr expr = new GRBLinExpr();
 				for( RowEntry entry : it.entries )
 				{
-					expr.addTerm( entry.value, vars.get( entry.idx ) );
+					expr.addTerm( entry.coef, vars.get( entry.idx ) );
 				}
 				quad_model.addConstr( expr, it.type, it.val, null );
 			}
 			
 			// add the Maximum objective constraint
 			GRBLinExpr maxObj = new GRBLinExpr();
-			for( RowEntry entry : objective.coefs )
-				maxObj.addTerm( entry.value, vars.get( entry.idx ) );
+			for( RowEntry entry : objective.entries )
+				maxObj.addTerm( entry.coef, vars.get( entry.idx ) );
 			GRBVar objValue = quad_model.addVar( this.objval, this.objval, 0.0, GRB.CONTINUOUS, null );
 			quad_model.update(); // due to adding a new variable
 			quad_model.addConstr( maxObj, GRB.EQUAL, objValue, null );
@@ -469,7 +469,7 @@ public class GurobiSolver extends Solver
 					GRBLinExpr expr = new GRBLinExpr();
 					for( RowEntry entry : it.entries )
 					{
-						expr.addTerm( entry.value, vars.get( entry.idx ) );
+						expr.addTerm( entry.coef, vars.get( entry.idx ) );
 					}
 					model.addConstr( expr, it.type, it.val, null );
 				}
@@ -479,8 +479,8 @@ public class GurobiSolver extends Solver
 				GRBLinExpr expr = new GRBLinExpr();
 	
 				// set the terms & coefficients defining the objective function
-				for( RowEntry entry : objective.coefs )
-					expr.addTerm( entry.value, vars.get( entry.idx ) );
+				for( RowEntry entry : objective.entries )
+					expr.addTerm( entry.coef, vars.get( entry.idx ) );
 	
 				// set the objective
 				model.setObjective( expr, getGRBObjType( objType ) );
@@ -633,8 +633,50 @@ public class GurobiSolver extends Solver
 	protected boolean eval_f( int n, double[] x, boolean new_x,
 			double[] obj_value )
 	{
-		// TODO Auto-generated method stub
-		return false;
+		try
+		{
+			ArrayList< Double > flux_v = new ArrayList< Double >();
+			ArrayList< Double > gene_v = new ArrayList< Double >();
+			// fill in flux_v using variable 'x', fill in gene_v given value from file
+			for( Entry< Integer, Double > keyVal : this.getNonlinearSolverInfo().entrySet() )
+			{
+				Double g_i = keyVal.getValue();
+				Double v_i = 0.0;
+				for( RowEntry entry : rows.get( keyVal.getKey() ).entries )
+				{
+					v_i += entry.coef * x[ entry.idx ];
+				}
+				flux_v.add( v_i );
+				gene_v.add( g_i );
+			}
+			
+			// calculate the dot product between flux_v and gene_v
+			double dotProduct = 0.0;
+			assert( flux_v.size() == gene_v.size() );
+			for( int i = 0; i < flux_v.size(); ++i )
+				dotProduct += flux_v.get( i ) * gene_v.get( i );
+			
+			// calculate length of flux_v
+			double length_flux_v = 0;
+			for( Double d : flux_v )
+				length_flux_v += d;
+			length_flux_v = Math.sqrt( length_flux_v );
+			
+			// calculate length of gene_v
+			double length_gene_v = 0;
+			for( Double d : gene_v )
+				length_gene_v += d;
+			length_gene_v = Math.sqrt( length_gene_v );
+			
+			// -1 <= ( flux_v dot gene_v ) / ( ||flux_v|| ||gene_v|| ) <= 1
+			obj_value[ 0 ] = dotProduct / ( length_flux_v * length_gene_v );
+			
+		}
+		catch( Exception e )
+		{
+			e.printStackTrace();
+		}
+		return true;
 	}
 	@Override
 	protected boolean eval_grad_f( int n, double[] x, boolean new_x,
