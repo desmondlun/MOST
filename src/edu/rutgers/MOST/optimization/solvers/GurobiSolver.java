@@ -553,7 +553,7 @@ public class GurobiSolver extends Solver
 							else if( this.rows.get( i ).type == GRB.EQUAL )
 							{
 								g_L[ i ] = this.rows.get( i ).val;
-								g_U[ i ] = this.rows.get( i  ).val;
+								g_U[ i ] = this.rows.get( i ).val;
 							}
 							else if( this.rows.get( i ).type == GRB.GREATER_EQUAL )
 							{
@@ -638,18 +638,19 @@ public class GurobiSolver extends Solver
 			ArrayList< Double > flux_v = new ArrayList< Double >();
 			ArrayList< Double > gene_v = new ArrayList< Double >();
 			// fill in flux_v using variable 'x', fill in gene_v given value from file
-			for( Entry< Integer, Double > keyVal : this.getNonlinearSolverInfo().entrySet() )
+
+			for( RowType row : rows )
 			{
-				Double g_i = keyVal.getValue();
+				Double g_i = row.val; // updated from SPOT.run() and modelFormatter method
 				Double v_i = 0.0;
-				for( RowEntry entry : rows.get( keyVal.getKey() ).entries )
+				for( RowEntry entry : row.entries )
 				{
 					v_i += entry.coef * x[ entry.idx ];
 				}
 				flux_v.add( v_i );
 				gene_v.add( g_i );
 			}
-			
+
 			// calculate the dot product between flux_v and gene_v
 			double dotProduct = 0.0;
 			assert( flux_v.size() == gene_v.size() );

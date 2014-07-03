@@ -1,110 +1,22 @@
 package edu.rutgers.MOST.Analysis;
 
 import java.io.File;
-import java.io.FileReader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.ArrayList;
+import edu.rutgers.MOST.optimization.solvers.Algorithm;
+import edu.rutgers.MOST.presentation.GraphicalInterface;
 
-import edu.rutgers.MOST.data.ModelParser;
-import edu.rutgers.MOST.data.SBMLReaction;
-import au.com.bytecode.opencsv.CSVReader;
-
-public class SPOT extends FBA
+public class SPOT extends Analysis
 {
-	//calculate correlation between in VITRO and in Silico fluxes
-	public Double calculateCorrelations( File file )
+	public SPOT()
 	{
-		if( file == null || !file.exists() )
-			return Double.NaN;
-		Double result = 0.0;
-		try
-		{
-			//read the CSV file
-			CSVReader csvReader = new CSVReader( new FileReader( file ) );
-			List< String[] > all = csvReader.readAll();
-			csvReader.close();
-			
-			//put the arrays into a hashmap for the modelparser database
-			Map< String, Double > inSilico = new HashMap< String, Double >();
-			model.updateFromrFactory();
-			for( SBMLReaction reaction : model.getReactions() )
-			{
-				inSilico.put( reaction.getReactionAbbreviation().replace( "R_", "" ), reaction.getFluxValue() );
-			}
-			
-			//parser the arrays and fill the vectors
-			Vector< Double > inSilicoVector = new Vector< Double >();
-			Vector< Double > inVitroVector = new Vector< Double >();
-			for( String[] keyval : all)
-			{
-				ModelParser parser = new ModelParser( keyval[ 0 ], inSilico );
-				inVitroVector.add( Double.valueOf( keyval[ 1 ].equals( "NaN" )? "0" : keyval[ 1 ] ) / 100.0 );
-				inSilicoVector.add( parser.getValue() );
-			}
-			
-			if( inSilicoVector.size() != inVitroVector.size() )
-				throw new Exception( "inSilico vector size does not match inViro vector size" );
-			
-			Double dotProduct = 0.0;
-			for( int i = 0; i < inSilicoVector.size(); ++i )
-				dotProduct += inSilicoVector.get( i ) * inVitroVector.get( i );
-			
-			Double lengthInVitro = 0.0;
-			for( Double val : inVitroVector )
-				lengthInVitro += val * val;
-			lengthInVitro = Math.sqrt( lengthInVitro );
-			
-			Double lengthInSilico = 0.0;
-			for( Double val : inSilicoVector )
-				lengthInSilico += val * val;
-			lengthInSilico = Math.sqrt( lengthInSilico );
-			
-			result = dotProduct / (lengthInSilico * lengthInVitro );
-		}
-		catch( Exception e )
-		{
-			e.printStackTrace();
-			result = Double.NaN;
-		}
-		return result;
+		super( Algorithm.SPOT );
 	}
 
-	public Double updateNonlinearSolver( File file )
+	public ArrayList< Double > run()
 	{
-		if( file == null || !file.exists() )
-			return Double.NaN;
-		Double result;
-		try
-		{
-			//read the CSV file
-			CSVReader csvReader = new CSVReader( new FileReader( file ) );
-			List< String[] > all = csvReader.readAll();
-			csvReader.close();
-			
-			//put the arrays into a hashmap for the modelparser database
-			HashMap< Integer, Double > data = new HashMap< Integer, Double >();
-			model.updateFromrFactory();
-
-			for( String[] keyval : all)
-			{
-				for( SBMLReaction reaction : model.getReactions() )
-				{
-					if( keyval[ 0 ].equals( reaction.getReactionAbbreviation().replace( "R_", "" ) ) )
-					{
-						data.put( reaction.getId(), Double.valueOf( keyval[ 1 ].equals( "NaN" ) ? "0.0" : keyval[ 1 ] ) );
-						break;
-					}
-				}
-			}
-			result = Double.NaN;
-		}
-		catch( Exception e )
-		{
-			e.printStackTrace();
-			result = Double.NaN;
-		}
-		return result;
+		ModelFormatter modelFormatter = new ModelFormatter();
+		File file = GraphicalInterface.chooseCSVFile( "Load Gene Expression Data" );
+		modelFormatter.formatFluxBoundsfromGeneExpressionData( file, this.model );
+		return super.run();
 	}
 }

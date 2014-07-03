@@ -10,7 +10,6 @@ public abstract class Solver extends Ipopt
 	protected ObjType objType;
 	protected VarType[] varTypes;
 	protected Map<Integer,Double> obj = new HashMap<Integer, Double>();
-	private Map< Integer, Double > m_rowNum_vitroVal;
 	private Algorithm algorithm;
 	
 	public Solver( Algorithm algorithm )
@@ -49,13 +48,5 @@ public abstract class Solver extends Ipopt
 	public int getHeissanNonZeros( int varCount )
 	{
 		return ( varCount * ( varCount + 1 ) ) / 2;
-	}
-	public void updateNonlinearSolver( Map< Integer, Double > m_row_Value )
-	{
-		this.m_rowNum_vitroVal = m_row_Value;
-	}
-	public Map< Integer, Double > getNonlinearSolverInfo()
-	{
-		return this.m_rowNum_vitroVal;
 	}
 }

@@ -1730,8 +1730,7 @@ public class GraphicalInterface extends JFrame {
 				// JScrollPane scrollPaneGene = new JScrollPane();
 				// tabbedPane.addTab("Genes", scrollPaneGene);
 				// tabbedPane.repaint();
-				
-				Double cosTheta = spot.updateNonlinearSolver( chooseCSVFile( "Load in Vitro fluxes") );
+
 				rFactory.setFluxes( spot.run() );
 				
 				// End optimization
@@ -1755,7 +1754,7 @@ public class GraphicalInterface extends JFrame {
 						}
 						outputText.append( "Maximum objective: " + maxObj
 								+ "\n" );
-						outputText.append( "Correlation: " + cosTheta + "\n" );
+					//	outputText.append( "Correlation: " + cosTheta + "\n" );
 						outputText.append( "Solver = " + getSolverName() );
 
 						File file = new File( u.createLogFileName( optimizeName
