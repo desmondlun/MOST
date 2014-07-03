@@ -644,9 +644,7 @@ public class GurobiSolver extends Solver
 				Double g_i = row.val; // updated from SPOT.run() and modelFormatter method
 				Double v_i = 0.0;
 				for( RowEntry entry : row.entries )
-				{
 					v_i += entry.coef * x[ entry.idx ];
-				}
 				flux_v.add( v_i );
 				gene_v.add( g_i );
 			}
@@ -683,8 +681,56 @@ public class GurobiSolver extends Solver
 	protected boolean eval_grad_f( int n, double[] x, boolean new_x,
 			double[] grad_f )
 	{
-		// TODO Auto-generated method stub
-		return false;
+		// gradient eval_f
+		try
+		{
+			// with respect to x_j
+			for( int j = 0; j < columns.size(); ++j )
+			{
+				ArrayList< Double > flux_v = new ArrayList< Double >();
+				ArrayList< Double > gene_v = new ArrayList< Double >();
+				// fill in flux_v using variable 'x', fill in gene_v given value from file
+
+				for( RowType row : rows )
+				{
+					Double g_i = row.val; // updated from SPOT.run() and modelFormatter method
+					Double v_i = 0.0;
+					for( RowEntry entry : row.entries )
+					{
+						if( entry.idx == j ) // d/dx_j a*x_i + b*x_j + c*x_k = b
+							v_i += entry.coef;
+					}
+					flux_v.add( v_i );
+					gene_v.add( g_i );
+				}
+
+				// calculate the dot product between flux_v' and gene_v
+				double dotProduct = 0.0;
+				assert( flux_v.size() == gene_v.size() );
+				for( int i = 0; i < flux_v.size(); ++i )
+					dotProduct += flux_v.get( i ) * gene_v.get( i );
+				
+				// calculate length of flux_v'
+				double length_flux_v = 0;
+				for( Double v_i : flux_v )
+					length_flux_v += v_i * v_i;
+				length_flux_v = Math.sqrt( length_flux_v );
+				
+				// calculate length of gene_v
+				double length_gene_v = 0;
+				for( Double g_i : gene_v )
+					length_gene_v += g_i * g_i;
+				length_gene_v = Math.sqrt( length_gene_v );
+				
+				// -1 <= ( flux_v' dot gene_v ) / ( ||flux_v'|| ||gene_v|| ) <= 1
+				grad_f[ j ] = dotProduct / ( length_flux_v * length_gene_v );
+			}
+		}
+		catch( Exception e )
+		{
+			e.printStackTrace();
+		}
+		return true;
 	}
 	@Override
 	protected boolean eval_g( int n, double[] x, boolean new_x, int m,
@@ -693,6 +739,14 @@ public class GurobiSolver extends Solver
 		// define the constraints
 		// Sv = 0.0 (steady state constraint)
 		
+		for( int i = 0; i < rows.size(); ++i )
+		{
+			//
+			double value = 0.0;
+			for( RowEntry entry : rows.get( i ).entries )
+				value += entry.coef * x[ entry.idx ];
+			g[ i ] = value;
+		}
 		
 		return false;
 	}
@@ -700,8 +754,48 @@ public class GurobiSolver extends Solver
 	protected boolean eval_jac_g( int n, double[] x, boolean new_x, int m,
 			int nele_jac, int[] iRow, int[] jCol, double[] values )
 	{
-		// TODO Auto-generated method stub
-		return false;
+		// define the jacobian of the constraints
+		// [ d/dx_0 g_0, d/dx_1 g_0, ..., d/dx_n g_0 ]
+		// [ d/dx_0 g_1, d/dx_1 g_1, ..., d/dx_n g_1  ]
+		// [   ....   ]
+		// [ d/dx_n g_n, d/dx_1 g_n, ..., d/dx_n g_n  ]
+		
+		if( values == null )
+		{
+			int idx = 0;
+			for( int i = 0; i < rows.size(); ++i )
+			{
+				for( int j = 0; j < columns.size(); ++i )
+				{
+					iRow[ idx ] = i;
+					jCol[ idx ] = j;
+					idx++;
+				}
+			}
+		}
+		else
+		{
+			// gradient of the v'th constraint
+			int idx = 0;
+			for( int v = 0; v < rows.size(); ++v )
+			{
+				// with respect to x_i
+				for( int i = 0; i < columns.size(); ++i )
+				{
+					// if x_i exists, the coefficient is the derivative
+					double value = 0;
+					for( RowEntry entry : rows.get( v ).entries )
+					{
+						if( entry.idx == i )
+							value += entry.coef;
+					}
+					values[ idx ] = value;
+					idx++;
+				}
+			}
+		}
+		
+		return true;
 	}
 	@Override
 	protected boolean eval_h( int n, double[] x, boolean new_x,
