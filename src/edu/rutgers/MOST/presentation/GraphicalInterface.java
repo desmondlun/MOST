@@ -1610,7 +1610,6 @@ public class GraphicalInterface extends JFrame {
 				Model model = new Model();
 				Eflux2 eflux2 = new Eflux2();
 				eflux2.setModel(model);
-				eflux2.formatFluxBoundsfromGeneExpressionData( chooseCSVFile( "Load Gene Expressions" ) );
 	                // uncomment next three lines for proof of concept of adding a new tab at runtime
 //					JScrollPane scrollPaneGene = new JScrollPane();
 //					tabbedPane.addTab("Genes", scrollPaneGene);
