@@ -659,14 +659,14 @@ public class GurobiSolver extends Solver
 			
 			// calculate length of flux_v
 			double length_flux_v = 0;
-			for( Double d : flux_v )
-				length_flux_v += d;
+			for( Double v_i : flux_v )
+				length_flux_v += v_i * v_i;
 			length_flux_v = Math.sqrt( length_flux_v );
 			
 			// calculate length of gene_v
 			double length_gene_v = 0;
-			for( Double d : gene_v )
-				length_gene_v += d;
+			for( Double g_i : gene_v )
+				length_gene_v += g_i * g_i;
 			length_gene_v = Math.sqrt( length_gene_v );
 			
 			// -1 <= ( flux_v dot gene_v ) / ( ||flux_v|| ||gene_v|| ) <= 1
@@ -690,7 +690,10 @@ public class GurobiSolver extends Solver
 	protected boolean eval_g( int n, double[] x, boolean new_x, int m,
 			double[] g )
 	{
-		// TODO Auto-generated method stub
+		// define the constraints
+		// Sv = 0.0 (steady state constraint)
+		
+		
 		return false;
 	}
 	@Override
