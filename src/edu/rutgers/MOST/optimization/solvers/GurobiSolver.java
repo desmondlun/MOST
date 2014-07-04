@@ -536,7 +536,7 @@ public class GurobiSolver extends Solver
 						for( int i = 0; i < this.columns.size(); ++i )
 						{
 							x_L[ i ] = this.columns.get( i ).lb;
-							x_L[ i ] = this.columns.get( i ).ub;
+							x_U[ i ] = this.columns.get( i ).ub;
 						}
 						
 						double[] g_L = new double[ this.rows.size() ];
@@ -563,8 +563,16 @@ public class GurobiSolver extends Solver
 						}
 						
 						this.create( this.columns.size(), x_L, x_U, this.rows.size(),
-								g_L, g_U, this.getJacobianNonZeros( this.columns.size(), this.rows.size() ),
-								this.getHeissanNonZeros( this.columns.size() ), Ipopt.C_STYLE );
+								g_L, g_U, rows.size() * columns.size(),
+								rows.size() * columns.size(), Ipopt.C_STYLE );
+						double[] x = new double[ soln.size() ];
+						for( int i = 0; i < soln.size(); ++i )
+							x[ i ] = soln.get( i );
+						
+						this.solve( x );
+						
+						System.out.println( "success!" );
+						
 					}
 				}
 			}
@@ -802,7 +810,32 @@ public class GurobiSolver extends Solver
 			double obj_factor, int m, double[] lambda, boolean new_lambda,
 			int nele_hess, int[] iRow, int[] jCol, double[] values )
 	{
-		// TODO Auto-generated method stub
-		return false;
+		if( values == null )
+		{
+			int idx = 0;
+			for( int i = 0; i < rows.size(); ++i )
+			{
+				for( int j = 0; j < columns.size(); ++j )
+				{
+					iRow[ idx ] = i;
+					jCol[ idx ] = j;
+					++idx;
+				}
+			}
+		}
+		else
+		{
+			int idx = 0;
+			for( int i = 0; i < rows.size(); ++i )
+			{
+				for( int j = 0; j < columns.size(); ++j )
+				{
+					values[ idx ] = 0;
+					++idx;
+				}
+			}
+		}
+		
+		return true;
 	}
 }
