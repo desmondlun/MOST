@@ -16,7 +16,8 @@ public class SPOT extends Analysis
 	{
 		ModelFormatter modelFormatter = new ModelFormatter();
 		File file = GraphicalInterface.chooseCSVFile( "Load Gene Expression Data" );
-		modelFormatter.formatFluxBoundsfromGeneExpressionData( file, this.model );
+		solver.setGeneExpr( 
+				modelFormatter.formatFluxBoundsfromGeneExpressionData( file, this.model ) );
 		return super.run();
 	}
 }

@@ -14,10 +14,11 @@ import edu.rutgers.MOST.data.SBMLReaction;
 
 public class ModelFormatter
 {
-	public void formatFluxBoundsfromGeneExpressionData( File file, Model model )
+	public Vector< Double > formatFluxBoundsfromGeneExpressionData( File file, Model model )
 	{		
+		Vector< Double > gene_expr = new Vector< Double >();
 		if( file == null || !file.exists() )
-			return;
+			return gene_expr;
 		try
 		{
 			
@@ -57,6 +58,7 @@ public class ModelFormatter
 				double fluxBound = parser.getValue();
 				reaction.setLowerBound( reaction.getLowerBound() >= 0.0 ? 0.0 : -fluxBound );
 				reaction.setUpperBound( reaction.getUpperBound() <= 0.0 ? 0.0 : fluxBound  );
+				gene_expr.add( fluxBound );
 			}
 			model.setReactions( model.getReactions() );
 		}
@@ -64,5 +66,6 @@ public class ModelFormatter
 		{
 			e.printStackTrace();
 		}
+		return gene_expr;
 	}
 }

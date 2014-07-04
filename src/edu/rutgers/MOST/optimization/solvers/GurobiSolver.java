@@ -548,16 +548,16 @@ public class GurobiSolver extends Solver
 							if( this.rows.get( i ).type == GRB.LESS_EQUAL )
 							{
 								g_L[ i ] = Double.NEGATIVE_INFINITY;
-								g_U[ i ] = this.rows.get( i ).val;
+								g_U[ i ] = rows.get( i ).val;
 							}
 							else if( this.rows.get( i ).type == GRB.EQUAL )
 							{
-								g_L[ i ] = this.rows.get( i ).val;
-								g_U[ i ] = this.rows.get( i ).val;
+								g_L[ i ] = rows.get( i ).val;
+								g_U[ i ] = rows.get( i ).val;
 							}
 							else if( this.rows.get( i ).type == GRB.GREATER_EQUAL )
 							{
-								g_L[ i ] = this.rows.get( i ).val;
+								g_L[ i ] = rows.get( i ).val;
 								g_U[ i ] = Double.POSITIVE_INFINITY;
 							}
 						}
@@ -570,6 +570,9 @@ public class GurobiSolver extends Solver
 							x[ i ] = soln.get( i );
 						
 						this.solve( x );
+						double obj_value = 0;
+						for( RowEntry entry : objective.entries )
+							obj_value += entry.coef * x[ entry.idx ];
 						
 						System.out.println( "success!" );
 						
@@ -647,11 +650,11 @@ public class GurobiSolver extends Solver
 			ArrayList< Double > gene_v = new ArrayList< Double >();
 			// fill in flux_v using variable 'x', fill in gene_v given value from file
 
-			for( RowType row : rows )
+			for( int i = 0; i < rows.size(); ++i )
 			{
-				Double g_i = row.val; // updated from SPOT.run() and modelFormatter method
+				Double g_i = Double.isInfinite( geneExpr.get( i ) )? 1.0 : geneExpr.get( i ); // updated from SPOT.run() and modelFormatter method
 				Double v_i = 0.0;
-				for( RowEntry entry : row.entries )
+				for( RowEntry entry : rows.get( i ).entries )
 					v_i += entry.coef * x[ entry.idx ];
 				flux_v.add( v_i );
 				gene_v.add( g_i );
@@ -699,11 +702,11 @@ public class GurobiSolver extends Solver
 				ArrayList< Double > gene_v = new ArrayList< Double >();
 				// fill in flux_v using variable 'x', fill in gene_v given value from file
 
-				for( RowType row : rows )
+				for( int i = 0; i < rows.size(); ++i )
 				{
-					Double g_i = row.val; // updated from SPOT.run() and modelFormatter method
+					Double g_i = Double.isInfinite( geneExpr.get( i ) )? 1.0 : geneExpr.get( i ); // updated from SPOT.run() and modelFormatter method
 					Double v_i = 0.0;
-					for( RowEntry entry : row.entries )
+					for( RowEntry entry : rows.get( i ).entries )
 					{
 						if( entry.idx == j ) // d/dx_j a*x_i + b*x_j + c*x_k = b
 							v_i += entry.coef;
@@ -773,7 +776,7 @@ public class GurobiSolver extends Solver
 			int idx = 0;
 			for( int i = 0; i < rows.size(); ++i )
 			{
-				for( int j = 0; j < columns.size(); ++i )
+				for( int j = 0; j < columns.size(); ++j )
 				{
 					iRow[ idx ] = i;
 					jCol[ idx ] = j;

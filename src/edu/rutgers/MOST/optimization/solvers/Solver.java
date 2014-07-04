@@ -3,6 +3,8 @@ package edu.rutgers.MOST.optimization.solvers;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Vector;
+
 import org.coinor.Ipopt;
 
 public abstract class Solver extends Ipopt 
@@ -10,6 +12,7 @@ public abstract class Solver extends Ipopt
 	protected ObjType objType;
 	protected VarType[] varTypes;
 	protected Map<Integer,Double> obj = new HashMap<Integer, Double>();
+	protected Vector< Double > geneExpr = new Vector< Double >();
 	private Algorithm algorithm;
 	
 	public Solver( Algorithm algorithm )
@@ -41,12 +44,8 @@ public abstract class Solver extends Ipopt
 	{
 		this.algorithm = algorithm;
 	}
-	public int getJacobianNonZeros( int varCount, int constraintCount )
+	public void setGeneExpr( Vector< Double > geneExpr )
 	{
-		return varCount * constraintCount;
-	}
-	public int getHeissanNonZeros( int varCount )
-	{
-		return ( varCount * ( varCount + 1 ) ) / 2;
+		this.geneExpr = geneExpr;
 	}
 }
