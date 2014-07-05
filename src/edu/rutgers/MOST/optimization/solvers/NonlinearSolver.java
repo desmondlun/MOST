@@ -23,6 +23,7 @@ public class NonlinearSolver extends Solver
 		double ub;
 	}
 	
+	boolean obj_set = false;
 	private Vector< Constraint > constraints = new Vector< Constraint >();
 	private Vector< Double > objTerms = new Vector< Double >();
 	private Vector< Variable > variables = new Vector< Variable >();
@@ -62,8 +63,12 @@ public class NonlinearSolver extends Solver
 	@Override
 	public void setObj( Map< Integer, Double > map )
 	{
-		for( int j = 0; j < variables.size(); ++j )
-			objTerms.add( 0.0 );
+		if( !obj_set )
+		{
+			for( int j = 0; j < variables.size(); ++j )
+				objTerms.add( new Double( 0 ) );
+			obj_set = true;
+		}
 		
 		for( Entry< Integer, Double > term : map.entrySet() )
 			objTerms.set( term.getKey(), term.getValue() );
@@ -86,8 +91,6 @@ public class NonlinearSolver extends Solver
 	@Override
 	public double optimize()
 	{
-		this.addNumOption( KEY_OBJ_SCALING_FACTOR, -1.0 );
-
 		double[] x_L = new double[ variables.size() ];
 		double[] x_U = new double[ variables.size() ];
 		double[] g_L = new double[ constraints.size() ];
@@ -125,6 +128,7 @@ public class NonlinearSolver extends Solver
 		for( int j = 0; j < vars.length; ++j )
 			vars[ j ] = 0;
 		
+		this.addNumOption( KEY_OBJ_SCALING_FACTOR, -1.0 );
 		this.solve( vars );
 		
 		double value = 0.0;
