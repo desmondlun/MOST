@@ -430,6 +430,7 @@ public class GraphicalInterfaceConstants {
     public static final String SOLVER_SELECTION_LABEL = "Select a Solver:";
     public static final String GLPK_SOLVER_BUTTON_LABEL = "GLPK";
     public static final String GUROBI_SOLVER_BUTTON_LABEL = "Gurobi";
+    public static final String JIPOPT_SOLVER_BUTTON_LABEL = "Ipopt";
     public static final String GUROBI_NOT_INSTALLED_PREFIX = "No Gurobi installation detected. Please install Gurobi ";
     public static final String GUROBI_MINIMUM_VERSION = "5.6.2 ";
     public static final String GUROBI_NOT_INSTALLED_SUFFIX =  " bit version if you would like to use Gurobi.";
@@ -440,6 +441,7 @@ public class GraphicalInterfaceConstants {
     public static final String DEFAULT_SOLVER_NAME = "GLPK";
     public static final String GLPK_SOLVER_NAME = "GLPK";
     public static final String GUROBI_SOLVER_NAME = "Gurobi";
+    public static final String IPOPT_SOLVER_NAME = "Ipopt";
     
     public static final String GLPK_NO_MULTIPLE_THREADS_TOOLTIP = "GLPK does not support multiple threads.";
     

@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+
 import org.coinor.Ipopt;
 
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
@@ -31,7 +32,7 @@ import gurobi.GRBQuadExpr;
 import gurobi.GRBVar;
 import gurobi.GRBLinExpr;
 
-public class GurobiSolver extends Solver
+public class GurobiSolver extends Ipopt implements Solver
 {	
 	private class RowEntry
 	{
@@ -83,13 +84,15 @@ public class GurobiSolver extends Solver
 	private Vector< ColumnType > columns = new Vector< ColumnType >();
 	private ObjectiveType objective = new ObjectiveType();
 	private ArrayList< Double > soln = new ArrayList< Double >();
-	
+	Vector< Double > geneExpr = new Vector< Double >();
 	private double objval;
 	private GRBEnv env = null;
 	private ObjType objType;
 	private ResizableDialog dialog = new ResizableDialog( "Error",
 			"Gurobi Solver Error", "Gurobi Solver Error" );
-
+	private Algorithm algorithm;
+	private boolean abort = false;
+	
 	public static boolean isGurobiLinked()
 	{
 		try
@@ -210,7 +213,6 @@ public class GurobiSolver extends Solver
 
 	public GurobiSolver( Algorithm algorithm )
 	{
-		super( algorithm );
 		// set the dialog
 		final ArrayList< Image > icons = new ArrayList< Image >();
 		icons.add( new ImageIcon( "etc/most16.jpg" ).getImage() );
@@ -610,6 +612,10 @@ public class GurobiSolver extends Solver
 
 		return objval;
 	}
+	private Algorithm getAlgorithm()
+	{
+		return algorithm;
+	}
 	@Override
 	public void setEnv( double timeLimit, int numThreads )
 	{
@@ -789,5 +795,10 @@ public class GurobiSolver extends Solver
 			int nele_hess, int[] iRow, int[] jCol, double[] values )
 	{
 		return true;
+	}
+	@Override
+	public void setGeneExpr( Vector< Double > geneExpr )
+	{
+		this.geneExpr = geneExpr;
 	}
 }

@@ -25,7 +25,7 @@ import edu.rutgers.MOST.Analysis.GDBB;
 import edu.rutgers.MOST.data.Solution;
 import edu.rutgers.MOST.presentation.ResizableDialog;
 
-public class GLPKSolver extends Solver implements GlpkCallbackListener
+public class GLPKSolver implements Solver, GlpkCallbackListener
 {
 	private class RowEntry
 	{
@@ -86,7 +86,10 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 	private glp_prob problem_tmp;
 	private ResizableDialog dialog = new ResizableDialog( "Error",
 			"GLPK Solver Error", "GLPK Solver Error" );
-
+	private Algorithm algorithm;
+	private boolean abort = false;
+	Vector< Double > geneExpr = new Vector< Double >();
+	
 	private static void addLibraryPath( String pathToAdd ) throws Exception
 	{
 		final Field usrPathsField = ClassLoader.class
@@ -121,10 +124,14 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 		dialog.setModal(true);
 		dialog.setVisible( true );
 	}
-
+	private Algorithm getAlgorithm()
+	{
+		return this.algorithm;
+	}
+	
 	public GLPKSolver( Algorithm algorithm )
 	{
-		super( algorithm );
+		this.algorithm = algorithm;
 		String dependsFolder = "lib/";
 		if( System.getProperty( "os.name" ).toLowerCase().contains( "windows" ) )
 		{
@@ -187,7 +194,6 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 	@Override
 	public void setObjType( ObjType objType )
 	{
-		this.objType = objType;
 		int dir = objType == ObjType.Minimize ? GLPKConstants.GLP_MIN
 				: GLPKConstants.GLP_MAX;
 		objective.dir = dir;
@@ -381,40 +387,8 @@ public class GLPKSolver extends Solver implements GlpkCallbackListener
 		}
 	}
 	@Override
-	protected boolean eval_f( int n, double[] x, boolean new_x,
-			double[] obj_value )
+	public void setGeneExpr( Vector< Double > geneExpr )
 	{
-		// TODO Auto-generated method stub
-		return false;
+		this.geneExpr = geneExpr;
 	}
-	@Override
-	protected boolean eval_grad_f( int n, double[] x, boolean new_x,
-			double[] grad_f )
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	protected boolean eval_g( int n, double[] x, boolean new_x, int m,
-			double[] g )
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	protected boolean eval_jac_g( int n, double[] x, boolean new_x, int m,
-			int nele_jac, int[] iRow, int[] jCol, double[] values )
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	protected boolean eval_h( int n, double[] x, boolean new_x,
-			double obj_factor, int m, double[] lambda, boolean new_lambda,
-			int nele_hess, int[] iRow, int[] jCol, double[] values )
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

@@ -9,7 +9,7 @@ import java.util.Vector;
 
 import org.coinor.Ipopt;
 
-public class NonlinearSolver extends Solver
+public class NonlinearSolver extends Ipopt implements Solver
 {
 	private class Constraint
 	{
@@ -28,10 +28,11 @@ public class NonlinearSolver extends Solver
 	private Vector< Double > objTerms = new Vector< Double >();
 	private Vector< Variable > variables = new Vector< Variable >();
 	private ArrayList< Double > soln = new ArrayList< Double >();
+	private Algorithm algorithm;
 	
 	public NonlinearSolver( Algorithm algorithm )
 	{
-		super( algorithm );
+		this.algorithm = algorithm;
 	}
 
 	@Override
@@ -254,5 +255,12 @@ public class NonlinearSolver extends Solver
 			int nele_hess, int[] iRow, int[] jCol, double[] values )
 	{
 		return true;
+	}
+
+	@Override
+	public void setGeneExpr( Vector< Double > geneExpr )
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }
