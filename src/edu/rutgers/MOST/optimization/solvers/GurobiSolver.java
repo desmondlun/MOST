@@ -14,7 +14,6 @@ import java.util.Map.Entry;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-
 import org.coinor.Ipopt;
 
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
@@ -79,7 +78,7 @@ public class GurobiSolver extends Solver
 	{
 		Vector< RowEntry > entries = new Vector< RowEntry >();
 	}
-
+	
 	private Vector< RowType > rows = new Vector< RowType >();
 	private Vector< ColumnType > columns = new Vector< ColumnType >();
 	private ObjectiveType objective = new ObjectiveType();
@@ -331,6 +330,7 @@ public class GurobiSolver extends Solver
 		{
 			// row / constraint definitions
 			RowType row = new RowType( value, getGRBConType( con ) );
+
 			for( Entry< Integer, Double > entry : map.entrySet() )
 			{
 				int key = entry.getKey();
@@ -486,7 +486,8 @@ public class GurobiSolver extends Solver
 				model.setObjective( expr, getGRBObjType( objType ) );
 				
 				// perform the optimization and get the objective value
-				model.optimize();
+				model.optimize();				
+				
 				if( !abort )
 				{
 					switch( model.get( GRB.IntAttr.Status ) )
@@ -564,15 +565,23 @@ public class GurobiSolver extends Solver
 						
 						this.create( this.columns.size(), x_L, x_U, this.rows.size(),
 								g_L, g_U, rows.size() * columns.size(),
-								rows.size() * columns.size(), Ipopt.C_STYLE );
+								0, Ipopt.C_STYLE );
 						double[] x = new double[ soln.size() ];
 						for( int i = 0; i < soln.size(); ++i )
-							x[ i ] = soln.get( i );
+							x[ i ] = 0.0;//soln.get( i );
 						
+						this.addNumOption( KEY_OBJ_SCALING_FACTOR, -1.0 );
 						this.solve( x );
 						double obj_value = 0;
 						for( RowEntry entry : objective.entries )
 							obj_value += entry.coef * x[ entry.idx ];
+					
+					
+						objval = obj_value;
+						soln.clear();
+						for( int j = 0; j < columns.size(); ++j )
+							soln.add( x[ j ] );
+							
 						
 						System.out.println( "success!" );
 						
@@ -644,103 +653,29 @@ public class GurobiSolver extends Solver
 	protected boolean eval_f( int n, double[] x, boolean new_x,
 			double[] obj_value )
 	{
-		try
-		{
-			ArrayList< Double > flux_v = new ArrayList< Double >();
-			ArrayList< Double > gene_v = new ArrayList< Double >();
-			// fill in flux_v using variable 'x', fill in gene_v given value from file
+		double value = 0.0;
 
-			for( int i = 0; i < rows.size(); ++i )
-			{
-				Double g_i = Double.isInfinite( geneExpr.get( i ) )? 1.0 : geneExpr.get( i ); // updated from SPOT.run() and modelFormatter method
-				Double v_i = 0.0;
-				for( RowEntry entry : rows.get( i ).entries )
-					v_i += entry.coef * x[ entry.idx ];
-				flux_v.add( v_i );
-				gene_v.add( g_i );
-			}
-
-			// calculate the dot product between flux_v and gene_v
-			double dotProduct = 0.0;
-			assert( flux_v.size() == gene_v.size() );
-			for( int i = 0; i < flux_v.size(); ++i )
-				dotProduct += flux_v.get( i ) * gene_v.get( i );
-			
-			// calculate length of flux_v
-			double length_flux_v = 0;
-			for( Double v_i : flux_v )
-				length_flux_v += v_i * v_i;
-			length_flux_v = Math.sqrt( length_flux_v );
-			
-			// calculate length of gene_v
-			double length_gene_v = 0;
-			for( Double g_i : gene_v )
-				length_gene_v += g_i * g_i;
-			length_gene_v = Math.sqrt( length_gene_v );
-			
-			// -1 <= ( flux_v dot gene_v ) / ( ||flux_v|| ||gene_v|| ) <= 1
-			obj_value[ 0 ] = dotProduct / ( length_flux_v * length_gene_v );
-			
-		}
-		catch( Exception e )
-		{
-			e.printStackTrace();
-		}
+		for( RowEntry term : objective.entries )
+			value += term.coef * x[ term.idx ];
+		
+		obj_value[ 0 ] = value;
 		return true;
 	}
 	@Override
 	protected boolean eval_grad_f( int n, double[] x, boolean new_x,
 			double[] grad_f )
 	{
-		// gradient eval_f
-		try
+		for( int j = 0; j < columns.size(); ++j )
 		{
-			// with respect to x_j
-			for( int j = 0; j < columns.size(); ++j )
+			double value = 0.0;
+			for( RowEntry term : objective.entries )
 			{
-				ArrayList< Double > flux_v = new ArrayList< Double >();
-				ArrayList< Double > gene_v = new ArrayList< Double >();
-				// fill in flux_v using variable 'x', fill in gene_v given value from file
-
-				for( int i = 0; i < rows.size(); ++i )
-				{
-					Double g_i = Double.isInfinite( geneExpr.get( i ) )? 1.0 : geneExpr.get( i ); // updated from SPOT.run() and modelFormatter method
-					Double v_i = 0.0;
-					for( RowEntry entry : rows.get( i ).entries )
-					{
-						if( entry.idx == j ) // d/dx_j a*x_i + b*x_j + c*x_k = b
-							v_i += entry.coef;
-					}
-					flux_v.add( v_i );
-					gene_v.add( g_i );
-				}
-
-				// calculate the dot product between flux_v' and gene_v
-				double dotProduct = 0.0;
-				assert( flux_v.size() == gene_v.size() );
-				for( int i = 0; i < flux_v.size(); ++i )
-					dotProduct += flux_v.get( i ) * gene_v.get( i );
-				
-				// calculate length of flux_v'
-				double length_flux_v = 0;
-				for( Double v_i : flux_v )
-					length_flux_v += v_i * v_i;
-				length_flux_v = Math.sqrt( length_flux_v );
-				
-				// calculate length of gene_v
-				double length_gene_v = 0;
-				for( Double g_i : gene_v )
-					length_gene_v += g_i * g_i;
-				length_gene_v = Math.sqrt( length_gene_v );
-				
-				// -1 <= ( flux_v' dot gene_v ) / ( ||flux_v'|| ||gene_v|| ) <= 1
-				grad_f[ j ] = dotProduct / ( length_flux_v * length_gene_v );
+				if( term.idx == j )
+					value += term.coef;
 			}
+			grad_f[ j ] = value;
 		}
-		catch( Exception e )
-		{
-			e.printStackTrace();
-		}
+		
 		return true;
 	}
 	@Override
@@ -759,7 +694,7 @@ public class GurobiSolver extends Solver
 			g[ i ] = value;
 		}
 		
-		return false;
+		return true;
 	}
 	@Override
 	protected boolean eval_jac_g( int n, double[] x, boolean new_x, int m,
@@ -786,22 +721,18 @@ public class GurobiSolver extends Solver
 		}
 		else
 		{
-			// gradient of the v'th constraint
 			int idx = 0;
-			for( int v = 0; v < rows.size(); ++v )
+			for( RowType row : rows )
 			{
-				// with respect to x_i
-				for( int i = 0; i < columns.size(); ++i )
+				for( int j = 0; j < columns.size(); ++j )
 				{
-					// if x_i exists, the coefficient is the derivative
-					double value = 0;
-					for( RowEntry entry : rows.get( v ).entries )
+					double value = 0.0;
+					for( RowEntry term : row.entries )
 					{
-						if( entry.idx == i )
-							value += entry.coef;
+						if( term.idx == j )
+							value = term.coef;
 					}
-					values[ idx ] = value;
-					idx++;
+					values[ idx++ ] = value;
 				}
 			}
 		}
@@ -813,32 +744,6 @@ public class GurobiSolver extends Solver
 			double obj_factor, int m, double[] lambda, boolean new_lambda,
 			int nele_hess, int[] iRow, int[] jCol, double[] values )
 	{
-		if( values == null )
-		{
-			int idx = 0;
-			for( int i = 0; i < rows.size(); ++i )
-			{
-				for( int j = 0; j < columns.size(); ++j )
-				{
-					iRow[ idx ] = i;
-					jCol[ idx ] = j;
-					++idx;
-				}
-			}
-		}
-		else
-		{
-			int idx = 0;
-			for( int i = 0; i < rows.size(); ++i )
-			{
-				for( int j = 0; j < columns.size(); ++j )
-				{
-					values[ idx ] = 0;
-					++idx;
-				}
-			}
-		}
-		
 		return true;
 	}
 }
