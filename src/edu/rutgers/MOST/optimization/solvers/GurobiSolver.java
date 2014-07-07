@@ -658,12 +658,12 @@ public class GurobiSolver extends Solver
 		
 		for( int i = 0; i < rows.size(); ++i )
 		{
-			Double g_i = Double.isInfinite( geneExpr.get( i ) )? new Double( 1.0 ) : geneExpr.get( i ); // updated from SPOT.run() and modelFormatter method
+			Double g_i = geneExpr.get( i ); // updated from SPOT.run() and modelFormatter method
 			Double v_i = 0.0;
 			for( RowEntry entry : rows.get( i ).entries )
 				v_i += entry.coef * x[ entry.idx ];
 			flux_v.add( v_i );
-			gene_v.add( g_i );
+			gene_v.add( Double.isInfinite( g_i ) ? v_i : g_i );
 		}
 		
 		// calculate the dot product between flux_v and gene_v
@@ -678,14 +678,8 @@ public class GurobiSolver extends Solver
 			length_flux_v += v_i * v_i;
 		length_flux_v = Math.sqrt( length_flux_v );
 
-		// calculate length of gene_v
-		double length_gene_v = 0;
-		for( Double g_i : gene_v )
-			length_gene_v += g_i * g_i;
-		length_gene_v = Math.sqrt( length_gene_v );
-
-		// -1 <= ( flux_v dot gene_v ) / ( ||flux_v|| ||gene_v|| ) <= 1
-		obj_value[ 0 ] = dotProduct / ( length_flux_v * length_gene_v );
+		// -1 <= ( flux_v dot gene_v ) / ( ||flux_v|| ) <= 1
+		obj_value[ 0 ] = dotProduct / ( length_flux_v );
 		return true;
 	}
 	@Override
@@ -700,7 +694,7 @@ public class GurobiSolver extends Solver
 	
 			for( int i = 0; i < rows.size(); ++i )
 			{
-				Double g_i = Double.isInfinite( geneExpr.get( i ) )? new Double( 1.0 ) : geneExpr.get( i );
+				Double g_i = geneExpr.get( i );
 				Double v_i = 0.0;
 				for( RowEntry entry : rows.get( i ).entries )
 				{
@@ -708,7 +702,7 @@ public class GurobiSolver extends Solver
 						v_i += entry.coef;
 				}
 				flux_v.add( v_i );
-				gene_v.add( g_i );
+				gene_v.add( Double.isInfinite( g_i ) ? v_i : g_i );
 			}
 	
 			// calculate the dot product between flux_v' and gene_v
@@ -722,14 +716,8 @@ public class GurobiSolver extends Solver
 				length_flux_v += v_i * v_i;
 			length_flux_v = Math.sqrt( length_flux_v );
 	
-			// calculate length of gene_v
-			double length_gene_v = 0;
-			for( Double g_i : gene_v )
-				length_gene_v += g_i * g_i;
-			length_gene_v = Math.sqrt( length_gene_v );
-	
-			// -1 <= ( flux_v' dot gene_v ) / ( ||flux_v'|| ||gene_v|| ) <= 1
-			grad_f[ j ] = dotProduct / ( length_flux_v * length_gene_v );
+			// -1 <= ( flux_v' dot gene_v ) / ( ||flux_v'|| ) <= 1
+			grad_f[ j ] = dotProduct / ( length_flux_v );
 		}
 		
 		return true;
