@@ -568,21 +568,21 @@ public class GurobiSolver extends Solver
 								0, Ipopt.C_STYLE );
 						double[] x = new double[ soln.size() ];
 						for( int i = 0; i < soln.size(); ++i )
-							x[ i ] = 0.0;//soln.get( i );
+							x[ i ] = soln.get( i );
 						
 						this.addNumOption( KEY_OBJ_SCALING_FACTOR, -1.0 );
+						this.addIntOption( "mumps_mem_percent", 500 );
+						
 						this.solve( x );
 						double obj_value = 0;
 						for( RowEntry entry : objective.entries )
 							obj_value += entry.coef * x[ entry.idx ];
-					
 					
 						objval = obj_value;
 						soln.clear();
 						for( int j = 0; j < columns.size(); ++j )
 							soln.add( x[ j ] );
 							
-						
 						System.out.println( "success!" );
 						
 					}
@@ -653,12 +653,39 @@ public class GurobiSolver extends Solver
 	protected boolean eval_f( int n, double[] x, boolean new_x,
 			double[] obj_value )
 	{
-		double value = 0.0;
-
-		for( RowEntry term : objective.entries )
-			value += term.coef * x[ term.idx ];
+		Vector< Double > flux_v = new Vector< Double >();
+		Vector< Double > gene_v = new Vector< Double >();
 		
-		obj_value[ 0 ] = value;
+		for( int i = 0; i < rows.size(); ++i )
+		{
+			Double g_i = Double.isInfinite( geneExpr.get( i ) )? new Double( 1.0 ) : geneExpr.get( i ); // updated from SPOT.run() and modelFormatter method
+			Double v_i = 0.0;
+			for( RowEntry entry : rows.get( i ).entries )
+				v_i += entry.coef * x[ entry.idx ];
+			flux_v.add( v_i );
+			gene_v.add( g_i );
+		}
+		
+		// calculate the dot product between flux_v and gene_v
+		double dotProduct = 0.0;
+		assert( flux_v.size() == gene_v.size() );
+		for( int i = 0; i < flux_v.size(); ++i )
+			dotProduct += flux_v.get( i ) * gene_v.get( i );
+
+		// calculate length of flux_v
+		double length_flux_v = 0;
+		for( Double v_i : flux_v )
+			length_flux_v += v_i * v_i;
+		length_flux_v = Math.sqrt( length_flux_v );
+
+		// calculate length of gene_v
+		double length_gene_v = 0;
+		for( Double g_i : gene_v )
+			length_gene_v += g_i * g_i;
+		length_gene_v = Math.sqrt( length_gene_v );
+
+		// -1 <= ( flux_v dot gene_v ) / ( ||flux_v|| ||gene_v|| ) <= 1
+		obj_value[ 0 ] = dotProduct / ( length_flux_v * length_gene_v );
 		return true;
 	}
 	@Override
@@ -667,13 +694,42 @@ public class GurobiSolver extends Solver
 	{
 		for( int j = 0; j < columns.size(); ++j )
 		{
-			double value = 0.0;
-			for( RowEntry term : objective.entries )
+			Vector< Double > flux_v = new Vector< Double >();
+			Vector< Double > gene_v = new Vector< Double >();
+			// fill in flux_v using variable 'x', fill in gene_v given value from file
+	
+			for( int i = 0; i < rows.size(); ++i )
 			{
-				if( term.idx == j )
-					value += term.coef;
+				Double g_i = Double.isInfinite( geneExpr.get( i ) )? new Double( 1.0 ) : geneExpr.get( i );
+				Double v_i = 0.0;
+				for( RowEntry entry : rows.get( i ).entries )
+				{
+					if( entry.idx == j ) // d/dx_j a*x_i + b*x_j + c*x_k = b
+						v_i += entry.coef;
+				}
+				flux_v.add( v_i );
+				gene_v.add( g_i );
 			}
-			grad_f[ j ] = value;
+	
+			// calculate the dot product between flux_v' and gene_v
+			double dotProduct = 0.0;
+			for( int i = 0; i < flux_v.size(); ++i )
+				dotProduct += flux_v.get( i ) * gene_v.get( i );
+	
+			// calculate length of flux_v'
+			double length_flux_v = 0;
+			for( Double v_i : flux_v )
+				length_flux_v += v_i * v_i;
+			length_flux_v = Math.sqrt( length_flux_v );
+	
+			// calculate length of gene_v
+			double length_gene_v = 0;
+			for( Double g_i : gene_v )
+				length_gene_v += g_i * g_i;
+			length_gene_v = Math.sqrt( length_gene_v );
+	
+			// -1 <= ( flux_v' dot gene_v ) / ( ||flux_v'|| ||gene_v|| ) <= 1
+			grad_f[ j ] = dotProduct / ( length_flux_v * length_gene_v );
 		}
 		
 		return true;
