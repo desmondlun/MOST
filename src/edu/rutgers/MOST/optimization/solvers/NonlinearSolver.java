@@ -11,24 +11,12 @@ import org.coinor.Ipopt;
 
 public class NonlinearSolver extends Ipopt implements Solver
 {
-	private class Constraint
-	{
-		public char conType;
-		public Double value;
-		public Vector< Double > terms = new Vector< Double >();
-	}
-	private class Variable
-	{
-		double lb;
-		double ub;
-	}
-	
 	boolean obj_set = false;
-	private Vector< Constraint > constraints = new Vector< Constraint >();
+	SolverComponent component = new SolverComponent();
 	private Vector< Double > objTerms = new Vector< Double >();
-	private Vector< Variable > variables = new Vector< Variable >();
 	private ArrayList< Double > soln = new ArrayList< Double >();
 	private Algorithm algorithm;
+	Vector< Double > geneExpr = new Vector< Double >();
 	
 	public NonlinearSolver( Algorithm algorithm )
 	{
@@ -48,12 +36,9 @@ public class NonlinearSolver extends Ipopt implements Solver
 	}
 
 	@Override
-	public void setVar( String varName, VarType types, double lb, double ub )
+	public void setVar( String varName, VarType type, double lb, double ub )
 	{
-		Variable v = new Variable();
-		v.lb = lb;
-		v.ub = ub;
-		variables.add( v );
+		component.addVariable( type, lb, ub );
 	}
 
 	@Override
@@ -66,7 +51,7 @@ public class NonlinearSolver extends Ipopt implements Solver
 	{
 		if( !obj_set )
 		{
-			for( int j = 0; j < variables.size(); ++j )
+			for( int j = 0; j < component.variables.size(); ++j )
 				objTerms.add( new Double( 0 ) );
 			obj_set = true;
 		}
@@ -76,56 +61,49 @@ public class NonlinearSolver extends Ipopt implements Solver
 	}
 
 	@Override
-	public void addConstraint( Map< Integer, Double > map, ConType con,
+	public void addConstraint( Map< Integer, Double > map, ConType conType,
 			double value )
 	{
-		Constraint c = new Constraint();
-		for( int j = 0; j < variables.size(); ++j )
-			c.terms.add( 0.0 );
-		
-		for( Entry< Integer, Double > term : map.entrySet() )
-			c.terms.set( term.getKey(), term.getValue() );
-		
-		constraints.add( c );		
+		component.addConstraint( map, conType, value );
 	}
 
 	@Override
 	public double optimize()
 	{
-		double[] x_L = new double[ variables.size() ];
-		double[] x_U = new double[ variables.size() ];
-		double[] g_L = new double[ constraints.size() ];
-		double[] g_U = new double[ constraints.size() ];
+		double[] x_L = new double[ component.variables.size() ];
+		double[] x_U = new double[ component.variables.size() ];
+		double[] g_L = new double[ component.constraints.size() ];
+		double[] g_U = new double[ component.constraints.size() ];
 		
-		for( int j = 0; j < variables.size(); ++j )
+		for( int j = 0; j < component.variables.size(); ++j )
 		{
-			x_L[ j ] = variables.get( j ).lb;
-			x_U[ j ] = variables.get( j ).ub;
+			x_L[ j ] = component.variables.get( j ).lb;
+			x_U[ j ] = component.variables.get( j ).ub;
 		}
 		
-		for( int i = 0; i < constraints.size(); ++i )
+		for( int i = 0; i < component.constraints.size(); ++i )
 		{
-			switch( constraints.get( i ).conType )
+			switch( component.constraints.get( i ).type )
 			{
-			case GRB.LESS_EQUAL:
+			case LESS_EQUAL:
 				g_L[ i ] = Double.NEGATIVE_INFINITY;
-				g_U[ i ] = constraints.get( i ).value;
+				g_U[ i ] = component.constraints.get( i ).value;
 				break;
-			case GRB.EQUAL:
-				g_L[ i ] = constraints.get( i ).value;
-				g_U[ i ] = constraints.get( i ).value;
+			case EQUAL:
+				g_L[ i ] = component.constraints.get( i ).value;
+				g_U[ i ] = component.constraints.get( i ).value;
 				break;
-			case GRB.GREATER_EQUAL:
-				g_L[ i ] = constraints.get( i ).value;
+			case GREATER_EQUAL:
+				g_L[ i ] = component.constraints.get( i ).value;
 				g_U[ i ] = Double.POSITIVE_INFINITY;
 				break;
 			}
 		}
 		
-		this.create( variables.size(), x_L, x_U, constraints.size(), g_L, g_U,
-				constraints.size() * variables.size(), 0, Ipopt.C_STYLE );
+		this.create( component.variables.size(), x_L, x_U, component.constraints.size(), g_L, g_U,
+				component.constraints.size() * component.variables.size(), 0, Ipopt.C_STYLE );
 		
-		double[] vars = new double[ variables.size() ];
+		double[] vars = new double[ component.variables.size() ];
 		for( int j = 0; j < vars.length; ++j )
 			vars[ j ] = 0;
 		
@@ -134,7 +112,7 @@ public class NonlinearSolver extends Ipopt implements Solver
 		this.solve( vars );
 		
 		double value = 0.0;
-		for( int j = 0; j < variables.size(); ++j )
+		for( int j = 0; j < component.variables.size(); ++j )
 			value += objTerms.get( j ) * vars[ j ];
 		
 		for( double d : vars )
@@ -171,11 +149,50 @@ public class NonlinearSolver extends Ipopt implements Solver
 	protected boolean eval_f( int n, double[] x, boolean new_x,
 			double[] obj_value )
 	{
-		double value = 0.0;
-		for( int j = 0; j < variables.size(); ++j )
-			value += objTerms.get( j ) * x[ j ];
-		
-		obj_value[ 0 ] = value;
+		switch( algorithm )
+		{
+		case FBA:
+			double value = 0.0;
+			for( int j = 0; j < component.variables.size(); ++j )
+				value += objTerms.get( j ) * x[ j ];
+			
+			obj_value[ 0 ] = value;
+			break;
+			
+		case SPOT:
+			{
+				Vector< Double > flux_v = new Vector< Double >();
+				Vector< Double > gene_v = new Vector< Double >();
+				
+				for( int i = 0; i < component.constraints.size(); ++i )
+				{
+					Double g_i = geneExpr.get( i ); // updated from SPOT.run() and modelFormatter method
+					Double v_i = 0.0;
+					for( int j = 0; j < component.variables.size(); ++j )
+						v_i += component.constraints.get( i ).coefficients.get( j ) * x[ j ];
+					flux_v.add( v_i );
+					gene_v.add( Double.isInfinite( g_i ) ? v_i : g_i );
+				}
+				
+				// calculate the dot product between flux_v and gene_v
+				double dotProduct = 0.0;
+				assert( flux_v.size() == gene_v.size() );
+				for( int i = 0; i < flux_v.size(); ++i )
+					dotProduct += flux_v.get( i ) * gene_v.get( i );
+	
+				// calculate length of flux_v
+				double length_flux_v = 0;
+				for( Double v_i : flux_v )
+					length_flux_v += v_i * v_i;
+				length_flux_v = Math.sqrt( length_flux_v );
+	
+				// -1 <= ( flux_v dot gene_v ) / ( ||flux_v|| ) <= 1
+				obj_value[ 0 ] = dotProduct / ( length_flux_v );
+			}
+			break;
+		default:
+			return false;
+		}
 		
 		return true;
 	}
@@ -184,11 +201,51 @@ public class NonlinearSolver extends Ipopt implements Solver
 	protected boolean eval_grad_f( int n, double[] x, boolean new_x,
 			double[] grad_f )
 	{
-		for( int j = 0; j < variables.size(); ++j )
+		switch( algorithm )
 		{
-			double value = 0.0;
-			value = objTerms.get( j );
-			grad_f[ j ] = value;
+		case FBA:
+			for( int j = 0; j < component.variables.size(); ++j )
+			{
+				double value = 0.0;
+				value = objTerms.get( j );
+				grad_f[ j ] = value;
+			}
+			break;
+			
+		case SPOT:
+			{
+				for( int j = 0; j < component.variables.size(); ++j )
+				{
+					Vector< Double > flux_v = new Vector< Double >();
+					Vector< Double > gene_v = new Vector< Double >();
+					// fill in flux_v using variable 'x', fill in gene_v given value from file
+			
+					for( int i = 0; i < component.constraints.size(); ++i )
+					{
+						Double g_i = geneExpr.get( i );
+						Double v_i = component.constraints.get( i ).coefficients.get( j );
+						flux_v.add( v_i );
+						gene_v.add( Double.isInfinite( g_i ) ? v_i : g_i );
+					}
+			
+					// calculate the dot product between flux_v' and gene_v
+					double dotProduct = 0.0;
+					for( int i = 0; i < flux_v.size(); ++i )
+						dotProduct += flux_v.get( i ) * gene_v.get( i );
+			
+					// calculate length of flux_v'
+					double length_flux_v = 0;
+					for( Double v_i : flux_v )
+						length_flux_v += v_i * v_i;
+					length_flux_v = Math.sqrt( length_flux_v );
+			
+					// -1 <= ( flux_v' dot gene_v ) / ( ||flux_v'|| ) <= 1
+					grad_f[ j ] = dotProduct / ( length_flux_v );
+				}
+			}
+			
+		default:
+			return false;
 		}
 		return true;
 	}
@@ -197,12 +254,12 @@ public class NonlinearSolver extends Ipopt implements Solver
 	protected boolean eval_g( int n, double[] x, boolean new_x, int m,
 			double[] g )
 	{
-		for( int i = 0; i < constraints.size(); ++i )
+		for( int i = 0; i < component.constraints.size(); ++i )
 		{
 			double value = 0.0;
-			for( int j = 0; j < variables.size(); ++j )
+			for( int j = 0; j < component.variables.size(); ++j )
 			{
-				value += constraints.get( i ).terms.get( j ) * x[ j ];
+				value += component.constraints.get( i ).coefficients.get( j ) * x[ j ];
 			}
 			g[ i ] = value;
 		}
@@ -216,9 +273,9 @@ public class NonlinearSolver extends Ipopt implements Solver
 		if( values == null )
 		{
 			int idx = 0;
-			for( int i = 0; i < constraints.size(); ++i )
+			for( int i = 0; i < component.constraints.size(); ++i )
 			{
-				for( int j = 0; j < variables.size(); ++j )
+				for( int j = 0; j < component.variables.size(); ++j )
 				{
 					iRow[ idx ] = i;
 					jCol[ idx ] = j;
@@ -234,10 +291,10 @@ public class NonlinearSolver extends Ipopt implements Solver
 			int j=0;
 			try
 			{
-				for( i = 0; i < constraints.size(); ++i )
+				for( i = 0; i < component.constraints.size(); ++i )
 				{
-					for( j = 0; j < variables.size(); ++j )
-						values[ idx++ ] = constraints.get( i ).terms.get( j );
+					for( j = 0; j < component.variables.size(); ++j )
+						values[ idx++ ] = component.constraints.get( i ).coefficients.get( j );
 				}
 			}
 			catch( Exception e )
@@ -260,7 +317,6 @@ public class NonlinearSolver extends Ipopt implements Solver
 	@Override
 	public void setGeneExpr( Vector< Double > geneExpr )
 	{
-		// TODO Auto-generated method stub
-		
+		this.geneExpr = geneExpr;
 	}
 }
