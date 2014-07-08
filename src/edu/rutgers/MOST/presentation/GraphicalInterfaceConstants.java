@@ -424,8 +424,8 @@ public class GraphicalInterfaceConstants {
     public static final String EDIT_OPT_TABLE_ERROR_TITLE = "Read-Only Table";
     
     // Solver and Gurobi set up
-    public static final int SOLVER_DIALOG_WIDTH = 400;
-    public static final int SOLVER_DIALOG_HEIGHT = 165;
+    public static final int SOLVER_DIALOG_WIDTH = 360;
+    public static final int SOLVER_DIALOG_HEIGHT = 240;
     public static final String SOLVER_DIALOG_TITLE = "Set Up Solver";
     public static final String SOLVER_SELECTION_LABEL = "Select a Solver:";
     public static final String GLPK_SOLVER_BUTTON_LABEL = "GLPK";
@@ -442,6 +442,31 @@ public class GraphicalInterfaceConstants {
     public static final String GLPK_SOLVER_NAME = "GLPK";
     public static final String GUROBI_SOLVER_NAME = "Gurobi";
     public static final String IPOPT_SOLVER_NAME = "Ipopt";
+    
+    public static final String[] LINEAR_OPTIONS_GUROBI_LINKED = 
+    	{
+    		"GLPK", "Gurobi", "Ipopt"
+    	};
+    
+    public static final String[] LINEAR_OPTIONS_GUROBI_NOT_LINKED = 
+    	{
+    		"GLPK", "Ipopt"
+    	};
+    
+    public static final String[] NONLINEAR_OPTIONS = 
+    	{
+    		"Ipopt"
+    	};
+    
+    public static final String[] QUADRATIC_OPTIONS_GUROBI_LINKED = 
+    	{
+    		"Gurobi"
+    	};
+    
+//    public static final String[] QUADRATIC_OPTIONS_GUROBI_NOT_LINKED = 
+//    	{
+//    		
+//    	};
     
     public static final String GLPK_NO_MULTIPLE_THREADS_TOOLTIP = "GLPK does not support multiple threads.";
     

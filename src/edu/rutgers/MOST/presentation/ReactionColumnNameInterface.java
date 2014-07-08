@@ -79,20 +79,20 @@ public class ReactionColumnNameInterface  extends JDialog {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		//setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-		cbReactionAbbreviation.setEditable(true);
-		cbKnockout.setEditable(true);	
-		cbFluxValue.setEditable(true);			
-		cbReactionName.setEditable(true);
-		cbReactionEquation.setEditable(true);
-		cbReversible.setEditable(true);
-		cbLowerBound.setEditable(true);
-		cbUpperBound.setEditable(true);
-		cbBiologicalObjective.setEditable(true);
-		cbSyntheticObjective.setEditable(true);
-		cbGeneAssociation.setEditable(true);
-		cbProteinAssociation.setEditable(true);
-		cbSubsystem.setEditable(true);
-		cbProteinClass.setEditable(true);
+		cbReactionAbbreviation.setEditable(false);
+		cbKnockout.setEditable(false);	
+		cbFluxValue.setEditable(false);			
+		cbReactionName.setEditable(false);
+		cbReactionEquation.setEditable(false);
+		cbReversible.setEditable(false);
+		cbLowerBound.setEditable(false);
+		cbUpperBound.setEditable(false);
+		cbBiologicalObjective.setEditable(false);
+		cbSyntheticObjective.setEditable(false);
+		cbGeneAssociation.setEditable(false);
+		cbProteinAssociation.setEditable(false);
+		cbSubsystem.setEditable(false);
+		cbProteinClass.setEditable(false);
 
 		cbReactionAbbreviation.setPreferredSize(new Dimension(250, 25));
 		cbReactionAbbreviation.setMaximumSize(new Dimension(250, 25));

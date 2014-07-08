@@ -72,11 +72,11 @@ public class MetaboliteColumnNameInterface  extends JDialog {
 
 		validColumns = true;
 		
-		cbMetaboliteAbbreviation.setEditable(true);	
-		cbMetaboliteName.setEditable(true);
-		cbCharge.setEditable(true);	
-		cbCompartment.setEditable(true);
-		cbBoundary.setEditable(true);
+		cbMetaboliteAbbreviation.setEditable(false);	
+		cbMetaboliteName.setEditable(false);
+		cbCharge.setEditable(false);	
+		cbCompartment.setEditable(false);
+		cbBoundary.setEditable(false);
 
 		cbMetaboliteAbbreviation.setPreferredSize(new Dimension(250, 25));
 		cbMetaboliteAbbreviation.setMaximumSize(new Dimension(250, 25));
