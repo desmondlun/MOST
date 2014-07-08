@@ -53,23 +53,6 @@ public class SolverComponent
 		
 		return true;
 	}
-	public boolean setObjective( Map< Integer, Double > map )
-	{
-		if( objectiveCoefs.size() == 0 )
-		{
-			for( int j = 0; j < variables.size(); ++j )
-				objectiveCoefs.add( new Double( 0.0 ) );
-		}
-		
-		for( Entry< Integer, Double > term : map.entrySet() )
-		{
-			if( objectiveCoefs.size() < term.getKey() )
-				return false;
-			objectiveCoefs.add( term.getKey(), term.getValue() );
-		}
-		
-		return true;
-	}
 	public SolverComponent clone()
 	{
 		SolverComponent clone = new SolverComponent();

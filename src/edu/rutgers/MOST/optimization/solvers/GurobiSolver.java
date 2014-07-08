@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -43,6 +44,7 @@ public class GurobiSolver extends Ipopt implements Solver
 	private Algorithm algorithm;
 	private boolean abort = false;
 	private SolverComponent component = new SolverComponent();
+	private Vector< Double > objCoefs = new Vector< Double >();
 	
 	public static boolean isGurobiLinked()
 	{
@@ -251,7 +253,14 @@ public class GurobiSolver extends Ipopt implements Solver
 	@Override
 	public void setObj( Map< Integer, Double > map )
 	{
-		component.setObjective( map );
+		if( objCoefs.size() == 0 )
+		{
+			for( int j = 0; j < component.variables.size(); ++j )
+				objCoefs.add( new Double( 0.0 ) );
+		}
+		
+		for( Entry< Integer, Double > coef : map.entrySet() )
+			objCoefs.set( coef.getKey(), coef.getValue() );
 	}
 	@Override
 	public void addConstraint( Map< Integer, Double > map, ConType conType,
@@ -390,7 +399,7 @@ public class GurobiSolver extends Ipopt implements Solver
 	
 				// set the terms & coefficients defining the objective function
 				for( int j = 0; j < component.variables.size(); ++j )
-					expr.addTerm( component.objectiveCoefs.get( j ), vars.get( j ) );
+					expr.addTerm( objCoefs.get( j ), vars.get( j ) );
 	
 				// set the objective
 				model.setObjective( expr, getGRBObjType( objType ) );
