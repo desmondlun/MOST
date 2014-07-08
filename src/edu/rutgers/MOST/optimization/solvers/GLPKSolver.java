@@ -282,7 +282,6 @@ public class GLPKSolver implements Solver, GlpkCallbackListener
 		// clean up
 		component.variables.clear();
 		component.constraints.clear();
-		component.objectiveCoefs.clear();
 		GlpkCallback.removeListener( this );
 		GLPK.glp_delete_prob( problem );
 		problem_tmp = null;

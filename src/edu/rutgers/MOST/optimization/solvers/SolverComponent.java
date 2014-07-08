@@ -21,7 +21,6 @@ public class SolverComponent
 	
 	public ArrayList< Constraint > constraints = new ArrayList< Constraint >();
 	public ArrayList< Variable > variables = new ArrayList< Variable >();
-	public ArrayList< Double > objectiveCoefs = new ArrayList< Double >();
 	
 	public boolean addVariable( VarType type, double lb, double ub )
 	{
@@ -70,7 +69,7 @@ public class SolverComponent
 			Variable variableCopy = new Variable();
 			variableCopy.lb = new Double( variable.lb.doubleValue() );
 			variableCopy.ub = new Double( variable.ub.doubleValue() );
-			variableCopy.type = variableCopy.type;
+			variableCopy.type = variable.type;
 			clone.variables.add( variableCopy );
 		}
 		

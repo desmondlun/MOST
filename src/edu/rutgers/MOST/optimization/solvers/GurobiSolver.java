@@ -28,7 +28,6 @@ import gurobi.GRBCallback;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
 import gurobi.GRBModel;
-import gurobi.GRBQuadExpr;
 import gurobi.GRBVar;
 import gurobi.GRBLinExpr;
 
@@ -273,68 +272,13 @@ public class GurobiSolver extends Ipopt implements Solver
 	{
 		double result = 0.0;
 		
-		try
-		{
-			// set up the quadratic environment model
-			GRBEnv quad_env = new GRBEnv();
-			GRBModel quad_model = new GRBModel( env );
-			ArrayList< GRBVar > vars = new ArrayList< GRBVar >();
-			quad_env.set( GRB.DoubleParam.IntFeasTol, 1.0E-9 );
-			quad_env.set( GRB.DoubleParam.FeasibilityTol, 1.0E-9 );
-			quad_env.set( GRB.IntParam.OutputFlag, 0 );
-			
-			// create the variables
-			for( SolverComponent.Variable var : component.variables )
-			{
-				vars.add( quad_model.addVar( var.lb, var.ub, 0.0, getGRBVarType( var.type ),
-						null ) );
-			}
-			quad_model.update();
-			
-			// add rows / constraints
-			for( SolverComponent.Constraint constraint : component.constraints )
-			{
-				GRBLinExpr expr = new GRBLinExpr();
-				for( int j = 0; j < component.variables.size(); ++j )
-				{
-					expr.addTerm( constraint.coefficients.get( j ), vars.get( j ) );
-				}
-				quad_model.addConstr( expr, getGRBConType( constraint.type ), constraint.value, null );
-			}
-			
-			// add the Maximum objective constraint
-			GRBLinExpr maxObj = new GRBLinExpr();
-			for( int j = 0; j < component.variables.size(); ++j )
-				maxObj.addTerm( component.objectiveCoefs.get( j ), vars.get( j ) );
-			GRBVar objValue = quad_model.addVar( this.objval, this.objval, 0.0, GRB.CONTINUOUS, null );
-			quad_model.update(); // due to adding a new variable
-			quad_model.addConstr( maxObj, GRB.EQUAL, objValue, null );
-			
-			// set the objective
-			GRBQuadExpr expr = new GRBQuadExpr();
-			for( GRBVar var : quad_model.getVars() ) 
-				expr.addTerm( 1.0, var, var );
-			quad_model.setObjective( expr );
-			
-			// optimize the model
-			quad_model.optimize();
-			
-			// get min of sum of min v^2
-			// objval = result = quad_model.get( GRB.DoubleAttr.ObjVal );
-			
-			soln.clear();
-			
-			for( GRBVar var : vars)
-				soln.add( var.get( GRB.DoubleAttr.X ) );
-			
-			// clean up
-			quad_model.dispose();
-			quad_env.dispose();
-		}
-		catch( GRBException e )
-		{
-			promptGRBError( e );
-		}
+		GurobiQuadraticSolver quadSolver = new GurobiQuadraticSolver();
+		this.soln = quadSolver.minimizeEuclideanNorm( new ArrayList< Double >( this.objCoefs ), this.objval, this.component );
+		
+		for( Double val : soln )
+			result += val * val;
+		
+		result = Math.sqrt( result );
 		
 		return result;
 	}
@@ -496,7 +440,7 @@ public class GurobiSolver extends Ipopt implements Solver
 						this.solve( x );
 						double obj_value = 0;
 						for( int j = 0; j < component.variables.size(); ++j )
-							obj_value += component.objectiveCoefs.get( j ) * x[ j ];
+							obj_value += this.objCoefs.get( j ) * x[ j ];
 					
 						objval = obj_value;
 						soln.clear();
@@ -518,7 +462,7 @@ public class GurobiSolver extends Ipopt implements Solver
 				// clean up
 				component.variables.clear();
 				component.constraints.clear();
-				component.objectiveCoefs.clear();
+				this.objCoefs.clear();
 				model.dispose();
 				env.dispose();
 				vars.clear();
