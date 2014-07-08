@@ -1,7 +1,5 @@
 package edu.rutgers.MOST.optimization.solvers;
 
-import gurobi.GRB;
-
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -13,7 +11,7 @@ public class NonlinearSolver extends Ipopt implements Solver
 {
 	boolean obj_set = false;
 	SolverComponent component = new SolverComponent();
-	private Vector< Double > objTerms = new Vector< Double >();
+	private Vector< Double > objCoefs = new Vector< Double >();
 	private ArrayList< Double > soln = new ArrayList< Double >();
 	private Algorithm algorithm;
 	Vector< Double > geneExpr = new Vector< Double >();
@@ -52,12 +50,12 @@ public class NonlinearSolver extends Ipopt implements Solver
 		if( !obj_set )
 		{
 			for( int j = 0; j < component.variables.size(); ++j )
-				objTerms.add( new Double( 0 ) );
+				objCoefs.add( new Double( 0 ) );
 			obj_set = true;
 		}
 		
 		for( Entry< Integer, Double > term : map.entrySet() )
-			objTerms.set( term.getKey(), term.getValue() );
+			objCoefs.set( term.getKey(), term.getValue() );
 	}
 
 	@Override
@@ -113,7 +111,7 @@ public class NonlinearSolver extends Ipopt implements Solver
 		
 		double value = 0.0;
 		for( int j = 0; j < component.variables.size(); ++j )
-			value += objTerms.get( j ) * vars[ j ];
+			value += objCoefs.get( j ) * vars[ j ];
 		
 		for( double d : vars )
 			soln.add( d );
@@ -154,7 +152,7 @@ public class NonlinearSolver extends Ipopt implements Solver
 		case FBA:
 			double value = 0.0;
 			for( int j = 0; j < component.variables.size(); ++j )
-				value += objTerms.get( j ) * x[ j ];
+				value += objCoefs.get( j ) * x[ j ];
 			
 			obj_value[ 0 ] = value;
 			break;
@@ -207,7 +205,7 @@ public class NonlinearSolver extends Ipopt implements Solver
 			for( int j = 0; j < component.variables.size(); ++j )
 			{
 				double value = 0.0;
-				value = objTerms.get( j );
+				value = objCoefs.get( j );
 				grad_f[ j ] = value;
 			}
 			break;
