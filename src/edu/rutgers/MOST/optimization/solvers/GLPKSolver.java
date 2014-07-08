@@ -39,47 +39,13 @@ public class GLPKSolver implements Solver, GlpkCallbackListener
 		}
 	}
 
-	private class RowType
-	{
-		public int type;
-		public double lb;
-		public double ub;
-		public Vector< RowEntry > entries = new Vector< RowEntry >();
-
-		RowType( double v, int t, double l, double u )
-		{
-			type = t;
-			lb = l;
-			ub = u;
-		}
-	}
-
-	private class ColumnType
-	{
-		public String name;
-		public int kind;
-		public int type;
-		public double lb;
-		public double ub;
-
-		ColumnType( String n, int k, int t, double l, double u )
-		{
-			name = n;
-			kind = k;
-			type = t;
-			lb = l;
-			ub = u;
-		}
-	}
-
 	private class ObjectiveType
 	{
-		int dir;
-		Vector< RowEntry > coefs = new Vector< RowEntry >();
+		public int dir;
+		public Vector< RowEntry > coefs = new Vector< RowEntry >();
 	}
 
-	private Vector< RowType > rows = new Vector< RowType >();
-	private Vector< ColumnType > columns = new Vector< ColumnType >();
+	SolverComponent component = new SolverComponent();
 	private ObjectiveType objective = new ObjectiveType();
 	private ArrayList< Double > soln = new ArrayList< Double >();
 	private double objval;
@@ -172,24 +138,7 @@ public class GLPKSolver implements Solver, GlpkCallbackListener
 	@Override
 	public void setVar( String varName, VarType types, double lb, double ub )
 	{
-		// column definitions
-		int kind;
-		switch( types )
-		{
-		case INTEGER:
-			kind = GLPKConstants.GLP_IV;
-			break;
-		case BINARY:
-			kind = GLPKConstants.GLP_BV;
-			break;
-		default:
-		case CONTINUOUS:
-			kind = GLPKConstants.GLP_CV;
-			break;
-		}
-		columns.add( new ColumnType( varName, kind,
-				lb != ub ? GLPKConstants.GLP_DB : GLPKConstants.GLP_FX, lb, ub ) );
-
+		component.addVariable( types, lb, ub );
 	}
 	@Override
 	public void setObjType( ObjType objType )
@@ -207,38 +156,10 @@ public class GLPKSolver implements Solver, GlpkCallbackListener
 					.getValue() ) );
 	}
 	@Override
-	public void addConstraint( Map< Integer, Double > map, ConType con,
+	public void addConstraint( Map< Integer, Double > map, ConType conType,
 			double value )
 	{
-		// row definitions
-		double lb = Double.NEGATIVE_INFINITY;
-		double ub = Double.POSITIVE_INFINITY;
-		int type = 0;
-		switch( con )
-		{
-		case LESS_EQUAL:
-			ub = value;
-			type = GLPKConstants.GLP_UP;
-			break;
-		case EQUAL:
-			ub = lb = value;
-			type = GLPKConstants.GLP_FX;
-			break;
-		case GREATER_EQUAL:
-			type = GLPKConstants.GLP_LO;
-			lb = value;
-			break;
-		}
-
-		RowType row = new RowType( value, type, lb, ub );
-		for( Entry< Integer, Double > entry : map.entrySet())
-		{
-			int key = entry.getKey();
-			double kvalue = entry.getValue();
-			row.entries.add( new RowEntry( key, kvalue ) );
-		}
-		rows.add( row );
-
+		component.addConstraint( map, conType, value );
 	}
 	@Override
 	public double optimize()
@@ -252,43 +173,73 @@ public class GLPKSolver implements Solver, GlpkCallbackListener
 		glp_prob problem = GLPK.glp_create_prob();
 		GLPK.glp_set_prob_name( problem, "GLPK Problem" );
 		problem_tmp = problem;
-
-		// add columns
-		for( ColumnType it : columns)
+		
+		// set the variables
+		for( SolverComponent.Variable var : component.variables )
 		{
-			int colNum = GLPK.glp_add_cols( problem, 1 );
-			GLPK.glp_set_col_name( problem, colNum, it.name );
-			GLPK.glp_set_col_kind( problem, colNum, it.kind );
-			GLPK.glp_set_col_bnds( problem, colNum, it.type, it.lb, it.ub );
+			int colNum = GLPK.glp_add_cols( problem,  1 );
+			GLPK.glp_set_col_name( problem, colNum, null );
+			int kind = 0;
+			switch( var.type )
+			{
+			case INTEGER:
+				kind = GLPKConstants.GLP_IV;
+				break;
+			case BINARY:
+				kind = GLPKConstants.GLP_DB;
+				break;
+			default:
+			case CONTINUOUS:
+				kind = GLPKConstants.GLP_CV;
+				break;
+			}
+			int type = (var.lb.equals( var.ub ) ? GLPKConstants.GLP_FX : GLPKConstants.GLP_DB );
+			GLPK.glp_set_col_kind( problem, colNum, kind );
+			GLPK.glp_set_col_bnds( problem, colNum, type, var.lb, var.ub );
 		}
-		columns.clear();
-
-		// add rows
-		for( RowType it : rows)
+		
+		// set the constraints 
+		for( SolverComponent.Constraint constraint : component.constraints )
 		{
 			int rowNum = GLPK.glp_add_rows( problem, 1 );
-			GLPK.glp_set_row_bnds( problem, rowNum, it.type, it.lb, it.ub );
-
-			SWIGTYPE_p_int ind = GLPK.new_intArray( 1 + it.entries.size() );
-			SWIGTYPE_p_double val = GLPK
-					.new_doubleArray( 1 + it.entries.size() );
-			int index = 1;
-			for( RowEntry entry : it.entries)
+			int type = 0;
+			double lb = 0;
+			double ub = 0;
+			switch( constraint.type )
 			{
-				GLPK.intArray_setitem( ind, index, 1 + entry.idx );
-				GLPK.doubleArray_setitem( val, index, entry.value );
-				++index;
+			case LESS_EQUAL:
+				ub = constraint.value;
+				type = GLPKConstants.GLP_UP;
+				break;
+			case EQUAL:
+				ub = lb = constraint.value;
+				type = GLPKConstants.GLP_FX;
+				break;
+			case GREATER_EQUAL:
+				type = GLPKConstants.GLP_LO;
+				lb = constraint.value;
+				break;
+			}
+			
+			SWIGTYPE_p_int ind = GLPK.new_intArray( 1 + component.variables.size() );
+			SWIGTYPE_p_double val = GLPK.new_doubleArray( 1 + component.variables.size() );
+			
+			for( int j = 0; j < component.variables.size(); ++j )
+			{
+				GLPK.intArray_setitem( ind, j+1, j+1 );
+				GLPK.doubleArray_setitem( val, j+1, constraint.coefficients.get( j ) );
 			}
 
-			GLPK.glp_set_mat_row( problem, rowNum, it.entries.size(), ind, val );
+			GLPK.glp_set_row_bnds( problem, rowNum, type, lb, ub );
+			GLPK.glp_set_mat_row( problem, rowNum, component.variables.size(), ind, val );
 			GLPK.delete_intArray( ind );
 			GLPK.delete_doubleArray( val );
 		}
-		rows.clear();
-
+	
+		
 		// set the objective
 		GLPK.glp_set_obj_dir( problem, objective.dir );
-		for( RowEntry coef : objective.coefs)
+		for( RowEntry coef : objective.coefs )
 			GLPK.glp_set_obj_coef( problem, coef.idx, coef.value );
 
 		GlpkCallback.addListener( this );
@@ -329,6 +280,9 @@ public class GLPKSolver implements Solver, GlpkCallbackListener
 		}
 
 		// clean up
+		component.variables.clear();
+		component.constraints.clear();
+		component.objectiveCoefs.clear();
 		GlpkCallback.removeListener( this );
 		GLPK.glp_delete_prob( problem );
 		problem_tmp = null;
@@ -338,12 +292,15 @@ public class GLPKSolver implements Solver, GlpkCallbackListener
 	@Override
 	public void setEnv( double timeLimit, int numThreads )
 	{
-		// TODO Auto-generated method stub
 	}
 	@Override
 	public void setVars( VarType[] types, double[] lb, double[] ub )
 	{
-		// TODO Auto-generated method stub
+		if( types.length == lb.length && lb.length == ub.length )
+		{
+			for( int j = 0; j < types.length; ++ j )
+				component.addVariable( types[ j ], lb[ j ], ub[ j ] );
+		}
 	}
 	@Override
 	public void abort()
