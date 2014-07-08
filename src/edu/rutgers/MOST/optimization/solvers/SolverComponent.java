@@ -19,9 +19,9 @@ public class SolverComponent
 		VarType type;
 	}
 	
-	ArrayList< Constraint > constraints = new ArrayList< Constraint >();
-	ArrayList< Variable > variables = new ArrayList< Variable >();
-	ArrayList< Double > objectiveCoefs = new ArrayList< Double >();
+	public ArrayList< Constraint > constraints = new ArrayList< Constraint >();
+	public ArrayList< Variable > variables = new ArrayList< Variable >();
+	public ArrayList< Double > objectiveCoefs = new ArrayList< Double >();
 	
 	public boolean addVariable( VarType type, double lb, double ub )
 	{
@@ -69,5 +69,28 @@ public class SolverComponent
 		}
 		
 		return true;
+	}
+	public SolverComponent clone()
+	{
+		SolverComponent clone = new SolverComponent();
+		for( Constraint constraint : constraints )
+		{
+			Constraint constraintCopy = new Constraint();
+			constraintCopy.value = new Double( constraint.value.doubleValue() );
+			constraintCopy.type = constraint.type;
+			for( Double coef : constraint.coefficients )
+				constraintCopy.coefficients.add( new Double( coef.doubleValue() ) );
+			clone.constraints.add( constraintCopy );
+		}
+		for( Variable variable : variables )
+		{
+			Variable variableCopy = new Variable();
+			variableCopy.lb = new Double( variable.lb.doubleValue() );
+			variableCopy.ub = new Double( variable.ub.doubleValue() );
+			variableCopy.type = variableCopy.type;
+			clone.variables.add( variableCopy );
+		}
+		
+		return clone;
 	}
 }
