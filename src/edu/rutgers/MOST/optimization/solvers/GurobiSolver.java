@@ -10,7 +10,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Vector;
-import java.util.Map.Entry;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -33,56 +32,7 @@ import gurobi.GRBVar;
 import gurobi.GRBLinExpr;
 
 public class GurobiSolver extends Ipopt implements Solver
-{	
-	private class RowEntry
-	{
-		public int idx;
-		public double coef;
-
-		RowEntry( int i, double v )
-		{
-			idx = i;
-			coef = v;
-		}
-	}
-
-	private class RowType
-	{
-		public double val;
-		public char type;
-		public Vector< RowEntry > entries = new Vector< RowEntry >();
-
-		RowType( double v, char t )
-		{
-			val = v;
-			type = t;
-		}
-	}
-
-	private class ColumnType
-	{
-		public String name;
-		public int type;
-		public double lb;
-		public double ub;
-
-		ColumnType( String n, int t, double l, double u )
-		{
-			name = n;
-			type = t;
-			lb = l;
-			ub = u;
-		}
-	}
-
-	private class ObjectiveType
-	{
-		Vector< RowEntry > entries = new Vector< RowEntry >();
-	}
-	
-	private Vector< RowType > rows = new Vector< RowType >();
-	private Vector< ColumnType > columns = new Vector< ColumnType >();
-	private ObjectiveType objective = new ObjectiveType();
+{
 	private ArrayList< Double > soln = new ArrayList< Double >();
 	Vector< Double > geneExpr = new Vector< Double >();
 	private double objval;
@@ -92,6 +42,7 @@ public class GurobiSolver extends Ipopt implements Solver
 			"Gurobi Solver Error", "Gurobi Solver Error" );
 	private Algorithm algorithm;
 	private boolean abort = false;
+	private SolverComponent component = new SolverComponent();
 	
 	public static boolean isGurobiLinked()
 	{
@@ -214,6 +165,7 @@ public class GurobiSolver extends Ipopt implements Solver
 	public GurobiSolver( Algorithm algorithm )
 	{
 		// set the dialog
+		this.algorithm = algorithm;
 		final ArrayList< Image > icons = new ArrayList< Image >();
 		icons.add( new ImageIcon( "etc/most16.jpg" ).getImage() );
 		icons.add( new ImageIcon( "etc/most32.jpg" ).getImage() );
@@ -287,21 +239,9 @@ public class GurobiSolver extends Ipopt implements Solver
 		return soln;
 	}
 	@Override
-	public void setVar( String varName, VarType types, double lb, double ub )
+	public void setVar( String varName, VarType type, double lb, double ub )
 	{
-		try
-		{
-			// column definitions
-			if( varName == null || types == null  )
-				return;
-			
-			columns.add( new ColumnType( varName, getGRBVarType( types ), lb, ub ) );
-		}
-		catch ( Exception e )
-		{
-			processStackTrace( e );
-		}
-
+		component.addVariable( type, lb, ub );
 	}
 	@Override
 	public void setObjType( ObjType objType )
@@ -311,40 +251,13 @@ public class GurobiSolver extends Ipopt implements Solver
 	@Override
 	public void setObj( Map< Integer, Double > map )
 	{
-		try
-		{
-			// objective definition
-			for( Entry< Integer, Double > entry : map.entrySet())
-				objective.entries.add( new RowEntry( entry.getKey(), entry
-						.getValue() ) );
-		}
-		catch ( Exception e )
-		{
-			processStackTrace( e );
-		}
-
+		component.setObjective( map );
 	}
 	@Override
-	public void addConstraint( Map< Integer, Double > map, ConType con,
+	public void addConstraint( Map< Integer, Double > map, ConType conType,
 			double value )
 	{
-		try
-		{
-			// row / constraint definitions
-			RowType row = new RowType( value, getGRBConType( con ) );
-
-			for( Entry< Integer, Double > entry : map.entrySet() )
-			{
-				int key = entry.getKey();
-				double kvalue = entry.getValue();
-				row.entries.add( new RowEntry( key, kvalue ) );
-			}
-			rows.add( row );
-		}
-		catch ( Exception e )
-		{
-			processStackTrace( e );
-		}
+		component.addConstraint( map, conType, value );
 	}
 
 	private double minimizeEuclideanNorm()
@@ -362,28 +275,28 @@ public class GurobiSolver extends Ipopt implements Solver
 			quad_env.set( GRB.IntParam.OutputFlag, 0 );
 			
 			// create the variables
-			for( ColumnType it : columns)
+			for( SolverComponent.Variable var : component.variables )
 			{
-				vars.add( quad_model.addVar( it.lb, it.ub, 0.0, (char)it.type,
-						it.name ) );
+				vars.add( quad_model.addVar( var.lb, var.ub, 0.0, getGRBVarType( var.type ),
+						null ) );
 			}
 			quad_model.update();
 			
 			// add rows / constraints
-			for( RowType it : rows)
+			for( SolverComponent.Constraint constraint : component.constraints )
 			{
 				GRBLinExpr expr = new GRBLinExpr();
-				for( RowEntry entry : it.entries )
+				for( int j = 0; j < component.variables.size(); ++j )
 				{
-					expr.addTerm( entry.coef, vars.get( entry.idx ) );
+					expr.addTerm( constraint.coefficients.get( j ), vars.get( j ) );
 				}
-				quad_model.addConstr( expr, it.type, it.val, null );
+				quad_model.addConstr( expr, getGRBConType( constraint.type ), constraint.value, null );
 			}
 			
 			// add the Maximum objective constraint
 			GRBLinExpr maxObj = new GRBLinExpr();
-			for( RowEntry entry : objective.entries )
-				maxObj.addTerm( entry.coef, vars.get( entry.idx ) );
+			for( int j = 0; j < component.variables.size(); ++j )
+				maxObj.addTerm( component.objectiveCoefs.get( j ), vars.get( j ) );
 			GRBVar objValue = quad_model.addVar( this.objval, this.objval, 0.0, GRB.CONTINUOUS, null );
 			quad_model.update(); // due to adding a new variable
 			quad_model.addConstr( maxObj, GRB.EQUAL, objValue, null );
@@ -436,17 +349,15 @@ public class GurobiSolver extends Ipopt implements Solver
 						{
 							if( abort )
 								this.abort();
-							else if( this.where == GRB.CB_SIMPLEX )
-								objval = getDoubleInfo( GRB.CB_SPX_OBJVAL ); // FBA
-																				// objective
-							else if( this.where == GRB.CB_MIPSOL )
+							else if( this.where == GRB.CB_SIMPLEX ) //FBA
+								objval = getDoubleInfo( GRB.CB_SPX_OBJVAL );
+							else if( this.where == GRB.CB_MIPSOL ) //MIP
 							{
 								// GDBB intermediate solutions
 								GDBB.intermediateSolution.add( new Solution( this
 										.getDoubleInfo( GRB.CB_MIPSOL_OBJ ), this
 										.getSolution( model.getVars() ) ) );
-								objval = getDoubleInfo( GRB.CB_MIPSOL_OBJ ); // MIP
-																				// objective
+								objval = getDoubleInfo( GRB.CB_MIPSOL_OBJ ); 
 							}
 						}
 						catch ( GRBException e )
@@ -457,23 +368,20 @@ public class GurobiSolver extends Ipopt implements Solver
 				} );
 				
 				// add columns
-				for( ColumnType it : columns)
+				for( SolverComponent.Variable var : component.variables )
 				{
-					vars.add( model.addVar( it.lb, it.ub, 0.0, (char)it.type,
-							it.name ) );
+					vars.add( model.addVar( var.lb, var.ub, 0.0, getGRBVarType( var.type ),
+							null ) );
 				}
 				model.update();
 				
-	
-				// add rows / constraints
-				for( RowType it : rows)
+				
+				for( SolverComponent.Constraint constraint : component.constraints )
 				{
 					GRBLinExpr expr = new GRBLinExpr();
-					for( RowEntry entry : it.entries )
-					{
-						expr.addTerm( entry.coef, vars.get( entry.idx ) );
-					}
-					model.addConstr( expr, it.type, it.val, null );
+					for( int j = 0; j < constraint.coefficients.size(); ++j )
+						expr.addTerm( constraint.coefficients.get( j ), vars.get( j ) );
+					model.addConstr( expr, getGRBConType( constraint.type ), constraint.value, null );
 				}
 				
 				
@@ -481,8 +389,8 @@ public class GurobiSolver extends Ipopt implements Solver
 				GRBLinExpr expr = new GRBLinExpr();
 	
 				// set the terms & coefficients defining the objective function
-				for( RowEntry entry : objective.entries )
-					expr.addTerm( entry.coef, vars.get( entry.idx ) );
+				for( int j = 0; j < component.variables.size(); ++j )
+					expr.addTerm( component.objectiveCoefs.get( j ), vars.get( j ) );
 	
 				// set the objective
 				model.setObjective( expr, getGRBObjType( objType ) );
@@ -526,47 +434,48 @@ public class GurobiSolver extends Ipopt implements Solver
 					// get the flux values
 					for( GRBVar var : vars)
 						soln.add( var.get( GRB.DoubleAttr.X ) );
+					
 					if( getAlgorithm() == Algorithm.Eflux2 )
 						this.minimizeEuclideanNorm();
 					
 					if( getAlgorithm() == Algorithm.SPOT )
 					{
 						// set up the nlp
-						double[] x_L = new double[ this.columns.size() ];
-						double[] x_U = new double[ this.columns.size() ];
+						double[] x_L = new double[ component.variables.size() ];
+						double[] x_U = new double[ component.variables.size() ];
 						
 						// set the var upper and lower bounds
-						for( int i = 0; i < this.columns.size(); ++i )
+						for( int i = 0; i < component.variables.size(); ++i )
 						{
-							x_L[ i ] = this.columns.get( i ).lb;
-							x_U[ i ] = this.columns.get( i ).ub;
+							x_L[ i ] = component.variables.get( i ).lb;
+							x_U[ i ] = component.variables.get( i ).ub;
 						}
 						
-						double[] g_L = new double[ this.rows.size() ];
-						double[] g_U = new double[ this.rows.size() ];
+						double[] g_L = new double[ component.constraints.size() ];
+						double[] g_U = new double[ component.constraints.size() ];
 						
 						// set the constraint upper and lower bounds
-						for( int i = 0; i < this.rows.size(); ++i )
+						for( int i = 0; i < component.constraints.size(); ++i )
 						{
-							if( this.rows.get( i ).type == GRB.LESS_EQUAL )
+							if( component.constraints.get( i ).type == ConType.LESS_EQUAL )
 							{
 								g_L[ i ] = Double.NEGATIVE_INFINITY;
-								g_U[ i ] = rows.get( i ).val;
+								g_U[ i ] = component.constraints.get( i ).value;
 							}
-							else if( this.rows.get( i ).type == GRB.EQUAL )
+							else if( component.constraints.get( i ).type == ConType.EQUAL )
 							{
-								g_L[ i ] = rows.get( i ).val;
-								g_U[ i ] = rows.get( i ).val;
+								g_L[ i ] = component.constraints.get( i ).value;
+								g_U[ i ] = component.constraints.get( i ).value;
 							}
-							else if( this.rows.get( i ).type == GRB.GREATER_EQUAL )
+							else if( component.constraints.get( i ).type ==ConType.GREATER_EQUAL )
 							{
-								g_L[ i ] = rows.get( i ).val;
+								g_L[ i ] = component.constraints.get( i ).value;
 								g_U[ i ] = Double.POSITIVE_INFINITY;
 							}
 						}
 						
-						this.create( this.columns.size(), x_L, x_U, this.rows.size(),
-								g_L, g_U, rows.size() * columns.size(),
+						this.create( component.variables.size(), x_L, x_U, component.constraints.size(),
+								g_L, g_U, component.constraints.size() * component.variables.size(),
 								0, Ipopt.C_STYLE );
 						double[] x = new double[ soln.size() ];
 						for( int i = 0; i < soln.size(); ++i )
@@ -577,15 +486,16 @@ public class GurobiSolver extends Ipopt implements Solver
 						
 						this.solve( x );
 						double obj_value = 0;
-						for( RowEntry entry : objective.entries )
-							obj_value += entry.coef * x[ entry.idx ];
+						for( int j = 0; j < component.variables.size(); ++j )
+							obj_value += component.objectiveCoefs.get( j ) * x[ j ];
 					
 						objval = obj_value;
 						soln.clear();
-						for( int j = 0; j < columns.size(); ++j )
+						for( int j = 0; j < component.variables.size(); ++j )
 							soln.add( x[ j ] );
 							
 						System.out.println( "success!" );
+						System.out.println( "new obj is: " + objval );
 						
 					}
 				}
@@ -597,8 +507,9 @@ public class GurobiSolver extends Ipopt implements Solver
 			finally
 			{
 				// clean up
-				columns.clear();
-				rows.clear();
+				component.variables.clear();
+				component.constraints.clear();
+				component.objectiveCoefs.clear();
 				model.dispose();
 				env.dispose();
 				vars.clear();
@@ -662,12 +573,12 @@ public class GurobiSolver extends Ipopt implements Solver
 		Vector< Double > flux_v = new Vector< Double >();
 		Vector< Double > gene_v = new Vector< Double >();
 		
-		for( int i = 0; i < rows.size(); ++i )
+		for( int i = 0; i < component.constraints.size(); ++i )
 		{
 			Double g_i = geneExpr.get( i ); // updated from SPOT.run() and modelFormatter method
 			Double v_i = 0.0;
-			for( RowEntry entry : rows.get( i ).entries )
-				v_i += entry.coef * x[ entry.idx ];
+			for( int j = 0; j < component.variables.size(); ++j )
+				v_i += component.constraints.get( i ).coefficients.get( j ) * x[ j ];
 			flux_v.add( v_i );
 			gene_v.add( Double.isInfinite( g_i ) ? v_i : g_i );
 		}
@@ -692,21 +603,16 @@ public class GurobiSolver extends Ipopt implements Solver
 	protected boolean eval_grad_f( int n, double[] x, boolean new_x,
 			double[] grad_f )
 	{
-		for( int j = 0; j < columns.size(); ++j )
+		for( int j = 0; j < component.variables.size(); ++j )
 		{
 			Vector< Double > flux_v = new Vector< Double >();
 			Vector< Double > gene_v = new Vector< Double >();
 			// fill in flux_v using variable 'x', fill in gene_v given value from file
 	
-			for( int i = 0; i < rows.size(); ++i )
+			for( int i = 0; i < component.constraints.size(); ++i )
 			{
 				Double g_i = geneExpr.get( i );
-				Double v_i = 0.0;
-				for( RowEntry entry : rows.get( i ).entries )
-				{
-					if( entry.idx == j ) // d/dx_j a*x_i + b*x_j + c*x_k = b
-						v_i += entry.coef;
-				}
+				Double v_i = component.constraints.get( i ).coefficients.get( j );
 				flux_v.add( v_i );
 				gene_v.add( Double.isInfinite( g_i ) ? v_i : g_i );
 			}
@@ -735,12 +641,12 @@ public class GurobiSolver extends Ipopt implements Solver
 		// define the constraints
 		// Sv = 0.0 (steady state constraint)
 		
-		for( int i = 0; i < rows.size(); ++i )
+		for( int i = 0; i < component.constraints.size(); ++i )
 		{
 			//
 			double value = 0.0;
-			for( RowEntry entry : rows.get( i ).entries )
-				value += entry.coef * x[ entry.idx ];
+			for( int j = 0; j < component.variables.size(); ++j )
+				value += component.constraints.get( i ).coefficients.get( j ) * x[ j ];
 			g[ i ] = value;
 		}
 		
@@ -759,9 +665,9 @@ public class GurobiSolver extends Ipopt implements Solver
 		if( values == null )
 		{
 			int idx = 0;
-			for( int i = 0; i < rows.size(); ++i )
+			for( int i = 0; i < component.constraints.size(); ++i )
 			{
-				for( int j = 0; j < columns.size(); ++j )
+				for( int j = 0; j < component.variables.size(); ++j )
 				{
 					iRow[ idx ] = i;
 					jCol[ idx ] = j;
@@ -772,18 +678,10 @@ public class GurobiSolver extends Ipopt implements Solver
 		else
 		{
 			int idx = 0;
-			for( RowType row : rows )
+			for( int i = 0; i < component.constraints.size(); ++i )
 			{
-				for( int j = 0; j < columns.size(); ++j )
-				{
-					double value = 0.0;
-					for( RowEntry term : row.entries )
-					{
-						if( term.idx == j )
-							value = term.coef;
-					}
-					values[ idx++ ] = value;
-				}
+				for( int j = 0; j < component.variables.size(); ++j )
+					values[ idx++ ] = component.constraints.get( i ).coefficients.get( j );
 			}
 		}
 		
