@@ -132,6 +132,17 @@ public class GurobiQuadraticSolver implements QuadraticSolver
 		}
 	}
 	
+	/**
+	 * Used by E-Flux2
+	 * Minimize the Euclidean norm of the flux vectors returned by FBA
+	 * 
+	 * @return The minimized Euclidean vector (ArrayList) of fluxes
+	 * @param objCoefs The coefficient vector of the Objective function used in FBA, it is used as an extra constraint
+	 * @param objVal The value of the objective function returned by FBA
+	 * @param componentSource The solverComponent that contains the constraint and variable matrix
+	 * @see Eflux-2
+	 * @see FBA
+	 */
 	@Override
 	public ArrayList< Double > minimizeEuclideanNorm( ArrayList< Double > objCoefs, Double objVal, SolverComponent componentSource )
 	{
