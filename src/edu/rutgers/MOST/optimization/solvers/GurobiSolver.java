@@ -31,7 +31,7 @@ import gurobi.GRBModel;
 import gurobi.GRBVar;
 import gurobi.GRBLinExpr;
 
-public class GurobiSolver extends Ipopt implements Solver
+public class GurobiSolver extends Ipopt implements LinearSolver
 {
 	private ArrayList< Double > soln = new ArrayList< Double >();
 	Vector< Double > geneExpr = new Vector< Double >();
