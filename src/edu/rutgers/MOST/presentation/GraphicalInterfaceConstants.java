@@ -437,15 +437,17 @@ public class GraphicalInterfaceConstants {
     public static final String GUROBI_INSTALLED_MESSAGE = "Gurobi has been installed on this computer and is available for selection as a solver";
     public static final String SOLVER_OPTIONS_MENU_ITEM = "Set Up Solver";
     
-    // use GLPK as default solver since it is free and always available
-    public static final String DEFAULT_SOLVER_NAME = "GLPK";
     public static final String GLPK_SOLVER_NAME = "GLPK";
     public static final String GUROBI_SOLVER_NAME = "Gurobi";
     public static final String IPOPT_SOLVER_NAME = "Ipopt";
+    // use GLPK or Ipopt as default solvers since they are free and always available
+    public static final String DEFAULT_MIXED_INTEGER_SOLVER_NAME = GLPK_SOLVER_NAME;
+    public static final String DEFAULT_QUADRATIC_SOLVER_NAME = IPOPT_SOLVER_NAME;
+    public static final String DEFAULT_NONLINEAR_SOLVER_NAME = IPOPT_SOLVER_NAME;
     
     public static final String MIXED_INTEGER_LINEAR_LABEL = "Mixed Integer Linear";
-    public static final String QUADRATIC_LABEL = "Mixed Integer Linear";
-    public static final String NONLINEAR_LABEL = "Nonlinera";
+    public static final String QUADRATIC_LABEL = "Quadratic";
+    public static final String NONLINEAR_LABEL = "Nonlinear";
     
     public static final String[] MIXED_INTEGER_LINEAR_OPTIONS = 
     	{

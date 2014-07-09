@@ -127,11 +127,7 @@ public class SettingsFactory {
 	    writer.add(codeChars);
 	    EndElement codeEE = xmlEventFactory.createEndElement("", "", "LastLoadedSBML");
 	    writer.add(codeEE);
-		*/
-	    
-
-
-	    
+		*/ 
 	}
 	
 	public void addAttribute(XMLEventWriter writer, XMLEventFactory xmlEventFactory, 

@@ -9,50 +9,59 @@ import java.io.OutputStream;
 import java.util.Properties;
 
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
+import edu.rutgers.MOST.presentation.Utilities;
 
 // based on http://www.mkyong.com/java/java-properties-file-examples/
 public class ConfigProperties {
-	private static String solverName;
+	private static String mixedIntegerLinearSolverName;
+	private static String quadraticSolverName;
+	private static String nonlinearSolverName;
 
-	public String getSolverName() {
-		return solverName;
+	public static String getMixedIntegerLinearSolverName() {
+		return mixedIntegerLinearSolverName;
 	}
 
-	public static void setSolverName(String solverName) {
-		ConfigProperties.solverName = solverName;
+	public static void setMixedIntegerLinearSolverName(
+			String mixedIntegerLinearSolverName) {
+		ConfigProperties.mixedIntegerLinearSolverName = mixedIntegerLinearSolverName;
 	}
 
-	private static String propertiesPath() {
-		String fileName = "";
-		if (System.getProperty("os.name").equals("Windows 7") || System.getProperty("os.name").equals("Windows 8") || System.getProperty("os.name").equals("Windows Vista")) {
-			File destDir = new File(SettingsConstants.SETTINGS_PATH_PREFIX_WINDOWS_7 + System.getProperty("user.name") + SettingsConstants.SETTINGS_PATH_SUFFIX_WINDOWS_7 + SettingsConstants.FOLDER_NAME);
-			if (!destDir.exists()) {
-				destDir.mkdir();				
-			}
-			fileName = SettingsConstants.SETTINGS_PATH_PREFIX_WINDOWS_7 + System.getProperty("user.name") + SettingsConstants.SETTINGS_PATH_SUFFIX_WINDOWS_7 + SettingsConstants.FOLDER_NAME + "config.properties";
-		} else if (System.getProperty("os.name").equals("Windows XP")) {
-			File destDir = new File(SettingsConstants.SETTINGS_PATH_PREFIX_WINDOWS_XP + System.getProperty("user.name") + SettingsConstants.SETTINGS_PATH_SUFFIX_WINDOWS_XP + SettingsConstants.FOLDER_NAME);
-			if (!destDir.exists()) {
-				destDir.mkdir();				
-			}
-			fileName = SettingsConstants.SETTINGS_PATH_PREFIX_WINDOWS_XP + System.getProperty("user.name") + SettingsConstants.SETTINGS_PATH_SUFFIX_WINDOWS_XP + SettingsConstants.FOLDER_NAME + "config.properties";
-		} else {
-			fileName = "config.properties";
-		}
-
-		return fileName;
+	public static String getQuadraticSolverName() {
+		return quadraticSolverName;
 	}
 
-	public static void writeToFile(String solverName) {
+	public static void setQuadraticSolverName(String quadraticSolverName) {
+		ConfigProperties.quadraticSolverName = quadraticSolverName;
+	}
+
+	public static String getNonlinearSolverName() {
+		return nonlinearSolverName;
+	}
+
+	public static void setNonlinearSolverName(String nonlinearSolverName) {
+		ConfigProperties.nonlinearSolverName = nonlinearSolverName;
+	}
+
+	/**
+	 * 
+	 * @param linearSolverName
+	 * @param quadraticSolverName
+	 * @param nonLinearSolverName
+	 */
+	public static void writeToFile(String linearSolverName, String quadraticSolverName,
+			String nonLinearSolverName) {
 
 		Properties prop = new Properties();
 		OutputStream output = null;
 
 		try {
-			output = new FileOutputStream(propertiesPath());
+			System.out.println(propertiesPath("config.properties"));
+			output = new FileOutputStream(propertiesPath("config.properties"));
 
 			// set the properties value
-			prop.setProperty("solver", solverName);
+			prop.setProperty("mixedIntegerLinear", linearSolverName);
+			prop.setProperty("quadratic", quadraticSolverName);
+			prop.setProperty("nonlinear", nonLinearSolverName);
 
 			// save properties
 			prop.store(output, null);
@@ -76,11 +85,11 @@ public class ConfigProperties {
 		InputStream input = null;
 
 		try {
-
-			input = new FileInputStream(propertiesPath());
+			input = new FileInputStream(propertiesPath("config.properties"));
 			prop.load(input);
-			setSolverName(prop.getProperty("solver"));
-
+			setMixedIntegerLinearSolverName(prop.getProperty("mixedIntegerLinear"));
+			setQuadraticSolverName(prop.getProperty("quadratic"));
+			setNonlinearSolverName(prop.getProperty("nonlinear"));
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
@@ -95,12 +104,25 @@ public class ConfigProperties {
 	}
 
 	public boolean fileExists() {
-		File f = new File(propertiesPath());
+		File f = new File(propertiesPath("config.properties"));
 		return f.exists();
 	}
 
 	public static void main(String[] args) {
-		writeToFile(GraphicalInterfaceConstants.DEFAULT_SOLVER_NAME);
+		writeToFile(GraphicalInterfaceConstants.DEFAULT_MIXED_INTEGER_SOLVER_NAME,
+				GraphicalInterfaceConstants.DEFAULT_QUADRATIC_SOLVER_NAME,
+				GraphicalInterfaceConstants.DEFAULT_NONLINEAR_SOLVER_NAME);
 		readFile();
+	}
+	
+	/**
+	 * Create path for config.properties file
+	 * @param name
+	 * @return
+	 */
+	private static String propertiesPath(String name) {
+		Utilities u = new Utilities();
+		String fileName = u.createLogFileName(name);
+		return fileName;
 	}
 }

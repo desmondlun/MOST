@@ -412,16 +412,6 @@ public class GraphicalInterface extends JFrame {
 	public static ReactionEditor getReactionEditor() {
 		return reactionEditor;
 	}
-	
-	public static String solverName;
-
-	public static String getSolverName() {
-		return solverName;
-	}
-
-	public static void setSolverName(String solverName) {
-		GraphicalInterface.solverName = solverName;
-	}
 
 	private static SuspiciousMetabolitesDialog suspiciousMetabolitesDialog = new SuspiciousMetabolitesDialog();
 
@@ -1379,7 +1369,7 @@ public class GraphicalInterface extends JFrame {
 						}
 						outputText.append("Maximum objective: "	+ maxObj + "\n");
 						//outputText.append("Maximum objective: "	+ fba.getMaxObj() + "\n");
-						outputText.append("Solver = " + getSolverName());
+						//outputText.append("Solver = " + getSolverName());
 						
 						File file = new File(u.createLogFileName(optimizeName + ".log"));
 						writer = new BufferedWriter(new FileWriter(file));
@@ -1467,11 +1457,11 @@ public class GraphicalInterface extends JFrame {
         			gdbbDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         			gdbbDialog.setLocationRelativeTo(null);
         			setGdbbDialog(gdbbDialog);
-        			if (getSolverName() == GraphicalInterfaceConstants.GLPK_SOLVER_NAME) {
-        				getGdbbDialog().disableThreadsCombo();
-        			} else if (getSolverName() == GraphicalInterfaceConstants.GUROBI_SOLVER_NAME) {
-        				getGdbbDialog().enableThreadsCombo();
-        			}
+//        			if (getSolverName() == GraphicalInterfaceConstants.GLPK_SOLVER_NAME) {
+//        				getGdbbDialog().disableThreadsCombo();
+//        			} else if (getSolverName() == GraphicalInterfaceConstants.GUROBI_SOLVER_NAME) {
+//        				getGdbbDialog().enableThreadsCombo();
+//        			}
         			gdbbDialog.addWindowListener(new WindowAdapter() {
         				public void windowClosing(WindowEvent evt) {
         					if (gdbbTimer.isRunning()) {
@@ -1581,11 +1571,11 @@ public class GraphicalInterface extends JFrame {
         eflux2Item.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
 				
-				if( GraphicalInterface.getSolverName().equals( GraphicalInterfaceConstants.GLPK_SOLVER_NAME ) )
-				{
-					JOptionPane.showMessageDialog( null, "GLPK does not support Eflux-2 at this time.\nPlease use Gurobi Solver instead." );
-					return;
-				}
+//				if( GraphicalInterface.getSolverName().equals( GraphicalInterfaceConstants.GLPK_SOLVER_NAME ) )
+//				{
+//					JOptionPane.showMessageDialog( null, "GLPK does not support Eflux-2 at this time.\nPlease use Gurobi Solver instead." );
+//					return;
+//				}
 				
 				Utilities u = new Utilities();
 
@@ -1632,7 +1622,7 @@ public class GraphicalInterface extends JFrame {
 							maxObj = "0.0";
 						}
 						outputText.append("Maximum objective: "	+ maxObj + "\n");
-						outputText.append("Solver = " + getSolverName());
+//						outputText.append("Solver = " + getSolverName());
 						
 						File file = new File(u.createLogFileName(optimizeName + ".log"));
 						writer = new BufferedWriter(new FileWriter(file));
@@ -1683,15 +1673,15 @@ public class GraphicalInterface extends JFrame {
 			public void actionPerformed( ActionEvent a )
 			{
 
-				if( GraphicalInterface.getSolverName().equals(
-						GraphicalInterfaceConstants.GLPK_SOLVER_NAME ) )
-				{
-					JOptionPane
-							.showMessageDialog(
-									null,
-									"GLPK does not support Eflux-2 at this time.\nPlease use Gurobi Solver instead." );
-					return;
-				}
+//				if( GraphicalInterface.getSolverName().equals(
+//						GraphicalInterfaceConstants.GLPK_SOLVER_NAME ) )
+//				{
+//					JOptionPane
+//							.showMessageDialog(
+//									null,
+//									"GLPK does not support Eflux-2 at this time.\nPlease use Gurobi Solver instead." );
+//					return;
+//				}
 
 				Utilities u = new Utilities();
 
@@ -1755,7 +1745,7 @@ public class GraphicalInterface extends JFrame {
 						outputText.append( "Maximum objective: " + maxObj
 								+ "\n" );
 					//	outputText.append( "Correlation: " + cosTheta + "\n" );
-						outputText.append( "Solver = " + getSolverName() );
+//						outputText.append( "Solver = " + getSolverName() );
 
 						File file = new File( u.createLogFileName( optimizeName
 								+ ".log" ) );
@@ -2464,13 +2454,13 @@ public class GraphicalInterface extends JFrame {
 				ConfigProperties configProp = new ConfigProperties();
 				if (configProp.fileExists()) {
 					ConfigProperties.readFile();
-					if (configProp.getSolverName() != null) {
-						if (configProp.getSolverName().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
-							getSolverSetUpDialog().glpkRadioButton.setSelected(true);
-						} else if (configProp.getSolverName().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
-							getSolverSetUpDialog().gurobiRadioButton.setSelected(true);
-						}
-					}
+//					if (configProp.getSolverName() != null) {
+//						if (configProp.getSolverName().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
+//							getSolverSetUpDialog().glpkRadioButton.setSelected(true);
+//						} else if (configProp.getSolverName().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
+//							getSolverSetUpDialog().gurobiRadioButton.setSelected(true);
+//						}
+//					}
 				}
 				getSolverSetUpDialog().setVisible(true);
 			}    	     
@@ -10531,7 +10521,7 @@ public class GraphicalInterface extends JFrame {
 								if (kString != null) {
 									text.append(kString);
 								}
-								text.append("\nSolver = " + getSolverName());
+//								text.append("\nSolver = " + getSolverName());
 
 								Utilities u = new Utilities();
 								File file = new File(u.createLogFileName(solution.getSolutionName() + ".log"));
@@ -10863,26 +10853,28 @@ public class GraphicalInterface extends JFrame {
 	static ActionListener solvOKActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			new ConfigProperties();
-			if (getSolverSetUpDialog().glpkRadioButton.isSelected()) {		
-				setSolverName(GraphicalInterfaceConstants.GLPK_SOLVER_NAME);
-				ConfigProperties.writeToFile(GraphicalInterfaceConstants.GLPK_SOLVER_NAME);
-			} else if (getSolverSetUpDialog().gurobiRadioButton.isSelected()) {
-				setSolverName(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
-				ConfigProperties.writeToFile(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
-			}
+//			if (getSolverSetUpDialog().glpkRadioButton.isSelected()) {		
+//				setSolverName(GraphicalInterfaceConstants.GLPK_SOLVER_NAME);
+//				ConfigProperties.writeToFile(GraphicalInterfaceConstants.GLPK_SOLVER_NAME);
+//			} else if (getSolverSetUpDialog().gurobiRadioButton.isSelected()) {
+//				setSolverName(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
+//				ConfigProperties.writeToFile(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
+//			}
 			getSolverSetUpDialog().setVisible(false);
 		}
 	};
 	
 	public void enableGurobiItems() {
-		getSolverSetUpDialog().gurobiRadioButton.setEnabled(true);
+		SolverSetUpDialog.cbLinear.addItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
+		SolverSetUpDialog.cbQuadratic.addItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
+		SolverSetUpDialog.cbLinear.setSelectedItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
+		SolverSetUpDialog.cbQuadratic.setSelectedItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
 		SolverSetUpDialog.gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_INSTALLED_MESSAGE + "</HTML>");
 	}
 	
 	public void disableGurobiItems() {
-		getSolverSetUpDialog().gurobiRadioButton.setEnabled(false);
-		// this ensures that if Gurobi is not installed, GLPK button will be selected
-		getSolverSetUpDialog().glpkRadioButton.setSelected(true);
+		SolverSetUpDialog.cbLinear.setSelectedItem(0);
+		SolverSetUpDialog.cbQuadratic.setSelectedItem(0);
 		SolverSetUpDialog.gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_PREFIX + GraphicalInterfaceConstants.GUROBI_MINIMUM_VERSION + System.getProperty("sun.arch.data.model") + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_SUFFIX + "</HTML>");
 	}
 	
@@ -10963,16 +10955,28 @@ public class GraphicalInterface extends JFrame {
 	
 	public static void getSolverFromConfigProperties() {
 		ConfigProperties configProp = new ConfigProperties();
-		setSolverName(GraphicalInterfaceConstants.DEFAULT_SOLVER_NAME);
+		//setSolverName(GraphicalInterfaceConstants);
 		if (configProp.fileExists()) {
 			ConfigProperties.readFile();
-			if (configProp.getSolverName() != null) {
-				if (configProp.getSolverName().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
-					setSolverName(GraphicalInterfaceConstants.GLPK_SOLVER_NAME);
-				} else if (configProp.getSolverName().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
-					setSolverName(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
+			if (ConfigProperties.getMixedIntegerLinearSolverName() != null) {
+				if (ConfigProperties.getMixedIntegerLinearSolverName().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
+					
+				} else if (ConfigProperties.getMixedIntegerLinearSolverName().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
+					
 				}
-			} 
+			}
+			if (ConfigProperties.getQuadraticSolverName() != null) {
+				if (ConfigProperties.getQuadraticSolverName().equals(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME)) {
+					
+				} else if (ConfigProperties.getQuadraticSolverName().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
+					
+				}
+			}
+			if (ConfigProperties.getNonlinearSolverName() != null) {
+				if (ConfigProperties.getNonlinearSolverName().equals(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME)) {
+					
+				} 
+			}
 		}
 	}
 	

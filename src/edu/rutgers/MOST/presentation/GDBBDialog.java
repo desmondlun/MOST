@@ -489,11 +489,11 @@ public class GDBBDialog  extends JDialog {
 	public void enableComponents() {
 		numKnockoutsLabel.setForeground(Color.BLACK);
 		numKnockoutsField.setEditable(true);
-		if (GraphicalInterface.getSolverName() == GraphicalInterfaceConstants.GLPK_SOLVER_NAME) {
-			disableThreadsCombo();
-		} else if (GraphicalInterface.getSolverName() == GraphicalInterfaceConstants.GUROBI_SOLVER_NAME) {
-			enableThreadsCombo();
-		}
+//		if (GraphicalInterface.getSolverName() == GraphicalInterfaceConstants.GLPK_SOLVER_NAME) {
+//			disableThreadsCombo();
+//		} else if (GraphicalInterface.getSolverName() == GraphicalInterfaceConstants.GUROBI_SOLVER_NAME) {
+//			enableThreadsCombo();
+//		}
 		
 		synObjLabel.setForeground(Color.BLACK);
 		cbSynObj.setEnabled(true);
