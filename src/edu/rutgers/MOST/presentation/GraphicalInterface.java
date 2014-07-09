@@ -752,6 +752,41 @@ public class GraphicalInterface extends JFrame {
 	/*****************************************************************************/
 
 	/*****************************************************************************/
+	// solvers
+	/*****************************************************************************/
+	
+	private static String mixedIntegerLinearSolverName;
+	
+	public static String getMixedIntegerLinearSolverName() {
+		return mixedIntegerLinearSolverName;
+	}
+
+	public static void setMixedIntegerLinearSolverName(
+			String mixedIntegerLinearSolverName) {
+		GraphicalInterface.mixedIntegerLinearSolverName = mixedIntegerLinearSolverName;
+	}
+	
+	private static String nonlinearSolverName;
+	
+	public static String getNonlinearSolverName() {
+		return nonlinearSolverName;
+	}
+
+	public static void setNonlinearSolverName(String nonlinearSolverName) {
+		GraphicalInterface.nonlinearSolverName = nonlinearSolverName;
+	}
+
+	private static String quadraticSolverName;
+
+	public static String getQuadraticSolverName() {
+		return quadraticSolverName;
+	}
+
+	public static void setQuadraticSolverName(String quadraticSolverName) {
+		GraphicalInterface.quadraticSolverName = quadraticSolverName;
+	}
+
+	/*****************************************************************************/
 	// sorting
 	/*****************************************************************************/
 
@@ -2454,13 +2489,25 @@ public class GraphicalInterface extends JFrame {
 				ConfigProperties configProp = new ConfigProperties();
 				if (configProp.fileExists()) {
 					ConfigProperties.readFile();
-//					if (configProp.getSolverName() != null) {
-//						if (configProp.getSolverName().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
-//							getSolverSetUpDialog().glpkRadioButton.setSelected(true);
-//						} else if (configProp.getSolverName().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
-//							getSolverSetUpDialog().gurobiRadioButton.setSelected(true);
-//						}
-//					}
+					if (ConfigProperties.getMixedIntegerLinearSolverName() != null) {
+						if (ConfigProperties.getMixedIntegerLinearSolverName().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
+							SolverSetUpDialog.cbLinear.setSelectedItem(GraphicalInterfaceConstants.GLPK_SOLVER_NAME);
+						} else if (ConfigProperties.getMixedIntegerLinearSolverName().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
+							SolverSetUpDialog.cbLinear.setSelectedItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
+						}
+					}
+					if (ConfigProperties.getQuadraticSolverName() != null) {
+						if (ConfigProperties.getQuadraticSolverName().equals(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME)) {
+							SolverSetUpDialog.cbQuadratic.setSelectedItem(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME);
+						} else if (ConfigProperties.getQuadraticSolverName().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
+							SolverSetUpDialog.cbQuadratic.setSelectedItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
+						}
+					}
+					if (ConfigProperties.getNonlinearSolverName() != null) {
+						if (ConfigProperties.getNonlinearSolverName().equals(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME)) {
+							SolverSetUpDialog.cbNonlinear.setSelectedItem(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME);
+						}
+					}
 				}
 				getSolverSetUpDialog().setVisible(true);
 			}    	     
@@ -10850,23 +10897,41 @@ public class GraphicalInterface extends JFrame {
 		return gurobiPath;
 	}
 	
+	/**
+	 * Writes solver selections to config file.
+	 */
 	static ActionListener solvOKActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			new ConfigProperties();
-//			if (getSolverSetUpDialog().glpkRadioButton.isSelected()) {		
-//				setSolverName(GraphicalInterfaceConstants.GLPK_SOLVER_NAME);
-//				ConfigProperties.writeToFile(GraphicalInterfaceConstants.GLPK_SOLVER_NAME);
-//			} else if (getSolverSetUpDialog().gurobiRadioButton.isSelected()) {
-//				setSolverName(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
-//				ConfigProperties.writeToFile(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
-//			}
+			String linear = "";
+			String quadratic = "";
+			String nonlinear = "";
+			if (SolverSetUpDialog.cbLinear.getSelectedItem().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
+				linear = GraphicalInterfaceConstants.GLPK_SOLVER_NAME;
+			} else if (SolverSetUpDialog.cbLinear.getSelectedItem().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
+				linear = GraphicalInterfaceConstants.GUROBI_SOLVER_NAME;
+			}
+			if (SolverSetUpDialog.cbQuadratic.getSelectedItem().equals(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME)) {
+				quadratic = GraphicalInterfaceConstants.IPOPT_SOLVER_NAME;
+			} else if (SolverSetUpDialog.cbQuadratic.getSelectedItem().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
+				quadratic = GraphicalInterfaceConstants.GUROBI_SOLVER_NAME;
+			}
+			if (SolverSetUpDialog.cbNonlinear.getSelectedItem().equals(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME)) {
+				nonlinear = GraphicalInterfaceConstants.GLPK_SOLVER_NAME;
+			}
+			ConfigProperties.writeToFile(linear, quadratic, nonlinear);
+
 			getSolverSetUpDialog().setVisible(false);
 		}
 	};
 	
 	public void enableGurobiItems() {
-		SolverSetUpDialog.cbLinear.addItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
-		SolverSetUpDialog.cbQuadratic.addItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
+		if (SolverSetUpDialog.cbLinear.getItemCount() == GraphicalInterfaceConstants.MIXED_INTEGER_LINEAR_OPTIONS.length) {
+			SolverSetUpDialog.cbLinear.addItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
+		}
+		if (SolverSetUpDialog.cbQuadratic.getItemCount() == GraphicalInterfaceConstants.QUADRATIC_OPTIONS.length) {
+			SolverSetUpDialog.cbQuadratic.addItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
+		}
 		SolverSetUpDialog.cbLinear.setSelectedItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
 		SolverSetUpDialog.cbQuadratic.setSelectedItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
 		SolverSetUpDialog.gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_INSTALLED_MESSAGE + "</HTML>");

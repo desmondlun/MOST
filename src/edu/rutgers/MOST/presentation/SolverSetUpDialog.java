@@ -56,9 +56,6 @@ public class SolverSetUpDialog extends JDialog {
 		cbQuadratic.setMaximumSize(new Dimension(150, 25));
 		cbQuadratic.setMinimumSize(new Dimension(150, 25));
 		
-		cbLinear.removeAll();
-		cbQuadratic.removeAll();
-		cbNonlinear.removeAll();
 		for (int i = 0; i < GraphicalInterfaceConstants.MIXED_INTEGER_LINEAR_OPTIONS.length; i++) {
 			cbLinear.addItem(GraphicalInterfaceConstants.MIXED_INTEGER_LINEAR_OPTIONS[i]);
 		}
