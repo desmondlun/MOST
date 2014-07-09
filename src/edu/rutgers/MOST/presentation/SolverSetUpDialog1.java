@@ -56,14 +56,14 @@ public class SolverSetUpDialog1 extends JDialog {
 		cbQuadratic.setMaximumSize(new Dimension(150, 25));
 		cbQuadratic.setMinimumSize(new Dimension(150, 25));
 		
-		for (int i = 0; i < GraphicalInterfaceConstants.LINEAR_OPTIONS_GUROBI_LINKED.length; i++) {
-			cbLinear.addItem(GraphicalInterfaceConstants.LINEAR_OPTIONS_GUROBI_LINKED[i]);
+		for (int i = 0; i < GraphicalInterfaceConstants.MIXED_INTEGER_LINEAR_OPTIONS.length; i++) {
+			cbLinear.addItem(GraphicalInterfaceConstants.MIXED_INTEGER_LINEAR_OPTIONS[i]);
+		}
+		for (int i = 0; i < GraphicalInterfaceConstants.QUADRATIC_OPTIONS.length; i++) {
+			cbQuadratic.addItem(GraphicalInterfaceConstants.QUADRATIC_OPTIONS[i]);
 		}
 		for (int i = 0; i < GraphicalInterfaceConstants.NONLINEAR_OPTIONS.length; i++) {
 			cbNonlinear.addItem(GraphicalInterfaceConstants.NONLINEAR_OPTIONS[i]);
-		}
-		for (int i = 0; i < GraphicalInterfaceConstants.QUADRATIC_OPTIONS_GUROBI_LINKED.length; i++) {
-			cbQuadratic.addItem(GraphicalInterfaceConstants.QUADRATIC_OPTIONS_GUROBI_LINKED[i]);
 		}
 		
 		//box layout
@@ -71,10 +71,10 @@ public class SolverSetUpDialog1 extends JDialog {
 		Box hbGurobiLabel = Box.createHorizontalBox();
 		Box hbLinearLabel = Box.createHorizontalBox();
 		Box hbLinear = Box.createHorizontalBox();
-		Box hbNonlinearLabel = Box.createHorizontalBox();
-		Box hbNonlinear = Box.createHorizontalBox();
 		Box hbQuadraticLabel = Box.createHorizontalBox();
 		Box hbQuadratic = Box.createHorizontalBox();
+		Box hbNonlinearLabel = Box.createHorizontalBox();
+		Box hbNonlinear = Box.createHorizontalBox();
 		Box hbButton = Box.createHorizontalBox();
 		
 		Box vbLabels = Box.createVerticalBox();
@@ -113,10 +113,10 @@ public class SolverSetUpDialog1 extends JDialog {
 		
 		//Linear Label and combo
 		JLabel linearLabel = new JLabel();
-		linearLabel.setText("Linear");
-		linearLabel.setPreferredSize(new Dimension(100, 25));
-		linearLabel.setMaximumSize(new Dimension(100, 25));
-		linearLabel.setMinimumSize(new Dimension(100, 25));
+		linearLabel.setText(GraphicalInterfaceConstants.MIXED_INTEGER_LINEAR_LABEL);
+		linearLabel.setPreferredSize(new Dimension(150, 25));
+		linearLabel.setMaximumSize(new Dimension(150, 25));
+		linearLabel.setMinimumSize(new Dimension(150, 25));
 		linearLabel.setBorder(BorderFactory.createEmptyBorder(10,0,ColumnInterfaceConstants.LABEL_BOTTOM_BORDER_SIZE,10));
 		linearLabel.setAlignmentX(LEFT_ALIGNMENT);
 		//linearLabel.setAlignmentY(TOP_ALIGNMENT);	    	    
@@ -143,44 +143,12 @@ public class SolverSetUpDialog1 extends JDialog {
 		vbLabels.add(blankLabel3);
 		vbCombos.add(hbLinear);
 		
-		//Nonlinear Label and combo
-		JLabel nonlinearLabel = new JLabel();
-		nonlinearLabel.setText("Nonlinear");
-		nonlinearLabel.setPreferredSize(new Dimension(100, 25));
-		nonlinearLabel.setMaximumSize(new Dimension(100, 25));
-		nonlinearLabel.setMinimumSize(new Dimension(100, 25));
-		nonlinearLabel.setBorder(BorderFactory.createEmptyBorder(10,0,ColumnInterfaceConstants.LABEL_BOTTOM_BORDER_SIZE,10));
-		nonlinearLabel.setAlignmentX(LEFT_ALIGNMENT);
-		//nonlinearLabel.setAlignmentY(TOP_ALIGNMENT);	    	    
-
-		JPanel panelNonlinearLabel = new JPanel();
-		panelNonlinearLabel.setLayout(new BoxLayout(panelNonlinearLabel, BoxLayout.X_AXIS));
-		panelNonlinearLabel.add(nonlinearLabel);
-		panelNonlinearLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
-
-		hbNonlinearLabel.add(panelNonlinearLabel);
-		hbNonlinearLabel.setAlignmentX(LEFT_ALIGNMENT);
-
-		JPanel panelNonlinear = new JPanel();
-		panelNonlinear.setLayout(new BoxLayout(panelNonlinear, BoxLayout.X_AXIS));
-		panelNonlinear.add(cbNonlinear);
-		panelNonlinear.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
-		panelNonlinear.setAlignmentX(RIGHT_ALIGNMENT);
-
-		hbNonlinear.add(panelNonlinear);
-		hbNonlinear.setAlignmentX(RIGHT_ALIGNMENT);
-
-		vbLabels.add(hbNonlinearLabel);
-		JLabel blankLabel2 = new JLabel("");
-		vbLabels.add(blankLabel2);
-		vbCombos.add(hbNonlinear);
-		
 		//Quadratic Label and combo
 		JLabel quadraticLabel = new JLabel();
-		quadraticLabel.setText("Quadratic");
-		quadraticLabel.setPreferredSize(new Dimension(100, 25));
-		quadraticLabel.setMaximumSize(new Dimension(100, 25));
-		quadraticLabel.setMinimumSize(new Dimension(100, 25));
+		quadraticLabel.setText(GraphicalInterfaceConstants.QUADRATIC_LABEL);
+		quadraticLabel.setPreferredSize(new Dimension(150, 25));
+		quadraticLabel.setMaximumSize(new Dimension(150, 25));
+		quadraticLabel.setMinimumSize(new Dimension(150, 25));
 		quadraticLabel.setBorder(BorderFactory.createEmptyBorder(10,0,ColumnInterfaceConstants.LABEL_BOTTOM_BORDER_SIZE,10));
 		quadraticLabel.setAlignmentX(LEFT_ALIGNMENT);
 		//quadraticLabel.setAlignmentY(TOP_ALIGNMENT);	    	    
@@ -206,6 +174,38 @@ public class SolverSetUpDialog1 extends JDialog {
 		JLabel blankLabel1 = new JLabel("");
 		vbLabels.add(blankLabel1);
 		vbCombos.add(hbQuadratic);
+		
+		//Nonlinear Label and combo
+		JLabel nonlinearLabel = new JLabel();
+		nonlinearLabel.setText(GraphicalInterfaceConstants.NONLINEAR_LABEL);
+		nonlinearLabel.setPreferredSize(new Dimension(150, 25));
+		nonlinearLabel.setMaximumSize(new Dimension(150, 25));
+		nonlinearLabel.setMinimumSize(new Dimension(150, 25));
+		nonlinearLabel.setBorder(BorderFactory.createEmptyBorder(10,0,ColumnInterfaceConstants.LABEL_BOTTOM_BORDER_SIZE,10));
+		nonlinearLabel.setAlignmentX(LEFT_ALIGNMENT);
+		//nonlinearLabel.setAlignmentY(TOP_ALIGNMENT);	    	    
+
+		JPanel panelNonlinearLabel = new JPanel();
+		panelNonlinearLabel.setLayout(new BoxLayout(panelNonlinearLabel, BoxLayout.X_AXIS));
+		panelNonlinearLabel.add(nonlinearLabel);
+		panelNonlinearLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+
+		hbNonlinearLabel.add(panelNonlinearLabel);
+		hbNonlinearLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+		JPanel panelNonlinear = new JPanel();
+		panelNonlinear.setLayout(new BoxLayout(panelNonlinear, BoxLayout.X_AXIS));
+		panelNonlinear.add(cbNonlinear);
+		panelNonlinear.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		panelNonlinear.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbNonlinear.add(panelNonlinear);
+		hbNonlinear.setAlignmentX(RIGHT_ALIGNMENT);
+
+		vbLabels.add(hbNonlinearLabel);
+		JLabel blankLabel2 = new JLabel("");
+		vbLabels.add(blankLabel2);
+		vbCombos.add(hbNonlinear);
 		
 		okButton.setMnemonic(KeyEvent.VK_O);
 		okButton.setEnabled(true);

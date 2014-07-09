@@ -255,7 +255,7 @@ public class ReactionEditor extends JFrame {
 								reactant[h] = reactantSelection[h];
 							}
 							tempReactantsList.add(reactant[h]);
-						}      	    	      
+						} 
 					} 
 					//set reaction equation into text box
 					String reacString = "";

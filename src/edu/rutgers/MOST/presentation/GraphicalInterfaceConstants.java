@@ -443,30 +443,24 @@ public class GraphicalInterfaceConstants {
     public static final String GUROBI_SOLVER_NAME = "Gurobi";
     public static final String IPOPT_SOLVER_NAME = "Ipopt";
     
-    public static final String[] LINEAR_OPTIONS_GUROBI_LINKED = 
+    public static final String MIXED_INTEGER_LINEAR_LABEL = "Mixed Integer Linear";
+    public static final String QUADRATIC_LABEL = "Mixed Integer Linear";
+    public static final String NONLINEAR_LABEL = "Nonlinera";
+    
+    public static final String[] MIXED_INTEGER_LINEAR_OPTIONS = 
     	{
-    		"GLPK", "Gurobi", "Ipopt"
+    		GLPK_SOLVER_NAME
     	};
     
-    public static final String[] LINEAR_OPTIONS_GUROBI_NOT_LINKED = 
+    public static final String[] QUADRATIC_OPTIONS = 
     	{
-    		"GLPK", "Ipopt"
+    		IPOPT_SOLVER_NAME
     	};
     
     public static final String[] NONLINEAR_OPTIONS = 
     	{
-    		"Ipopt"
+    		IPOPT_SOLVER_NAME
     	};
-    
-    public static final String[] QUADRATIC_OPTIONS_GUROBI_LINKED = 
-    	{
-    		"Gurobi"
-    	};
-    
-//    public static final String[] QUADRATIC_OPTIONS_GUROBI_NOT_LINKED = 
-//    	{
-//    		
-//    	};
     
     public static final String GLPK_NO_MULTIPLE_THREADS_TOOLTIP = "GLPK does not support multiple threads.";
     

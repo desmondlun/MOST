@@ -8145,19 +8145,33 @@ public class GraphicalInterface extends JFrame {
 	// undo/redo
 	/******************************************************************************/
 
-	// adds image to OptionComponent
+	/**
+	 * adds image to OptionComponent
+	 * @param comp
+	 * @param label
+	 */
 	public void addImage(OptionComponent comp, JLabel label) {
 		label.setBorder(BorderFactory.createEmptyBorder(0,0,0,20));
 		label.setAlignmentX(LEFT_ALIGNMENT);
 		comp.add(label); 
 	}
-
+	/**
+	 * @param comp
+	 * @param label
+	 * @param grayedLabel
+	 */
 	public void enableOptionComponent(OptionComponent comp, JLabel label, JLabel grayedLabel) {
 		comp.setEnabled(true);
 		label.setVisible(true);
 		grayedLabel.setVisible(false);
 	}
 
+	/**
+	 * 
+	 * @param comp
+	 * @param label
+	 * @param grayedLabel
+	 */
 	public void disableOptionComponent(OptionComponent comp, JLabel label, JLabel grayedLabel) {
 		comp.setEnabled(false);
 		comp.buttonClicked = false;
