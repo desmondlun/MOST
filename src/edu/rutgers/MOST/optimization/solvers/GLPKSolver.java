@@ -25,7 +25,7 @@ import edu.rutgers.MOST.Analysis.GDBB;
 import edu.rutgers.MOST.data.Solution;
 import edu.rutgers.MOST.presentation.ResizableDialog;
 
-public class GLPKSolver implements LinearSolver, GlpkCallbackListener
+public class GLPKSolver implements MILSolver, GlpkCallbackListener
 {
 	private class RowEntry
 	{
