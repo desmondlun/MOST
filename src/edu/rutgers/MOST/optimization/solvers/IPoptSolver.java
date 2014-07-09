@@ -188,6 +188,7 @@ public class IPoptSolver extends Ipopt implements NonlinearSolver, LinearSolver
 				obj_value[ 0 ] = dotProduct / ( length_flux_v );
 			}
 			break;
+			
 		default:
 			return false;
 		}
@@ -241,6 +242,7 @@ public class IPoptSolver extends Ipopt implements NonlinearSolver, LinearSolver
 					grad_f[ j ] = dotProduct / ( length_flux_v );
 				}
 			}
+			break;
 			
 		default:
 			return false;
