@@ -426,7 +426,7 @@ public class GraphicalInterfaceConstants {
     // Solver and Gurobi set up
     public static final int SOLVER_DIALOG_WIDTH = 360;
     public static final int SOLVER_DIALOG_HEIGHT = 240;
-    public static final String SOLVER_DIALOG_TITLE = "Set Up Solvers";
+    public static final String SOLVER_DIALOG_TITLE = "Select Solvers";
     public static final String SOLVER_SELECTION_LABEL = "";
     public static final String GLPK_SOLVER_BUTTON_LABEL = "GLPK";
     public static final String GUROBI_SOLVER_BUTTON_LABEL = "Gurobi";

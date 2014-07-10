@@ -565,7 +565,7 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem editorMenu = new JMenuItem("Launch Reaction Editor");
 	public final JMenuItem unsortReacMenuItem = new JMenuItem("Unsort Reactions Table");
 	public final JMenuItem unsortMetabMenuItem = new JMenuItem("Unsort Metabolites Table");
-	public final JMenuItem setUpSolver = new JMenuItem("Set Up Solvers");
+	public final JMenuItem setUpSolver = new JMenuItem("Select Solvers");
 
 	public final JMenuItem formulaBarCutItem = new JMenuItem("Cut");
 	public final JMenuItem formulaBarCopyItem = new JMenuItem("Copy");

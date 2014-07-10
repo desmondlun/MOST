@@ -55,7 +55,6 @@ public class ConfigProperties {
 		OutputStream output = null;
 
 		try {
-			System.out.println(propertiesPath("config.properties"));
 			output = new FileOutputStream(propertiesPath("config.properties"));
 
 			// set the properties value

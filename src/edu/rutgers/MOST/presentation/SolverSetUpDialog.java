@@ -113,6 +113,8 @@ public class SolverSetUpDialog extends JDialog {
 		
 		//Linear Label and combo
 		JLabel linearLabel = new JLabel();
+		linearLabel.setDisplayedMnemonic('M');
+		linearLabel.setLabelFor(cbLinear);
 		linearLabel.setText(GraphicalInterfaceConstants.MIXED_INTEGER_LINEAR_LABEL);
 		linearLabel.setPreferredSize(new Dimension(150, 25));
 		linearLabel.setMaximumSize(new Dimension(150, 25));
@@ -145,6 +147,8 @@ public class SolverSetUpDialog extends JDialog {
 		
 		//Quadratic Label and combo
 		JLabel quadraticLabel = new JLabel();
+		quadraticLabel.setDisplayedMnemonic('Q');
+		quadraticLabel.setLabelFor(cbQuadratic);
 		quadraticLabel.setText(GraphicalInterfaceConstants.QUADRATIC_LABEL);
 		quadraticLabel.setPreferredSize(new Dimension(150, 25));
 		quadraticLabel.setMaximumSize(new Dimension(150, 25));
@@ -177,6 +181,8 @@ public class SolverSetUpDialog extends JDialog {
 		
 		//Nonlinear Label and combo
 		JLabel nonlinearLabel = new JLabel();
+		nonlinearLabel.setDisplayedMnemonic('N');
+		nonlinearLabel.setLabelFor(cbNonlinear);
 		nonlinearLabel.setText(GraphicalInterfaceConstants.NONLINEAR_LABEL);
 		nonlinearLabel.setPreferredSize(new Dimension(150, 25));
 		nonlinearLabel.setMaximumSize(new Dimension(150, 25));
