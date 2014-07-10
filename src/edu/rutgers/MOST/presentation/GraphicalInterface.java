@@ -424,14 +424,14 @@ public class GraphicalInterface extends JFrame {
 		GraphicalInterface.suspiciousMetabolitesDialog = suspiciousMetabolitesDialog;
 	}
 	
-	private static SolverSetUpDialog solverSetUpDialog;
+	private SolverSetUpDialog solvSetUpDlg;
 
-	public static SolverSetUpDialog getSolverSetUpDialog() {
-		return solverSetUpDialog;
+	public SolverSetUpDialog getSolverSetUpDialog() {
+		return solvSetUpDlg;
 	}
 
-	public static void setSolverSetUpDialog(SolverSetUpDialog solverSetUpDialog) {
-		GraphicalInterface.solverSetUpDialog = solverSetUpDialog;
+	public void setSolverSetUpDialog(SolverSetUpDialog solverSetUpDialog) {
+		this.solvSetUpDlg = solverSetUpDialog;
 	}
 
 	private DynamicTreePanel treePanel;
@@ -1050,16 +1050,15 @@ public class GraphicalInterface extends JFrame {
 		SuspiciousMetabolitesDialog.messageButton.addActionListener(new OpenUrlAction());
 		setSuspiciousMetabolitesDialog(suspiciousMetabolitesDialog);
 		
-		SolverSetUpDialog solvSetUpDlg = new SolverSetUpDialog();
-		setSolverSetUpDialog(solvSetUpDlg);
-		solvSetUpDlg.setIconImages(icons);					
-		solvSetUpDlg.setSize(GraphicalInterfaceConstants.SOLVER_DIALOG_WIDTH, GraphicalInterfaceConstants.SOLVER_DIALOG_HEIGHT);
-		solvSetUpDlg.setResizable(false);
-		solvSetUpDlg.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		solvSetUpDlg.setLocationRelativeTo(null);		
-		solvSetUpDlg.setModal(true);
-		SolverSetUpDialog.okButton.addActionListener(solvOKActionListener);
-		solvSetUpDlg.addWindowListener(new WindowAdapter() {
+		setSolverSetUpDialog( new SolverSetUpDialog() );
+		getSolverSetUpDialog().setIconImages(icons);					
+		getSolverSetUpDialog().setSize(GraphicalInterfaceConstants.SOLVER_DIALOG_WIDTH, GraphicalInterfaceConstants.SOLVER_DIALOG_HEIGHT);
+		getSolverSetUpDialog().setResizable(false);
+		getSolverSetUpDialog().setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		getSolverSetUpDialog().setLocationRelativeTo(null);		
+		getSolverSetUpDialog().setModal(true);
+		getSolverSetUpDialog().okButton.addActionListener(solvOKActionListener);
+		getSolverSetUpDialog().addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent evt) {
 				getSolverSetUpDialog().setVisible(false);
 				getSolverSetUpDialog().dispose();
@@ -2492,21 +2491,21 @@ public class GraphicalInterface extends JFrame {
 					ConfigProperties.readFile();
 					if (ConfigProperties.getMixedIntegerLinearSolverName() != null) {
 						if (ConfigProperties.getMixedIntegerLinearSolverName().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
-							SolverSetUpDialog.cbLinear.setSelectedItem(GraphicalInterfaceConstants.GLPK_SOLVER_NAME);
+							getSolverSetUpDialog().cbLinear.setSelectedItem(GraphicalInterfaceConstants.GLPK_SOLVER_NAME);
 						} else if (ConfigProperties.getMixedIntegerLinearSolverName().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
-							SolverSetUpDialog.cbLinear.setSelectedItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
+							getSolverSetUpDialog().cbLinear.setSelectedItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
 						}
 					}
 					if (ConfigProperties.getQuadraticSolverName() != null) {
 						if (ConfigProperties.getQuadraticSolverName().equals(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME)) {
-							SolverSetUpDialog.cbQuadratic.setSelectedItem(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME);
+							getSolverSetUpDialog().cbQuadratic.setSelectedItem(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME);
 						} else if (ConfigProperties.getQuadraticSolverName().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
-							SolverSetUpDialog.cbQuadratic.setSelectedItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
+							getSolverSetUpDialog().cbQuadratic.setSelectedItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
 						}
 					}
 					if (ConfigProperties.getNonlinearSolverName() != null) {
 						if (ConfigProperties.getNonlinearSolverName().equals(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME)) {
-							SolverSetUpDialog.cbNonlinear.setSelectedItem(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME);
+							getSolverSetUpDialog().cbNonlinear.setSelectedItem(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME);
 						}
 					}
 				}
@@ -10901,23 +10900,23 @@ public class GraphicalInterface extends JFrame {
 	/**
 	 * Writes solver selections to config file.
 	 */
-	static ActionListener solvOKActionListener = new ActionListener() {
+	ActionListener solvOKActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			new ConfigProperties();
 			String linear = "";
 			String quadratic = "";
 			String nonlinear = "";
-			if (SolverSetUpDialog.cbLinear.getSelectedItem().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
+			if ( getSolverSetUpDialog().cbLinear.getSelectedItem().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
 				linear = GraphicalInterfaceConstants.GLPK_SOLVER_NAME;
-			} else if (SolverSetUpDialog.cbLinear.getSelectedItem().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
+			} else if ( getSolverSetUpDialog().cbLinear.getSelectedItem().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
 				linear = GraphicalInterfaceConstants.GUROBI_SOLVER_NAME;
 			}
-			if (SolverSetUpDialog.cbQuadratic.getSelectedItem().equals(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME)) {
+			if ( getSolverSetUpDialog().cbQuadratic.getSelectedItem().equals(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME)) {
 				quadratic = GraphicalInterfaceConstants.IPOPT_SOLVER_NAME;
-			} else if (SolverSetUpDialog.cbQuadratic.getSelectedItem().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
+			} else if ( getSolverSetUpDialog().cbQuadratic.getSelectedItem().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
 				quadratic = GraphicalInterfaceConstants.GUROBI_SOLVER_NAME;
 			}
-			if (SolverSetUpDialog.cbNonlinear.getSelectedItem().equals(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME)) {
+			if ( getSolverSetUpDialog().cbNonlinear.getSelectedItem().equals(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME)) {
 				nonlinear = GraphicalInterfaceConstants.GLPK_SOLVER_NAME;
 			}
 			setMixedIntegerLinearSolverName(linear);
@@ -10930,21 +10929,21 @@ public class GraphicalInterface extends JFrame {
 	};
 	
 	public void enableGurobiItems() {
-		if (SolverSetUpDialog.cbLinear.getItemCount() == GraphicalInterfaceConstants.MIXED_INTEGER_LINEAR_OPTIONS.length) {
-			SolverSetUpDialog.cbLinear.addItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
+		if (getSolverSetUpDialog().cbLinear.getItemCount() == GraphicalInterfaceConstants.MIXED_INTEGER_LINEAR_OPTIONS.length) {
+			getSolverSetUpDialog().cbLinear.addItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
 		}
-		if (SolverSetUpDialog.cbQuadratic.getItemCount() == GraphicalInterfaceConstants.QUADRATIC_OPTIONS.length) {
-			SolverSetUpDialog.cbQuadratic.addItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
+		if (getSolverSetUpDialog().cbQuadratic.getItemCount() == GraphicalInterfaceConstants.QUADRATIC_OPTIONS.length) {
+			getSolverSetUpDialog().cbQuadratic.addItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
 		}
-		SolverSetUpDialog.cbLinear.setSelectedItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
-		SolverSetUpDialog.cbQuadratic.setSelectedItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
-		SolverSetUpDialog.gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_INSTALLED_MESSAGE + "</HTML>");
+		getSolverSetUpDialog().cbLinear.setSelectedItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
+		getSolverSetUpDialog().cbQuadratic.setSelectedItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
+		getSolverSetUpDialog().gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_INSTALLED_MESSAGE + "</HTML>");
 	}
 	
 	public void disableGurobiItems() {
-		SolverSetUpDialog.cbLinear.setSelectedItem(0);
-		SolverSetUpDialog.cbQuadratic.setSelectedItem(0);
-		SolverSetUpDialog.gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_PREFIX + GraphicalInterfaceConstants.GUROBI_MINIMUM_VERSION + System.getProperty("sun.arch.data.model") + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_SUFFIX + "</HTML>");
+		getSolverSetUpDialog().cbLinear.setSelectedItem(0);
+		getSolverSetUpDialog().cbQuadratic.setSelectedItem(0);
+		getSolverSetUpDialog().gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_PREFIX + GraphicalInterfaceConstants.GUROBI_MINIMUM_VERSION + System.getProperty("sun.arch.data.model") + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_SUFFIX + "</HTML>");
 	}
 	
 	/******************************************************************************/

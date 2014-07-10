@@ -23,13 +23,13 @@ public class SolverSetUpDialog extends JDialog {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	//public static JLabel solverSelectionLabel = new JLabel(GraphicalInterfaceConstants.SOLVER_SELECTION_LABEL);
-	public static JComboBox<String> cbLinear = new JComboBox<String>(); 
-	public static JComboBox<String> cbNonlinear = new JComboBox<String>(); 
-	public static JComboBox<String> cbQuadratic = new JComboBox<String>(); 
-	public static JButton okButton = new JButton("    OK    ");
-	public static JButton cancelButton = new JButton("  Cancel  ");
-	public static JLabel gurobiLabel = new JLabel();
+	//public JLabel solverSelectionLabel = new JLabel(GraphicalInterfaceConstants.SOLVER_SELECTION_LABEL);
+	public JComboBox<String> cbLinear = new JComboBox<String>(); 
+	public JComboBox<String> cbNonlinear = new JComboBox<String>(); 
+	public JComboBox<String> cbQuadratic = new JComboBox<String>(); 
+	public JButton okButton = new JButton("    OK    ");
+	public JButton cancelButton = new JButton("  Cancel  ");
+	public JLabel gurobiLabel = new JLabel();
 	
 	public SolverSetUpDialog() {
 
