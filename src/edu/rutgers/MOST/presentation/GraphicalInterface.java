@@ -8,6 +8,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
@@ -1354,6 +1356,20 @@ public class GraphicalInterface extends JFrame {
 		//Analysis menu
 		JMenu analysisMenu = new JMenu("Analysis");
 		analysisMenu.setMnemonic(KeyEvent.VK_A);
+		
+		// based on http://stackoverflow.com/questions/9358710/java-action-listener-on-menu-and-not-on-menu-item
+		analysisMenu.addMenuListener(new MenuListener() {
+			@Override
+			public void menuCanceled(MenuEvent arg0) {
+			}
+			@Override
+			public void menuDeselected(MenuEvent arg0) {
+			}
+			@Override
+			public void menuSelected(MenuEvent arg0) {
+				System.out.println("menuSelected");
+			}
+	    });
 
 		//Analysis --> FBA
 		analysisMenu.add(fbaItem);
