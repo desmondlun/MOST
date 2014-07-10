@@ -32,7 +32,7 @@ public class SolverComponent
 		
 		return true;
 	}
-	public boolean addConstraint(  Map< Integer, Double > map, ConType conType, double value )
+	public boolean addConstraint( Map< Integer, Double > map, ConType conType, double value )
 	{
 		Constraint constraint = new Constraint();
 		for( int j = 0; j < variables.size(); ++j )
@@ -47,6 +47,21 @@ public class SolverComponent
 				return false;
 			constraint.coefficients.set( term.getKey(), term.getValue() );
 		}
+		
+		constraints.add( constraint );
+		
+		return true;
+	}
+	public boolean addConstraint( ArrayList< Double > coefs, ConType conType, double value )
+	{
+		if( coefs.size() != variables.size() )
+			return false;
+		
+		Constraint constraint = new Constraint();
+		constraint.type = conType;
+		constraint.value = value;
+		for( Double coef : coefs )
+			constraint.coefficients.add( new Double( coef.doubleValue() ) );
 		
 		constraints.add( constraint );
 		

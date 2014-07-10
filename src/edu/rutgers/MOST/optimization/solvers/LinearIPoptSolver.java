@@ -5,7 +5,6 @@ public class LinearIPoptSolver extends IPoptSolver implements LinearSolver
 	public LinearIPoptSolver()
 	{
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	protected boolean eval_f( int n, double[] x, boolean new_x,

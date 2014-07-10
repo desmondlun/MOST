@@ -62,6 +62,9 @@ public class SolverFactory
 			solver = new QuadraticGurobiSolver();
 			break;
 			
+		case GraphicalInterfaceConstants.IPOPT_SOLVER_NAME:
+			solver = new QuadraticIPoptSolver();
+			break;			
 		}
 		return solver;
 	}
