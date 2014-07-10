@@ -21,7 +21,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 
-public class GurobiQuadraticSolver implements QuadraticSolver
+public class QuadraticGurobiSolver implements QuadraticSolver
 { 
 	private void promptGRBError( GRBException e )
 	{
@@ -147,7 +147,7 @@ public class GurobiQuadraticSolver implements QuadraticSolver
 	public ArrayList< Double > minimizeEuclideanNorm( ArrayList< Double > objCoefs, Double objVal, SolverComponent componentSource )
 	{
 		ArrayList< Double > soln = new ArrayList< Double >();
-		SolverComponent component = componentSource.clone();
+		final SolverComponent component = componentSource;
 		
 		try
 		{

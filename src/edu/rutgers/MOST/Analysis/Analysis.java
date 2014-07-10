@@ -9,18 +9,11 @@ import edu.rutgers.MOST.data.*;
 import edu.rutgers.MOST.optimization.solvers.*;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
-public class Analysis
+public abstract class Analysis
 {
 	protected Model model = new Model();
-	protected Solver solver;
 	protected Vector< String > varNames = new Vector< String >();
 	protected double maxObj;
-
-	public Analysis( Algorithm algorithm )
-	{
-		this.solver = SolverFactory.createSolver( algorithm );
-		this.varNames = new Vector< String >();
-	}
 
 	private void setVars()
 	{
@@ -83,20 +76,22 @@ public class Analysis
 		this.model = m;
 	}
 	
-	public ArrayList< Double > run()
+	public void setSolverParameters()
 	{
 		this.setVars();
 		this.setConstraints();
 		this.setObjective();
+	}
+	
+	public ArrayList< Double > run()
+	{
+		this.setSolverParameters();
 		this.maxObj = this.getSolver().optimize();
 
 		return this.getSolver().getSoln();
 	}
 	
-	public Solver getSolver()
-	{
-		return solver;
-	}
+	public abstract Solver getSolver();
 
 	public double getMaxObj()
 	{

@@ -6,6 +6,10 @@ import java.util.Vector;
 
 public interface Solver
 {
+	/**
+	 * Get the Solver name
+	 * @return The name of type of Solver
+	 */
 	public abstract String getName();
 	
 	/**

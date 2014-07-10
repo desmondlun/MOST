@@ -31,20 +31,19 @@ import gurobi.GRBModel;
 import gurobi.GRBVar;
 import gurobi.GRBLinExpr;
 
-public class GurobiSolver extends Ipopt implements MILSolver
+public abstract class GurobiSolver extends Ipopt implements MILSolver
 {
-	private ArrayList< Double > soln = new ArrayList< Double >();
+	protected ArrayList< Double > soln = new ArrayList< Double >();
 	Vector< Double > geneExpr = new Vector< Double >();
-	private double objval;
-	private GRBEnv env = null;
-	private ObjType objType;
-	private ResizableDialog dialog = new ResizableDialog( "Error",
+	protected double objval;
+	protected GRBEnv env = null;
+	protected ObjType objType;
+	protected ResizableDialog dialog = new ResizableDialog( "Error",
 			"Gurobi Solver Error", "Gurobi Solver Error" );
-	private Algorithm algorithm;
-	private boolean abort = false;
-	private SolverComponent component = new SolverComponent();
-	private Vector< Double > objCoefs = new Vector< Double >();
-	
+	protected boolean abort = false;
+	protected SolverComponent component = new SolverComponent();
+	protected ArrayList< Double > objCoefs = new ArrayList< Double >();
+	protected GRBModel model = null;
 	public static boolean isGurobiLinked()
 	{
 		try
@@ -65,7 +64,7 @@ public class GurobiSolver extends Ipopt implements MILSolver
 
 		return true; // gurobi does link
 	}
-	private void processStackTrace( Exception e )
+	protected void processStackTrace( Exception e )
 	{
 		//e.printStackTrace();
 		StringWriter errors = new StringWriter();
@@ -76,7 +75,7 @@ public class GurobiSolver extends Ipopt implements MILSolver
 		dialog.setModal(true);		
 		dialog.setVisible( true );
 	}
-	private void promptGRBError( GRBException e )
+	protected void promptGRBError( GRBException e )
 	{
 		abort();
 		String errMsg;
@@ -118,7 +117,7 @@ public class GurobiSolver extends Ipopt implements MILSolver
 		processStackTrace( new Exception( errMsg ) );
 		LocalConfig.getInstance().getOptimizationFilesList().clear();
 	}
-	private char getGRBVarType( VarType type )
+	protected char getGRBVarType( VarType type )
 	{
 		switch( type )
 		{
@@ -136,7 +135,7 @@ public class GurobiSolver extends Ipopt implements MILSolver
 			return GRB.CONTINUOUS;
 		}
 	}
-	private char getGRBConType( ConType type )
+	protected char getGRBConType( ConType type )
 	{
 		switch( type )
 		{
@@ -150,7 +149,7 @@ public class GurobiSolver extends Ipopt implements MILSolver
 			return GRB.LESS_EQUAL;
 		}
 	}
-	private int getGRBObjType( ObjType objType )
+	protected int getGRBObjType( ObjType objType )
 	{
 		switch( objType )
 		{
@@ -163,10 +162,9 @@ public class GurobiSolver extends Ipopt implements MILSolver
 		}
 	}
 
-	public GurobiSolver( Algorithm algorithm )
+	public GurobiSolver()
 	{
 		// set the dialog
-		this.algorithm = algorithm;
 		final ArrayList< Image > icons = new ArrayList< Image >();
 		icons.add( new ImageIcon( "etc/most16.jpg" ).getImage() );
 		icons.add( new ImageIcon( "etc/most32.jpg" ).getImage() );
@@ -268,11 +266,11 @@ public class GurobiSolver extends Ipopt implements MILSolver
 		component.addConstraint( map, conType, value );
 	}
 
-	private double minimizeEuclideanNorm()
+	protected double minimizeEuclideanNorm()
 	{
 		double result = 0.0;
 		
-		GurobiQuadraticSolver quadSolver = new GurobiQuadraticSolver();
+		QuadraticGurobiSolver quadSolver = new QuadraticGurobiSolver();
 		this.soln = quadSolver.minimizeEuclideanNorm( new ArrayList< Double >( this.objCoefs ), this.objval, this.component );
 		
 		for( Double val : soln )
@@ -287,7 +285,7 @@ public class GurobiSolver extends Ipopt implements MILSolver
 	{
 		try
 		{
-			final GRBModel model = new GRBModel( env );
+			model = new GRBModel( env );
 			ArrayList< GRBVar > vars = new ArrayList< GRBVar >();
 			
 			try
@@ -387,70 +385,6 @@ public class GurobiSolver extends Ipopt implements MILSolver
 					// get the flux values
 					for( GRBVar var : vars)
 						soln.add( var.get( GRB.DoubleAttr.X ) );
-					
-					if( getAlgorithm() == Algorithm.Eflux2 )
-						this.minimizeEuclideanNorm();
-					
-					if( getAlgorithm() == Algorithm.SPOT )
-					{
-						// set up the nlp
-						double[] x_L = new double[ component.variables.size() ];
-						double[] x_U = new double[ component.variables.size() ];
-						
-						// set the var upper and lower bounds
-						for( int i = 0; i < component.variables.size(); ++i )
-						{
-							x_L[ i ] = component.variables.get( i ).lb;
-							x_U[ i ] = component.variables.get( i ).ub;
-						}
-						
-						double[] g_L = new double[ component.constraints.size() ];
-						double[] g_U = new double[ component.constraints.size() ];
-						
-						// set the constraint upper and lower bounds
-						for( int i = 0; i < component.constraints.size(); ++i )
-						{
-							if( component.constraints.get( i ).type == ConType.LESS_EQUAL )
-							{
-								g_L[ i ] = Double.NEGATIVE_INFINITY;
-								g_U[ i ] = component.constraints.get( i ).value;
-							}
-							else if( component.constraints.get( i ).type == ConType.EQUAL )
-							{
-								g_L[ i ] = component.constraints.get( i ).value;
-								g_U[ i ] = component.constraints.get( i ).value;
-							}
-							else if( component.constraints.get( i ).type ==ConType.GREATER_EQUAL )
-							{
-								g_L[ i ] = component.constraints.get( i ).value;
-								g_U[ i ] = Double.POSITIVE_INFINITY;
-							}
-						}
-						
-						this.create( component.variables.size(), x_L, x_U, component.constraints.size(),
-								g_L, g_U, component.constraints.size() * component.variables.size(),
-								0, Ipopt.C_STYLE );
-						double[] x = new double[ soln.size() ];
-						for( int i = 0; i < soln.size(); ++i )
-							x[ i ] = soln.get( i );
-						
-						this.addNumOption( KEY_OBJ_SCALING_FACTOR, -1.0 );
-						this.addIntOption( "mumps_mem_percent", 500 );
-						
-						this.solve( x );
-						double obj_value = 0;
-						for( int j = 0; j < component.variables.size(); ++j )
-							obj_value += this.objCoefs.get( j ) * x[ j ];
-					
-						objval = obj_value;
-						soln.clear();
-						for( int j = 0; j < component.variables.size(); ++j )
-							soln.add( x[ j ] );
-							
-						System.out.println( "success!" );
-						System.out.println( "new obj is: " + objval );
-						
-					}
 				}
 			}
 			catch( GRBException e )
@@ -460,9 +394,6 @@ public class GurobiSolver extends Ipopt implements MILSolver
 			finally
 			{
 				// clean up
-				component.variables.clear();
-				component.constraints.clear();
-				this.objCoefs.clear();
 				model.dispose();
 				env.dispose();
 				vars.clear();
@@ -475,10 +406,6 @@ public class GurobiSolver extends Ipopt implements MILSolver
 		}
 
 		return objval;
-	}
-	private Algorithm getAlgorithm()
-	{
-		return algorithm;
 	}
 	@Override
 	public void setEnv( double timeLimit, int numThreads )
@@ -651,5 +578,19 @@ public class GurobiSolver extends Ipopt implements MILSolver
 	public void setGeneExpr( Vector< Double > geneExpr )
 	{
 		this.geneExpr = geneExpr;
+	}
+
+	protected synchronized boolean aborted()
+	{
+		return this.abort;
+	}
+	protected abstract GRBCallback createGRBCallback();
+	public SolverComponent getSolverComponent()
+	{
+		return component;
+	}
+	public ArrayList< Double > getObjectiveCoefs()
+	{
+		return this.objCoefs;
 	}
 }

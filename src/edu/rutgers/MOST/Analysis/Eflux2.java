@@ -7,15 +7,27 @@ import edu.rutgers.MOST.presentation.GraphicalInterface;
 
 public class Eflux2 extends Analysis
 {	
+	private LinearSolver linearSolver = SolverFactory.createLinearSolver();
+	
  	public Eflux2()
 	{
-		super( Algorithm.Eflux2 );
+		super();
 	}
  	
  	public ArrayList< Double > run()
  	{
  		ModelFormatter modelFormatter = new ModelFormatter();
  		modelFormatter.formatFluxBoundsfromGeneExpressionData( GraphicalInterface.chooseCSVFile( "Load Gene Expressions" ), this.model );
- 		return super.run();
+ 		
+ 		this.setSolverParameters();
+ 		this.maxObj = linearSolver.optimize();
+ 		QuadraticSolver quadraticSolver = SolverFactory.createQuadraticSolver();
+ 		return quadraticSolver.minimizeEuclideanNorm( linearSolver.getObjectiveCoefs(), this.getMaxObj(), linearSolver.getSolverComponent() );
  	}
+
+	@Override
+	public Solver getSolver()
+	{
+		return linearSolver;
+	}
 }

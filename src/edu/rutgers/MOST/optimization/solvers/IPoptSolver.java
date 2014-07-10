@@ -7,18 +7,16 @@ import java.util.Map.Entry;
 
 import org.coinor.Ipopt;
 
-public class IPoptSolver extends Ipopt implements NonlinearSolver, LinearSolver
+public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, LinearSolver
 {
-	boolean obj_set = false;
+	private boolean obj_set = false;
 	SolverComponent component = new SolverComponent();
-	private Vector< Double > objCoefs = new Vector< Double >();
+	protected ArrayList< Double > objCoefs = new ArrayList< Double >();
 	private ArrayList< Double > soln = new ArrayList< Double >();
-	private Algorithm algorithm;
-	Vector< Double > geneExpr = new Vector< Double >();
+	protected Vector< Double > geneExpr = new Vector< Double >();
 	
-	public IPoptSolver( Algorithm algorithm )
+	public IPoptSolver()
 	{
-		this.algorithm = algorithm;
 	}
 
 	@Override
@@ -143,6 +141,7 @@ public class IPoptSolver extends Ipopt implements NonlinearSolver, LinearSolver
 	{
 	}
 
+	/*
 	@Override
 	protected boolean eval_f( int n, double[] x, boolean new_x,
 			double[] obj_value )
@@ -313,10 +312,22 @@ public class IPoptSolver extends Ipopt implements NonlinearSolver, LinearSolver
 	{
 		return true;
 	}
-
+	*/
 	@Override
 	public void setGeneExpr( Vector< Double > geneExpr )
 	{
 		this.geneExpr = geneExpr;
+	}
+
+	@Override
+	public SolverComponent getSolverComponent()
+	{
+		return component;
+	}
+
+	@Override
+	public ArrayList< Double > getObjectiveCoefs()
+	{
+		return this.objCoefs;
 	}
 }

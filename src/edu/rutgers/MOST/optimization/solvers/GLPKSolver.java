@@ -7,10 +7,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Vector;
+import java.util.Map.Entry;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.gnu.glpk.GLPK;
 import org.gnu.glpk.GLPKConstants;
 import org.gnu.glpk.GlpkCallback;
@@ -21,50 +20,47 @@ import org.gnu.glpk.glp_iocp;
 import org.gnu.glpk.glp_prob;
 import org.gnu.glpk.glp_tree;
 
-import edu.rutgers.MOST.Analysis.GDBB;
-import edu.rutgers.MOST.data.Solution;
 import edu.rutgers.MOST.presentation.ResizableDialog;
 
-public class GLPKSolver implements MILSolver, GlpkCallbackListener
+public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, GlpkCallbackListener
 {
-	private class RowEntry
+	protected class RowEntry
 	{
 		public int idx;
 		public double value;
-
+	
 		RowEntry( int i, double v )
 		{
 			idx = i;
 			value = v;
 		}
-	}
+}
 
-	private class ObjectiveType
+	protected class ObjectiveType
 	{
 		public int dir;
 		public Vector< RowEntry > coefs = new Vector< RowEntry >();
 	}
-
-	SolverComponent component = new SolverComponent();
-	private ObjectiveType objective = new ObjectiveType();
-	private ArrayList< Double > soln = new ArrayList< Double >();
-	private double objval;
-	private glp_prob problem_tmp;
-	private ResizableDialog dialog = new ResizableDialog( "Error",
-			"GLPK Solver Error", "GLPK Solver Error" );
-	private Algorithm algorithm;
-	private boolean abort = false;
-	Vector< Double > geneExpr = new Vector< Double >();
 	
-	private static void addLibraryPath( String pathToAdd ) throws Exception
+	protected SolverComponent component = new SolverComponent();
+	protected ObjectiveType objective = new ObjectiveType();
+	protected ArrayList< Double > soln = new ArrayList< Double >();
+	protected double objval;
+	protected glp_prob problem_tmp;
+	protected ResizableDialog dialog = new ResizableDialog( "Error",
+			"GLPK Solver Error", "GLPK Solver Error" );
+	private boolean abort = false;
+	protected Vector< Double > geneExpr = new Vector< Double >();
+	
+	protected static void addLibraryPath( String pathToAdd ) throws Exception
 	{
 		final Field usrPathsField = ClassLoader.class
 				.getDeclaredField( "usr_paths" );
 		usrPathsField.setAccessible( true );
-
+	
 		// get array of paths
 		final String[] paths = (String[])usrPathsField.get( null );
-
+	
 		// check if the path to add is already present
 		for( String path : paths)
 		{
@@ -73,13 +69,13 @@ public class GLPKSolver implements MILSolver, GlpkCallbackListener
 				return;
 			}
 		}
-
+	
 		// add the new path
 		final String[] newPaths = Arrays.copyOf( paths, paths.length + 1 );
 		newPaths[newPaths.length - 1] = pathToAdd;
 		usrPathsField.set( null, newPaths );
 	}
-	private void processStackTrace( Exception except )
+	protected void processStackTrace( Exception except )
 	{
 		//except.printStackTrace();
 		StringWriter errors = new StringWriter();
@@ -90,14 +86,9 @@ public class GLPKSolver implements MILSolver, GlpkCallbackListener
 		dialog.setModal(true);
 		dialog.setVisible( true );
 	}
-	private Algorithm getAlgorithm()
-	{
-		return this.algorithm;
-	}
 	
-	public GLPKSolver( Algorithm algorithm )
+	public GLPKSolver()
 	{
-		this.algorithm = algorithm;
 		String dependsFolder = "lib/";
 		if( System.getProperty( "os.name" ).toLowerCase().contains( "windows" ) )
 		{
@@ -108,7 +99,7 @@ public class GLPKSolver implements MILSolver, GlpkCallbackListener
 			dependsFolder += "mac";
 		else
 			dependsFolder += "linux";
-
+	
 		try
 		{
 			addLibraryPath( dependsFolder );
@@ -168,7 +159,7 @@ public class GLPKSolver implements MILSolver, GlpkCallbackListener
 		boolean terminalOutput = false;
 		GLPK.glp_term_out( terminalOutput ? GLPKConstants.GLP_ON
 				: GLPKConstants.GLP_OFF );
-
+	
 		// set up
 		glp_prob problem = GLPK.glp_create_prob();
 		GLPK.glp_set_prob_name( problem, "GLPK Problem" );
@@ -186,7 +177,7 @@ public class GLPKSolver implements MILSolver, GlpkCallbackListener
 				kind = GLPKConstants.GLP_IV;
 				break;
 			case BINARY:
-				kind = GLPKConstants.GLP_DB;
+				kind = GLPKConstants.GLP_BV;
 				break;
 			default:
 			case CONTINUOUS:
@@ -229,7 +220,7 @@ public class GLPKSolver implements MILSolver, GlpkCallbackListener
 				GLPK.intArray_setitem( ind, j+1, j+1 );
 				GLPK.doubleArray_setitem( val, j+1, constraint.coefficients.get( j ) );
 			}
-
+	
 			GLPK.glp_set_row_bnds( problem, rowNum, type, lb, ub );
 			GLPK.glp_set_mat_row( problem, rowNum, component.variables.size(), ind, val );
 			GLPK.delete_intArray( ind );
@@ -241,7 +232,7 @@ public class GLPKSolver implements MILSolver, GlpkCallbackListener
 		GLPK.glp_set_obj_dir( problem, objective.dir );
 		for( RowEntry coef : objective.coefs )
 			GLPK.glp_set_obj_coef( problem, coef.idx, coef.value );
-
+	
 		GlpkCallback.addListener( this );
 		glp_iocp parm = new glp_iocp();
 		GLPK.glp_init_iocp( parm );
@@ -278,14 +269,14 @@ public class GLPKSolver implements MILSolver, GlpkCallbackListener
 		{
 			processStackTrace( except );
 		}
-
+	
 		// clean up
 		component.variables.clear();
 		component.constraints.clear();
 		GlpkCallback.removeListener( this );
 		GLPK.glp_delete_prob( problem );
 		problem_tmp = null;
-
+	
 		return objval;
 	}
 	@Override
@@ -316,35 +307,30 @@ public class GLPKSolver implements MILSolver, GlpkCallbackListener
 	{
 		this.abort = abort;
 	}
-	@Override
-	public void callback( glp_tree tree )
+	public boolean aborted()
 	{
-		int reason = GLPK.glp_ios_reason( tree );
-		if( abort )
-		{
-			GLPK.glp_ios_terminate( tree );
-		}
-		else if( reason == GLPKConstants.GLP_IBINGO )
-		{
-			// get the solution columns
-			soln.clear();
-			int columnCount = GLPK.glp_get_num_cols( problem_tmp );
-			for( int i = 1; i <= columnCount; ++i)
-				// soln.add( GLPK.glp_get_col_prim( problem, i ) );
-				soln.add( GLPK.glp_mip_col_val( problem_tmp, i ) );
-
-			// objval = GLPK.glp_get_obj_val( problem );
-			objval = GLPK.glp_mip_obj_val( problem_tmp );
-			double[] darray = ArrayUtils.toPrimitive( soln
-					.toArray( new Double[] {} ) );
-			Solution sn = new Solution( objval, darray );
-			if( this.getAlgorithm() == Algorithm.GDBB )
-				GDBB.intermediateSolution.add( sn );
-		}
+		return this.abort;
 	}
+	@Override
+	public abstract void callback( glp_tree tree );
 	@Override
 	public void setGeneExpr( Vector< Double > geneExpr )
 	{
 		this.geneExpr = geneExpr;
+	}
+	public SolverComponent getSolverComponent()
+	{
+		return component;
+	}
+	public ArrayList< Double > getObjectiveCoefs()
+	{
+		ArrayList< Double > objCoefs = new ArrayList< Double >();
+		for( int j = 0; j < component.variables.size(); ++j )
+			objCoefs.add( new Double( 0.0 ) );
+		
+		for( RowEntry coef : objective.coefs )
+			objCoefs.set( coef.idx, coef.value );
+		
+		return objCoefs;
 	}
 }

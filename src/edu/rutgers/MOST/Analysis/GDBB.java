@@ -22,7 +22,7 @@ import org.apache.commons.lang3.time.StopWatch;
 public class GDBB extends Thread {
 
 	private GDBBModel model;
-	private Solver solver;
+	private MILSolver solver;
 	private double maxObj;
 
 //  public static ArrayList<Double> objIntermediate;
@@ -64,7 +64,7 @@ public class GDBB extends Thread {
 	private ArrayList<SBMLReaction> reac;
 
 	public GDBB() {
-		this.setSolver(SolverFactory.createSolver( Algorithm.GDBB ));
+		this.setSolver( SolverFactory.createMILSolver() );
 		new Vector<String>();
 		intermediateSolution = new LinkedList<Solution>();
 		reac = new ArrayList<SBMLReaction>();
@@ -72,7 +72,7 @@ public class GDBB extends Thread {
 
 	public GDBB(GDBBModel m) {
 		this.model = m;
-		this.setSolver(SolverFactory.createSolver( Algorithm.GDBB ));
+		this.setSolver(SolverFactory.createMILSolver());
 		new Vector<String>();
 	}
 
@@ -482,7 +482,7 @@ public class GDBB extends Thread {
 		return this.solver;
 	}
 
-	public void setSolver(Solver solver) {
+	public void setSolver(MILSolver solver) {
 		this.solver = solver;
 	}
 
