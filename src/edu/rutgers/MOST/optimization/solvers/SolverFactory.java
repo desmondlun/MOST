@@ -55,7 +55,15 @@ public class SolverFactory
 	 */
 	public static QuadraticSolver createQuadraticSolver()
 	{
-		return new QuadraticGurobiSolver();
+		QuadraticSolver solver = null;
+		switch( GraphicalInterface.getQuadraticSolverName() )
+		{
+		case GraphicalInterfaceConstants.GUROBI_SOLVER_NAME:
+			solver = new QuadraticGurobiSolver();
+			break;
+			
+		}
+		return solver;
 	}
 	
 	/**
@@ -64,6 +72,13 @@ public class SolverFactory
 	 */
 	public static NonlinearSolver createNonlinearSolver()
 	{
-		return new NonlinearIPoptSolver();
+		NonlinearSolver solver = null;
+		switch( GraphicalInterface.getNonlinearSolverName() )
+		{
+		case GraphicalInterfaceConstants.IPOPT_SOLVER_NAME:
+			solver = new NonlinearIPoptSolver();
+			break;
+		}
+		return solver;
 	}
 }
