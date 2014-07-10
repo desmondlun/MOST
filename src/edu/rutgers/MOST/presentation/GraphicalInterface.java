@@ -565,7 +565,7 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem editorMenu = new JMenuItem("Launch Reaction Editor");
 	public final JMenuItem unsortReacMenuItem = new JMenuItem("Unsort Reactions Table");
 	public final JMenuItem unsortMetabMenuItem = new JMenuItem("Unsort Metabolites Table");
-	public final JMenuItem setUpSolver = new JMenuItem(GraphicalInterfaceConstants.SOLVER_OPTIONS_MENU_ITEM);
+	public final JMenuItem setUpSolver = new JMenuItem("Set Up Solvers");
 
 	public final JMenuItem formulaBarCutItem = new JMenuItem("Cut");
 	public final JMenuItem formulaBarCopyItem = new JMenuItem("Copy");
@@ -2486,6 +2486,7 @@ public class GraphicalInterface extends JFrame {
 				else {
 					disableGurobiItems();
 				}
+				// sets selected items in combo boxes based on items in config file if not null
 				ConfigProperties configProp = new ConfigProperties();
 				if (configProp.fileExists()) {
 					ConfigProperties.readFile();
@@ -10919,6 +10920,9 @@ public class GraphicalInterface extends JFrame {
 			if (SolverSetUpDialog.cbNonlinear.getSelectedItem().equals(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME)) {
 				nonlinear = GraphicalInterfaceConstants.GLPK_SOLVER_NAME;
 			}
+			setMixedIntegerLinearSolverName(linear);
+			setQuadraticSolverName(quadratic);
+			setNonlinearSolverName(nonlinear);
 			ConfigProperties.writeToFile(linear, quadratic, nonlinear);
 
 			getSolverSetUpDialog().setVisible(false);
@@ -11018,28 +11022,35 @@ public class GraphicalInterface extends JFrame {
 		} 
 	}
 	
+	/**
+	 * Get solver names from config file if exists
+	 */
 	public static void getSolverFromConfigProperties() {
+		// set default solvers in order to avoid having null solver names
+		setMixedIntegerLinearSolverName(GraphicalInterfaceConstants.DEFAULT_MIXED_INTEGER_SOLVER_NAME);
+		setQuadraticSolverName(GraphicalInterfaceConstants.DEFAULT_QUADRATIC_SOLVER_NAME);
+		setNonlinearSolverName(GraphicalInterfaceConstants.DEFAULT_NONLINEAR_SOLVER_NAME);
+		// get solver names from config file if exists
 		ConfigProperties configProp = new ConfigProperties();
-		//setSolverName(GraphicalInterfaceConstants);
 		if (configProp.fileExists()) {
 			ConfigProperties.readFile();
 			if (ConfigProperties.getMixedIntegerLinearSolverName() != null) {
 				if (ConfigProperties.getMixedIntegerLinearSolverName().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
-					
+					setMixedIntegerLinearSolverName(GraphicalInterfaceConstants.GLPK_SOLVER_NAME);
 				} else if (ConfigProperties.getMixedIntegerLinearSolverName().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
-					
+					setMixedIntegerLinearSolverName(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
 				}
 			}
 			if (ConfigProperties.getQuadraticSolverName() != null) {
 				if (ConfigProperties.getQuadraticSolverName().equals(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME)) {
-					
+					setQuadraticSolverName(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME);
 				} else if (ConfigProperties.getQuadraticSolverName().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
-					
+					setQuadraticSolverName(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
 				}
 			}
 			if (ConfigProperties.getNonlinearSolverName() != null) {
 				if (ConfigProperties.getNonlinearSolverName().equals(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME)) {
-					
+					setNonlinearSolverName(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME);
 				} 
 			}
 		}

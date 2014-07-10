@@ -23,7 +23,7 @@ public class SolverSetUpDialog extends JDialog {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public static JLabel solverSelectionLabel = new JLabel(GraphicalInterfaceConstants.SOLVER_SELECTION_LABEL);
+	//public static JLabel solverSelectionLabel = new JLabel(GraphicalInterfaceConstants.SOLVER_SELECTION_LABEL);
 	public static JComboBox<String> cbLinear = new JComboBox<String>(); 
 	public static JComboBox<String> cbNonlinear = new JComboBox<String>(); 
 	public static JComboBox<String> cbQuadratic = new JComboBox<String>(); 
@@ -82,17 +82,17 @@ public class SolverSetUpDialog extends JDialog {
 		
 		Box hbLabeledCombos = Box.createHorizontalBox();
 		
-		solverSelectionLabel.setSize(new Dimension(150, 10));
-		//top, left, bottom. right
-		solverSelectionLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-		//solverSelectionLabel.setAlignmentX(CENTER_ALIGNMENT);
-
-		JPanel solverSelectionPanel = new JPanel();
-		solverSelectionPanel.setLayout(new BoxLayout(solverSelectionPanel, BoxLayout.X_AXIS));
-		solverSelectionPanel.add(solverSelectionLabel);
-		solverSelectionPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-
-		solverSelectionLabel.setMinimumSize(new Dimension(200, 15));
+//		solverSelectionLabel.setSize(new Dimension(150, 10));
+//		//top, left, bottom. right
+//		solverSelectionLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+//		//solverSelectionLabel.setAlignmentX(CENTER_ALIGNMENT);
+//
+//		JPanel solverSelectionPanel = new JPanel();
+//		solverSelectionPanel.setLayout(new BoxLayout(solverSelectionPanel, BoxLayout.X_AXIS));
+//		solverSelectionPanel.add(solverSelectionLabel);
+//		solverSelectionPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+//
+//		solverSelectionLabel.setMinimumSize(new Dimension(200, 15));
 
 		gurobiLabel.setSize(new Dimension(150, 10));
 		//top, left, bottom. right
