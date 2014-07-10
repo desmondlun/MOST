@@ -196,7 +196,7 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 					type = GLPKConstants.GLP_LO;
 				else if( !var.lb.isInfinite() && !var.ub.isInfinite() && Double.compare( var.lb, var.ub ) < 0 )
 					type = GLPKConstants.GLP_DB;
-				else if( var.lb.equals( var.ub ) && !var.lb.equals( Double.NEGATIVE_INFINITY ) && var.lb.equals( Double.POSITIVE_INFINITY ) )
+				else if( var.lb.equals( var.ub ) && !var.lb.equals( Double.NEGATIVE_INFINITY ) && !var.lb.equals( Double.POSITIVE_INFINITY ) )
 					type = GLPKConstants.GLP_FX;
 				else
 					throw new Exception( "Invalid variable bounds are set" );
