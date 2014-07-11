@@ -24,7 +24,7 @@ public class NonlinearIPoptSolver extends IPoptSolver implements NonlinearSolver
 			for( int j = 0; j < component.variables.size(); ++j )
 				v_i += component.constraints.get( i ).coefficients.get( j ) * x[ j ];
 			flux_v.add( v_i );
-			gene_v.add( Double.isInfinite( g_i ) ? v_i : g_i );
+			gene_v.add( Double.isInfinite( g_i ) ? 0 : g_i );
 		}
 				
 		// calculate the dot product between flux_v and gene_v
@@ -61,7 +61,7 @@ public class NonlinearIPoptSolver extends IPoptSolver implements NonlinearSolver
 				Double g_i = geneExpr.get( i );
 				Double v_i = component.constraints.get( i ).coefficients.get( j );
 				flux_v.add( v_i );
-				gene_v.add( Double.isInfinite( g_i ) ? v_i : g_i );
+				gene_v.add( Double.isInfinite( g_i ) ? 0 : g_i );
 			}
 	
 			// calculate the dot product between flux_v' and gene_v
