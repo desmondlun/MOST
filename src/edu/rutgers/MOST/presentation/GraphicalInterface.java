@@ -10917,7 +10917,7 @@ public class GraphicalInterface extends JFrame {
 				quadratic = GraphicalInterfaceConstants.GUROBI_SOLVER_NAME;
 			}
 			if ( getSolverSetUpDialog().cbNonlinear.getSelectedItem().equals(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME)) {
-				nonlinear = GraphicalInterfaceConstants.GLPK_SOLVER_NAME;
+				nonlinear = GraphicalInterfaceConstants.IPOPT_SOLVER_NAME;
 			}
 			setMixedIntegerLinearSolverName(linear);
 			setQuadraticSolverName(quadratic);

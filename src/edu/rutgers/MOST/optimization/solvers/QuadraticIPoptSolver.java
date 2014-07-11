@@ -1,14 +1,35 @@
 package edu.rutgers.MOST.optimization.solvers;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 
 import org.coinor.Ipopt;
+
+import edu.rutgers.MOST.presentation.ResizableDialog;
 
 public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 {
 	private ArrayList< Double > soln = new ArrayList< Double >();
 	private SolverComponent component = new SolverComponent();
+	protected ResizableDialog dialog = new ResizableDialog( "Error",
+			"IPopt Quadratic Solver Error", "IPopt Quadratic Solver Error" );
 	
+	/**
+	 * Process the stack trace for exceptions or errors
+	 * @param thrown The thrown object
+	 */
+	protected void processStackTrace( Throwable thrown )
+	{
+		//except.printStackTrace();
+		StringWriter errors = new StringWriter();
+		thrown.printStackTrace( new PrintWriter( errors ) );
+		dialog.setErrorMessage( errors.toString() );
+		// centers dialog
+		dialog.setLocationRelativeTo(null);
+		dialog.setModal(true);
+		dialog.setVisible( true );
+	}
 	/**
 	 * Used by E-Flux2
 	 * Minimize the Euclidean norm of the flux vectors returned by FBA using IPOPT
@@ -26,7 +47,9 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 			SolverComponent componentSource )
 	{
 		// Fv = z extra constraint
-		component = componentSource.clone(); 
+		try
+		{
+		component = componentSource;
 		component.addConstraint( objCoefs, ConType.EQUAL, objVal );
 		
 		// set up the constraints and variables
@@ -71,14 +94,13 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 		this.addIntOption( "mumps_mem_percent", 500 );
 		this.solve( vars );
 		
-		/*
-		double value = 0.0;
-		for( int j = 0; j < component.variables.size(); ++j )
-			value += objCoefs.get( j ) * vars[ j ];
-		*/
-		
 		for( double d : vars )
 			soln.add( d );		
+		}
+		catch( Error | Exception thrown )
+		{
+			processStackTrace( thrown );
+		}
 		
 		return soln;
 	}
