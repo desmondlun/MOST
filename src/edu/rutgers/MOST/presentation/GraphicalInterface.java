@@ -1418,8 +1418,7 @@ public class GraphicalInterface extends JFrame {
 							maxObj = "0.0";
 						}
 						outputText.append("Maximum objective: "	+ maxObj + "\n");
-						//outputText.append("Maximum objective: "	+ fba.getMaxObj() + "\n");
-						//outputText.append("Solver = " + getSolverName());
+						outputText.append("MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() + "\n" );
 						
 						File file = new File(u.createLogFileName(optimizeName + ".log"));
 						writer = new BufferedWriter(new FileWriter(file));
@@ -1621,12 +1620,6 @@ public class GraphicalInterface extends JFrame {
         eflux2Item.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
 				
-//				if( GraphicalInterface.getSolverName().equals( GraphicalInterfaceConstants.GLPK_SOLVER_NAME ) )
-//				{
-//					JOptionPane.showMessageDialog( null, "GLPK does not support Eflux-2 at this time.\nPlease use Gurobi Solver instead." );
-//					return;
-//				}
-				
 				Utilities u = new Utilities();
 
 				highlightUnusedMetabolites = false;
@@ -1672,7 +1665,8 @@ public class GraphicalInterface extends JFrame {
 							maxObj = "0.0";
 						}
 						outputText.append("Maximum objective: "	+ maxObj + "\n");
-//						outputText.append("Solver = " + getSolverName());
+						outputText.append("MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() + "\n" );
+						outputText.append( "Quadratic Solver = " + GraphicalInterface.getQuadraticSolverName() + "\n" );
 						
 						File file = new File(u.createLogFileName(optimizeName + ".log"));
 						writer = new BufferedWriter(new FileWriter(file));
@@ -1722,17 +1716,6 @@ public class GraphicalInterface extends JFrame {
 			@Override
 			public void actionPerformed( ActionEvent a )
 			{
-
-//				if( GraphicalInterface.getSolverName().equals(
-//						GraphicalInterfaceConstants.GLPK_SOLVER_NAME ) )
-//				{
-//					JOptionPane
-//							.showMessageDialog(
-//									null,
-//									"GLPK does not support Eflux-2 at this time.\nPlease use Gurobi Solver instead." );
-//					return;
-//				}
-
 				Utilities u = new Utilities();
 
 				highlightUnusedMetabolites = false;
@@ -1794,8 +1777,9 @@ public class GraphicalInterface extends JFrame {
 						}
 						outputText.append( "Maximum objective: " + maxObj
 								+ "\n" );
-					//	outputText.append( "Correlation: " + cosTheta + "\n" );
-//						outputText.append( "Solver = " + getSolverName() );
+						
+						outputText.append("MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() + "\n" );
+						outputText.append("Nonlinear solver = " + GraphicalInterface.getNonlinearSolverName() + "\n" );
 
 						File file = new File( u.createLogFileName( optimizeName
 								+ ".log" ) );
@@ -10584,7 +10568,7 @@ public class GraphicalInterface extends JFrame {
 								if (kString != null) {
 									text.append(kString);
 								}
-//								text.append("\nSolver = " + getSolverName());
+								text.append( "MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() );
 
 								Utilities u = new Utilities();
 								File file = new File(u.createLogFileName(solution.getSolutionName() + ".log"));
