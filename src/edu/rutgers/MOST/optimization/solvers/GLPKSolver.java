@@ -42,7 +42,7 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 		public Vector< RowEntry > coefs = new Vector< RowEntry >();
 	}
 	
-	protected SolverComponent component = new SolverComponent();
+	protected SolverComponent component = new SolverComponentLightWeight();
 	protected ObjectiveType objective = new ObjectiveType();
 	protected ArrayList< Double > soln = new ArrayList< Double >();
 	protected double objval;
@@ -169,8 +169,10 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 			problem_tmp = problem;
 			
 			// set the variables
-			for( SolverComponent.Variable var : component.variables )
+			for( int j = 0; j < component.variableCount(); ++j )
 			{
+				Variable var = component.getVariable( j );
+
 				int colNum = GLPK.glp_add_cols( problem,  1 );
 				GLPK.glp_set_col_name( problem, colNum, null );
 				int kind = 0;
@@ -204,9 +206,11 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 				GLPK.glp_set_col_bnds( problem, colNum, type, var.lb, var.ub );
 			}
 			
-			// set the constraints 
-			for( SolverComponent.Constraint constraint : component.constraints )
+			// set the constraints
+			for( int i = 0; i < component.constraintCount(); ++i )
 			{
+				Constraint constraint = component.getConstraint( i );
+				
 				int rowNum = GLPK.glp_add_rows( problem, 1 );
 				int type = 0;
 				double lb = Double.NEGATIVE_INFINITY;
@@ -227,19 +231,19 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 					break;
 				}
 				
-				SWIGTYPE_p_int ind = GLPK.new_intArray( 1 + component.variables.size() );
-				SWIGTYPE_p_double val = GLPK.new_doubleArray( 1 + component.variables.size() );
+				SWIGTYPE_p_int ind = GLPK.new_intArray( 1 + component.variableCount() );
+				SWIGTYPE_p_double val = GLPK.new_doubleArray( 1 + component.variableCount() );
 				
-				for( int j = 0; j < component.variables.size(); ++j )
+				for( int j = 0; j < component.variableCount(); ++j )
 				{
 					GLPK.intArray_setitem( ind, j+1, j+1 );
-					GLPK.doubleArray_setitem( val, j+1, constraint.coefficients.get( j ) );
+					GLPK.doubleArray_setitem( val, j+1, constraint.getCoefficient( j ) );
 				}
 		
 				if( type == GLPKConstants.GLP_FX && lb != ub )
 					System.out.println( "Here! at Constraints setup!" );
 				GLPK.glp_set_row_bnds( problem, rowNum, type, lb, ub );
-				GLPK.glp_set_mat_row( problem, rowNum, component.variables.size(), ind, val );
+				GLPK.glp_set_mat_row( problem, rowNum, component.variableCount(), ind, val );
 				GLPK.delete_intArray( ind );
 				GLPK.delete_doubleArray( val );
 			}
@@ -341,7 +345,7 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 	public ArrayList< Double > getObjectiveCoefs()
 	{
 		ArrayList< Double > objCoefs = new ArrayList< Double >();
-		for( int j = 0; j < component.variables.size(); ++j )
+		for( int j = 0; j < component.variableCount(); ++j )
 			objCoefs.add( new Double( 0.0 ) );
 		
 		for( RowEntry coef : objective.coefs )

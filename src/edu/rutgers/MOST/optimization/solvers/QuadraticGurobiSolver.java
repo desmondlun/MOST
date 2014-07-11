@@ -160,27 +160,31 @@ public class QuadraticGurobiSolver implements QuadraticSolver
 			quad_env.set( GRB.IntParam.OutputFlag, 0 );
 			
 			// create the variables
-			for( SolverComponent.Variable var : component.variables )
+			for( int j = 0; j < component.variableCount(); ++ j )
 			{
+				Variable var = component.getVariable( j );
+
 				vars.add( quad_model.addVar( var.lb, var.ub, 0.0, getGRBVarType( var.type ),
 						null ) );
 			}
 			quad_model.update();
 			
 			// add rows / constraints
-			for( SolverComponent.Constraint constraint : component.constraints )
+			for( int i = 0; i < component.constraintCount(); ++i )
 			{
+				Constraint constraint = component.getConstraint( i );
+
 				GRBLinExpr expr = new GRBLinExpr();
-				for( int j = 0; j < component.variables.size(); ++j )
+				for( int j = 0; j < component.variableCount(); ++j )
 				{
-					expr.addTerm( constraint.coefficients.get( j ), vars.get( j ) );
+					expr.addTerm( constraint.getCoefficient( j ), vars.get( j ) );
 				}
 				quad_model.addConstr( expr, getGRBConType( constraint.type ), constraint.value, null );
 			}
 			
 			// add the Maximum objective constraint
 			GRBLinExpr maxObj = new GRBLinExpr();
-			for( int j = 0; j < component.variables.size(); ++j )
+			for( int j = 0; j < component.variableCount(); ++j )
 				maxObj.addTerm( objCoefs.get( j ), vars.get( j ) );
 			GRBVar objValue = quad_model.addVar( objVal, objVal, 0.0, GRB.CONTINUOUS, null );
 			quad_model.update(); // due to adding a new variable

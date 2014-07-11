@@ -11,7 +11,7 @@ import edu.rutgers.MOST.presentation.ResizableDialog;
 public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 {
 	private ArrayList< Double > soln = new ArrayList< Double >();
-	private SolverComponent component = new SolverComponent();
+	private SolverComponent component = new SolverComponentLightWeight();
 	protected ResizableDialog dialog = new ResizableDialog( "Error",
 			"IPopt Quadratic Solver Error", "IPopt Quadratic Solver Error" );
 	
@@ -53,40 +53,40 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 		component.addConstraint( objCoefs, ConType.EQUAL, objVal );
 		
 		// set up the constraints and variables
-		double[] x_L = new double[ component.variables.size() ];
-		double[] x_U = new double[ component.variables.size() ];
-		double[] g_L = new double[ component.constraints.size() ]; 
-		double[] g_U = new double[ component.constraints.size() ];
+		double[] x_L = new double[ component.variableCount() ];
+		double[] x_U = new double[ component.variableCount() ];
+		double[] g_L = new double[ component.constraintCount() ]; 
+		double[] g_U = new double[ component.constraintCount() ];
 		
-		for( int j = 0; j < component.variables.size(); ++j )
+		for( int j = 0; j < component.variableCount(); ++j )
 		{
-			x_L[ j ] = component.variables.get( j ).lb;
-			x_U[ j ] = component.variables.get( j ).ub;
+			x_L[ j ] = component.getVariable( j ).lb;
+			x_U[ j ] = component.getVariable( j ).ub;
 		}
 		
-		for( int i = 0; i < component.constraints.size(); ++i )
+		for( int i = 0; i < component.constraintCount(); ++i )
 		{
-			switch( component.constraints.get( i ).type )
+			switch( component.getConstraint( i ).type )
 			{
 			case LESS_EQUAL:
 				g_L[ i ] = Double.NEGATIVE_INFINITY;
-				g_U[ i ] = component.constraints.get( i ).value;
+				g_U[ i ] = component.getConstraint( i ).value;
 				break;
 			case EQUAL:
-				g_L[ i ] = component.constraints.get( i ).value;
-				g_U[ i ] = component.constraints.get( i ).value;
+				g_L[ i ] = component.getConstraint( i ).value;
+				g_U[ i ] = component.getConstraint( i ).value;
 				break;
 			case GREATER_EQUAL:
-				g_L[ i ] = component.constraints.get( i ).value;
+				g_L[ i ] = component.getConstraint( i ).value;
 				g_U[ i ] = Double.POSITIVE_INFINITY;
 				break;
 			}
 		}
 		
-		this.create( component.variables.size(), x_L, x_U, component.constraints.size(), g_L, g_U,
-				component.constraints.size() * component.variables.size(), component.variables.size(), Ipopt.C_STYLE );
+		this.create( component.variableCount(), x_L, x_U, component.constraintCount(), g_L, g_U,
+				component.constraintCount() * component.variableCount(), component.variableCount(), Ipopt.C_STYLE );
 		
-		double[] vars = new double[ component.variables.size() ];
+		double[] vars = new double[ component.variableCount() ];
 		for( int j = 0; j < vars.length; ++j )
 			vars[ j ] = 0;
 		
@@ -110,7 +110,7 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 			double[] obj_value )
 	{
 		double value = 0.0;
-		for( int j = 0; j < component.variables.size(); ++j )
+		for( int j = 0; j < component.variableCount(); ++j )
 			value += x[ j ] * x[ j ];
 		obj_value[ 0 ] = value;
 		
@@ -121,7 +121,7 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 	protected boolean eval_grad_f( int n, double[] x, boolean new_x,
 			double[] grad_f )
 	{
-		for( int j = 0; j < component.variables.size(); ++j )
+		for( int j = 0; j < component.variableCount(); ++j )
 			grad_f[ j ] = 2 * x[ j ];
 		
 		return true;
@@ -131,12 +131,12 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 	protected boolean eval_g( int n, double[] x, boolean new_x, int m,
 			double[] g )
 	{
-		for( int i = 0; i < component.constraints.size(); ++i )
+		for( int i = 0; i < component.constraintCount(); ++i )
 		{
 			double value = 0.0;
-			for( int j = 0; j < component.variables.size(); ++j )
+			for( int j = 0; j < component.variableCount(); ++j )
 			{
-				value += component.constraints.get( i ).coefficients.get( j ) * x[ j ];
+				value += component.getConstraint( i ).getCoefficient( j ) * x[ j ];
 			}
 			g[ i ] = value;
 		}
@@ -150,9 +150,9 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 		if( values == null )
 		{
 			int idx = 0;
-			for( int i = 0; i < component.constraints.size(); ++i )
+			for( int i = 0; i < component.constraintCount(); ++i )
 			{
-				for( int j = 0; j < component.variables.size(); ++j )
+				for( int j = 0; j < component.variableCount(); ++j )
 				{
 					iRow[ idx ] = i;
 					jCol[ idx ] = j;
@@ -168,10 +168,10 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 			int j=0;
 			try
 			{
-				for( i = 0; i < component.constraints.size(); ++i )
+				for( i = 0; i < component.constraintCount(); ++i )
 				{
-					for( j = 0; j < component.variables.size(); ++j )
-						values[ idx++ ] = component.constraints.get( i ).coefficients.get( j );
+					for( j = 0; j < component.variableCount(); ++j )
+						values[ idx++ ] = component.getConstraint( i ).getCoefficient( j );
 				}
 			}
 			catch( Exception e )
@@ -195,7 +195,7 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 			// [ 0 x 0 0 ]
 			// [ 0 0 x 0 ]
 			// [ 0 0 0 x ]
-			for( int j = 0; j < component.variables.size(); ++j )
+			for( int j = 0; j < component.variableCount(); ++j )
 			{
 				iRow[ j ] = j;
 				jCol[ j ] = j;
@@ -203,7 +203,7 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 		}
 		else
 		{
-			for( int j = 0; j < component.variables.size(); ++j )
+			for( int j = 0; j < component.variableCount(); ++j )
 				values[ j ] = obj_factor * 2;
 		}
 		

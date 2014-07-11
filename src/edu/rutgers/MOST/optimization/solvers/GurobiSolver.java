@@ -41,7 +41,7 @@ public abstract class GurobiSolver extends Ipopt implements MILSolver
 	protected ResizableDialog dialog = new ResizableDialog( "Error",
 			"Gurobi Solver Error", "Gurobi Solver Error" );
 	protected boolean abort = false;
-	protected SolverComponent component = new SolverComponent();
+	protected SolverComponent component = new SolverComponentLightWeight();
 	protected ArrayList< Double > objCoefs = new ArrayList< Double >();
 	protected GRBModel model = null;
 	public static boolean isGurobiLinked()
@@ -252,7 +252,7 @@ public abstract class GurobiSolver extends Ipopt implements MILSolver
 	{
 		if( objCoefs.size() == 0 )
 		{
-			for( int j = 0; j < component.variables.size(); ++j )
+			for( int j = 0; j < component.variableCount(); ++j )
 				objCoefs.add( new Double( 0.0 ) );
 		}
 		
@@ -319,19 +319,20 @@ public abstract class GurobiSolver extends Ipopt implements MILSolver
 				} );
 				
 				// add columns
-				for( SolverComponent.Variable var : component.variables )
+				for( int j = 0; j < component.variableCount(); ++j )
 				{
+					Variable var = component.getVariable( j );
 					vars.add( model.addVar( var.lb, var.ub, 0.0, getGRBVarType( var.type ),
 							null ) );
 				}
 				model.update();
 				
-				
-				for( SolverComponent.Constraint constraint : component.constraints )
+				for( int i = 0; i < component.constraintCount(); ++i )
 				{
+					Constraint constraint = component.getConstraint( i );
 					GRBLinExpr expr = new GRBLinExpr();
-					for( int j = 0; j < constraint.coefficients.size(); ++j )
-						expr.addTerm( constraint.coefficients.get( j ), vars.get( j ) );
+					for( int j = 0; j < component.variableCount(); ++j )
+						expr.addTerm( constraint.getCoefficient( j ), vars.get( j ) );
 					model.addConstr( expr, getGRBConType( constraint.type ), constraint.value, null );
 				}
 				
@@ -340,7 +341,7 @@ public abstract class GurobiSolver extends Ipopt implements MILSolver
 				GRBLinExpr expr = new GRBLinExpr();
 	
 				// set the terms & coefficients defining the objective function
-				for( int j = 0; j < component.variables.size(); ++j )
+				for( int j = 0; j < component.variableCount(); ++j )
 					expr.addTerm( objCoefs.get( j ), vars.get( j ) );
 	
 				// set the objective
@@ -453,12 +454,12 @@ public abstract class GurobiSolver extends Ipopt implements MILSolver
 		Vector< Double > flux_v = new Vector< Double >();
 		Vector< Double > gene_v = new Vector< Double >();
 		
-		for( int i = 0; i < component.constraints.size(); ++i )
+		for( int i = 0; i < component.constraintCount(); ++i )
 		{
 			Double g_i = geneExpr.get( i ); // updated from SPOT.run() and modelFormatter method
 			Double v_i = 0.0;
-			for( int j = 0; j < component.variables.size(); ++j )
-				v_i += component.constraints.get( i ).coefficients.get( j ) * x[ j ];
+			for( int j = 0; j < component.variableCount(); ++j )
+				v_i += component.getConstraint( i ).getCoefficient( j ) * x[ j ];
 			flux_v.add( v_i );
 			gene_v.add( Double.isInfinite( g_i ) ? v_i : g_i );
 		}
@@ -483,16 +484,16 @@ public abstract class GurobiSolver extends Ipopt implements MILSolver
 	protected boolean eval_grad_f( int n, double[] x, boolean new_x,
 			double[] grad_f )
 	{
-		for( int j = 0; j < component.variables.size(); ++j )
+		for( int j = 0; j < component.variableCount(); ++j )
 		{
 			Vector< Double > flux_v = new Vector< Double >();
 			Vector< Double > gene_v = new Vector< Double >();
 			// fill in flux_v using variable 'x', fill in gene_v given value from file
 	
-			for( int i = 0; i < component.constraints.size(); ++i )
+			for( int i = 0; i < component.constraintCount(); ++i )
 			{
 				Double g_i = geneExpr.get( i );
-				Double v_i = component.constraints.get( i ).coefficients.get( j );
+				Double v_i = component.getConstraint( i ).getCoefficient( j );
 				flux_v.add( v_i );
 				gene_v.add( Double.isInfinite( g_i ) ? v_i : g_i );
 			}
@@ -521,12 +522,12 @@ public abstract class GurobiSolver extends Ipopt implements MILSolver
 		// define the constraints
 		// Sv = 0.0 (steady state constraint)
 		
-		for( int i = 0; i < component.constraints.size(); ++i )
+		for( int i = 0; i < component.constraintCount(); ++i )
 		{
 			//
 			double value = 0.0;
-			for( int j = 0; j < component.variables.size(); ++j )
-				value += component.constraints.get( i ).coefficients.get( j ) * x[ j ];
+			for( int j = 0; j < component.variableCount(); ++j )
+				value += component.getConstraint( i ).getCoefficient( j ) * x[ j ];
 			g[ i ] = value;
 		}
 		
@@ -545,9 +546,9 @@ public abstract class GurobiSolver extends Ipopt implements MILSolver
 		if( values == null )
 		{
 			int idx = 0;
-			for( int i = 0; i < component.constraints.size(); ++i )
+			for( int i = 0; i < component.constraintCount(); ++i )
 			{
-				for( int j = 0; j < component.variables.size(); ++j )
+				for( int j = 0; j < component.variableCount(); ++j )
 				{
 					iRow[ idx ] = i;
 					jCol[ idx ] = j;
@@ -558,10 +559,10 @@ public abstract class GurobiSolver extends Ipopt implements MILSolver
 		else
 		{
 			int idx = 0;
-			for( int i = 0; i < component.constraints.size(); ++i )
+			for( int i = 0; i < component.constraintCount(); ++i )
 			{
-				for( int j = 0; j < component.variables.size(); ++j )
-					values[ idx++ ] = component.constraints.get( i ).coefficients.get( j );
+				for( int j = 0; j < component.variableCount(); ++j )
+					values[ idx++ ] = component.getConstraint( i ).getCoefficient( j );
 			}
 		}
 		

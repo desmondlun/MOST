@@ -10,7 +10,7 @@ import org.coinor.Ipopt;
 public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, LinearSolver
 {
 	private boolean obj_set = false;
-	SolverComponent component = new SolverComponent();
+	SolverComponent component = new SolverComponentLightWeight();
 	protected ArrayList< Double > objCoefs = new ArrayList< Double >();
 	private ArrayList< Double > soln = new ArrayList< Double >();
 	protected Vector< Double > geneExpr = new Vector< Double >();
@@ -47,7 +47,7 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 	{
 		if( !obj_set )
 		{
-			for( int j = 0; j < component.variables.size(); ++j )
+			for( int j = 0; j < component.variableCount(); ++j )
 				objCoefs.add( new Double( 0 ) );
 			obj_set = true;
 		}
@@ -66,40 +66,40 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 	@Override
 	public double optimize()
 	{
-		double[] x_L = new double[ component.variables.size() ];
-		double[] x_U = new double[ component.variables.size() ];
-		double[] g_L = new double[ component.constraints.size() ];
-		double[] g_U = new double[ component.constraints.size() ];
+		double[] x_L = new double[ component.variableCount() ];
+		double[] x_U = new double[ component.variableCount() ];
+		double[] g_L = new double[ component.constraintCount() ];
+		double[] g_U = new double[ component.constraintCount() ];
 		
-		for( int j = 0; j < component.variables.size(); ++j )
+		for( int j = 0; j < component.variableCount(); ++j )
 		{
-			x_L[ j ] = component.variables.get( j ).lb;
-			x_U[ j ] = component.variables.get( j ).ub;
+			x_L[ j ] = component.getVariable( j ).lb;
+			x_U[ j ] = component.getVariable( j ).ub;
 		}
 		
-		for( int i = 0; i < component.constraints.size(); ++i )
+		for( int i = 0; i < component.constraintCount(); ++i )
 		{
-			switch( component.constraints.get( i ).type )
+			switch( component.getConstraint( i ).type )
 			{
 			case LESS_EQUAL:
 				g_L[ i ] = Double.NEGATIVE_INFINITY;
-				g_U[ i ] = component.constraints.get( i ).value;
+				g_U[ i ] = component.getConstraint( i ).value;
 				break;
 			case EQUAL:
-				g_L[ i ] = component.constraints.get( i ).value;
-				g_U[ i ] = component.constraints.get( i ).value;
+				g_L[ i ] = component.getConstraint( i ).value;
+				g_U[ i ] = component.getConstraint( i ).value;
 				break;
 			case GREATER_EQUAL:
-				g_L[ i ] = component.constraints.get( i ).value;
+				g_L[ i ] = component.getConstraint( i ).value;
 				g_U[ i ] = Double.POSITIVE_INFINITY;
 				break;
 			}
 		}
 		
-		this.create( component.variables.size(), x_L, x_U, component.constraints.size(), g_L, g_U,
-				component.constraints.size() * component.variables.size(), 0, Ipopt.C_STYLE );
+		this.create( component.variableCount(), x_L, x_U, component.constraintCount(), g_L, g_U,
+				component.constraintCount() * component.variableCount(), 0, Ipopt.C_STYLE );
 		
-		double[] vars = new double[ component.variables.size() ];
+		double[] vars = new double[ component.variableCount() ];
 		for( int j = 0; j < vars.length; ++j )
 			vars[ j ] = 0;
 		
@@ -108,7 +108,7 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 		this.solve( vars );
 		
 		double value = 0.0;
-		for( int j = 0; j < component.variables.size(); ++j )
+		for( int j = 0; j < component.variableCount(); ++j )
 			value += objCoefs.get( j ) * vars[ j ];
 		
 		for( double d : vars )
@@ -150,7 +150,7 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 		{
 		case FBA:
 			double value = 0.0;
-			for( int j = 0; j < component.variables.size(); ++j )
+			for( int j = 0; j < component.variableCount(); ++j )
 				value += objCoefs.get( j ) * x[ j ];
 			
 			obj_value[ 0 ] = value;
@@ -161,12 +161,12 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 				Vector< Double > flux_v = new Vector< Double >();
 				Vector< Double > gene_v = new Vector< Double >();
 				
-				for( int i = 0; i < component.constraints.size(); ++i )
+				for( int i = 0; i < component.constraintCount(); ++i )
 				{
 					Double g_i = geneExpr.get( i ); // updated from SPOT.run() and modelFormatter method
 					Double v_i = 0.0;
-					for( int j = 0; j < component.variables.size(); ++j )
-						v_i += component.constraints.get( i ).coefficients.get( j ) * x[ j ];
+					for( int j = 0; j < component.variableCount(); ++j )
+						v_i += component.getConstraint( i ).coefficients.get( j ) * x[ j ];
 					flux_v.add( v_i );
 					gene_v.add( Double.isInfinite( g_i ) ? v_i : g_i );
 				}
@@ -202,7 +202,7 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 		switch( algorithm )
 		{
 		case FBA:
-			for( int j = 0; j < component.variables.size(); ++j )
+			for( int j = 0; j < component.variableCount(); ++j )
 			{
 				double value = 0.0;
 				value = objCoefs.get( j );
@@ -212,16 +212,16 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 			
 		case SPOT:
 			{
-				for( int j = 0; j < component.variables.size(); ++j )
+				for( int j = 0; j < component.variableCount(); ++j )
 				{
 					Vector< Double > flux_v = new Vector< Double >();
 					Vector< Double > gene_v = new Vector< Double >();
 					// fill in flux_v using variable 'x', fill in gene_v given value from file
 			
-					for( int i = 0; i < component.constraints.size(); ++i )
+					for( int i = 0; i < component.constraintCount(); ++i )
 					{
 						Double g_i = geneExpr.get( i );
-						Double v_i = component.constraints.get( i ).coefficients.get( j );
+						Double v_i = component.getConstraint( i ).coefficients.get( j );
 						flux_v.add( v_i );
 						gene_v.add( Double.isInfinite( g_i ) ? v_i : g_i );
 					}
@@ -253,12 +253,12 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 	protected boolean eval_g( int n, double[] x, boolean new_x, int m,
 			double[] g )
 	{
-		for( int i = 0; i < component.constraints.size(); ++i )
+		for( int i = 0; i < component.constraintCount(); ++i )
 		{
 			double value = 0.0;
-			for( int j = 0; j < component.variables.size(); ++j )
+			for( int j = 0; j < component.variableCount(); ++j )
 			{
-				value += component.constraints.get( i ).coefficients.get( j ) * x[ j ];
+				value += component.getConstraint( i ).coefficients.get( j ) * x[ j ];
 			}
 			g[ i ] = value;
 		}
@@ -272,9 +272,9 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 		if( values == null )
 		{
 			int idx = 0;
-			for( int i = 0; i < component.constraints.size(); ++i )
+			for( int i = 0; i < component.constraintCount(); ++i )
 			{
-				for( int j = 0; j < component.variables.size(); ++j )
+				for( int j = 0; j < component.variableCount(); ++j )
 				{
 					iRow[ idx ] = i;
 					jCol[ idx ] = j;
@@ -290,10 +290,10 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 			int j=0;
 			try
 			{
-				for( i = 0; i < component.constraints.size(); ++i )
+				for( i = 0; i < component.constraintCount(); ++i )
 				{
-					for( j = 0; j < component.variables.size(); ++j )
-						values[ idx++ ] = component.constraints.get( i ).coefficients.get( j );
+					for( j = 0; j < component.variableCount(); ++j )
+						values[ idx++ ] = component.getConstraint( i ).coefficients.get( j );
 				}
 			}
 			catch( Exception e )

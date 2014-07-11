@@ -12,7 +12,7 @@ public class LinearIPoptSolver extends IPoptSolver implements LinearSolver
 	{
 
 		double value = 0.0;
-		for( int j = 0; j < component.variables.size(); ++j )
+		for( int j = 0; j < component.variableCount(); ++j )
 			value += objCoefs.get( j ) * x[ j ];
 		
 		obj_value[ 0 ] = value;
@@ -24,7 +24,7 @@ public class LinearIPoptSolver extends IPoptSolver implements LinearSolver
 	protected boolean eval_grad_f( int n, double[] x, boolean new_x,
 			double[] grad_f )
 	{
-		for( int j = 0; j < component.variables.size(); ++j )
+		for( int j = 0; j < component.variableCount(); ++j )
 		{
 			double value = 0.0;
 			value = objCoefs.get( j );
@@ -38,12 +38,12 @@ public class LinearIPoptSolver extends IPoptSolver implements LinearSolver
 	protected boolean eval_g( int n, double[] x, boolean new_x, int m,
 			double[] g )
 	{
-		for( int i = 0; i < component.constraints.size(); ++i )
+		for( int i = 0; i < component.constraintCount(); ++i )
 		{
 			double value = 0.0;
-			for( int j = 0; j < component.variables.size(); ++j )
+			for( int j = 0; j < component.variableCount(); ++j )
 			{
-				value += component.constraints.get( i ).coefficients.get( j ) * x[ j ];
+				value += component.getConstraint( i ).getCoefficient( j ) * x[ j ];
 			}
 			g[ i ] = value;
 		}
@@ -57,9 +57,9 @@ public class LinearIPoptSolver extends IPoptSolver implements LinearSolver
 		if( values == null )
 		{
 			int idx = 0;
-			for( int i = 0; i < component.constraints.size(); ++i )
+			for( int i = 0; i < component.constraintCount(); ++i )
 			{
-				for( int j = 0; j < component.variables.size(); ++j )
+				for( int j = 0; j < component.variableCount(); ++j )
 				{
 					iRow[ idx ] = i;
 					jCol[ idx ] = j;
@@ -75,10 +75,10 @@ public class LinearIPoptSolver extends IPoptSolver implements LinearSolver
 			int j=0;
 			try
 			{
-				for( i = 0; i < component.constraints.size(); ++i )
+				for( i = 0; i < component.constraintCount(); ++i )
 				{
-					for( j = 0; j < component.variables.size(); ++j )
-						values[ idx++ ] = component.constraints.get( i ).coefficients.get( j );
+					for( j = 0; j < component.variableCount(); ++j )
+						values[ idx++ ] = component.getConstraint( i ).getCoefficient( j );
 				}
 			}
 			catch( Exception e )
