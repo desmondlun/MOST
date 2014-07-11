@@ -1367,7 +1367,7 @@ public class GraphicalInterface extends JFrame {
 			}
 			@Override
 			public void menuSelected(MenuEvent arg0) {
-				System.out.println("menuSelected");
+				DynamicTreePanel.treePanel.setNodeSelected(0);
 			}
 	    });
 
@@ -4750,7 +4750,9 @@ public class GraphicalInterface extends JFrame {
 	//reload tables methods
 	/******************************************************************************/
 
-	//sets parameters to initial values on load
+	/**
+	 * This method sets parameters to initial values before load of model
+	 */
 	public void loadSetUp() {
 		if (getFindReplaceDialog() != null) {
 			getFindReplaceDialog().dispose();
@@ -4785,6 +4787,10 @@ public class GraphicalInterface extends JFrame {
 		unsortMetabMenuItem.setEnabled(false);
 	}
 	
+	/**
+	 * This method is called whenever the metabolites table is reloaded
+	 * @param model
+	 */
 	public void setUpMetabolitesTable(DefaultTableModel model) {
 		metabolitesTable.setModel(model);
 		setMetabolitesTableLayout();
@@ -4809,6 +4815,10 @@ public class GraphicalInterface extends JFrame {
 		statusBar.setText("Row 1");	   
 	}
 
+	/**
+	 * This method is called whenever the reactions table is reloaded
+	 * @param model
+	 */
 	public void setUpReactionsTable(DefaultTableModel model) {
 		reactionsTable.setModel(model);
 		setReactionsTableLayout();
@@ -4822,6 +4832,9 @@ public class GraphicalInterface extends JFrame {
 		maybeDisplaySuspiciousMetabMessage(statusBarRow());			   
 	}
 
+	/**
+	 * This method is called whenever a model is loaded to reset the GUI to default conditions.
+	 */
 	public void setUpTables() {
 		setTitle(GraphicalInterfaceConstants.TITLE + " - " + LocalConfig.getInstance().getModelName());				
 		if (saveFile) {
@@ -4859,6 +4872,9 @@ public class GraphicalInterface extends JFrame {
 		}		
 	}
 
+	/**
+	 * This method sets boolean values to default values when model is loaded
+	 */
 	public void setBooleanDefaults() {
 		// listener values
 		selectedCellChanged = false;
@@ -10311,10 +10327,13 @@ public class GraphicalInterface extends JFrame {
 			deleteUnusedItem.setEnabled(true);
 		}
 		maybeDisplaySuspiciousMetabMessage(statusBarRow());	
-		fbaItem.setEnabled(true);
-		gdbbItem.setEnabled(true);
-		eflux2Item.setEnabled( true );
-		spotItem.setEnabled( true );
+		// since we are still testing the new behavior where clicking the Analysis menu
+		// selects the original model in the tree, these items should remain until
+		// it is determined that the new behavior is acceptable.
+//		fbaItem.setEnabled(true);
+//		gdbbItem.setEnabled(true);
+//		eflux2Item.setEnabled( true );
+//		spotItem.setEnabled( true );
 		addReacRowItem.setEnabled(true);
 		addReacRowsItem.setEnabled(true);
 		addMetabRowItem.setEnabled(true);
@@ -10342,10 +10361,13 @@ public class GraphicalInterface extends JFrame {
 		highlightUnusedMetabolitesItem.setEnabled(false);
 		deleteUnusedItem.setEnabled(false);
 		findSuspiciousItem.setEnabled(false);
-		fbaItem.setEnabled(false);
-		gdbbItem.setEnabled(false);
-		eflux2Item.setEnabled( false );
-		spotItem.setEnabled( false );
+		// since we are still testing the new behavior where clicking the Analysis menu
+		// selects the original model in the tree, these items should remain until
+		// it is determined that the new behavior is acceptable.
+//		fbaItem.setEnabled(false);
+//		gdbbItem.setEnabled(false);
+//		eflux2Item.setEnabled( false );
+//		spotItem.setEnabled( false );
 		addReacRowItem.setEnabled(false);
 		addReacRowsItem.setEnabled(false);
 		addMetabRowItem.setEnabled(false);
