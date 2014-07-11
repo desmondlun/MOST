@@ -143,7 +143,7 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 	{
 		// objective definition
 		for( Entry< Integer, Double > entry : map.entrySet())
-			objective.coefs.add( new RowEntry( 1 + entry.getKey(), entry
+			objective.coefs.add( new RowEntry( entry.getKey(), entry
 					.getValue() ) );
 	}
 	@Override
@@ -248,7 +248,7 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 			// set the objective
 			GLPK.glp_set_obj_dir( problem, objective.dir );
 			for( RowEntry coef : objective.coefs )
-				GLPK.glp_set_obj_coef( problem, coef.idx, coef.value );
+				GLPK.glp_set_obj_coef( problem, 1 + coef.idx, coef.value );
 		
 			GlpkCallback.addListener( this );
 			glp_iocp parm = new glp_iocp();
