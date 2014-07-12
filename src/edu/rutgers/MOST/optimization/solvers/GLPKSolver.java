@@ -42,7 +42,7 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 		public Vector< RowEntry > coefs = new Vector< RowEntry >();
 	}
 	
-	protected SolverComponent component = new SolverComponentHeavyWeight();
+	protected SolverComponent component = new SolverComponentLightWeight();
 	protected ObjectiveType objective = new ObjectiveType();
 	protected ArrayList< Double > soln = new ArrayList< Double >();
 	protected double objval;
