@@ -42,7 +42,7 @@ public class SolverFactory
 			solver = new MILGLPKSolver();
 			break;
 		case GraphicalInterfaceConstants.GUROBI_SOLVER_NAME:
-			solver = new LinearGurobiSolver();
+			solver = new MILGurobiSolver();
 			break;
 		}
 		return solver;

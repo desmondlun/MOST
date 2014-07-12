@@ -22,7 +22,7 @@ public class LinearGurobiSolver extends GurobiSolver implements LinearSolver
 			{
 				try
 				{
-					if( abort )
+					if( aborted() )
 						this.abort();
 					else if( this.where == GRB.CB_SIMPLEX ) //FBA
 						objval = getDoubleInfo( GRB.CB_SPX_OBJVAL );

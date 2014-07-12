@@ -20,9 +20,7 @@ import org.coinor.Ipopt;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 import edu.rutgers.MOST.presentation.ResizableDialog;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
-import edu.rutgers.MOST.Analysis.GDBB;
 import edu.rutgers.MOST.config.LocalConfig;
-import edu.rutgers.MOST.data.Solution;
 import gurobi.GRB;
 import gurobi.GRBCallback;
 import gurobi.GRBEnv;
@@ -291,32 +289,7 @@ public abstract class GurobiSolver extends Ipopt implements MILSolver
 			try
 			{
 				// set the callback
-				model.setCallback( new GRBCallback()
-				{
-					@Override
-					protected void callback()
-					{
-						try
-						{
-							if( aborted() )
-								this.abort();
-							else if( this.where == GRB.CB_SIMPLEX ) //FBA
-								objval = getDoubleInfo( GRB.CB_SPX_OBJVAL );
-							else if( this.where == GRB.CB_MIPSOL ) //MIP
-							{
-								// GDBB intermediate solutions
-								GDBB.intermediateSolution.add( new Solution( this
-										.getDoubleInfo( GRB.CB_MIPSOL_OBJ ), this
-										.getSolution( model.getVars() ) ) );
-								objval = getDoubleInfo( GRB.CB_MIPSOL_OBJ ); 
-							}
-						}
-						catch ( GRBException e )
-						{
-							processStackTrace( e );
-						}
-					}
-				} );
+				model.setCallback( this.createGRBCallback() );
 				
 				// add columns
 				for( int j = 0; j < component.variableCount(); ++j )
