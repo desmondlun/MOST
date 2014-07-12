@@ -63,6 +63,8 @@ public class SolverComponentLightWeight implements SolverComponent
 			if( coefs.get( j ).doubleValue() != 0.0 )
 				constraint.coefs.put( j, coefs.get( j ).doubleValue() );
 		
+		constraints.add( constraint );
+		
 		return true;
 	}
 
