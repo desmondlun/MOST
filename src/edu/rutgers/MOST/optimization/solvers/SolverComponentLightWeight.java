@@ -116,4 +116,11 @@ public class SolverComponentLightWeight implements SolverComponent
 	{
 		return variables.size();
 	}
+	
+	@Override
+	public boolean removeConstraint( int i )
+	{
+		constraints.remove( i );
+		return true;
+	}
 }

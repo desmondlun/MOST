@@ -103,7 +103,6 @@ public class SolverComponentHeavyWeight implements SolverComponent
 	{
 		return variables.get( j );
 	}
-	
 
 	@Override
 	public Constraint getConstraint( int i )
@@ -121,5 +120,12 @@ public class SolverComponentHeavyWeight implements SolverComponent
 	public int variableCount()
 	{
 		return variables.size();
+	}
+
+	@Override
+	public boolean removeConstraint( int i )
+	{
+		constraints.remove( i );
+		return true;
 	}
 }

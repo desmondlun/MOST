@@ -46,56 +46,59 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 			ArrayList< Double > objCoefs, Double objVal,
 			SolverComponent componentSource )
 	{
-		// Fv = z extra constraint
 		try
 		{
-		component = componentSource;
-		component.addConstraint( objCoefs, ConType.EQUAL, objVal );
-		
-		// set up the constraints and variables
-		double[] x_L = new double[ component.variableCount() ];
-		double[] x_U = new double[ component.variableCount() ];
-		double[] g_L = new double[ component.constraintCount() ]; 
-		double[] g_U = new double[ component.constraintCount() ];
-		
-		for( int j = 0; j < component.variableCount(); ++j )
-		{
-			x_L[ j ] = component.getVariable( j ).lb;
-			x_U[ j ] = component.getVariable( j ).ub;
-		}
-		
-		for( int i = 0; i < component.constraintCount(); ++i )
-		{
-			switch( component.getConstraint( i ).type )
+			// Fv = z extra constraint
+			component = componentSource;
+			component.addConstraint( objCoefs, ConType.EQUAL, objVal );
+			
+			// set up the constraints and variables
+			double[] x_L = new double[ component.variableCount() ];
+			double[] x_U = new double[ component.variableCount() ];
+			double[] g_L = new double[ component.constraintCount() ]; 
+			double[] g_U = new double[ component.constraintCount() ];
+			
+			for( int j = 0; j < component.variableCount(); ++j )
 			{
-			case LESS_EQUAL:
-				g_L[ i ] = Double.NEGATIVE_INFINITY;
-				g_U[ i ] = component.getConstraint( i ).value;
-				break;
-			case EQUAL:
-				g_L[ i ] = component.getConstraint( i ).value;
-				g_U[ i ] = component.getConstraint( i ).value;
-				break;
-			case GREATER_EQUAL:
-				g_L[ i ] = component.getConstraint( i ).value;
-				g_U[ i ] = Double.POSITIVE_INFINITY;
-				break;
+				x_L[ j ] = component.getVariable( j ).lb;
+				x_U[ j ] = component.getVariable( j ).ub;
 			}
-		}
-		
-		this.create( component.variableCount(), x_L, x_U, component.constraintCount(), g_L, g_U,
-				component.constraintCount() * component.variableCount(), component.variableCount(), Ipopt.C_STYLE );
-		
-		double[] vars = new double[ component.variableCount() ];
-		for( int j = 0; j < vars.length; ++j )
-			vars[ j ] = 0;
-		
-		// this.addNumOption( KEY_OBJ_SCALING_FACTOR, -1.0 );
-		this.addIntOption( "mumps_mem_percent", 500 );
-		this.solve( vars );
-		
-		for( double d : vars )
-			soln.add( d );		
+			
+			for( int i = 0; i < component.constraintCount(); ++i )
+			{
+				switch( component.getConstraint( i ).type )
+				{
+				case LESS_EQUAL:
+					g_L[ i ] = Double.NEGATIVE_INFINITY;
+					g_U[ i ] = component.getConstraint( i ).value;
+					break;
+				case EQUAL:
+					g_L[ i ] = component.getConstraint( i ).value;
+					g_U[ i ] = component.getConstraint( i ).value;
+					break;
+				case GREATER_EQUAL:
+					g_L[ i ] = component.getConstraint( i ).value;
+					g_U[ i ] = Double.POSITIVE_INFINITY;
+					break;
+				}
+			}
+			
+			this.create( component.variableCount(), x_L, x_U, component.constraintCount(), g_L, g_U,
+					component.constraintCount() * component.variableCount(), component.variableCount(), Ipopt.C_STYLE );
+			
+			double[] vars = new double[ component.variableCount() ];
+			for( int j = 0; j < vars.length; ++j )
+				vars[ j ] = 0;
+			
+			// this.addNumOption( KEY_OBJ_SCALING_FACTOR, -1.0 );
+			this.addIntOption( "mumps_mem_percent", 500 );
+			this.solve( vars );
+			
+			// remove the extra constraint
+			component.removeConstraint( component.constraintCount() - 1 );
+			
+			for( double d : vars )
+				soln.add( d );		
 		}
 		catch( Error | Exception thrown )
 		{
