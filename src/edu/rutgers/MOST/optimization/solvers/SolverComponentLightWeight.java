@@ -10,11 +10,12 @@ public class SolverComponentLightWeight implements SolverComponent
 	private class LightWeightConstraint extends Constraint
 	{
 		public Map< Integer, Double > coefs = new HashMap< Integer, Double >();
+		
 		@Override
 		public Double getCoefficient( int j )
 		{
 			Double res = coefs.get( j );
-			return res == null ? new Double( 0.0 ) : coefs.get( j ).doubleValue();
+			return res == null ? new Double( 0.0 ) : coefs.get( j );
 		}		
 	}
 	
@@ -58,7 +59,7 @@ public class SolverComponentLightWeight implements SolverComponent
 		constraint.type = conType;
 		constraint.value = value;
 		
-		for( int j = 0; j < coefs.size(); ++j )
+		for( int j = 0; j < variables.size(); ++j )
 			if( coefs.get( j ).doubleValue() != 0.0 )
 				constraint.coefs.put( j, coefs.get( j ).doubleValue() );
 		
@@ -98,7 +99,6 @@ public class SolverComponentLightWeight implements SolverComponent
 		return clone;
 	}
 
-	
 	@Override
 	public Constraint getConstraint( int i )
 	{

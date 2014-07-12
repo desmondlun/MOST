@@ -8,7 +8,7 @@ public class SolverComponentHeavyWeight implements SolverComponent
 {
 	private class HeavyConstraint extends Constraint
 	{
-		public ArrayList< Double > coefs;
+		public ArrayList< Double > coefs = new ArrayList< Double >();
 		
 		@Override
 		public Double getCoefficient( int j )

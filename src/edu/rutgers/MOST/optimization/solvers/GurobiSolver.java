@@ -41,7 +41,7 @@ public abstract class GurobiSolver extends Ipopt implements MILSolver
 	protected ResizableDialog dialog = new ResizableDialog( "Error",
 			"Gurobi Solver Error", "Gurobi Solver Error" );
 	protected boolean abort = false;
-	protected SolverComponent component = new SolverComponentLightWeight();
+	protected SolverComponent component = new SolverComponentHeavyWeight();
 	protected ArrayList< Double > objCoefs = new ArrayList< Double >();
 	protected GRBModel model = null;
 	public static boolean isGurobiLinked()
