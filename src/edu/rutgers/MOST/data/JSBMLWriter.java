@@ -212,7 +212,7 @@ public class JSBMLWriter implements TreeModelListener{
 	}
 	@SuppressWarnings( "deprecation" )
 	public void create() throws Exception {
-		level = 3;
+		level = 2;
 		version = 1;
 		
 		
@@ -571,7 +571,7 @@ public class JSBMLWriter implements TreeModelListener{
 			
 			
 			ASTNode math = new ASTNode();
-			//math.setName("FLUX_VALUE");
+			math.setName("FLUX_VALUE");
 			int curReacCount = 0;
 			ArrayList<String> abbrList = new ArrayList<String>();
 			JSBMLValidator validator = new JSBMLValidator();
