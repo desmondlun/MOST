@@ -46,6 +46,8 @@ public class ReactionEditor extends JFrame {
 	private String oldReaction;
 	private boolean reactantsPopulated;
 	private boolean productsPopulated;
+	private ArrayList<String> tempReactantsList;
+	private ArrayList<String> tempProductsList;
 
 	public void setReactantString(String reactantString) {
 		this.reactantString = reactantString;
@@ -117,6 +119,22 @@ public class ReactionEditor extends JFrame {
 
 	public String getOldReaction() {
 		return oldReaction;
+	}
+
+	public ArrayList<String> getTempProductsList() {
+		return tempProductsList;
+	}
+
+	public void setTempProductsList(ArrayList<String> tempProductsList) {
+		this.tempProductsList = tempProductsList;
+	}
+
+	public ArrayList<String> getTempReactantsList() {
+		return tempReactantsList;
+	}
+
+	public void setTempReactantsList(ArrayList<String> tempReactantsList) {
+		this.tempReactantsList = tempReactantsList;
 	}
 
 	// private final JList names;
@@ -257,43 +275,20 @@ public class ReactionEditor extends JFrame {
 							tempReactantsList.add(reactant[h]);
 						} 
 					} 
+					setTempReactantsList(tempReactantsList);
 					//set reaction equation into text box
-					String reacString = "";
-
-					for (int i = 0; i < tempReactantsList.size(); i++) {
-						if (i == 0) {
-							reacString += (String) tempReactantsList.get(i);
-						} else {
-							reacString += " + " + (String) tempReactantsList.get(i);
-						}
-					}
-
-					setReactantString(reacString);
-					if (getReactantString() == null || getReactantString().length() == 0) {
-						reactionArea.setText(getArrowString() + " " + getProductString());
-						okButton.setEnabled(true);
-					} else if (getProductString() == null || getProductString().length() == 0) {
-						reactionArea.setText(getReactantString() + " " + getArrowString());
-						okButton.setEnabled(true);
-					} else {
-						reactionArea.setText(getReactantString() + " " + getArrowString() + " " + getProductString());
-						okButton.setEnabled(true);
-					}
+					setReactantString(createReactantsString(getTempReactantsList()));
+					writeEquation();
+					
 					ReactionParser parser = new ReactionParser();
 					if (reactionArea.getText() != null && parser.isValid(reactionArea.getText())) {
 						parser.reactionList(reactionArea.getText().trim());
 						if ((getNumPopulatedReacBoxes() + 1) < getNumReactantFields()) {
 							int index = ReactionParser.getEquation().getReactants().size();
 							if (index == getNumPopulatedReacBoxes() && !reactantsPopulated) {
-								for (int m = 0; m < metabList.size(); m++) {
-									cbReactant[index].addItem(metabList.get(m));
-								}
+								populateComboBox(cbReactant[index], metabList);
 								reactantsPopulated = true;
-								cbReactant[index].setEnabled(true);
-								cbReactant[index].setSelectedIndex(-1);
-								reactantEditor[index] = new JTextField();
-								reactantEditor[index] = (JTextField)cbReactant[index].getEditor().getEditorComponent();
-								reactantEditor[index].addKeyListener(new ComboKeyHandler(cbReactant[index]));
+								setUpComboBox(cbReactant[index], reactantEditor[index]);
 								setNumPopulatedReacBoxes(index + 1);
 							}
 						}
@@ -301,8 +296,20 @@ public class ReactionEditor extends JFrame {
 					reactantsPopulated = false;
 				}				
 			};
-			reactantCoeffField[i].addActionListener(reactantsActionListener);
-			cbReactant[i].addActionListener(reactantsActionListener);			
+			//reactantCoeffField[i].addActionListener(reactantsActionListener);
+			cbReactant[i].addActionListener(reactantsActionListener);	
+			
+			reactantCoeffField[i].getDocument().addDocumentListener(new DocumentListener() {
+				public void changedUpdate(DocumentEvent e) {
+					updateReactants();
+				}
+				public void removeUpdate(DocumentEvent e) {
+					updateReactants();
+				}
+				public void insertUpdate(DocumentEvent e) {
+					updateReactants();
+				}
+			});
 		} 
 
 		//end reactant combo boxes
@@ -366,6 +373,7 @@ public class ReactionEditor extends JFrame {
 							tempProductsList.add(product[h]);
 						}      	    	      
 					}
+					setTempProductsList(tempProductsList);
 					//set reaction equation into text box
 					String prodString = "";
 
@@ -378,16 +386,8 @@ public class ReactionEditor extends JFrame {
 					}
 
 					setProductString(prodString);
-					if (getReactantString() == null || getReactantString().length() == 0) {
-						reactionArea.setText(getArrowString() + " " + prodString);
-						okButton.setEnabled(true);
-					} else if (getProductString() == null || getProductString().length() == 0) {
-						reactionArea.setText(getReactantString() + " " + getArrowString());
-						okButton.setEnabled(true);
-					} else {
-						reactionArea.setText(getReactantString() + " " + getArrowString() + " " + prodString);
-						okButton.setEnabled(true);
-					}					
+					writeEquation();
+				
 					ReactionParser parser = new ReactionParser();
 					if (reactionArea.getText() != null && parser.isValid(reactionArea.getText())) {
 						parser.reactionList(reactionArea.getText().trim());
@@ -410,8 +410,20 @@ public class ReactionEditor extends JFrame {
 					productsPopulated = false;
 				}
 			};
-			productCoeffField[j].addActionListener(productsActionListener);
-			cbProduct[j].addActionListener(productsActionListener);			
+			//productCoeffField[j].addActionListener(productsActionListener);
+			cbProduct[j].addActionListener(productsActionListener);	
+			
+			productCoeffField[j].getDocument().addDocumentListener(new DocumentListener() {
+				public void changedUpdate(DocumentEvent e) {
+					updateProducts();
+				}
+				public void removeUpdate(DocumentEvent e) {
+					updateProducts();
+				}
+				public void insertUpdate(DocumentEvent e) {
+					updateProducts();
+				}
+			});
 		} 
 		//end product combo boxes
 		/***************************************************************************/
@@ -737,6 +749,58 @@ public class ReactionEditor extends JFrame {
 		StringSelection selection = new StringSelection(s);
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
 				selection, selection);
+	}
+	
+	public void updateReactants() {
+	
+	}
+	
+	public void updateProducts() {
+		System.out.println();
+	}
+	
+	public void writeEquation() {
+		if (getReactantString() == null || getReactantString().length() == 0) {
+			reactionArea.setText(getArrowString() + " " + getProductString());
+			okButton.setEnabled(true);
+		} else if (getProductString() == null || getProductString().length() == 0) {
+			reactionArea.setText(getReactantString() + " " + getArrowString());
+			okButton.setEnabled(true);
+		} else {
+			reactionArea.setText(getReactantString() + " " + getArrowString() + " " + getProductString());
+			okButton.setEnabled(true);
+		}
+	}
+	
+	public void setUpComboBox(JComboBox<String> combo, JTextField editor) {
+		combo.setEnabled(true);
+		combo.setSelectedIndex(-1);
+		editor = new JTextField();
+		editor = (JTextField)combo.getEditor().getEditorComponent();
+		editor.addKeyListener(new ComboKeyHandler(combo));
+	}
+	
+	public void populateComboBox(JComboBox<String> combo, ArrayList<String> metabList) {
+		for (int m = 0; m < metabList.size(); m++) {
+			combo.addItem(metabList.get(m));
+		}
+	}
+	
+	public String createReactantsString(ArrayList<String> tempList) {
+		String reacString = "";
+
+		for (int i = 0; i < tempList.size(); i++) {
+			if (i == 0) {
+				reacString += (String) tempList.get(i);
+			} else {
+				reacString += " + " + (String) tempList.get(i);
+			}
+		}
+		return reacString;
+	}
+	
+	public void addItems() {
+		
 	}
 
 }
