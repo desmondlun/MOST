@@ -258,22 +258,11 @@ public class ReactionEditor extends JFrame {
 			// add reactant action listener
 			ActionListener reactantsActionListener = new ActionListener() {
 				public void actionPerformed(ActionEvent actionEvent) {
-					String reactantSelection[] = new String[numReactantFields];
+					//String reactantSelection[] = new String[numReactantFields];
 					String reactant[] = new String[numReactantFields];
 					ArrayList<String> tempReactantsList = new ArrayList<String>();
 					for (int h = 0; h < numReactantFields; h++) {
-						reactant[h] = "";
-
-						reactantSelection[h] = (String) cbReactant[h].getSelectedItem();
-						// TODO: check if second condition necessary
-						if (reactantSelection[h] != null && reactantSelection[h].length() > 0) {
-							if (reactantCoeffField[h].getText().length() > 0) {
-								reactant[h] = reactantCoeffField[h].getText() + " " + reactantSelection[h];
-							} else {
-								reactant[h] = reactantSelection[h];
-							}
-							tempReactantsList.add(reactant[h]);
-						} 
+						addItems(cbReactant[h], reactantCoeffField[h], tempReactantsList, reactant[h]);
 					} 
 					setTempReactantsList(tempReactantsList);
 					//set reaction equation into text box
@@ -300,14 +289,35 @@ public class ReactionEditor extends JFrame {
 			cbReactant[i].addActionListener(reactantsActionListener);	
 			
 			reactantCoeffField[i].getDocument().addDocumentListener(new DocumentListener() {
+				//String reactantSelection[] = new String[numReactantFields];
+				String reactant[] = new String[numReactantFields];
+				ArrayList<String> tempReactantsList = new ArrayList<String>();
 				public void changedUpdate(DocumentEvent e) {
-					updateReactants();
+					for (int h = 0; h < numReactantFields; h++) {
+						addItems(cbReactant[h], reactantCoeffField[h], tempReactantsList, reactant[h]);
+					} 
+					setTempReactantsList(tempReactantsList);
+					//set reaction equation into text box
+					setReactantString(createReactantsString(getTempReactantsList()));
+					writeEquation();
 				}
 				public void removeUpdate(DocumentEvent e) {
-					updateReactants();
+					for (int h = 0; h < numReactantFields; h++) {
+						addItems(cbReactant[h], reactantCoeffField[h], tempReactantsList, reactant[h]);
+					} 
+					setTempReactantsList(tempReactantsList);
+					//set reaction equation into text box
+					setReactantString(createReactantsString(getTempReactantsList()));
+					writeEquation();
 				}
 				public void insertUpdate(DocumentEvent e) {
-					updateReactants();
+					for (int h = 0; h < numReactantFields; h++) {
+						addItems(cbReactant[h], reactantCoeffField[h], tempReactantsList, reactant[h]);
+					} 
+					setTempReactantsList(tempReactantsList);
+					//set reaction equation into text box
+					setReactantString(createReactantsString(getTempReactantsList()));
+					writeEquation();
 				}
 			});
 		} 
@@ -415,13 +425,13 @@ public class ReactionEditor extends JFrame {
 			
 			productCoeffField[j].getDocument().addDocumentListener(new DocumentListener() {
 				public void changedUpdate(DocumentEvent e) {
-					updateProducts();
+					
 				}
 				public void removeUpdate(DocumentEvent e) {
-					updateProducts();
+					
 				}
 				public void insertUpdate(DocumentEvent e) {
-					updateProducts();
+					
 				}
 			});
 		} 
@@ -751,14 +761,6 @@ public class ReactionEditor extends JFrame {
 				selection, selection);
 	}
 	
-	public void updateReactants() {
-	
-	}
-	
-	public void updateProducts() {
-		System.out.println();
-	}
-	
 	public void writeEquation() {
 		if (getReactantString() == null || getReactantString().length() == 0) {
 			reactionArea.setText(getArrowString() + " " + getProductString());
@@ -799,8 +801,19 @@ public class ReactionEditor extends JFrame {
 		return reacString;
 	}
 	
-	public void addItems() {
-		
+	public void addItems(JComboBox<String> combo, JTextField coeffField, ArrayList<String> tempList, String species) {
+		String entry = "";
+
+		species = (String) combo.getSelectedItem();
+		// TODO: check if second condition necessary
+		if (species != null && species.length() > 0) {
+			if (coeffField.getText().length() > 0) {
+				entry = coeffField.getText() + " " + species;
+			} else {
+				entry = species;
+			}
+			tempList.add(entry);
+		} 
 	}
 
 }
