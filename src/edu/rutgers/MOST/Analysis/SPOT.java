@@ -22,7 +22,7 @@ public class SPOT extends Analysis
 		ModelFormatter modelFormatter = new ModelFormatter();
 		File file = GraphicalInterface.chooseCSVFile( "Load Gene Expression Data" );
 		nonlinearSolver.setGeneExpr( 
-				modelFormatter.formatFluxBoundsfromGeneExpressionData( file, this.model ) );
+				modelFormatter.parseGeneExpressionDataSPOT( file, this.model ) );
 		return super.run();
 	}
 
