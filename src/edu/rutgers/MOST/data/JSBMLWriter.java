@@ -46,7 +46,7 @@ public class JSBMLWriter implements TreeModelListener{
 	public SettingsFactory curSettings;
 	public String optFilePath;
 	public boolean load;
-	
+
 	public String getOptFilePath() {
 		return optFilePath;
 	}
@@ -236,7 +236,14 @@ public class JSBMLWriter implements TreeModelListener{
 		//Replace the following with something proper (see issue # ):
 		String dbN = "someModel";
 		
-		Model model = doc.createModel(dbN + "1");
+		if (outFile.getName().endsWith(".xml")) {
+			dbN = outFile.getName().substring(0, outFile.getName().length() - 4);
+		}
+		
+		JSBMLValidator validator = new JSBMLValidator();
+		String validDbN = validator.makeValidID(dbN);
+		Model model = doc.createModel(validDbN);
+		//Model model = doc.createModel(dbN + "1");
 		UnitDefinition mmolgh = new UnitDefinition();
 		
 		Unit mole = new Unit();
