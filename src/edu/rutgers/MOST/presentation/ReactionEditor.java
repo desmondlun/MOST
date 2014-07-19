@@ -363,51 +363,24 @@ public class ReactionEditor extends JFrame {
 			// add product action listener
 			ActionListener productsActionListener = new ActionListener() {
 				public void actionPerformed(ActionEvent actionEvent) {
-					String productSelection[] = new String[numProductFields];
 					String product[] = new String[numProductFields];
-					ArrayList<String> tempProductsList = new ArrayList<String>();
+					ArrayList<String> tempProdList = new ArrayList<String>();
 					for (int h = 0; h < numProductFields; h++) {
-						product[h] = "";	      
-						productSelection[h] = (String) cbProduct[h].getSelectedItem();
-						if (productSelection[h] != null) {
-							if (productCoeffField[h].getText().length() > 0) {
-								product[h] = productCoeffField[h].getText() + " " + productSelection[h];
-							} else {
-								product[h] = productSelection[h];
-							}
-							tempProductsList.add(product[h]);
-						}      	    	      
-					}
-					setTempProductsList(tempProductsList);
+						addItems(cbProduct[h], productCoeffField[h], tempProdList, product[h]);
+					} 
 					//set reaction equation into text box
-					String prodString = "";
-
-					for (int i = 0; i < tempProductsList.size(); i++) {
-						if (i == 0) {
-							prodString += (String) tempProductsList.get(i);
-						} else {
-							prodString += " + " + (String) tempProductsList.get(i);
-						}
-					}
-
-					setProductString(prodString);
+					setProductString(createSpeciesString(tempProdList));
 					writeEquation();
-				
+					
 					ReactionParser parser = new ReactionParser();
 					if (reactionArea.getText() != null && parser.isValid(reactionArea.getText())) {
 						parser.reactionList(reactionArea.getText().trim());
 						if ((getNumPopulatedProdBoxes() + 1) < getNumProductFields()) {
 							int index = ReactionParser.getEquation().getProducts().size();
 							if (index == getNumPopulatedProdBoxes() && !productsPopulated) {
-								for (int m = 0; m < metabList.size(); m++) {
-									cbProduct[index].addItem(metabList.get(m));
-								}
+								populateComboBox(cbProduct[index], metabList);
 								productsPopulated = true;
-								cbProduct[index].setEnabled(true);
-								cbProduct[index].setSelectedIndex(-1);
-								productEditor[index] = new JTextField();
-								productEditor[index] = (JTextField)cbProduct[index].getEditor().getEditorComponent();
-								productEditor[index].addKeyListener(new ComboKeyHandler(cbProduct[index]));
+								setUpComboBox(cbProduct[index], productEditor[index]);
 								setNumPopulatedProdBoxes(index + 1);
 							}
 						}
@@ -415,18 +388,36 @@ public class ReactionEditor extends JFrame {
 					productsPopulated = false;
 				}
 			};
-			//productCoeffField[j].addActionListener(productsActionListener);
 			cbProduct[j].addActionListener(productsActionListener);	
 			
 			productCoeffField[j].getDocument().addDocumentListener(new DocumentListener() {
 				public void changedUpdate(DocumentEvent e) {
-					
+					fieldChangeAction();
 				}
 				public void removeUpdate(DocumentEvent e) {
-					
+					fieldChangeAction();
 				}
 				public void insertUpdate(DocumentEvent e) {
-					
+					fieldChangeAction();
+				}
+				public void fieldChangeAction() {
+					String product[] = new String[numProductFields];
+					ArrayList<String> tempProdList = new ArrayList<String>();
+					boolean valid = true;
+					EntryValidator v = new EntryValidator();
+					for (int h = 0; h < numProductFields; h++) {
+						if (productCoeffField[h].getText().length() > 0 && !v.isNumber(productCoeffField[h].getText())) {
+							valid = false;
+						}
+						addItems(cbProduct[h], productCoeffField[h], tempProdList, product[h]);
+					} 
+					if (!valid) {
+						showErrorMessage();
+					} else {
+						setProductString(createSpeciesString(tempProdList));
+						writeEquation();
+					}
+					maybeEnableOKButton();
 				}
 			});
 		} 
