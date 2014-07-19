@@ -259,13 +259,12 @@ public class ReactionEditor extends JFrame {
 			ActionListener reactantsActionListener = new ActionListener() {
 				public void actionPerformed(ActionEvent actionEvent) {
 					String reactant[] = new String[numReactantFields];
-					ArrayList<String> tempReactantsList = new ArrayList<String>();
+					ArrayList<String> tempReacList = new ArrayList<String>();
 					for (int h = 0; h < numReactantFields; h++) {
-						addItems(cbReactant[h], reactantCoeffField[h], tempReactantsList, reactant[h]);
+						addItems(cbReactant[h], reactantCoeffField[h], tempReacList, reactant[h]);
 					} 
-					setTempReactantsList(tempReactantsList);
 					//set reaction equation into text box
-					setReactantString(createSpeciesString(getTempReactantsList()));
+					setReactantString(createSpeciesString(tempReacList));
 					writeEquation();
 					
 					ReactionParser parser = new ReactionParser();
@@ -287,31 +286,33 @@ public class ReactionEditor extends JFrame {
 			cbReactant[i].addActionListener(reactantsActionListener);	
 			
 			reactantCoeffField[i].getDocument().addDocumentListener(new DocumentListener() {
-				String reactant[] = new String[numReactantFields];
-				ArrayList<String> tempReactantsList = new ArrayList<String>();
 				public void changedUpdate(DocumentEvent e) {
-					for (int h = 0; h < numReactantFields; h++) {
-						addItems(cbReactant[h], reactantCoeffField[h], tempReactantsList, reactant[h]);
-					} 
-					setTempReactantsList(tempReactantsList);
-					setReactantString(createSpeciesString(getTempReactantsList()));
-					writeEquation();
+					fieldChangeAction();
 				}
 				public void removeUpdate(DocumentEvent e) {
-					for (int h = 0; h < numReactantFields; h++) {
-						addItems(cbReactant[h], reactantCoeffField[h], tempReactantsList, reactant[h]);
-					} 
-					setTempReactantsList(tempReactantsList);
-					setReactantString(createSpeciesString(getTempReactantsList()));
-					writeEquation();
+					fieldChangeAction();
 				}
 				public void insertUpdate(DocumentEvent e) {
+					fieldChangeAction();
+				}
+				public void fieldChangeAction() {
+					String reactant[] = new String[numReactantFields];
+					ArrayList<String> tempReacList = new ArrayList<String>();
+					boolean valid = true;
+					EntryValidator v = new EntryValidator();
 					for (int h = 0; h < numReactantFields; h++) {
-						addItems(cbReactant[h], reactantCoeffField[h], tempReactantsList, reactant[h]);
+						if (reactantCoeffField[h].getText().length() > 0 && !v.isNumber(reactantCoeffField[h].getText())) {
+							valid = false;
+						}
+						addItems(cbReactant[h], reactantCoeffField[h], tempReacList, reactant[h]);
 					} 
-					setTempReactantsList(tempReactantsList);
-					setReactantString(createSpeciesString(getTempReactantsList()));
-					writeEquation();
+					if (!valid) {
+						showErrorMessage();
+					} else {
+						setReactantString(createSpeciesString(tempReacList));
+						writeEquation();
+					}
+					maybeEnableOKButton();
 				}
 			});
 		} 
@@ -767,12 +768,7 @@ public class ReactionEditor extends JFrame {
 		} else {
 			reactionArea.setText(getReactantString() + " " + getArrowString() + " " + getProductString());
 		}
-		ReactionParser parser = new ReactionParser();
-		if (parser.isValid(reactionArea.getText())) {
-			okButton.setEnabled(true);
-		} else {
-			okButton.setEnabled(false);
-		}
+		maybeEnableOKButton();
 	}
 	
 	/**
@@ -840,6 +836,25 @@ public class ReactionEditor extends JFrame {
 			}
 			tempList.add(entry);
 		} 
+	}
+	
+	public void showErrorMessage() {
+		JOptionPane.showMessageDialog(null,                
+				GraphicalInterfaceConstants.NUMERIC_VALUE_ERROR_MESSAGE, 
+				GraphicalInterfaceConstants.NUMERIC_VALUE_ERROR_TITLE,                               
+				JOptionPane.ERROR_MESSAGE);
+	}
+	
+	/**
+	 * Enables OK button if reaction equation is valid
+	 */
+	public void maybeEnableOKButton() {
+		ReactionParser parser = new ReactionParser();
+		if (parser.isValid(reactionArea.getText())) {
+			okButton.setEnabled(true);
+		} else {
+			okButton.setEnabled(false);
+		}
 	}
 
 }
