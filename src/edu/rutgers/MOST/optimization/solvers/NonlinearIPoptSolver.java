@@ -40,7 +40,7 @@ public class NonlinearIPoptSolver extends IPoptSolver implements NonlinearSolver
 		length_flux_v = Math.sqrt( length_flux_v );
 	
 		// -1 <= ( flux_v dot gene_v ) / ( ||flux_v|| ) <= 1
-		obj_value[ 0 ] = -dotProduct / ( length_flux_v );
+		obj_value[ 0 ] = dotProduct / ( length_flux_v );
 		
 		return true;
 	}
@@ -76,7 +76,7 @@ public class NonlinearIPoptSolver extends IPoptSolver implements NonlinearSolver
 			length_flux_v = Math.sqrt( length_flux_v );
 	
 			// -1 <= ( flux_v' dot gene_v ) / ( ||flux_v'|| ) <= 1
-			grad_f[ j ] = -dotProduct / ( length_flux_v );
+			grad_f[ j ] = dotProduct / ( length_flux_v );
 		}
 			
 		return true;
