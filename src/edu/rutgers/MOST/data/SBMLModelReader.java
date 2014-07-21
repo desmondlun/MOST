@@ -653,7 +653,7 @@ public class SBMLModelReader {
 		LocalConfig.getInstance().setReactionEquationMap(reactionEquationMap);
 		//System.out.println(LocalConfig.getInstance().getReactionEquationMap());
 		LocalConfig.getInstance().setReactionAbbreviationIdMap(reactionAbbreviationIdMap);
-		System.out.println(reactionAbbreviationIdMap);
+		//System.out.println(reactionAbbreviationIdMap);
 		LocalConfig.getInstance().setProgress(100);	
 		finished = true;
 		//System.out.println("Done");

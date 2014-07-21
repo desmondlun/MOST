@@ -354,7 +354,7 @@ public class TextReactionsModelReader {
 		GraphicalInterface.showPrompt = true;
 		LocalConfig.getInstance().hasMetabolitesFile = false;
 		setReactionsTableModel(reacTableModel);
-		System.out.println(LocalConfig.getInstance().getReactionAbbreviationIdMap());
+//		System.out.println(LocalConfig.getInstance().getReactionAbbreviationIdMap());
 //		System.out.println(LocalConfig.getInstance().getReactionEquationMap());
 //		System.out.println(LocalConfig.getInstance().getMetaboliteUsedMap());
 //		System.out.println(LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());

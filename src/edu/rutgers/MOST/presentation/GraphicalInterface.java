@@ -58,6 +58,7 @@ import edu.rutgers.MOST.optimization.solvers.GurobiSolver;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
@@ -999,6 +1000,7 @@ public class GraphicalInterface extends JFrame {
 		//progressBar.progress.setIndeterminate(true);
 		progressBar.setLocationRelativeTo(null);
 		progressBar.setVisible(false);
+		progressBar.setAlwaysOnTop(true);
 
 		csvLoadInterface.setIconImages(icons);					
 		csvLoadInterface.setSize(600, 200);
