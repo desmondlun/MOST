@@ -183,6 +183,7 @@ public class TextMetabolitesModelReader {
 					
 	                String metaboliteAbbreviation = dataArray[LocalConfig.getInstance().getMetaboliteAbbreviationColumnIndex()];
 	                
+	                // appends suffix on duplicate abbreviations
 					if (metaboliteAbbreviation == null || metaboliteAbbreviation.trim().length() == 0) {
 							
 					} else {

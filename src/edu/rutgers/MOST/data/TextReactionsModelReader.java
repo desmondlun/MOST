@@ -12,7 +12,6 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 import au.com.bytecode.opencsv.CSVReader;
-
 import edu.rutgers.MOST.config.LocalConfig;
 //import edu.rutgers.MOST.logic.ReactionParser;
 import edu.rutgers.MOST.logic.ReactionParser;
@@ -238,6 +237,17 @@ public class TextReactionsModelReader {
 					} 
 					reacRow.add(Double.toString(fluxValue));
 					reactionAbbreviation = dataArray[LocalConfig.getInstance().getReactionAbbreviationColumnIndex()];
+					
+					// appends suffix on duplicate abbreviations
+					if (reactionAbbreviation == null || reactionAbbreviation.trim().length() == 0) {
+						
+					} else {
+						if (LocalConfig.getInstance().getReactionAbbreviationIdMap().containsKey(reactionAbbreviation)) {
+							reactionAbbreviation = reactionAbbreviation + duplicateSuffix(reactionAbbreviation);
+						}
+						LocalConfig.getInstance().getReactionAbbreviationIdMap().put(reactionAbbreviation, id);
+					}
+					
 					LocalConfig.getInstance().getReactionAbbreviationIdMap().put(reactionAbbreviation, id);
 					reacRow.add(reactionAbbreviation);
 					if (LocalConfig.getInstance().getReactionNameColumnIndex() > -1) {
@@ -533,6 +543,18 @@ public class TextReactionsModelReader {
 			blankMetabModel.addColumn(GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES[m]);
 		}
 		return blankMetabModel;
+	}
+	
+	public String duplicateSuffix(String value) {
+		String duplicateSuffix = GraphicalInterfaceConstants.DUPLICATE_SUFFIX;
+		if (LocalConfig.getInstance().getReactionAbbreviationIdMap().containsKey(value + duplicateSuffix)) {
+			int duplicateCount = Integer.valueOf(duplicateSuffix.substring(1, duplicateSuffix.length() - 1));
+			while (LocalConfig.getInstance().getReactionAbbreviationIdMap().containsKey(value + duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1)))) {
+				duplicateCount += 1;
+			}
+			duplicateSuffix = duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1));
+		}
+		return duplicateSuffix;
 	}
 	
 }
