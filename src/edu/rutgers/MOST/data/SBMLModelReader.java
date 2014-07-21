@@ -17,6 +17,7 @@ import edu.rutgers.MOST.presentation.ProgressConstants;
 public class SBMLModelReader {
 
 	private SBMLDocument doc;
+	private boolean finished = false;
 
 	private static DefaultTableModel metabolitesTableModel;
 
@@ -29,6 +30,10 @@ public class SBMLModelReader {
 		SBMLModelReader.metabolitesTableModel = metabolitesTableModel;
 	}
 
+	public synchronized boolean isFinished()
+	{
+		return finished;
+	}
 	private static DefaultTableModel reactionsTableModel;
 
 	public static DefaultTableModel getReactionsTableModel() {
@@ -650,6 +655,7 @@ public class SBMLModelReader {
 		LocalConfig.getInstance().setReactionAbbreviationIdMap(reactionAbbreviationIdMap);
 		System.out.println(reactionAbbreviationIdMap);
 		LocalConfig.getInstance().setProgress(100);	
+		finished = true;
 		//System.out.println("Done");
 
 	}

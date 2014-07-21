@@ -19,7 +19,7 @@ public class LocalConfig {
 	// Private constructor prevents instantiation from other classes
 	private LocalConfig() { }
 
-	public static LocalConfig getInstance() {
+	public static synchronized LocalConfig getInstance() {
 		return instance;
 	}
 	
@@ -65,11 +65,11 @@ public class LocalConfig {
 	
 	private Integer progress;
 	
-	public void setProgress(Integer progress) {
+	public synchronized void setProgress(Integer progress) {
 		this.progress = progress;
 	}
 	
-	public Integer getProgress() {
+	public synchronized Integer getProgress() {
 		return progress;
 	}
 	

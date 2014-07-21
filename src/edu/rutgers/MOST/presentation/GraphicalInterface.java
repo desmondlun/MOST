@@ -10458,28 +10458,28 @@ public class GraphicalInterface extends JFrame {
 
 		@Override
 		public void done() {
-
+			System.out.println( "Task done!" );
 		}
 
 		@Override
 		protected Void doInBackground() throws Exception {
 			loadSetUp();
-			int progress = 0;
 			SBMLDocument doc = new SBMLDocument();
 			SBMLReader reader = new SBMLReader();
+			SBMLModelReader modelReader = null;
 			try {
 				doc = reader.readSBML(getSBMLFile());
-				SBMLModelReader modelReader = new SBMLModelReader(doc);
+				modelReader = new SBMLModelReader(doc);
 				modelReader.load();
 			} catch (FileNotFoundException e) {	
 				JOptionPane.showMessageDialog(null,                
 						"File does not exist.",                
 						"File does not exist.",                                
 						JOptionPane.ERROR_MESSAGE);					
-				//e.printStackTrace();					
-				progress = 100;
+				//e.printStackTrace();		
 				progressBar.setVisible(false);
 				progressBar.progress.setIndeterminate(false);
+				LocalConfig.getInstance().setProgress( 100 );
 				enableLoadItems();
 			} catch (XMLStreamException e) {
 				JOptionPane.showMessageDialog(null,                
@@ -10488,17 +10488,18 @@ public class GraphicalInterface extends JFrame {
 						JOptionPane.ERROR_MESSAGE);
 				// TODO Auto-generated catch block
 				//e.printStackTrace();
-				progress = 100;
 				progressBar.setVisible(false);
 				progressBar.progress.setIndeterminate(false);
+				LocalConfig.getInstance().setProgress( 100 );
 				enableLoadItems();
 			}	
-			while (progress < 100) {
+			while (LocalConfig.getInstance().getProgress() < 100) {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException ignore) {
 				}			
-			}				
+			}
+			Thread.sleep( 1000 );
 			timer.stop();
 			return null;
 		}
