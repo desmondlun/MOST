@@ -283,6 +283,11 @@ public class GraphicalInterfaceConstants {
     
     public static final String DUPLICATE_SUFFIX = "[1]";
     
+ // duplicate metabolite
+    public static final String DUPLICATE_REACTION_TITLE = "Duplicate Reaction";
+    public static final String DUPLICATE_REACTION_MESSAGE = "Duplicate Reaction. Rename as "; 
+    public static final String DUPLICATE_REACTION_PASTE_MESSAGE = "Duplicate Reactions. Names Will Be Appended With '[1]', '[2]', etc.";
+    
     // invalid reactions
     public static final String INVALID_REACTIONS_ENTRY_ERROR_TITLE = "Invalid Reaction";
     public static final String INVALID_REACTIONS_ENTRY_ERROR_MESSAGE = "Invalid Reaction Format. This is probably a result of incorrect spacing.\nFor example, a -> b is valid, a->b is not valid."; 

@@ -6,11 +6,16 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
 
+/**
+ * Class contains commonly used functions and eliminate redundancy of code.
+ *
+ */
 public class Utilities {
 
 	public String createDateTimeStamp() {
@@ -148,6 +153,25 @@ public class Utilities {
 		r.setIconImages(icons);
     	r.setLocationRelativeTo(null);
     	r.setVisible(true);
+	}
+	
+	/**
+	 * Appends numeric suffix to duplicate abbreviations such as [1]. [2].
+	 * These fields are keys in SBML and must be unique.
+	 * @param value
+	 * @param abbreviationIdMap
+	 * @return
+	 */
+	public String duplicateSuffix(String value, Map<String, Object> abbreviationIdMap) {
+		String duplicateSuffix = GraphicalInterfaceConstants.DUPLICATE_SUFFIX;
+		if (abbreviationIdMap.containsKey(value + duplicateSuffix)) {
+			int duplicateCount = Integer.valueOf(duplicateSuffix.substring(1, duplicateSuffix.length() - 1));
+			while (abbreviationIdMap.containsKey(value + duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1)))) {
+				duplicateCount += 1;
+			}
+			duplicateSuffix = duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1));
+		}
+		return duplicateSuffix;
 	}
 	
 }

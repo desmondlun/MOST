@@ -17,6 +17,7 @@ import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.logic.ReactionParser;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
+import edu.rutgers.MOST.presentation.Utilities;
 
 public class TextReactionsModelReader {
 	
@@ -142,6 +143,7 @@ public class TextReactionsModelReader {
 	}
 
 	public void load(File file){
+		Utilities u = new Utilities();
 		LocalConfig.getInstance().getMetaboliteUsedMap().clear();
 		LocalConfig.getInstance().getSuspiciousMetabolites().clear();
 		LocalConfig.getInstance().getReactionAbbreviationIdMap().clear();
@@ -243,7 +245,7 @@ public class TextReactionsModelReader {
 						
 					} else {
 						if (LocalConfig.getInstance().getReactionAbbreviationIdMap().containsKey(reactionAbbreviation)) {
-							reactionAbbreviation = reactionAbbreviation + duplicateSuffix(reactionAbbreviation);
+							reactionAbbreviation = reactionAbbreviation + u.duplicateSuffix(reactionAbbreviation, LocalConfig.getInstance().getReactionAbbreviationIdMap());
 						}
 						LocalConfig.getInstance().getReactionAbbreviationIdMap().put(reactionAbbreviation, id);
 					}
@@ -543,18 +545,6 @@ public class TextReactionsModelReader {
 			blankMetabModel.addColumn(GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES[m]);
 		}
 		return blankMetabModel;
-	}
-	
-	public String duplicateSuffix(String value) {
-		String duplicateSuffix = GraphicalInterfaceConstants.DUPLICATE_SUFFIX;
-		if (LocalConfig.getInstance().getReactionAbbreviationIdMap().containsKey(value + duplicateSuffix)) {
-			int duplicateCount = Integer.valueOf(duplicateSuffix.substring(1, duplicateSuffix.length() - 1));
-			while (LocalConfig.getInstance().getReactionAbbreviationIdMap().containsKey(value + duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1)))) {
-				duplicateCount += 1;
-			}
-			duplicateSuffix = duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1));
-		}
-		return duplicateSuffix;
 	}
 	
 }

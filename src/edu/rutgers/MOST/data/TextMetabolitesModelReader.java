@@ -16,6 +16,7 @@ import javax.swing.table.DefaultTableModel;
 import au.com.bytecode.opencsv.CSVReader;
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
+import edu.rutgers.MOST.presentation.Utilities;
 
 public class TextMetabolitesModelReader {
 
@@ -131,6 +132,7 @@ public class TextMetabolitesModelReader {
 	}
 
 	public void load(File file){
+		Utilities u = new Utilities();
 		DefaultTableModel metabTableModel = new DefaultTableModel();
 		for (int m = 0; m < GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length; m++) {
 			metabTableModel.addColumn(GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES[m]);
@@ -188,7 +190,7 @@ public class TextMetabolitesModelReader {
 							
 					} else {
 						if (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(metaboliteAbbreviation)) {
-							metaboliteAbbreviation = metaboliteAbbreviation + duplicateSuffix(metaboliteAbbreviation);
+							metaboliteAbbreviation = metaboliteAbbreviation + u.duplicateSuffix(metaboliteAbbreviation, LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
 						}
 						LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().put(metaboliteAbbreviation, id);
 					}
@@ -255,17 +257,6 @@ public class TextMetabolitesModelReader {
 		//System.out.println("Done");		
 	}
 	
-	public String duplicateSuffix(String value) {
-		String duplicateSuffix = GraphicalInterfaceConstants.DUPLICATE_SUFFIX;
-		if (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(value + duplicateSuffix)) {
-			int duplicateCount = Integer.valueOf(duplicateSuffix.substring(1, duplicateSuffix.length() - 1));
-			while (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(value + duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1)))) {
-				duplicateCount += 1;
-			}
-			duplicateSuffix = duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1));
-		}
-		return duplicateSuffix;
-	}
 }
 
 

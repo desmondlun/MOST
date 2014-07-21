@@ -58,7 +58,6 @@ import edu.rutgers.MOST.optimization.solvers.GurobiSolver;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
@@ -4081,6 +4080,7 @@ public class GraphicalInterface extends JFrame {
 	public void updateReactionsCellIfValid(String oldValue, String newValue, int rowIndex, int colIndex) {		
 		reactionUpdateValid = true;
 		EntryValidator validator = new EntryValidator();
+		Utilities u = new Utilities();
 		//LocalConfig.getInstance().editMode = true;
 		int id = Integer.parseInt((String) (reactionsTable.getModel().getValueAt(rowIndex, 0)));		
 		if (colIndex == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
@@ -4187,6 +4187,40 @@ public class GraphicalInterface extends JFrame {
 				}				
 			}
 		} else if (colIndex == GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN) {
+			if (LocalConfig.getInstance().getReactionAbbreviationIdMap().containsKey(newValue)) {
+				setFindReplaceAlwaysOnTop(false);
+				Object[] options = {"    Yes    ", "    No    ",};
+				int choice = JOptionPane.showOptionDialog(null, 
+						GraphicalInterfaceConstants.DUPLICATE_REACTION_MESSAGE + newValue + u.duplicateSuffix(newValue, LocalConfig.getInstance().getReactionAbbreviationIdMap()) + " ?", 
+						GraphicalInterfaceConstants.DUPLICATE_REACTION_TITLE, 
+						JOptionPane.YES_NO_OPTION, 
+						JOptionPane.QUESTION_MESSAGE, 
+						null, options, options[0]);
+				if (choice == JOptionPane.YES_OPTION) {
+					newValue = newValue + u.duplicateSuffix(newValue, LocalConfig.getInstance().getReactionAbbreviationIdMap());
+					reactionsTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
+					LocalConfig.getInstance().getReactionAbbreviationIdMap().put(newValue, id);
+					LocalConfig.getInstance().getReactionAbbreviationIdMap().remove(oldValue);
+				}
+				if (choice == JOptionPane.NO_OPTION) {
+					reactionUpdateValid = false;
+					reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
+				}			
+				setFindReplaceAlwaysOnTop(true);
+			} else {
+				//if a blank is entered remove key/value of old value
+				if (newValue == null || newValue.length() == 0 || newValue.trim().equals("")) {
+					LocalConfig.getInstance().getReactionAbbreviationIdMap().remove(oldValue);
+					// non-duplicate entry
+				} else {
+					if (newValue.trim() != null && newValue.trim().length() > 0) {
+						LocalConfig.getInstance().getReactionAbbreviationIdMap().remove(oldValue);
+						LocalConfig.getInstance().getReactionAbbreviationIdMap().put(newValue, Integer.parseInt((String) (reactionsTable.getModel().getValueAt(rowIndex, 0))));
+					}					
+				}
+				reactionsTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
+			}
+			LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().remove(oldValue);
 			LocalConfig.getInstance().getReactionAbbreviationIdMap().put(newValue, id);
 		} else if (colIndex == GraphicalInterfaceConstants.FLUX_VALUE_COLUMN || 
 				colIndex == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN || 
@@ -4529,6 +4563,7 @@ public class GraphicalInterface extends JFrame {
 	public void updateMetabolitesCellIfValid(String oldValue, String newValue, int rowIndex, int colIndex) {
 		metaboliteUpdateValid = true;
 		EntryValidator validator = new EntryValidator();
+		Utilities u = new Utilities();
 		int id = Integer.parseInt((String) (metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN)));
 		String metabAbbrev = (String) (metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN));
 		String metabName = (String) (metabolitesTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN));
@@ -4579,13 +4614,13 @@ public class GraphicalInterface extends JFrame {
 				setFindReplaceAlwaysOnTop(false);
 				Object[] options = {"    Yes    ", "    No    ",};
 				int choice = JOptionPane.showOptionDialog(null, 
-						GraphicalInterfaceConstants.DUPLICATE_METABOLITE_MESSAGE + newValue + duplicateSuffix(newValue) + " ?", 
+						GraphicalInterfaceConstants.DUPLICATE_METABOLITE_MESSAGE + newValue + u.duplicateSuffix(newValue, LocalConfig.getInstance().getMetaboliteAbbreviationIdMap()) + " ?", 
 						GraphicalInterfaceConstants.DUPLICATE_METABOLITE_TITLE, 
 						JOptionPane.YES_NO_OPTION, 
 						JOptionPane.QUESTION_MESSAGE, 
 						null, options, options[0]);
 				if (choice == JOptionPane.YES_OPTION) {
-					newValue = newValue + duplicateSuffix(newValue);
+					newValue = newValue + u.duplicateSuffix(newValue, LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
 					metabolitesTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 					LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().put(newValue, id);
 					LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().remove(oldValue);
@@ -7855,6 +7890,7 @@ public class GraphicalInterface extends JFrame {
 	}
 	
 	public void updateMetabolitesCellIfPasteValid(String value, int row, int col) {
+		Utilities u = new Utilities();
 		int id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));		
 		String metabAbbrev = (String) metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 		metabolitesTable.convertRowIndexToView(row);
@@ -7883,7 +7919,7 @@ public class GraphicalInterface extends JFrame {
 									JOptionPane.QUESTION_MESSAGE, 
 									null, options, options[0]);
 							if (choice == JOptionPane.YES_OPTION) {	
-								value = value + duplicateSuffix(value);
+								value = value + u.duplicateSuffix(value, LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
 								updateMetabolitesCellById(value, id, col);
 								LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().remove(metabAbbrev);
 								LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().put(value, id);
@@ -7896,7 +7932,7 @@ public class GraphicalInterface extends JFrame {
 							}
 						} else {
 							if (duplicateMetabOK) {
-								value = value + duplicateSuffix(value);
+								value = value + u.duplicateSuffix(value, LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
 								updateMetabolitesCellById(value, id, col);
 								//metabolitesTable.setValueAt(value, viewRow, col);
 								if (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(metabAbbrev)) {
@@ -7938,17 +7974,7 @@ public class GraphicalInterface extends JFrame {
 		}	
 	}
 
-	public String duplicateSuffix(String value) {
-		String duplicateSuffix = GraphicalInterfaceConstants.DUPLICATE_SUFFIX;
-		if (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(value + duplicateSuffix)) {
-			int duplicateCount = Integer.valueOf(duplicateSuffix.substring(1, duplicateSuffix.length() - 1));
-			while (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(value + duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1)))) {
-				duplicateCount += 1;
-			}
-			duplicateSuffix = duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1));
-		}
-		return duplicateSuffix;
-	}
+	
 	
 	public boolean isMetabolitesEntryValid(int columnIndex, String value) {
 		if (columnIndex == GraphicalInterfaceConstants.CHARGE_COLUMN) {
