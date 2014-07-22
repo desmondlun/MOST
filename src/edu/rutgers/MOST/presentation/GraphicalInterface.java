@@ -6482,7 +6482,11 @@ public class GraphicalInterface extends JFrame {
 					for (int r = rowIndexEnd; r >= startRow; r--) {
 						int viewRow = reactionsTable.convertRowIndexToModel(r);
 						int id = (Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
-						deleteIds.add(id);	
+						deleteIds.add(id);
+						String key = (String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
+						if (LocalConfig.getInstance().getReactionAbbreviationIdMap().containsKey(key)) {
+							LocalConfig.getInstance().getReactionAbbreviationIdMap().remove(key);
+						}
 						model.removeRow(viewRow);
 						if (LocalConfig.getInstance().getReactionEquationMap().get(id) != null) {
 							for (int i = 0; i < ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).getReactants().size(); i++) {
@@ -6498,7 +6502,8 @@ public class GraphicalInterface extends JFrame {
 								}
 							}
 							LocalConfig.getInstance().getReactionEquationMap().remove(id);
-						}												
+						}
+						
 //						System.out.println("del " + LocalConfig.getInstance().getReactionEquationMap());
 //						System.out.println("del id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
 //						System.out.println("del used " + LocalConfig.getInstance().getMetaboliteUsedMap());
