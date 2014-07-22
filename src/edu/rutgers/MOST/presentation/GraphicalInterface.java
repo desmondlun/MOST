@@ -4220,8 +4220,14 @@ public class GraphicalInterface extends JFrame {
 				}
 				reactionsTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
 			}
-			LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().remove(oldValue);
-			LocalConfig.getInstance().getReactionAbbreviationIdMap().put(newValue, id);
+			LocalConfig.getInstance().getReactionAbbreviationIdMap().remove(oldValue);
+			// update id name map
+			if (!LocalConfig.getInstance().getReactionAbbreviationIdMap().containsKey((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN))) {
+				if (reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN) != null 
+						&& ((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN)).trim().length() > 0) {
+					LocalConfig.getInstance().getReactionAbbreviationIdMap().put((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN), new Integer(id));
+				}				
+			}
 		} else if (colIndex == GraphicalInterfaceConstants.FLUX_VALUE_COLUMN || 
 				colIndex == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN || 
 				colIndex == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN || 
