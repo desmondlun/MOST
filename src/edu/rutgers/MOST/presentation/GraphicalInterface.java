@@ -6883,7 +6883,7 @@ public class GraphicalInterface extends JFrame {
 		int id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));		
 		String reacAbbrev = (String)reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
 		if (col == GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN) {
-			if (LocalConfig.getInstance().getReactionAbbreviationIdMap().containsKey(value)) {
+			if (value != null && value.trim().length() > 0 && LocalConfig.getInstance().getReactionAbbreviationIdMap().containsKey(value)) {
 				if (showDuplicateReacPrompt) {
 					restoreOldReactionsSort();
 					Object[] options = {"    Yes    ", "    No    ",};
@@ -6921,9 +6921,10 @@ public class GraphicalInterface extends JFrame {
 				if (LocalConfig.getInstance().getReactionAbbreviationIdMap().containsKey(reacAbbrev)) {
 					LocalConfig.getInstance().getReactionAbbreviationIdMap().remove(reacAbbrev);
 				}
-				LocalConfig.getInstance().getReactionAbbreviationIdMap().put(value, id);
+				if (value != null && value.trim().length() > 0) {
+					LocalConfig.getInstance().getReactionAbbreviationIdMap().put(value, id);
+				}
 			}
-			System.out.println(LocalConfig.getInstance().getReactionAbbreviationIdMap());
 		} else if (col == GraphicalInterfaceConstants.FLUX_VALUE_COLUMN || 
 				col == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN ||
 				col == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN ||
@@ -6948,6 +6949,7 @@ public class GraphicalInterface extends JFrame {
 		} else {
 			validPaste = false;
 		}	
+		System.out.println(LocalConfig.getInstance().getReactionAbbreviationIdMap());
 	}
 
 	public boolean isReactionsEntryValid(int row, int columnIndex, String value) {
@@ -7982,7 +7984,7 @@ public class GraphicalInterface extends JFrame {
 				}				
 			} else {
 				if (continuePasting) {
-					if (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(value)) {
+					if (value != null && value.trim().length() > 0 && LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(value)) {
 						if (showDuplicatePrompt) {
 							restoreOldMetabolitesSort();
 							Object[] options = {"    Yes    ", "    No    ",};
@@ -8020,7 +8022,9 @@ public class GraphicalInterface extends JFrame {
 						if (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(metabAbbrev)) {
 							LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().remove(metabAbbrev);
 						}
-						LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().put(value, id);
+						if (value != null && value.trim().length() > 0) {
+							LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().put(value, id);
+						}
 					}
 				}				
 			}
