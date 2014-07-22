@@ -252,6 +252,8 @@ public class GraphicalInterface extends JFrame {
 	public static boolean participatingMessageShown;
 	public static boolean pasteOutOfRangeErrorShown;
 	public static boolean continuePasting;
+	public static boolean showDuplicateReacPrompt;
+	public static boolean duplicateReacOK;
 	// other
 	public static boolean showErrorMessage;
 	public static boolean saveOptFile;
@@ -4947,6 +4949,8 @@ public class GraphicalInterface extends JFrame {
 		participatingMessageShown = false;
 		pasteOutOfRangeErrorShown = false;
 		continuePasting = true;
+		showDuplicateReacPrompt = true;
+		duplicateReacOK = true;
 		// other
 		showErrorMessage = true;
 		saveOptFile = false;
@@ -6681,6 +6685,8 @@ public class GraphicalInterface extends JFrame {
 					"Paste Error",                                
 					JOptionPane.ERROR_MESSAGE);
 		} else {
+			showDuplicateReacPrompt = true;
+			duplicateReacOK = true;
 			pasteOutOfRangeErrorShown = false;
 			// start at first item of pasteId's;
 			int startIndex = 0;
@@ -6873,17 +6879,75 @@ public class GraphicalInterface extends JFrame {
 	
 	public void updateReactionsCellIfPasteValid(String value, int row, int col) {
 		EntryValidator validator = new EntryValidator();
-		if (isReactionsEntryValid(row, col, value)) {
-			if (validator.isInvalidInfinityEntry(value)) {
-				value = GraphicalInterfaceConstants.VALID_INFINITY_ENTRY;
-			} else if (validator.isInvalidNegativeInfinityEntry(value)) {
-				value = "-" + GraphicalInterfaceConstants.VALID_INFINITY_ENTRY;
+		Utilities u = new Utilities();
+		int id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));		
+		String reacAbbrev = (String)reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
+		if (col == GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN) {
+			if (LocalConfig.getInstance().getReactionAbbreviationIdMap().containsKey(value)) {
+				if (showDuplicateReacPrompt) {
+					restoreOldReactionsSort();
+					Object[] options = {"    Yes    ", "    No    ",};
+					int choice = JOptionPane.showOptionDialog(null, 
+							GraphicalInterfaceConstants.DUPLICATE_REACTION_PASTE_MESSAGE, 
+							GraphicalInterfaceConstants.DUPLICATE_REACTION_TITLE, 
+							JOptionPane.YES_NO_OPTION, 
+							JOptionPane.QUESTION_MESSAGE, 
+							null, options, options[0]);
+					if (choice == JOptionPane.YES_OPTION) {	
+						value = value + u.duplicateSuffix(value, LocalConfig.getInstance().getReactionAbbreviationIdMap());
+						updateReactionsCellById(value, id, col);
+						LocalConfig.getInstance().getReactionAbbreviationIdMap().remove(reacAbbrev);
+						LocalConfig.getInstance().getReactionAbbreviationIdMap().put(value, id);
+						showDuplicateReacPrompt = false;
+					}
+					if (choice == JOptionPane.NO_OPTION) {
+						showDuplicateReacPrompt = false;
+						duplicateReacOK = false;
+						reactionsTable.setValueAt(reacAbbrev, row, col);
+					}
+				} else {
+					if (duplicateReacOK) {
+						value = value + u.duplicateSuffix(value, LocalConfig.getInstance().getReactionAbbreviationIdMap());
+						updateReactionsCellById(value, id, col);
+						//reactionsTable.setValueAt(value, viewRow, col);
+						if (LocalConfig.getInstance().getReactionAbbreviationIdMap().containsKey(reacAbbrev)) {
+							LocalConfig.getInstance().getReactionAbbreviationIdMap().remove(reacAbbrev);
+						}
+						LocalConfig.getInstance().getReactionAbbreviationIdMap().put(value, id);
+					}						
+				}
+			} else {
+				reactionsTable.setValueAt(value, row, col);
+				if (LocalConfig.getInstance().getReactionAbbreviationIdMap().containsKey(reacAbbrev)) {
+					LocalConfig.getInstance().getReactionAbbreviationIdMap().remove(reacAbbrev);
+				}
+				LocalConfig.getInstance().getReactionAbbreviationIdMap().put(value, id);
+			}
+			System.out.println(LocalConfig.getInstance().getReactionAbbreviationIdMap());
+		} else if (col == GraphicalInterfaceConstants.FLUX_VALUE_COLUMN || 
+				col == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN ||
+				col == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN ||
+				col == GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN ||
+				col == GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN) {
+			if (isReactionsEntryValid(row, col, value)) {
+				if (validator.isInvalidInfinityEntry(value)) {
+					value = GraphicalInterfaceConstants.VALID_INFINITY_ENTRY;
+				} else if (validator.isInvalidNegativeInfinityEntry(value)) {
+					value = "-" + GraphicalInterfaceConstants.VALID_INFINITY_ENTRY;
+				} 
+				reactionsTable.setValueAt(value, row, col);	
+				formulaBar.setText("");
+			} else {
+				validPaste = false;
+			}
+		} else if (isReactionsEntryValid(row, col, value)) {
+			if (col < reactionsTable.getColumnCount()) {
+				reactionsTable.setValueAt(value, row, col);
 			} 
-			reactionsTable.setValueAt(value, row, col);	
 			formulaBar.setText("");
 		} else {
 			validPaste = false;
-		}
+		}	
 	}
 
 	public boolean isReactionsEntryValid(int row, int columnIndex, String value) {
@@ -6975,7 +7039,7 @@ public class GraphicalInterface extends JFrame {
 				updateReactionEquation(viewRow, id, oldEqun, value);
 				return true;
 			}				
-		}
+		} 
 		return true;
 
 	}
@@ -7919,7 +7983,6 @@ public class GraphicalInterface extends JFrame {
 			} else {
 				if (continuePasting) {
 					if (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(value)) {
-						LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().get(value);
 						if (showDuplicatePrompt) {
 							restoreOldMetabolitesSort();
 							Object[] options = {"    Yes    ", "    No    ",};
