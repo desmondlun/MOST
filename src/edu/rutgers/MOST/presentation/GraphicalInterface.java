@@ -4720,6 +4720,7 @@ public class GraphicalInterface extends JFrame {
 				}
 			}
 		} else if (colIndex == GraphicalInterfaceConstants.COMPARTMENT_COLUMN) {
+			rewriteReactionEquationNames(id, metabAbbrev, newValue);
 			LocalConfig.getInstance().getMetaboliteIdCompartmentMap().put(new Integer(id), newValue); 
 			System.out.println(LocalConfig.getInstance().getMetaboliteIdCompartmentMap());
 		} else {
@@ -7206,6 +7207,14 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 
+	/**
+	 * Updates reaction equations if metabolite abbreviation or metabolite name changed.
+	 * @param id
+	 * @param metabAbbrev
+	 * @param metabName
+	 * @param newName
+	 * @param columnIndex
+	 */
 	public void rewriteReactions(int id, String metabAbbrev, String metabName, String newName, int columnIndex) {
 		MetaboliteFactory aFactory = new MetaboliteFactory("SBML");
 		ArrayList<Integer> participatingReactions = aFactory.participatingReactions(metabAbbrev);			
@@ -7244,6 +7253,33 @@ public class GraphicalInterface extends JFrame {
 				equn.writeReactionEquation();
 				updateReactionsCellById(equn.equationNames, participatingReactions.get(i), GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 			}								
+		}
+	}
+	
+	/**
+	 * Updates reaction equations with full names when compartment is modified
+	 * @param id
+	 * @param metabAbbrev
+	 * @param compartment
+	 */
+	public void rewriteReactionEquationNames(int id, String metabAbbrev, String compartment) {
+		MetaboliteFactory aFactory = new MetaboliteFactory("SBML");
+		ArrayList<Integer> participatingReactions = aFactory.participatingReactions(metabAbbrev);			
+		// rewrite reactions 
+		for (int i = 0; i < participatingReactions.size(); i++) {
+			SBMLReactionEquation equn = (SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(participatingReactions.get(i));
+			for (int j = 0; j < equn.getReactants().size(); j++) {
+				if (equn.getReactants().get(j).getMetaboliteAbbreviation().equals(metabAbbrev)) {
+					equn.getReactants().get(j).setCompartment(compartment);
+				}
+			}
+			for (int j = 0; j < equn.getProducts().size(); j++) {
+				if (equn.getProducts().get(j).getMetaboliteAbbreviation().equals(metabAbbrev)) {
+					equn.getProducts().get(j).setCompartment(compartment);
+				}
+			}
+			equn.writeReactionEquation();
+			updateReactionsCellById(equn.equationNames, participatingReactions.get(i), GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);								
 		}
 	}
 
