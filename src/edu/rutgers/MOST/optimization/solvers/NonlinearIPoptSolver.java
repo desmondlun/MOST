@@ -17,13 +17,10 @@ public class NonlinearIPoptSolver extends IPoptSolver implements NonlinearSolver
 		Vector< Double > flux_v = new Vector< Double >();
 		Vector< Double > gene_v = new Vector< Double >();
 				
-		for( int i = 0; i < component.constraintCount(); ++i )
+		for( int i = 0; i < component.variableCount(); ++i )
 		{
-			Double g_i = geneExpr.get( i ); // updated from SPOT.run() and modelFormatter method
-			Double v_i = 0.0;
-			for( int j = 0; j < component.variableCount(); ++j )
-				v_i += component.getConstraint( i ).getCoefficient( j ) * x[ j ];
-			flux_v.add( v_i );
+			Double g_i = geneExpr.get( i );
+			flux_v.add( x[ i ] );
 			gene_v.add( Double.isInfinite( g_i ) ? 0 : g_i );
 		}
 				
@@ -49,35 +46,9 @@ public class NonlinearIPoptSolver extends IPoptSolver implements NonlinearSolver
 	protected boolean eval_grad_f( int n, double[] x, boolean new_x,
 			double[] grad_f )
 	{
-		
+		// gradient of objective
 		for( int j = 0; j < component.variableCount(); ++j )
-		{
-			Vector< Double > flux_v = new Vector< Double >();
-			Vector< Double > gene_v = new Vector< Double >();
-			// fill in flux_v using variable 'x', fill in gene_v given value from file
-	
-			for( int i = 0; i < component.constraintCount(); ++i )
-			{
-				Double g_i = geneExpr.get( i );
-				Double v_i = component.getConstraint( i ).getCoefficient( j );
-				flux_v.add( v_i );
-				gene_v.add( Double.isInfinite( g_i ) ? 0 : g_i );
-			}
-	
-			// calculate the dot product between flux_v' and gene_v
-			double dotProduct = 0.0;
-			for( int i = 0; i < flux_v.size(); ++i )
-				dotProduct += flux_v.get( i ) * gene_v.get( i );
-	
-			// calculate length of flux_v'
-			double length_flux_v = 0;
-			for( Double v_i : flux_v )
-				length_flux_v += v_i * v_i;
-			length_flux_v = Math.sqrt( length_flux_v );
-	
-			// -1 <= ( flux_v' dot gene_v ) / ( ||flux_v'|| ) <= 1
-			grad_f[ j ] = dotProduct / ( length_flux_v );
-		}
+			grad_f[ j ] = 0; // d/dx  v*g/sqrt(v^2) = 0
 			
 		return true;
 	}
