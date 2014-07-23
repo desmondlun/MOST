@@ -113,12 +113,12 @@ public class ModelFormatter
 				
 				reaction.setLowerBound( reaction.getLowerBound() < 0.0 ? -fluxBound : 0.0 );
 				reaction.setUpperBound( reaction.getUpperBound() > 0.0 ?  fluxBound : 0.0 );
-/*				if( reaction.getReactionName().toLowerCase().contains( "biomass" ) )
+				if( reaction.getReactionName().toLowerCase().contains( "biomass" ) )
 				{
 					reaction.setLowerBound( 0.2 );
 					reaction.setUpperBound( 0.2 );
 				}
-*/
+
 				
 				if( fluxBound.isInfinite() || reaction.getReversible().toLowerCase().equals( "true" ) )
 					fluxBound = new Double( 0.0 );
