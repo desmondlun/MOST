@@ -1773,14 +1773,7 @@ public class GraphicalInterface extends JFrame {
 						outputText.append( model.getNumMetabolites()
 								+ " metabolites, " + model.getNumReactions()
 								+ " reactions\n" );
-						String maxObj = Double.toString( spot.getMaxObj() );
-						if( maxObj.equals( "-0.0" ) )
-						{
-							maxObj = "0.0";
-						}
-						outputText.append( "Maximum objective: " + maxObj
-								+ "\n" );
-						
+												
 						outputText.append("MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() + "\n" );
 						outputText.append("Nonlinear solver = " + GraphicalInterface.getNonlinearSolverName() + "\n" );
 

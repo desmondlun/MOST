@@ -1,7 +1,5 @@
 package edu.rutgers.MOST.optimization.solvers;
 
-import java.util.Vector;
-
 public class NonlinearIPoptSolver extends IPoptSolver implements NonlinearSolver
 {
 	public NonlinearIPoptSolver()
@@ -12,28 +10,16 @@ public class NonlinearIPoptSolver extends IPoptSolver implements NonlinearSolver
 	@Override
 	protected boolean eval_f( int n, double[] x, boolean new_x,
 			double[] obj_value )
-	{
-
-		Vector< Double > flux_v = new Vector< Double >();
-		Vector< Double > gene_v = new Vector< Double >();
-				
-		for( int i = 0; i < component.variableCount(); ++i )
-		{
-			Double g_i = geneExpr.get( i );
-			flux_v.add( x[ i ] );
-			gene_v.add( Double.isInfinite( g_i ) ? 0 : g_i );
-		}
-				
-		// calculate the dot product between flux_v and gene_v
+	{	
+		// calculate the dot product between geneExpr and fluxes
 		double dotProduct = 0.0;
-		assert( flux_v.size() == gene_v.size() );
-		for( int i = 0; i < flux_v.size(); ++i )
-			dotProduct += flux_v.get( i ) * gene_v.get( i );
+		for( int i = 0; i < geneExpr.size(); ++i )
+			dotProduct += geneExpr.get( i ) * x[ i ];
 	
 		// calculate length of flux_v
 		double length_flux_v = 0;
-		for( Double v_i : flux_v )
-			length_flux_v += v_i * v_i;
+		for( double x_i : x )
+			length_flux_v += x_i * x_i;
 		length_flux_v = Math.sqrt( length_flux_v );
 	
 		// -1 <= ( flux_v dot gene_v ) / ( ||flux_v|| ) <= 1

@@ -115,8 +115,8 @@ public class ModelFormatter
 				reaction.setUpperBound( reaction.getUpperBound() > 0.0 ?  fluxBound : 0.0 );
 				if( reaction.getReactionName().toLowerCase().contains( "biomass" ) )
 				{
-					reaction.setLowerBound( 0.2 );
-					reaction.setUpperBound( 0.2 );
+					reaction.setLowerBound( 0.15 );
+					reaction.setUpperBound( 0.15 );
 				}
 
 				
