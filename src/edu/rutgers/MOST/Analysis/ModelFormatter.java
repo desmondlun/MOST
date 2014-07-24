@@ -109,20 +109,21 @@ public class ModelFormatter
 						return Double.POSITIVE_INFINITY;
 					}
 				};
-				Double fluxBound = new Double( parser.getValue() );
+				Double parse_expr = new Double( parser.getValue() );
 				
-				reaction.setLowerBound( reaction.getLowerBound() < 0.0 ? -fluxBound : 0.0 );
-				reaction.setUpperBound( reaction.getUpperBound() > 0.0 ?  fluxBound : 0.0 );
+				reaction.setLowerBound( reaction.getLowerBound() < 0.0 ? Double.NEGATIVE_INFINITY : 0.0 );
+				reaction.setUpperBound( reaction.getUpperBound() > 0.0 ? Double.POSITIVE_INFINITY : 0.0 );
 				if( reaction.getReactionName().toLowerCase().contains( "biomass" ) )
 				{
-					reaction.setLowerBound( 0.15 );
-					reaction.setUpperBound( 0.15 );
+					reaction.setLowerBound( 0.2 );
+					reaction.setUpperBound( 0.2 );
 				}
 
 				
-				if( fluxBound.isInfinite() || reaction.getReversible().toLowerCase().equals( "true" ) )
-					fluxBound = new Double( 0.0 );
-				gene_expr.add( fluxBound );
+				if( parse_expr.isInfinite() || reaction.getReversible().toLowerCase().equals( "true" ) )
+					gene_expr.add( 0.0 );
+				else
+					gene_expr.add( parse_expr );
 			}
 			
 			model.setReactions( model.getReactions() );

@@ -75,6 +75,8 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 		ArrayList< Double > starting = new ArrayList< Double >();
 		try
 		{
+			CSVReader csvReader = null;
+		/*
 			// constraint matrix
 			CSVReader csvReader = new CSVReader( new FileReader( GraphicalInterface.chooseCSVFile( "Select Matrix" ) ) );
 			List< String[] > matrix = csvReader.readAll();
@@ -94,8 +96,8 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 			}
 						
 			this.component = newComponent;
-			
-			// optimized values
+		*/
+			// starting point
 			csvReader = new CSVReader( new FileReader( GraphicalInterface.chooseCSVFile( "Select optimized starting point" ) ) );
 			List< String[] > vals = csvReader.readAll();
 			csvReader.close();
@@ -139,7 +141,7 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 		}
 		
 		this.create( component.variableCount(), x_L, x_U, component.constraintCount(), g_L, g_U,
-				component.constraintCount() * component.variableCount(), 0, Ipopt.C_STYLE );
+				component.constraintCount() * component.variableCount(), component.variableCount() * component.variableCount(), Ipopt.C_STYLE );
 		
 		double[] vars = new double[ component.variableCount() ];
 		for( int j = 0; j < vars.length; ++j )
@@ -158,6 +160,7 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 		
 		this.addNumOption( KEY_OBJ_SCALING_FACTOR, -1.0 );
 		this.addIntOption( "mumps_mem_percent", 500 );
+		this.addIntOption( KEY_MAX_ITER, 5000 );
 		//this.addNumOption( KEY_ACCEPTABLE_TOL, 1e-9 );
 		this.solve( vars );
 		
@@ -200,7 +203,7 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 
 		System.out.println( "\nSpot val: " + spot_val + "\n" );
 		System.out.println( "dot_product: " + dot_product + "\n" );
-		System.out.println( "length_vars: " + length_vars + "\n" );
+		System.out.println( "length_vars: " + length_vars + "\n" );		
 		
 		for( double d : vars )
 			soln.add( d );
