@@ -3952,18 +3952,33 @@ public class GraphicalInterface extends JFrame {
 						LocalConfig.getInstance().reactionsTableChanged = false;
 					}	
 				} else if (getFileType().equals("sbml")) {
-					saveAsSBML();
-					showJSBMLFileChooser = true;
-				}		
-				if (LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {				
+					if (LocalConfig.getInstance().metabolitesTableChanged ||
+							LocalConfig.getInstance().reactionsTableChanged) {
+						System.out.println("t");
+						saveOptFile = false;
+						saveAsSBML();
+//						showJSBMLFileChooser = true;
+					}
+				}	
+				if (LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {
 					for (int i = 0; i < LocalConfig.getInstance().getOptimizationFilesList().size(); i++) {
-						saveOptFile = true;
+//						System.out.println(LocalConfig.getInstance().getOptimizationFilesList().get(i));
+//						saveOptFile = true;
 						if (getFileType().equals("csv")) {
 							saveReactionsTextFileChooser();
 						} else if (getFileType().equals("sbml")) {
+							System.out.println(LocalConfig.getInstance().getOptimizationFilesList().get(i));
 							try {
 								JSBMLWriter jWrite = new JSBMLWriter();
-								jWrite.setOptFilePath(DynamicTreePanel.treePanel.getTree().getLastSelectedPathComponent().toString());
+								String path = System.getenv("USERPROFILE");
+								if (curSettings.get("LastSBML") != null) {
+									File f = new File(curSettings.get("LastSBML"));
+									System.out.println(f.getParent());
+									path = f.getParent();
+								}
+								jWrite.setOptFilePath(path + "/" + LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".xml");
+//								System.out.println(LocalConfig.getInstance().getOptimizationFilesList().get(i));
+//								jWrite.setOptFilePath(DynamicTreePanel.treePanel.getTree().getLastSelectedPathComponent().toString());
 								jWrite.formConnect(LocalConfig.getInstance());
 								
 							} catch (Exception e) {
@@ -3976,7 +3991,7 @@ public class GraphicalInterface extends JFrame {
 						} 
 					}
 				}
-				deleteAllOptimizationFiles();
+//				deleteAllOptimizationFiles();
 				LocalConfig.getInstance().getOptimizationFilesList().clear();
 				exit = true;
 				//System.exit(0);
@@ -3985,7 +4000,7 @@ public class GraphicalInterface extends JFrame {
 			{
 				//TODO: if "_orig" db exists rename to db w/out "_orig", delete db w/out "_orig"
 				// or delete db
-				deleteAllOptimizationFiles();
+//				deleteAllOptimizationFiles();
 				exit = true;
 			}
 			if (choice == JOptionPane.CANCEL_OPTION) {
@@ -4889,6 +4904,8 @@ public class GraphicalInterface extends JFrame {
 			listModel.addElement(LocalConfig.getInstance().getModelName());
 			DynamicTreePanel.treePanel.addObject(new Solution(LocalConfig.getInstance().getModelName(), LocalConfig.getInstance().getModelName()));				
 			setSortDefault();
+			deleteAllOptimizationFiles();
+			LocalConfig.getInstance().getOptimizationFilesList().clear();
 		}
 		DynamicTreePanel.treePanel.setNodeSelected(0);
 		// enables or disables menu items depending on if there are unused items present

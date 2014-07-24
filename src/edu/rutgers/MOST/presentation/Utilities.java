@@ -97,7 +97,7 @@ public class Utilities {
 		FileSystemView fsv = fileChooser.getFileSystemView();
 		String defaultPath = fsv.getDefaultDirectory().getPath();
 		// if username is preferable this works
-		//String defaultPath = System.getenv("USERPROFILE") ;
+		//String defaultPath = System.getenv("USERPROFILE");
 		if (path == null) {
 			return defaultPath;
 		} else {
