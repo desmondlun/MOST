@@ -3954,7 +3954,6 @@ public class GraphicalInterface extends JFrame {
 				} else if (getFileType().equals("sbml")) {
 					if (LocalConfig.getInstance().metabolitesTableChanged ||
 							LocalConfig.getInstance().reactionsTableChanged) {
-						System.out.println("t");
 						saveOptFile = false;
 						saveAsSBML();
 //						showJSBMLFileChooser = true;
@@ -3967,13 +3966,12 @@ public class GraphicalInterface extends JFrame {
 						if (getFileType().equals("csv")) {
 							saveReactionsTextFileChooser();
 						} else if (getFileType().equals("sbml")) {
-							System.out.println(LocalConfig.getInstance().getOptimizationFilesList().get(i));
 							try {
 								JSBMLWriter jWrite = new JSBMLWriter();
 								String path = System.getenv("USERPROFILE");
 								if (curSettings.get("LastSBML") != null) {
 									File f = new File(curSettings.get("LastSBML"));
-									System.out.println(f.getParent());
+//									System.out.println(f.getParent());
 									path = f.getParent();
 								}
 								jWrite.setOptFilePath(path + "/" + LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".xml");
