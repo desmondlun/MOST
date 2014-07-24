@@ -1,5 +1,7 @@
 package edu.rutgers.MOST.optimization.solvers;
 
+import java.util.ArrayList;
+
 public class NonlinearIPoptSolver extends IPoptSolver implements NonlinearSolver
 {
 	public NonlinearIPoptSolver()
@@ -32,10 +34,32 @@ public class NonlinearIPoptSolver extends IPoptSolver implements NonlinearSolver
 	protected boolean eval_grad_f( int n, double[] x, boolean new_x,
 			double[] grad_f )
 	{
+		// f = x dot geneExpr
+		// f' = geneExpr		
+		// g = || sum x^2 ||^-1/2
+		// g' = -1/2 * || sum x^2 ||^-3/2 * 2x_i
+		
+		// compute f
+		double f = 0.0;
+		for( int j = 0; j < component.variableCount(); ++j )
+			f += geneExpr.get( j ) * x[ j ];
+		
+		//compute g
+		double sum_x_squared = 0.0;
+		for( int j = 0; j < component.variableCount(); ++j )
+			sum_x_squared += x[ j ] * x[ j ];
+		double g = Math.pow( sum_x_squared, -0.5 );
+		
+		//compute part of g', omit 2x_i for gradient part
+		double grad_g_part = -0.5 * Math.pow( sum_x_squared, -3.0/2.0 );
+		
 		// gradient of objective
 		for( int j = 0; j < component.variableCount(); ++j )
-			grad_f[ j ] = 0; // d/dx  v*g/sqrt(v^2) = 0
-			
+		{
+			// f'g + fg'
+			grad_f[ j ] = geneExpr.get(j)*g  +  f*grad_g_part*2*x[j];
+		}
+		
 		return true;
 	}
 
@@ -100,6 +124,66 @@ public class NonlinearIPoptSolver extends IPoptSolver implements NonlinearSolver
 			double obj_factor, int m, double[] lambda, boolean new_lambda,
 			int nele_hess, int[] iRow, int[] jCol, double[] values )
 	{
+		// f = x dot geneExpr
+		// f' = geneExpr
+		// f'' = 0
+		// g = || sum x^2 ||^-1/2
+		// g' = -1/2 * || sum x^2 ||^-3/2 * 2x_i
+
+		// u = -1/2 * || sum x^2 ||^-3/2
+		// v = 2x_i
+		// u' = 3/4 * || sum x^2 ||^-5/2
+		// v' = 2
+		// d/dx ( v*g ) = u'v + uv'
+		// u'v =  3/4 * || sum x^2 ||^-5/2 * 2x_i
+		// uv' = -1/2 * || sum x^2 ||^-3/2 * 2
+		
+		// compute f
+		double f = 0.0;
+		for( int j = 0; j < component.variableCount(); ++j )
+			f += geneExpr.get( j ) * x[ j ];
+		
+		//compute g
+		double sum_x_squared = 0.0;
+		for( int j = 0; j < component.variableCount(); ++j )
+			sum_x_squared += x[ j ] * x[ j ];
+		double g = Math.pow( sum_x_squared, -0.5 );
+		
+		//compute part of g', omit 2x_i * 2x_ii for gradient part
+		double u = -0.5 * Math.pow( sum_x_squared, -3.0/2.0 );
+		double u_prime = 0.75 * Math.pow( sum_x_squared, -5.0/2.0 );
+		
+		if( values == null )
+		{
+			int idx = 0;
+			for( int i = 0; i < component.variableCount(); ++i )
+			{
+				for( int j = 0; j < component.variableCount(); ++j )
+				{
+					iRow[ idx ] = i;
+					jCol[ idx ] = j;
+				}
+			}
+		}
+		else
+		{			
+			int idx = 0;
+			for( int i = 0; i < component.variableCount(); ++i )
+			{
+				double v = 2.0*x[i];
+				double v_prime = 2.0;
+				for( int j = 0; j < component.variableCount(); ++j )
+				{
+					// d/dx(f'g + fg') = fg''
+					if( i == j )
+						values[ idx++ ] = obj_factor * f *(u_prime * v + v_prime * u);
+					else
+						values[ idx++ ] = obj_factor * f * 3.0/4.0 * Math.pow( sum_x_squared,-5.0/2.0 ) * 2*x[i] * 2*x[j];
+
+						
+				}
+			}
+		}
 		return true;
 	}
 }
