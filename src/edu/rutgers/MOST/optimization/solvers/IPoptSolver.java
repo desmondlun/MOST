@@ -175,6 +175,33 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 		for( int j = 0; j < component.variableCount(); ++j )
 			value += objCoefs.get( j ) * vars[ j ];
 		
+		ArrayList< Double > constraint_rhs_vals = new ArrayList< Double >();
+		for( int i = 0; i < component.constraintCount(); ++i )
+		{
+			double con_val = 0.0;
+			for( int j = 0; j < component.variableCount(); ++j )
+			{
+				con_val += component.getConstraint( i ).getCoefficient( j ) * vars[ j ];
+			}
+			constraint_rhs_vals.add( con_val );
+		}
+		
+		double spot_val = 0.0;
+		double dot_product = 0.0;
+		double length_vars = 0.0;
+		
+		for( int i = 0; i < geneExpr.size(); ++i )
+		{
+			dot_product += geneExpr.get( i ) * vars[ i ];
+			length_vars += vars[ i ] * vars[ i ];
+		}
+		length_vars = Math.sqrt( length_vars );
+		spot_val = dot_product / length_vars;
+
+		System.out.println( "\nSpot val: " + spot_val + "\n" );
+		System.out.println( "dot_product: " + dot_product + "\n" );
+		System.out.println( "length_vars: " + length_vars + "\n" );
+		
 		for( double d : vars )
 			soln.add( d );
 		return value;
