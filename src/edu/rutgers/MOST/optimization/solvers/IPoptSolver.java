@@ -1,15 +1,12 @@
 package edu.rutgers.MOST.optimization.solvers;
 
-import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.Map.Entry;
 
 import org.coinor.Ipopt;
 
-import edu.rutgers.MOST.presentation.GraphicalInterface;
 import au.com.bytecode.opencsv.CSVReader;
 
 public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, LinearSolver
@@ -19,6 +16,7 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 	protected ArrayList< Double > objCoefs = new ArrayList< Double >();
 	private ArrayList< Double > soln = new ArrayList< Double >();
 	protected Vector< Double > geneExpr = new Vector< Double >();
+	protected ArrayList< Double > startingPoint = new ArrayList< Double >();
 	
 	public IPoptSolver()
 	{
@@ -72,7 +70,6 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 	public double optimize()
 	{
 		//the optimized starting point for debugging purposes
-		ArrayList< Double > starting = new ArrayList< Double >();
 		try
 		{
 			CSVReader csvReader = null;
@@ -98,12 +95,17 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 			this.component = newComponent;
 		*/
 			// starting point
-			csvReader = new CSVReader( new FileReader( GraphicalInterface.chooseCSVFile( "Select optimized starting point" ) ) );
+		/*	csvReader = new CSVReader( new FileReader( GraphicalInterface.chooseCSVFile( "Select optimized starting point" ) ) );
 			List< String[] > vals = csvReader.readAll();
 			csvReader.close();
 			
 			for( String[] var : vals )
 				starting.add( Double.valueOf( var[ 0 ] ) );
+		*/
+			
+			if( startingPoint.size() == 0 )
+				for( int j = 0; j < component.variableCount(); ++j )
+					startingPoint.add( 0.0 );
 			
 		}
 		catch( Exception e )
@@ -145,7 +147,7 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 		
 		double[] vars = new double[ component.variableCount() ];
 		for( int j = 0; j < vars.length; ++j )
-			vars[ j ] = starting.get( j );
+			vars[ j ] = startingPoint.get( j );
 		
 		ArrayList< Double > constraint_vals = new ArrayList< Double >();
 		
@@ -175,6 +177,7 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 		}
 		
 		double value = 0.0;
+		if( objCoefs.size() != 0 )
 		for( int j = 0; j < component.variableCount(); ++j )
 			value += objCoefs.get( j ) * vars[ j ];
 		
@@ -251,5 +254,18 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 	public ArrayList< Double > getObjectiveCoefs()
 	{
 		return this.objCoefs;
+	}
+	
+	@Override
+	public void setSolverComponent( SolverComponent source )
+	{
+		this.component = source;
+	}
+	
+	@Override
+	public double optimize( ArrayList< Double > x0 )
+	{
+		this.startingPoint = x0;
+		return optimize();
 	}
 }

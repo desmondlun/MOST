@@ -1,7 +1,5 @@
 package edu.rutgers.MOST.optimization.solvers;
 
-import java.util.ArrayList;
-
 public class NonlinearIPoptSolver extends IPoptSolver implements NonlinearSolver
 {
 	public NonlinearIPoptSolver()
