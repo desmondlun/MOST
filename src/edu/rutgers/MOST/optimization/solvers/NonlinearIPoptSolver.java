@@ -158,7 +158,7 @@ public class NonlinearIPoptSolver extends IPoptSolver implements NonlinearSolver
 			for( int i = 0; i < component.variableCount(); ++i )
 			{
 				x_dot_g += x[ i ] * geneExpr.get( i );
-				length_x_squared = x[ i ] * x[ i ];
+				length_x_squared += x[ i ] * x[ i ];
 			}
 			
 			// compute k1
