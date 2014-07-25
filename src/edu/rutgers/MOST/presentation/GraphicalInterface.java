@@ -3544,29 +3544,33 @@ public class GraphicalInterface extends JFrame {
 			} else if (getFileType().equals(GraphicalInterfaceConstants.CSV_FILE_TYPE)) {
 				// will need a last csv metabolites and last csv reactions in settings
 				//curSettings.get("LastCSV")
-				if (tabbedPane.getSelectedIndex() == 0) {
-					if (curSettings.get("LastCSVReactions") != null && !curSettings.get("LastCSVReactions").equals("none") && isRoot) {
-						LocalConfig.getInstance().reactionsTableChanged = false;
-						File f = new File(curSettings.get("LastCSVReactions"));
-						if (f.exists()) {
-							saveReactionsTextFile(f.getPath(), f.getName());
-						} else {
-							saveReactionsTextFileChooser();
-						}
+				if (curSettings.get("LastCSVMetabolites") != null && !curSettings.get("LastCSVMetabolites").equals("none") && isRoot) {
+					LocalConfig.getInstance().metabolitesTableChanged = false;
+					File f = new File(curSettings.get("LastCSVMetabolites"));
+					if (f.exists()) {
+						saveMetabolitesTextFile(f.getPath(), f.getName());
+					} else {
+						saveMetabolitesTextFileChooser();
+					}
+				} else {
+					saveMetabolitesTextFileChooser();
+				}
+				if (curSettings.get("LastCSVReactions") != null && !curSettings.get("LastCSVReactions").equals("none") && isRoot) {
+					LocalConfig.getInstance().reactionsTableChanged = false;
+					File f = new File(curSettings.get("LastCSVReactions"));
+					if (f.exists()) {
+						saveReactionsTextFile(f.getPath(), f.getName());
 					} else {
 						saveReactionsTextFileChooser();
 					}
-				} else if (tabbedPane.getSelectedIndex() == 1) {
-					if (curSettings.get("LastCSVMetabolites") != null && !curSettings.get("LastCSVMetabolites").equals("none") && isRoot) {
-						LocalConfig.getInstance().metabolitesTableChanged = false;
-						File f = new File(curSettings.get("LastCSVMetabolites"));
-						if (f.exists()) {
-							saveMetabolitesTextFile(f.getPath(), f.getName());
-						} else {
-							saveMetabolitesTextFileChooser();
-						}
-					} else {
-						saveMetabolitesTextFileChooser();
+				} else {
+					// if only metabolites file is loaded, and no changes have been made to
+					// the reactions table, no need for saving empty reactions table
+					//if (!curSettings.get("LastCSVReactions").equals("none") && !LocalConfig.getInstance().reactionsTableChanged) {
+					if (!curSettings.get("LastCSVReactions").equals("none")) {
+						saveReactionsTextFileChooser();
+					} else if (LocalConfig.getInstance().reactionsTableChanged) {
+						saveReactionsTextFileChooser();
 					}
 				}
 			} 
@@ -3826,6 +3830,7 @@ public class GraphicalInterface extends JFrame {
 					done = true;
 
 					saveReactionsTextFile(path, filename);
+					LocalConfig.getInstance().reactionsTableChanged = false;
 				}			                  	  
 			}
 		}
@@ -10741,6 +10746,7 @@ public class GraphicalInterface extends JFrame {
 								if (kString != null) {
 									text.append(kString);
 								}
+								text.append("\n");
 								text.append( "MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() );
 
 								Utilities u = new Utilities();
