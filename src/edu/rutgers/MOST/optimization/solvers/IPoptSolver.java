@@ -7,8 +7,6 @@ import java.util.Map.Entry;
 
 import org.coinor.Ipopt;
 
-import au.com.bytecode.opencsv.CSVReader;
-
 public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, LinearSolver
 {
 	private boolean obj_set = false;
@@ -69,49 +67,10 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 	@Override
 	public double optimize()
 	{
-		//the optimized starting point for debugging purposes
-		try
-		{
-			CSVReader csvReader = null;
-		/*
-			// constraint matrix
-			CSVReader csvReader = new CSVReader( new FileReader( GraphicalInterface.chooseCSVFile( "Select Matrix" ) ) );
-			List< String[] > matrix = csvReader.readAll();
-			csvReader.close();
-			
-			SolverComponent newComponent = new SolverComponentLightWeight(); // the new SolverComponent for the vars/constraints 
-			
+		if( startingPoint.size() == 0 )
 			for( int j = 0; j < component.variableCount(); ++j )
-				newComponent.addVariable( component.getVariable( j ).type, component.getVariable( j ).lb, component.getVariable( j ).ub );
-			
-			for( String[] row : matrix )
-			{
-				ArrayList< Double > coefs = new ArrayList< Double >();
-				for( int j = 0; j < row.length; ++j )
-					coefs.add( Double.valueOf( row[ j ] ) );
-				newComponent.addConstraint( coefs, ConType.EQUAL, 0.0 );
-			}
-						
-			this.component = newComponent;
-		*/
-			// starting point
-		/*	csvReader = new CSVReader( new FileReader( GraphicalInterface.chooseCSVFile( "Select optimized starting point" ) ) );
-			List< String[] > vals = csvReader.readAll();
-			csvReader.close();
-			
-			for( String[] var : vals )
-				starting.add( Double.valueOf( var[ 0 ] ) );
-		*/
-			
-			if( startingPoint.size() == 0 )
-				for( int j = 0; j < component.variableCount(); ++j )
-					startingPoint.add( 0.0 );
-			
-		}
-		catch( Exception e )
-		{
-			e.printStackTrace();
-		}
+				startingPoint.add( 0.0 );
+		
 		double[] x_L = new double[ component.variableCount() ];
 		double[] x_U = new double[ component.variableCount() ];
 		double[] g_L = new double[ component.constraintCount() ];
