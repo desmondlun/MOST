@@ -32,30 +32,34 @@ public class NonlinearIPoptSolver extends IPoptSolver implements NonlinearSolver
 	protected boolean eval_grad_f( int n, double[] x, boolean new_x,
 			double[] grad_f )
 	{
-		// f = x dot geneExpr
-		// f' = geneExpr		
-		// g = || sum x^2 ||^-1/2
-		// g' = -1/2 * || sum x^2 ||^-3/2 * 2x_i
+		// h = x dot g
+		// h'= g_i
+		// k = pow(length_x_squared,-1/2)
+		// k'= -pow(length_x_squared,-3/2)*x_i
+		// grad_obj = h'*k + h*k'
 		
-		// compute f
-		double f = 0.0;
-		for( int j = 0; j < component.variableCount(); ++j )
-			f += geneExpr.get( j ) * x[ j ];
+		// compute h
+		double h = 0.0;
+		for( int i = 0; i < component.variableCount(); ++i )
+			h += x[ i ] * geneExpr.get( i );
 		
-		//compute g
-		double sum_x_squared = 0.0;
-		for( int j = 0; j < component.variableCount(); ++j )
-			sum_x_squared += x[ j ] * x[ j ];
-		double g = Math.pow( sum_x_squared, -0.5 );
+		// compute k
+		double length_x_squared = 0.0;
+		for( int i = 0; i < component.variableCount(); ++i )
+			length_x_squared += x[ i ] * x[ i ];
+		double k = Math.pow( length_x_squared, -1.0/2.0 );
 		
-		//compute part of g', omit 2x_i for gradient part
-		double grad_g_part = -0.5 * Math.pow( sum_x_squared, -3.0/2.0 );
-		
-		// gradient of objective
-		for( int j = 0; j < component.variableCount(); ++j )
+		for( int i = 0; i < component.variableCount(); ++i )
 		{
-			// f'g + fg'
-			grad_f[ j ] = geneExpr.get(j)*g  +  f*grad_g_part*2*x[j];
+			// compute h'
+			double h_prime = geneExpr.get( i );
+			
+			//compute k'
+			double k_prime = -Math.pow( length_x_squared, -3.0/2.0 ) * x[ i ];
+			
+			// partial of obj / partial of x
+			grad_f[ i ] = h_prime*k + h*k_prime;
+			
 		}
 		
 		return true;
@@ -121,41 +125,7 @@ public class NonlinearIPoptSolver extends IPoptSolver implements NonlinearSolver
 	protected boolean eval_h( int n, double[] x, boolean new_x,
 			double obj_factor, int m, double[] lambda, boolean new_lambda,
 			int nele_hess, int[] iRow, int[] jCol, double[] values )
-	{
-		// f = x dot geneExpr
-		// f' = geneExpr
-		// g = || sum x^2 ||^-1/2
-		// g' = -1/2 * || sum x^2 ||^-3/2 * 2x_i
-		
-		// u = -1/2 * || sum x^2 ||^-3/2
-		// v = 2x_i
-		// u' = 3/4 * || sum x^2 ||^-5/2
-		// v' = 2
-		// d/dx ( v*g ) = u'v + uv'
-		// u'v =  3/4 * || sum x^2 ||^-5/2 * 2x_i
-		// uv' = -1/2 * || sum x^2 ||^-3/2 * 2
-		
-		// g'' = 3/4 * || sum x^2 ||^-5/2 * 2x_i * 2x_j ---> i =/= j
-		// g'' = u'v + v'u  ---> i==j
-		
-		// compute f
-		double f = 0.0;
-		for( int j = 0; j < component.variableCount(); ++j )
-			f += geneExpr.get( j ) * x[ j ];
-		
-		// compute g
-		double sum_x_squared = 0.0;
-		for( int j = 0; j < component.variableCount(); ++j )
-			sum_x_squared += x[ j ] * x[ j ];
-		
-		double g = Math.pow( sum_x_squared, -0.5 );
-		
-		// compute part of u
-		double u = -0.5 * Math.pow( sum_x_squared, -3.0/2.0 );
-		
-		// compute u'
-		double u_prime = 0.75 * Math.pow( sum_x_squared, -5.0/2.0 );
-		
+	{		
 		if( values == null )
 		{
 			int idx = 0;
@@ -169,25 +139,63 @@ public class NonlinearIPoptSolver extends IPoptSolver implements NonlinearSolver
 			}
 		}
 		else
-		{			
+		{
+			// h0 = g_i
+			// h0'= 0
+			// k0 = pow( length_x_squared, -1/2 )
+			// k0'= -pow( length_x_squared, -3/2 )*x_j
+			// s' = h0'*k0 + h0*k0' = h0*k0'
+			// h1 = (x dot g)*x_i
+			// h1'= g_j*x_i		i != j
+			// h1'= g_j*x_i + (x dot g)	i==j
+			// k1 = pow( length_x_squared, -3/2 )
+			// k1'= -3*pow( length_x_squared, -5/2 )*x_j
+			// t' = h1'*k1 + h1*k1'
+			// grad_grad_obj = s' - t'
+			
+			double x_dot_g = 0.0;
+			double length_x_squared = 0.0;
+			for( int i = 0; i < component.variableCount(); ++i )
+			{
+				x_dot_g += x[ i ] * geneExpr.get( i );
+				length_x_squared = x[ i ] * x[ i ];
+			}
+			
+			// compute k1
+			double k1 = Math.pow( length_x_squared, -3.0/2.0 );
+			
+			
 			int idx = 0;
 			for( int i = 0; i < component.variableCount(); ++i )
 			{
-				// compute v
-				double v = 2.0*x[i];
+				// compute h0
+				double h0 = geneExpr.get( i );
 				
-				// compute v'
-				double v_prime = 2.0;
-				
+				// compute h1
+				double h1 = x_dot_g*x[ i ];				
+
 				for( int j = 0; j < component.variableCount(); ++j )
 				{
-					// d/dx(f'g + fg') = fg''
-					if( i == j )
-						values[ idx++ ] = obj_factor * f *(u_prime * v + v_prime * u);
+					//compute h1'
+					double h1_prime = 0.0;
+					if( i != j )
+						h1_prime = geneExpr.get( j ) * x[ i ];
 					else
-						values[ idx++ ] = obj_factor * f * 3.0/4.0 * Math.pow( sum_x_squared,-5.0/2.0 ) * 2*x[i] * 2*x[j];
-
-						
+						h1_prime = geneExpr.get( j ) * x[ i ] + x_dot_g;
+					// compute k0'
+					double k0_prime = -Math.pow( length_x_squared, -3.0/2.0 )*x[ j ];
+					
+					//compute k1'
+					double k1_prime = -3.0*Math.pow( length_x_squared, -5.0/2.0 )*x[ j ];
+					
+					// compute s_prime
+					double s_prime = h0*k0_prime;
+					
+					// comput t_prime
+					double t_prime = h1_prime*k1 + h1*k1_prime; 
+					
+					// partial^2 of obj / partial of x^2
+					values[ idx++ ] = s_prime - t_prime;
 				}
 			}
 		}

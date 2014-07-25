@@ -121,7 +121,7 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 		
 		this.addNumOption( KEY_OBJ_SCALING_FACTOR, -1.0 );
 		this.addIntOption( "mumps_mem_percent", 500 );
-		this.addIntOption( KEY_MAX_ITER, 5000 );
+		this.addIntOption( KEY_MAX_ITER, 30000 );
 		//this.addNumOption( KEY_ACCEPTABLE_TOL, 1e-9 );
 		this.solve( vars );
 		
