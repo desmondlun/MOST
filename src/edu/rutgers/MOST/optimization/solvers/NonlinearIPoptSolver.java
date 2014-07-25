@@ -195,7 +195,7 @@ public class NonlinearIPoptSolver extends IPoptSolver implements NonlinearSolver
 					double t_prime = h1_prime*k1 + h1*k1_prime; 
 					
 					// partial^2 of obj / partial of x^2
-					values[ idx++ ] = s_prime - t_prime;
+					values[ idx++ ] = obj_factor * (s_prime - t_prime);
 				}
 			}
 		}
