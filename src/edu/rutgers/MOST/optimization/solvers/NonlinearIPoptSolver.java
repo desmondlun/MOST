@@ -124,10 +124,9 @@ public class NonlinearIPoptSolver extends IPoptSolver implements NonlinearSolver
 	{
 		// f = x dot geneExpr
 		// f' = geneExpr
-		// f'' = 0
 		// g = || sum x^2 ||^-1/2
 		// g' = -1/2 * || sum x^2 ||^-3/2 * 2x_i
-
+		
 		// u = -1/2 * || sum x^2 ||^-3/2
 		// v = 2x_i
 		// u' = 3/4 * || sum x^2 ||^-5/2
@@ -136,19 +135,25 @@ public class NonlinearIPoptSolver extends IPoptSolver implements NonlinearSolver
 		// u'v =  3/4 * || sum x^2 ||^-5/2 * 2x_i
 		// uv' = -1/2 * || sum x^2 ||^-3/2 * 2
 		
+		// g'' = 3/4 * || sum x^2 ||^-5/2 * 2x_i * 2x_j ---> i =/= j
+		// g'' = u'v + v'u  ---> i==j
+		
 		// compute f
 		double f = 0.0;
 		for( int j = 0; j < component.variableCount(); ++j )
 			f += geneExpr.get( j ) * x[ j ];
 		
-		//compute g
+		// compute g
 		double sum_x_squared = 0.0;
 		for( int j = 0; j < component.variableCount(); ++j )
 			sum_x_squared += x[ j ] * x[ j ];
+		
 		double g = Math.pow( sum_x_squared, -0.5 );
 		
-		//compute part of g', omit 2x_i * 2x_ii for gradient part
+		// compute part of u
 		double u = -0.5 * Math.pow( sum_x_squared, -3.0/2.0 );
+		
+		// compute u'
 		double u_prime = 0.75 * Math.pow( sum_x_squared, -5.0/2.0 );
 		
 		if( values == null )
@@ -168,8 +173,12 @@ public class NonlinearIPoptSolver extends IPoptSolver implements NonlinearSolver
 			int idx = 0;
 			for( int i = 0; i < component.variableCount(); ++i )
 			{
+				// compute v
 				double v = 2.0*x[i];
+				
+				// compute v'
 				double v_prime = 2.0;
+				
 				for( int j = 0; j < component.variableCount(); ++j )
 				{
 					// d/dx(f'g + fg') = fg''
