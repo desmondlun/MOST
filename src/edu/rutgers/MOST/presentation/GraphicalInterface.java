@@ -272,8 +272,9 @@ public class GraphicalInterface extends JFrame {
 	// save
 	public boolean saveFile;
 	public boolean saveSBML;
-	public boolean saveDisabled;
+	public boolean saveEnabled;
 	public static boolean showJSBMLFileChooser;
+	public boolean modelCollectionLoad;
 	// close
 	public static boolean exit;
 	// GDBB
@@ -906,6 +907,8 @@ public class GraphicalInterface extends JFrame {
 		gi = this;
 
 		isRoot = true;
+		
+		enableSaveItems(false);
 
 		// Tree Panel
 		treePanel = new DynamicTreePanel(new DynamicTree() {
@@ -2645,7 +2648,9 @@ public class GraphicalInterface extends JFrame {
 		
 		ActionListener reactionsSaveActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
-				saveLoadedFile();				
+				if (saveEnabled) {
+					saveLoadedFile();	
+				}			
 			}
 		};
 		
@@ -2752,7 +2757,9 @@ public class GraphicalInterface extends JFrame {
 		
 		ActionListener metabolitesSaveActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
-				saveLoadedFile();
+				if (saveEnabled) {
+					saveLoadedFile();	
+				}
 			}
 		};
 
@@ -3119,9 +3126,9 @@ public class GraphicalInterface extends JFrame {
 	/*******************************************************************************/ 
 
 	public void updateReactionsCell() {
-		if (formulaBar.getText() != null) {
-			LocalConfig.getInstance().reactionsTableChanged = true;
-		}						
+//		if (formulaBar.getText() != null) {
+//			LocalConfig.getInstance().reactionsTableChanged = true;
+//		}						
 		int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
 		int id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
 		String newValue = formulaBar.getText();
@@ -3133,6 +3140,8 @@ public class GraphicalInterface extends JFrame {
 		undoItem.setOldUpperBound((String) (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));
 		updateReactionsCellIfValid(getTableCellOldValue(), newValue, viewRow, reactionsTable.getSelectedColumn());
 		if (reactionUpdateValid) {
+			LocalConfig.getInstance().reactionsTableChanged = true;
+			enableSaveItems(true);
 			undoItem.setNewLowerBound((String) (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));
 			undoItem.setNewUpperBound((String) (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));
 			setNewUsedMap(undoItem);
@@ -3142,9 +3151,9 @@ public class GraphicalInterface extends JFrame {
 	}
 
 	public void updateMetabolitesCell() {
-		if (formulaBar.getText() != null) {
-			LocalConfig.getInstance().metabolitesTableChanged = true;
-		}						
+//		if (formulaBar.getText() != null) {
+//			LocalConfig.getInstance().metabolitesTableChanged = true;
+//		}						
 		int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());		
 		int id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
 		String newValue = formulaBar.getText();
@@ -3156,6 +3165,8 @@ public class GraphicalInterface extends JFrame {
 		setUndoOldCollections(undoItem);
 		updateMetabolitesCellIfValid(getTableCellOldValue(), newValue, viewRow, metabolitesTable.getSelectedColumn());	
 		if (metaboliteUpdateValid) {
+			LocalConfig.getInstance().metabolitesTableChanged = true;
+			enableSaveItems(true);
 			// fixes bug where entering value in formula bar in a sorted column and then
 			// hitting enter - old value (or value from somewhere else in row) set
 			formulaBar.setText(newValue);
@@ -3214,7 +3225,6 @@ public class GraphicalInterface extends JFrame {
 					} else {
 						listModel.clear();						
 						DynamicTreePanel.treePanel.clear();
-						setFileType(GraphicalInterfaceConstants.SBML_FILE_TYPE);
 						String filename;
 						if (rawFilename.endsWith(".xml")) {
 							filename = rawFilename.substring(0, rawFilename.length() - 4);
@@ -3232,7 +3242,8 @@ public class GraphicalInterface extends JFrame {
 
 						task = new Task();
 						task.execute();
-						saveDisabled = false;
+						saveEnabled = true;
+						modelCollectionLoad = false;
 					}
 				}
 			}			
@@ -3361,7 +3372,8 @@ public class GraphicalInterface extends JFrame {
 					loadReactionColumnNameInterface();
 				} else {
 					curSettings.add("LastCSVReactions", "none");
-					saveDisabled = false;
+					saveEnabled = true;
+					modelCollectionLoad = false;
 					DefaultTableModel blankReacModel = createBlankReactionsTableModel();
 					setUpReactionsTable(blankReacModel);
 					LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), blankReacModel);
@@ -3414,7 +3426,8 @@ public class GraphicalInterface extends JFrame {
 				curSettings.add("LastCSVMetabolites", "none");
 				loadSetUp();
 			}
-			saveDisabled = false;
+			saveEnabled = true;
+			modelCollectionLoad = false;
 			TextReactionsModelReader reader = new TextReactionsModelReader();
 			if (getReactionColumnNameInterface().validColumns) {
 				getReactionColumnNameInterface().setVisible(false);
@@ -3467,9 +3480,9 @@ public class GraphicalInterface extends JFrame {
 				loadSetUp();
 				listModel.clear();
 				DynamicTreePanel.treePanel.clear();
-				saveDisabled = true;
-				saveItem.setEnabled(false);
-				savebutton.setEnabled(false);
+				saveEnabled = false;
+				enableSaveItems(false);
+				modelCollectionLoad = true;
 				if (getModelCollectionTable().getFileType().equals(GraphicalInterfaceConstants.SBML_FILE_TYPE)) {
 					setFileType(GraphicalInterfaceConstants.SBML_FILE_TYPE);
 					String path = getModelCollectionTable().getPath();
@@ -3566,7 +3579,6 @@ public class GraphicalInterface extends JFrame {
 				} else {
 					// if only metabolites file is loaded, and no changes have been made to
 					// the reactions table, no need for saving empty reactions table
-					//if (!curSettings.get("LastCSVReactions").equals("none") && !LocalConfig.getInstance().reactionsTableChanged) {
 					if (!curSettings.get("LastCSVReactions").equals("none")) {
 						saveReactionsTextFileChooser();
 					} else if (LocalConfig.getInstance().reactionsTableChanged) {
@@ -3625,9 +3637,10 @@ public class GraphicalInterface extends JFrame {
 					timer.start();
 					task = new Task();
 					task.execute();
-					saveDisabled = false;
+					saveEnabled = true;
+					modelCollectionLoad = false;
 				} 
-			}				
+			}		
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null,                
 					"Unable to Write File.",                
@@ -3651,7 +3664,8 @@ public class GraphicalInterface extends JFrame {
 	}
 
 	public void saveMetabolitesTextFile(String path, String filename) {
-		saveDisabled = false;
+		saveEnabled = true;
+		modelCollectionLoad = false;
 		TextMetabolitesWriter writer = new TextMetabolitesWriter();
 		writer.write(path);	
 		if (filename.endsWith(".csv")) {
@@ -3667,6 +3681,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().getMetabolitesTableModelMap().put(filename, metabolitesModel);
 
 		setUpTables();
+		setFileType(GraphicalInterfaceConstants.CSV_FILE_TYPE);
 	}
 
 	public void saveMetabolitesTextFileChooser() {
@@ -3737,7 +3752,8 @@ public class GraphicalInterface extends JFrame {
 	}
 
 	public void saveReactionsTextFile(String path, String filename) {
-		saveDisabled = false;
+		saveEnabled = true;
+		modelCollectionLoad = false;
 		TextReactionsWriter writer = new TextReactionsWriter();
 		writer.write(path);		
 		if (filename.endsWith(".csv")) {
@@ -3754,6 +3770,7 @@ public class GraphicalInterface extends JFrame {
 			LocalConfig.getInstance().getMetabolitesTableModelMap().put(filename, metabolitesModel);
 			
 			setUpTables();
+			setFileType(GraphicalInterfaceConstants.CSV_FILE_TYPE);
 		}	
 		saveOptFile = false;
 	}
@@ -4041,9 +4058,10 @@ public class GraphicalInterface extends JFrame {
 				undoItem.setMaxMetabId(LocalConfig.getInstance().getMaxMetaboliteId());
 				undoItem.setOldLowerBound((String) (reactionsTable.getModel().getValueAt(tcl.getRow(), GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));			
 				undoItem.setOldUpperBound((String) (reactionsTable.getModel().getValueAt(tcl.getRow(), GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));			
-				LocalConfig.getInstance().reactionsTableChanged = true;
 				updateReactionsCellIfValid(tcl.getOldValue(), tcl.getNewValue(), tcl.getRow(), tcl.getColumn());
 				if (reactionUpdateValid) {
+					LocalConfig.getInstance().reactionsTableChanged = true;
+					enableSaveItems(true);
 					formulaBar.setText(tcl.getNewValue());
 					undoItem.setNewLowerBound((String) (reactionsTable.getModel().getValueAt(tcl.getRow(), GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));			
 					undoItem.setNewUpperBound((String) (reactionsTable.getModel().getValueAt(tcl.getRow(), GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));			
@@ -4074,6 +4092,8 @@ public class GraphicalInterface extends JFrame {
 				setUndoOldCollections(undoItem);
 				updateMetabolitesCellIfValid(mtcl.getOldValue(), mtcl.getNewValue(), mtcl.getRow(), mtcl.getColumn());
 				if (metaboliteUpdateValid) {
+					LocalConfig.getInstance().metabolitesTableChanged = true;
+					enableSaveItems(true);
 					if (renameMetabolite) {
 						undoItem.setUndoType(UndoConstants.RENAME_METABOLITE);
 					} else {
@@ -4916,9 +4936,8 @@ public class GraphicalInterface extends JFrame {
 		enableMenuItems();
 		setUpCellSelectionMode();		
 		maybeDisplaySuspiciousMetabMessage(statusBarRow());
-		if (!saveDisabled) {
-			saveItem.setEnabled(true);
-			savebutton.setEnabled(true);
+		if (saveEnabled) {
+			enableSaveItems(true);
 		}
 		tabbedPane.setSelectedIndex(0);
 		metabolitesTable.scrollRectToVisible(metabolitesTable.getCellRect(0, 1, false));
@@ -4929,6 +4948,15 @@ public class GraphicalInterface extends JFrame {
 		} catch (Throwable t) {
 			
 		}		
+	}
+	
+	public void enableSaveItems(boolean enabled) {
+		System.out.println(modelCollectionLoad);
+		if (!modelCollectionLoad) {
+			saveItem.setEnabled(enabled);
+			savebutton.setEnabled(enabled);
+			saveEnabled = enabled;
+		}
 	}
 
 	/**
@@ -6827,6 +6855,8 @@ public class GraphicalInterface extends JFrame {
 					deleteReactionsPasteUndoItem();
 					validPaste = true;
 				} else {
+					enableSaveItems(true);
+					LocalConfig.getInstance().reactionsTableChanged = true;
 					DefaultTableModel newReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
 					copyReactionsTableModels(newReactionsModel);
 					if (pasteIds.size() > 0) {
@@ -7953,6 +7983,8 @@ public class GraphicalInterface extends JFrame {
 					deleteReactionsPasteUndoItem();
 					validPaste = true;
 				} else {
+					enableSaveItems(true);
+					LocalConfig.getInstance().metabolitesTableChanged = true;
 					DefaultTableModel newMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());			
 					copyMetabolitesTableModels(newMetabolitesModel); 
 					setUndoNewCollections(undoItem);
@@ -9711,6 +9743,8 @@ public class GraphicalInterface extends JFrame {
 			undoItem.setOldLowerBound(oldLowerBound);
 			undoItem.setOldUpperBound(oldUpperBound);
 			if (reactionUpdateValid) {
+				enableSaveItems(true);
+				LocalConfig.getInstance().reactionsTableChanged = true;
 				scrollToLocation(reactionsTable, getRowFromReactionsId(id), getReactionsReplaceLocation().get(1));
 				formulaBar.setText(newValue);
 				undoItem.setNewLowerBound((String) (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));
@@ -9812,6 +9846,8 @@ public class GraphicalInterface extends JFrame {
 				}
 				undoItem.setPasteIds(pasteIds);
 				if (validPaste) {
+					enableSaveItems(true);
+					LocalConfig.getInstance().reactionsTableChanged = true;
 					DefaultTableModel newReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
 					copyReactionsTableModels(newReactionsModel); 
 					setNewUsedMap(undoItem);
@@ -10076,6 +10112,8 @@ public class GraphicalInterface extends JFrame {
 			MetaboliteUndoItem undoItem = createMetaboliteUndoItem(oldValue, newValue, metabolitesTable.getSelectedRow(), getMetabolitesReplaceLocation().get(1), id, UndoConstants.REPLACE, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
 			setUndoOldCollections(undoItem);
 			if (metaboliteUpdateValid) {
+				enableSaveItems(true);
+				LocalConfig.getInstance().metabolitesTableChanged = true;
 				scrollToLocation(metabolitesTable, getRowFromMetabolitesId(id), getMetabolitesReplaceLocation().get(1));
 				formulaBar.setText(newValue);
 				setUndoNewCollections(undoItem);
@@ -10191,7 +10229,9 @@ public class GraphicalInterface extends JFrame {
 						}	
 					}			
 				}
-				if (validPaste) {						
+				if (validPaste) {	
+					enableSaveItems(true);
+					LocalConfig.getInstance().metabolitesTableChanged = true;
 					DefaultTableModel newMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());			
 					copyMetabolitesTableModels(newMetabolitesModel); 
 					setUndoNewCollections(undoItem);
@@ -10444,7 +10484,7 @@ public class GraphicalInterface extends JFrame {
 		loadCSVItem.setEnabled(true);
 		loadExistingItem.setEnabled(true);
 		clearItem.setEnabled(true);
-		saveItem.setEnabled(true);
+		enableSaveItems(true);
 		saveSBMLItem.setEnabled(true);
 		if (tabbedPane.getSelectedIndex() == 0) {
 			saveCSVReactionsItem.setEnabled(true);
@@ -10464,7 +10504,7 @@ public class GraphicalInterface extends JFrame {
 		loadCSVItem.setEnabled(false);
 		loadExistingItem.setEnabled(false);
 		clearItem.setEnabled(false);
-		saveItem.setEnabled(false);
+		enableSaveItems(false);
 		saveSBMLItem.setEnabled(false);
 		saveCSVMetabolitesItem.setEnabled(false);
 		saveCSVReactionsItem.setEnabled(false);
@@ -10626,6 +10666,10 @@ public class GraphicalInterface extends JFrame {
 				doc = reader.readSBML(getSBMLFile());
 				modelReader = new SBMLModelReader(doc);
 				modelReader.load();
+				setFileType(GraphicalInterfaceConstants.SBML_FILE_TYPE);
+				// clear last csv for reactions and metabolites to get correct save behavior
+				curSettings.add("LastCSVReactions", "none");
+				curSettings.add("LastCSVMetabolites", "none");
 			} catch (FileNotFoundException e) {	
 				JOptionPane.showMessageDialog(null,                
 						"File does not exist.",                
