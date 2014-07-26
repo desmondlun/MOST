@@ -4753,7 +4753,7 @@ public class GraphicalInterface extends JFrame {
 		} else if (colIndex == GraphicalInterfaceConstants.COMPARTMENT_COLUMN) {
 			rewriteReactionEquationNames(id, metabAbbrev, newValue);
 			LocalConfig.getInstance().getMetaboliteIdCompartmentMap().put(new Integer(id), newValue); 
-			System.out.println(LocalConfig.getInstance().getMetaboliteIdCompartmentMap());
+			//System.out.println(LocalConfig.getInstance().getMetaboliteIdCompartmentMap());
 		} else {
 			// action for remaining columns
 			metabolitesTable.getModel().setValueAt(newValue, rowIndex, colIndex);
@@ -8124,6 +8124,10 @@ public class GraphicalInterface extends JFrame {
 				metabolitesTable.setValueAt(value, row, col);
 				LocalConfig.getInstance().getMetaboliteIdNameMap().put(id, value);				
 			}
+		} else if (col == GraphicalInterfaceConstants.COMPARTMENT_COLUMN) {	
+			metabolitesTable.setValueAt(value, row, col);
+			rewriteReactionEquationNames(id, metabAbbrev, value);
+			LocalConfig.getInstance().getMetaboliteIdCompartmentMap().put(new Integer(id), value); 
 		} else if (isMetabolitesEntryValid(col, value)) {
 			if (col < metabolitesTable.getColumnCount()) {
 				metabolitesTable.setValueAt(value, row, col);
@@ -10184,7 +10188,8 @@ public class GraphicalInterface extends JFrame {
 				}
 				for (int i = 0; i < getMetabolitesFindLocationsList().size(); i++) {
 					int viewRow = metabolitesTable.convertRowIndexToModel(getMetabolitesFindLocationsList().get(i).get(0));
-					metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+					int id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(viewRow, 0));
+					String metabAbbrev = (String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 					String oldValue = (String) metabolitesTable.getModel().getValueAt(viewRow, getMetabolitesFindLocationsList().get(i).get(1));
 					String replaceAllValue = "";
 					if (matchCase) {
@@ -10221,7 +10226,15 @@ public class GraphicalInterface extends JFrame {
 						}
 						if (validPaste) {
 							metabolitesTable.getModel().setValueAt(replaceAllValue, viewRow, getMetabolitesFindLocationsList().get(i).get(1));
-						}						
+						}
+					} else if (getMetabolitesFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.COMPARTMENT_COLUMN) {
+						if (isMetabolitesEntryValid(getMetabolitesFindLocationsList().get(i).get(1), replaceAllValue)) {
+							metabolitesTable.setValueAt(replaceAllValue, viewRow, getMetabolitesFindLocationsList().get(i).get(1));	
+							rewriteReactionEquationNames(id, metabAbbrev, replaceAllValue);
+							LocalConfig.getInstance().getMetaboliteIdCompartmentMap().put(new Integer(id), replaceAllValue); 
+						} else {
+							validPaste = false;
+						}	
 					} else {
 						if (isMetabolitesEntryValid(getMetabolitesFindLocationsList().get(i).get(1), replaceAllValue)) {
 							metabolitesTable.setValueAt(replaceAllValue, viewRow, getMetabolitesFindLocationsList().get(i).get(1));			
