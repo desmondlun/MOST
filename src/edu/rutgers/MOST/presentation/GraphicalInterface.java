@@ -4951,7 +4951,6 @@ public class GraphicalInterface extends JFrame {
 	}
 	
 	public void enableSaveItems(boolean enabled) {
-		System.out.println(modelCollectionLoad);
 		if (!modelCollectionLoad) {
 			saveItem.setEnabled(enabled);
 			savebutton.setEnabled(enabled);
@@ -6307,6 +6306,8 @@ public class GraphicalInterface extends JFrame {
 			undoItem.setOldLowerBound((String) (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));
 			undoItem.setOldUpperBound((String) (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));
 			if (reactionUpdateValid) {
+				enableSaveItems(true);
+				LocalConfig.getInstance().reactionsTableChanged = true;
 				formulaBar.setText(reactionEditor.getReactionEquation());
 				undoItem.setNewLowerBound((String) (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));
 				undoItem.setNewUpperBound((String) (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));
