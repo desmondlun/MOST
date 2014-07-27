@@ -1363,26 +1363,16 @@ public class GraphicalInterface extends JFrame {
 		JMenu analysisMenu = new JMenu("Analysis");
 		analysisMenu.setMnemonic(KeyEvent.VK_A);
 		
-		// based on http://stackoverflow.com/questions/9358710/java-action-listener-on-menu-and-not-on-menu-item
-		analysisMenu.addMenuListener(new MenuListener() {
+		/**
+		 * This is a generic action listener used for 
+		 * the Analysis portion of the graphical interface
+		 */
+		abstract class AnalysisCommonActionListener implements ActionListener
+		{
+			
 			@Override
-			public void menuCanceled(MenuEvent arg0) {
-			}
-			@Override
-			public void menuDeselected(MenuEvent arg0) {
-			}
-			@Override
-			public void menuSelected(MenuEvent arg0) {
-				DynamicTreePanel.treePanel.setNodeSelected(0);
-			}
-	    });
-
-		//Analysis --> FBA
-		analysisMenu.add(fbaItem);
-		fbaItem.setMnemonic(KeyEvent.VK_F);
-
-		fbaItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent a) {
+			public void actionPerformed( ActionEvent a )
+			{
 				Utilities u = new Utilities();
 
 				highlightUnusedMetabolites = false;
@@ -1404,9 +1394,7 @@ public class GraphicalInterface extends JFrame {
 
 				// Begin optimization
 				Model model = new Model();
-				FBA fba = new FBA();
-				fba.setModel(model);
-				ArrayList<Double> soln = fba.run();
+				ArrayList< Double > soln = analysisPart( model );
 				//End optimization
 
 				ReactionFactory rFactory = new ReactionFactory("SBML");
@@ -1416,15 +1404,7 @@ public class GraphicalInterface extends JFrame {
 					Writer writer = null;
 					try {
 						StringBuffer outputText = new StringBuffer();
-						outputText.append("FBA\n");
-						outputText.append(LocalConfig.getInstance().getModelName() + "\n");
-						outputText.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions\n");
-						String maxObj = Double.toString(fba.getMaxObj());
-						if (maxObj.equals("-0.0")) {
-							maxObj = "0.0";
-						}
-						outputText.append("Maximum objective: "	+ maxObj + "\n");
-						outputText.append("MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() + "\n" );
+						outputPart( model, outputText );
 						
 						File file = new File(u.createLogFileName(optimizeName + ".log"));
 						writer = new BufferedWriter(new FileWriter(file));
@@ -1463,7 +1443,67 @@ public class GraphicalInterface extends JFrame {
 					DynamicTreePanel.treePanel.setNodeSelected(0);
 				}
 				LocalConfig.getInstance().hasValidGurobiKey = true;
+			}
+			
+			/**
+			 * Run the analysis portion
+			 * @param model The data model used for this problem
+			 * @return The vector of optimized fluxes
+			 */
+			protected abstract ArrayList< Double > analysisPart( Model model );
+			
+			/**
+			 * This is output portion that runs after the optimization.
+			 * Whatever is written to outputText will display on the console
+			 * near the bottom of the GUI
+			 * @param model The model used for this problem
+			 * @param outputText The string buffer that will be displayed on the console
+			 */
+			protected abstract void outputPart( Model model, StringBuffer outputText );
+		}
+		
+		// based on http://stackoverflow.com/questions/9358710/java-action-listener-on-menu-and-not-on-menu-item
+		analysisMenu.addMenuListener(new MenuListener() {
+			@Override
+			public void menuCanceled(MenuEvent arg0) {
+			}
+			@Override
+			public void menuDeselected(MenuEvent arg0) {
+			}
+			@Override
+			public void menuSelected(MenuEvent arg0) {
+				DynamicTreePanel.treePanel.setNodeSelected(0);
+			}
+	    });
 
+		//Analysis --> FBA
+		analysisMenu.add(fbaItem);
+		fbaItem.setMnemonic(KeyEvent.VK_F);
+
+		fbaItem.addActionListener( new AnalysisCommonActionListener(){
+			private	Double maxObj = 0.0;
+			
+			@Override
+			protected ArrayList< Double > analysisPart( Model model )
+			{
+				FBA fba = new FBA();
+				fba.setModel(model);
+				ArrayList< Double > soln = fba.run();
+				maxObj = fba.getMaxObj();
+				return soln;
+			}
+
+			@Override
+			protected void outputPart( Model model, StringBuffer outputText )
+			{
+				outputText.append("FBA\n");
+				outputText.append(LocalConfig.getInstance().getModelName() + "\n");
+				outputText.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions\n");
+				if (maxObj.equals("-0.0")) {
+					maxObj = Double.valueOf( "0.0" );
+				}
+				outputText.append("Maximum objective: "	+ maxObj + "\n");
+				outputText.append("MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() + "\n" );
 			}
 		});
 
@@ -1623,102 +1663,71 @@ public class GraphicalInterface extends JFrame {
         analysisMenu.add( eflux2Item );
         eflux2Item.setMnemonic( KeyEvent.VK_E );
         
-        eflux2Item.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent a) {
-				
-				Utilities u = new Utilities();
-
-				highlightUnusedMetabolites = false;
-				highlightUnusedMetabolitesItem.setState(false);
-
-				String dateTimeStamp = u.createDateTimeStamp();
-				String optimizeName = GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
-						+ LocalConfig.getInstance().getModelName() + dateTimeStamp;
-				setOptimizeName(optimizeName);
-
-				// copy models, run optimization on these model
-				DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
-				DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
-				LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
-				LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
-				setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
-				setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
-				LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
-
-				// Begin optimization
-				Model model = new Model();
+        eflux2Item.addActionListener( new AnalysisCommonActionListener(){
+			private	Double maxObj = 0.0;
+			
+			@Override
+			protected ArrayList< Double > analysisPart( Model model )
+			{
 				Eflux2 eflux2 = new Eflux2();
 				eflux2.setModel(model);
 	                // uncomment next three lines for proof of concept of adding a new tab at runtime
-//					JScrollPane scrollPaneGene = new JScrollPane();
-//					tabbedPane.addTab("Genes", scrollPaneGene);
-//					tabbedPane.repaint();
+//        					JScrollPane scrollPaneGene = new JScrollPane();
+//        					tabbedPane.addTab("Genes", scrollPaneGene);
+//        					tabbedPane.repaint();
 				ArrayList<Double> soln = eflux2.run();
-				//End optimization
-
-				ReactionFactory rFactory = new ReactionFactory("SBML");
-				rFactory.setFluxes(soln);
-
-				if (LocalConfig.getInstance().hasValidGurobiKey) {
-					Writer writer = null;
-					try {
-						StringBuffer outputText = new StringBuffer();
-						outputText.append("Eflux2\n");
-						outputText.append(LocalConfig.getInstance().getModelName() + "\n");
-						outputText.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions\n");
-						String maxObj = Double.toString(eflux2.getMaxObj());
-						if (maxObj.equals("-0.0")) {
-							maxObj = "0.0";
-						}
-						outputText.append("Maximum objective: "	+ maxObj + "\n");
-						outputText.append("MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() + "\n" );
-						outputText.append( "Quadratic Solver = " + GraphicalInterface.getQuadraticSolverName() + "\n" );
-						
-						File file = new File(u.createLogFileName(optimizeName + ".log"));
-						writer = new BufferedWriter(new FileWriter(file));
-						writer.write(outputText.toString());
-
-					} catch (FileNotFoundException e) {
-						JOptionPane.showMessageDialog(null,                
-								"File Not Found.",                
-								"Error",                                
-								JOptionPane.ERROR_MESSAGE);
-						//e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					} finally {
-						try {
-							if (writer != null) {
-								writer.close();
-							}
-						} catch (IOException e) {
-							JOptionPane.showMessageDialog(null,                
-									"File Not Found.",                
-									"Error",                                
-									JOptionPane.ERROR_MESSAGE);
-							//e.printStackTrace();
-						}
-					}
-					loadOutputPane(u.createLogFileName(optimizeName + ".log"));
-					if (getPopout() != null) {
-						getPopout().load(u.createLogFileName(optimizeName + ".log"), gi.getTitle());
-					}
-					setTitle(GraphicalInterfaceConstants.TITLE + " - " + optimizeName);
-					listModel.addElement(optimizeName);				
-					DynamicTreePanel.treePanel.addObject(new Solution(optimizeName, optimizeName));
-					DynamicTreePanel.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
-				} else {
-					DynamicTreePanel.treePanel.setNodeSelected(0);
-				}
-				LocalConfig.getInstance().hasValidGurobiKey = true;
+				maxObj = eflux2.getMaxObj();
+				return soln;
 			}
-		});
+
+        	@Override
+        	protected void outputPart( Model model, StringBuffer outputText )
+        	{
+        		outputText.append("Eflux2\n");
+				outputText.append(LocalConfig.getInstance().getModelName() + "\n");
+				outputText.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions\n");
+				if (maxObj.equals("-0.0")) {
+					maxObj = Double.valueOf( "0.0" );
+				}
+				outputText.append("Maximum objective: "	+ maxObj + "\n");
+				outputText.append("MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() + "\n" );
+				outputText.append( "Quadratic Solver = " + GraphicalInterface.getQuadraticSolverName() + "\n" );
+			}
+        });
 
         //Analysis --> SPOT
         analysisMenu.add( spotItem );
         spotItem.setMnemonic( KeyEvent.VK_S );
         
-        spotItem.addActionListener( new ActionListener() {
+        spotItem.addActionListener( new AnalysisCommonActionListener(){
+			@Override
+			protected ArrayList< Double > analysisPart( Model model )
+			{
+				SPOT spot = new SPOT();
+				spot.setModel( model );
+				// uncomment next three lines for proof of concept of adding a
+				// new tab at runtime
+				// JScrollPane scrollPaneGene = new JScrollPane();
+				// tabbedPane.addTab("Genes", scrollPaneGene);
+				// tabbedPane.repaint();
+				return spot.run();
+			}
+
+			@Override
+			protected void outputPart( Model model, StringBuffer outputText )
+			{
+				outputText.append( "SPOT\n" );
+				outputText.append( LocalConfig.getInstance()
+						.getModelName() + "\n" );
+				outputText.append( model.getNumMetabolites()
+						+ " metabolites, " + model.getNumReactions()
+						+ " reactions\n" );
+										
+				outputText.append("MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() + "\n" );
+				outputText.append("Nonlinear solver = " + GraphicalInterface.getNonlinearSolverName() + "\n" );
+			}
+        }
+        		/*new ActionListener() {
 			@Override
 			public void actionPerformed( ActionEvent a )
 			{
@@ -1835,7 +1844,8 @@ public class GraphicalInterface extends JFrame {
 				}
 				LocalConfig.getInstance().hasValidGurobiKey = true;
 			}
-		} );
+		} */
+        );
         
 		//Edit menu
 		JMenu editMenu = new JMenu("Edit");
