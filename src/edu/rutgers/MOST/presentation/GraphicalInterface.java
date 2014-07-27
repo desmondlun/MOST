@@ -548,10 +548,10 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem saveCSVMetabolitesItem = new JMenuItem("Save As CSV Metabolites");
 	public final JMenuItem saveCSVReactionsItem = new JMenuItem("Save As CSV Reactions");
 	public final JMenuItem clearItem = new JMenuItem("Clear Tables");
-	public final static JMenuItem fbaItem = new JMenuItem("FBA");
-	public final static JMenuItem gdbbItem = new JMenuItem("GDBB");
-	public final static JMenuItem eflux2Item = new JMenuItem( "Eflux2" );
-	public final static JMenuItem spotItem = new JMenuItem( "SPOT" );
+	public final JMenuItem fbaItem = new JMenuItem("FBA");
+	public final JMenuItem gdbbItem = new JMenuItem("GDBB");
+	public final JMenuItem eflux2Item = new JMenuItem( "Eflux2" );
+	public final JMenuItem spotItem = new JMenuItem( "SPOT" );
 	public final JCheckBoxMenuItem highlightUnusedMetabolitesItem = new JCheckBoxMenuItem("Highlight Unused Metabolites");
 	public final JMenuItem deleteUnusedItem = new JMenuItem("Delete All Unused Metabolites");
 	public final JMenuItem findSuspiciousItem = new JMenuItem("Find Suspicious Metabolites");
@@ -909,6 +909,7 @@ public class GraphicalInterface extends JFrame {
 		isRoot = true;
 		
 		enableSaveItems(false);
+		setEnableAnalysisMenuItems( false );
 
 		// Tree Panel
 		treePanel = new DynamicTreePanel(new DynamicTree() {
@@ -10491,6 +10492,18 @@ public class GraphicalInterface extends JFrame {
 		redoItem.setEnabled(false);
 	}
 
+	/**
+	 * Enable or disable the Analysis menu items
+	 * @param expr True if enabled, False otherwise
+	 */
+	public synchronized void setEnableAnalysisMenuItems( boolean expr )
+	{
+		fbaItem.setEnabled( expr );
+		gdbbItem.setEnabled( expr );
+		eflux2Item.setEnabled( expr );
+		spotItem.setEnabled( expr );
+	}
+	
 	public void maybeDisplaySuspiciousMetabMessage(String row) {
 		try {
 			if (isRoot && LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
@@ -10597,6 +10610,7 @@ public class GraphicalInterface extends JFrame {
 				LocalConfig.getInstance().setProgress( 100 );
 				enableLoadItems();
 			}	
+			setEnableAnalysisMenuItems( true );
 			while (LocalConfig.getInstance().getProgress() < 100) {
 				try {
 					Thread.sleep(1000);
