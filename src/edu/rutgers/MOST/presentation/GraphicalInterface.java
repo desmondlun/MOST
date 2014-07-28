@@ -3336,6 +3336,7 @@ public class GraphicalInterface extends JFrame {
 				setUpMetabolitesTable(TextReactionsModelReader.getMetabolitesTableModel());
 				LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), TextReactionsModelReader.getMetabolitesTableModel());
 				setUpTables();
+				setEnableAnalysisMenuItems( true );
 				if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
 					setUrlString(GraphicalInterfaceConstants.SUSPICIOUS_METABOLITES_URL);
 					getSuspiciousMetabolitesDialog().setVisible(true);
@@ -3765,6 +3766,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().getMetabolitesTableModelMap().put(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME, blankMetabModel);
 		//LocalConfig.getInstance().setModelName(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME);
 		setUpTables();
+		setEnableAnalysisMenuItems( false );
 	}
 
 	class SBMLFileFilter extends javax.swing.filechooser.FileFilter {
