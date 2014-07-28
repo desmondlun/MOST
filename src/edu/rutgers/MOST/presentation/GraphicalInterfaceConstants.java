@@ -415,6 +415,7 @@ public class GraphicalInterfaceConstants {
     public static final Color FORMULA_BAR_NONEDITABLE_COLOR = Color.LIGHT_GRAY;
     // this shade of gray matches color when labeled components are grayed out
     public static final Color GRAYED_LABEL_COLOR = new Color(150,150,150);
+    public static final Color CONSTANT_BOUNDS_COLOR = Color.RED;
     
     // directories used for writing log files
     // The suffix must be used as there are bugs in getting the application data folder

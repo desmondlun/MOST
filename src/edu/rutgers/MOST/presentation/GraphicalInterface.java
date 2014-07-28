@@ -4928,6 +4928,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().getReactionAbbreviationIdMap().clear();
 		LocalConfig.getInstance().getSuspiciousMetabolites().clear();
 		LocalConfig.getInstance().getUnusedList().clear();
+		LocalConfig.getInstance().getConstantBoundsIdList().clear();
 		if (!saveSBML) {
 			LocalConfig.getInstance().getOptimizationFilesList().clear();
 			LocalConfig.getInstance().getMetabolitesTableModelMap().clear();
@@ -5329,12 +5330,27 @@ public class GraphicalInterface extends JFrame {
 			if (adapter.column == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN ||
 					!isRoot) {									
 				return true;
-			}						
+			} 
 			return false;
 		}
 	};
 
 	ColorHighlighter nonEditable = new ColorHighlighter(nonEditablePredicate, null, GraphicalInterfaceConstants.NONEDITABLE_COLOR);
+	
+	HighlightPredicate constantBoundsPredicate = new HighlightPredicate() {
+		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
+			int viewRow = reactionsTable.convertRowIndexToModel(adapter.row);
+			int id = Integer.valueOf(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN).toString());					
+			if (LocalConfig.getInstance().getConstantBoundsIdList().contains(id) &&
+					(adapter.column == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN ||
+					adapter.column == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)) {
+				return true;
+			}
+			return false;
+		}
+	};
+
+	ColorHighlighter constantBounds = new ColorHighlighter(constantBoundsPredicate, null, GraphicalInterfaceConstants.CONSTANT_BOUNDS_COLOR);
 
 	public void setReactionsTableLayout() {
 		reactionsTable.getSelectionModel().addListSelectionListener(new ReactionsRowListener());
@@ -5358,6 +5374,7 @@ public class GraphicalInterface extends JFrame {
 		reactionsTable.addHighlighter(reactionFindAll);
 		reactionsTable.addHighlighter(invalidReaction);
 		reactionsTable.addHighlighter(nonEditable);
+		reactionsTable.addHighlighter(constantBounds);
 
 		// these columns have names that are too long to fit in cell and need tooltips
 		// also KO has Knockout as tooltip
@@ -6185,8 +6202,9 @@ public class GraphicalInterface extends JFrame {
 						}
 					}
 				}
-				System.out.println(LocalConfig.getInstance().getConstantBoundsIdList());
+//				System.out.println(LocalConfig.getInstance().getConstantBoundsIdList());
 				boundsItemlicked = true;
+				reactionsTable.repaint();
 			}
 		});
 		
@@ -10501,6 +10519,7 @@ public class GraphicalInterface extends JFrame {
 		formulaBar.setEditable(true);		
 		editorMenu.setEnabled(true);
 		pastebutton.setEnabled(true);
+		boundsConstantMenuItem.setEnabled(true);
 		if (undoCount > 1) {
 			enableOptionComponent(undoSplitButton, undoLabel, undoGrayedLabel);
 			undoItem.setEnabled(true);
@@ -10535,6 +10554,7 @@ public class GraphicalInterface extends JFrame {
 		formulaBar.setEditable(false);
 		formulaBar.setBackground(Color.WHITE);
 		editorMenu.setEnabled(false);
+		boundsConstantMenuItem.setEnabled(false);
 		
 		FindReplaceDialog.replaceButton.setEnabled(false);
 		
