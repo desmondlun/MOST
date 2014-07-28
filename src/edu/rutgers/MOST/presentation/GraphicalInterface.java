@@ -903,8 +903,8 @@ public class GraphicalInterface extends JFrame {
 
 	public GraphicalInterface() {		
 		// make this true only when troubleshooting, false for actual use
-		showIdColumn = true;
-//		showIdColumn = false;
+//		showIdColumn = true;
+		showIdColumn = false;
 
 		gi = this;
 
