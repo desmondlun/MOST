@@ -10864,6 +10864,7 @@ public class GraphicalInterface extends JFrame {
 				getGdbbDialog().setVisible(false);
 				getGdbbDialog().dispose();
 				gdbbTimer.stop();
+				gdbbItem.setEnabled(true);
 				// probably not necessary since dispose
 				getGdbbDialog().enableComponents();
 				getGdbbDialog().selectIndefiniteTimeButton();
