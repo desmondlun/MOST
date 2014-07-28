@@ -269,6 +269,7 @@ public class GraphicalInterface extends JFrame {
 	public static boolean addMetabolite;
 	public boolean enterPressed;
 	public boolean reactionsUndo;
+	public boolean boundsItemlicked;
 	// save
 	public boolean saveFile;
 	public boolean saveSBML;
@@ -568,6 +569,7 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem deleteReactionRowMenuItem = new JMenuItem("Delete Row(s)");
 	public final JMenuItem deleteMetaboliteRowMenuItem = new JMenuItem("Delete Row(s)");
 	public final JMenuItem editorMenu = new JMenuItem("Launch Reaction Editor");
+	public final JCheckBoxMenuItem boundsConstantMenuItem = new JCheckBoxMenuItem("Set Bounds Constant");
 	public final JMenuItem unsortReacMenuItem = new JMenuItem("Unsort Reactions Table");
 	public final JMenuItem unsortMetabMenuItem = new JMenuItem("Unsort Metabolites Table");
 	public final JMenuItem setUpSolver = new JMenuItem("Select Solvers");
@@ -901,8 +903,8 @@ public class GraphicalInterface extends JFrame {
 
 	public GraphicalInterface() {		
 		// make this true only when troubleshooting, false for actual use
-		//showIdColumn = true;
-		showIdColumn = false;
+		showIdColumn = true;
+//		showIdColumn = false;
 
 		gi = this;
 
@@ -4906,6 +4908,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().includesReactions = true;		
 		enterPressed = false;
 		reactionsUndo = false;
+		boundsItemlicked = false;
 		// save
 		if (!saveSBML) {
 			saveFile = false;
@@ -5118,6 +5121,8 @@ public class GraphicalInterface extends JFrame {
 			if (getReactionEditor() != null) {
 				getReactionEditor().setVisible(false);
 				getReactionEditor().dispose();
+				LocalConfig.getInstance().reactionEditorVisible = false;
+				editorMenu.setEnabled(true);
 			}
 			String reactionRow = Integer.toString((reactionsTable.getSelectedRow() + 1));
 			maybeDisplaySuspiciousMetabMessage(reactionRow);
@@ -6111,6 +6116,13 @@ public class GraphicalInterface extends JFrame {
 								&& reactionsContextMenu.getComponentCount() > 0) {
 							reactionsContextMenu.show(reactionsTable, p.x, p.y);
 						}
+					} else if (col == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN ||
+							col == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN) {
+						JPopupMenu boundsContextMenu = createBoundsContextMenu(row, col);
+						if (boundsContextMenu != null
+								&& boundsContextMenu.getComponentCount() > 0) {
+							boundsContextMenu.show(reactionsTable, p.x, p.y);
+						}
 					} else {
 						// create popup for remaining columns
 						JPopupMenu contextMenu = createReactionsContextMenu(row, col);
@@ -6144,6 +6156,29 @@ public class GraphicalInterface extends JFrame {
 	//begin reaction equation context menu
 	/*******************************************************************************/	
 
+	private JPopupMenu createBoundsContextMenu(final int rowIndex,
+			final int columnIndex) {
+		JPopupMenu contextMenu = createReactionsContextMenu(rowIndex, columnIndex);
+		contextMenu.addSeparator();
+		boundsItemlicked = false;
+		boundsConstantMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!boundsItemlicked) {
+					if (boundsConstantMenuItem.isSelected()) {
+						int viewRow = reactionsTable.convertRowIndexToModel(rowIndex);
+						int id = (Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
+						System.out.println(id);
+					}
+				}
+				boundsItemlicked = true;
+			}
+		});
+		
+		contextMenu.add(boundsConstantMenuItem);
+
+		return contextMenu;
+	}
+	
 	private JPopupMenu createReactionEquationContextMenu(final int rowIndex,
 			final int columnIndex) {
 		JPopupMenu contextMenu = createReactionsContextMenu(rowIndex, columnIndex);
@@ -6186,8 +6221,10 @@ public class GraphicalInterface extends JFrame {
 	ActionListener okButtonActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			boolean okToClose = true;
-			int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
+			int viewRow = reactionsTable.convertRowIndexToModel(getCurrentReactionsRow());
+//			int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
 			int id = (Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
+			System.out.println(id);
 			String oldValue = (String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 			reactionEditor.setReactionEquation(reactionEditor.reactionArea.getText());
 			reactionsTable.getModel().setValueAt(reactionEditor.getReactionEquation(), viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
