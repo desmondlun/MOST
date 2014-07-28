@@ -795,5 +795,15 @@ public class LocalConfig {
 	public void setGdbbKnockoutsMap(Map<String, ArrayList<Integer>> gdbbKnockoutsMap) {
 		this.gdbbKnockoutsMap = gdbbKnockoutsMap;
 	}
+	
+	private ArrayList<Integer> constantBoundsIdList;
+
+	public ArrayList<Integer> getConstantBoundsIdList() {
+		return constantBoundsIdList;
+	}
+
+	public void setConstantBoundsIdList(ArrayList<Integer> constantBoundsIdList) {
+		this.constantBoundsIdList = constantBoundsIdList;
+	}
 
 }

@@ -1160,6 +1160,8 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().setMetabDisplayCollectionMap(metabDisplayCollectionMap);
 		ArrayList<String> invalidReactions = new ArrayList<String>();
 		LocalConfig.getInstance().setInvalidReactions(invalidReactions);
+		ArrayList<Integer> constantBoundsIdList = new ArrayList<Integer>();
+		LocalConfig.getInstance().setConstantBoundsIdList(constantBoundsIdList);
 
 		// meta column lists
 		ArrayList<String> reactionsMetaColumnNames = new ArrayList<String>();
@@ -6161,15 +6163,29 @@ public class GraphicalInterface extends JFrame {
 		JPopupMenu contextMenu = createReactionsContextMenu(rowIndex, columnIndex);
 		contextMenu.addSeparator();
 		boundsItemlicked = false;
+		int viewRow = reactionsTable.convertRowIndexToModel(rowIndex);
+		int id = (Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
+		if (LocalConfig.getInstance().getConstantBoundsIdList().contains(id)) {
+			boundsConstantMenuItem.setSelected(true);
+		} else {
+			boundsConstantMenuItem.setSelected(false);
+		}
 		boundsConstantMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (!boundsItemlicked) {
+					int viewRow = reactionsTable.convertRowIndexToModel(rowIndex);
+					int id = (Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
 					if (boundsConstantMenuItem.isSelected()) {
-						int viewRow = reactionsTable.convertRowIndexToModel(rowIndex);
-						int id = (Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
-						System.out.println(id);
+						if (!LocalConfig.getInstance().getConstantBoundsIdList().contains(id)) {
+							LocalConfig.getInstance().getConstantBoundsIdList().add(id);
+						}
+					} else {
+						if (LocalConfig.getInstance().getConstantBoundsIdList().contains(id)) {
+							LocalConfig.getInstance().getConstantBoundsIdList().remove(LocalConfig.getInstance().getConstantBoundsIdList().indexOf(id));
+						}
 					}
 				}
+				System.out.println(LocalConfig.getInstance().getConstantBoundsIdList());
 				boundsItemlicked = true;
 			}
 		});
