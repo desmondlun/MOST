@@ -490,5 +490,8 @@ public class GraphicalInterfaceConstants {
     public static final String DEFAULT_FILE_TYPE = "csv";
 
     public static final String GDBB_PREFIX = "GDBB_";
+    
+    // Note: name must contain an "N" since keyboard shortcut is "N"
+    public static final String SET_ALL_BOUNDS_NOT_CONSTANT = "Set All Bounds Not Constant";
 }
 

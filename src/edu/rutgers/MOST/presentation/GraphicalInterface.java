@@ -568,6 +568,7 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem addMetabColumnItem = new JMenuItem("Add Column to Metabolites Table"); 
 	public final JMenuItem deleteReactionRowMenuItem = new JMenuItem("Delete Row(s)");
 	public final JMenuItem deleteMetaboliteRowMenuItem = new JMenuItem("Delete Row(s)");
+	public final JMenuItem setBoundsNotConstantMenu = new JMenuItem(GraphicalInterfaceConstants.SET_ALL_BOUNDS_NOT_CONSTANT);
 	public final JMenuItem editorMenu = new JMenuItem("Launch Reaction Editor");
 	public final JCheckBoxMenuItem boundsConstantMenuItem = new JCheckBoxMenuItem("Set Bounds Constant");
 	public final JMenuItem unsortReacMenuItem = new JMenuItem("Unsort Reactions Table");
@@ -1821,6 +1822,18 @@ public class GraphicalInterface extends JFrame {
 			}    	     
 		});
 
+		editMenu.addSeparator(); 
+		
+		editMenu.add(setBoundsNotConstantMenu);
+		setBoundsNotConstantMenu.setMnemonic(KeyEvent.VK_N);
+		
+		setBoundsNotConstantMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) {
+				LocalConfig.getInstance().getConstantBoundsIdList().clear();
+				reactionsTable.repaint();
+			}    	     
+		});
+		
 		editMenu.addSeparator(); 
 
 		editMenu.add(undoItem);
@@ -10520,6 +10533,7 @@ public class GraphicalInterface extends JFrame {
 		editorMenu.setEnabled(true);
 		pastebutton.setEnabled(true);
 		boundsConstantMenuItem.setEnabled(true);
+		setBoundsNotConstantMenu.setEnabled(true);
 		if (undoCount > 1) {
 			enableOptionComponent(undoSplitButton, undoLabel, undoGrayedLabel);
 			undoItem.setEnabled(true);
@@ -10555,6 +10569,7 @@ public class GraphicalInterface extends JFrame {
 		formulaBar.setBackground(Color.WHITE);
 		editorMenu.setEnabled(false);
 		boundsConstantMenuItem.setEnabled(false);
+		setBoundsNotConstantMenu.setEnabled(false);
 		
 		FindReplaceDialog.replaceButton.setEnabled(false);
 		
