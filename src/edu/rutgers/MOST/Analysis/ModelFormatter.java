@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import au.com.bytecode.opencsv.CSVReader;
+import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.Model;
 import edu.rutgers.MOST.data.ModelParser;
 import edu.rutgers.MOST.data.SBMLReaction;
@@ -111,14 +112,11 @@ public class ModelFormatter
 				};
 				Double parse_expr = new Double( parser.getValue() );
 				
-				reaction.setLowerBound( reaction.getLowerBound() < 0.0 ? Double.NEGATIVE_INFINITY : 0.0 );
-				reaction.setUpperBound( reaction.getUpperBound() > 0.0 ? Double.POSITIVE_INFINITY : 0.0 );
-				if( reaction.getReactionName().toLowerCase().contains( "biomass" ) )
+				if( !LocalConfig.getInstance().getConstantBoundsIdList().contains( reaction.getId() ) )
 				{
-					reaction.setLowerBound( 0.2 );
-					reaction.setUpperBound( 0.2 );
+					reaction.setLowerBound( reaction.getLowerBound() < 0.0 ? Double.NEGATIVE_INFINITY : 0.0 );
+					reaction.setUpperBound( reaction.getUpperBound() > 0.0 ? Double.POSITIVE_INFINITY : 0.0 );
 				}
-
 				
 				if( parse_expr.isInfinite() || reaction.getReversible().toLowerCase().equals( "true" ) )
 					gene_expr.add( 0.0 );
