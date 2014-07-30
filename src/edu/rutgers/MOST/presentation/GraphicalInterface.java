@@ -282,6 +282,9 @@ public class GraphicalInterface extends JFrame {
 	public boolean gdbbStopped;
 	public boolean gdbbRunning;
 	public boolean gdbbProcessed;
+	
+	public boolean minEuclideanNorm;
+	public boolean runFVA;
 
 	/*****************************************************************************/
 	// end boolean values
@@ -316,6 +319,16 @@ public class GraphicalInterface extends JFrame {
 	}
 
 	public final CSVLoadInterface csvLoadInterface = new CSVLoadInterface();
+
+	private static FBADialog fbaDialog;
+	
+	public static FBADialog getFbaDialog() {
+		return fbaDialog;
+	}
+
+	public static void setFbaDialog(FBADialog fbaDialog) {
+		GraphicalInterface.fbaDialog = fbaDialog;
+	}
 
 	private static FindReplaceDialog findReplaceDialog;
 
@@ -1025,6 +1038,21 @@ public class GraphicalInterface extends JFrame {
 		CSVLoadInterface.okButton.addActionListener(okButtonCSVLoadActionListener);
 		CSVLoadInterface.cancelButton.addActionListener(cancelButtonCSVLoadActionListener);
 		
+		FBADialog fbaDialog = new FBADialog();
+		fbaDialog.setSize(300, 160);
+		fbaDialog.setResizable(false);
+		fbaDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		fbaDialog.setLocationRelativeTo(null);		
+		fbaDialog.setVisible(false);	
+		fbaDialog.setModal(true);
+		setFbaDialog(fbaDialog);
+		fbaDialog.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent evt) {
+				getFbaDialog().setVisible(false);	        	
+			}
+		});	
+		getFbaDialog().okButton.addActionListener(okButtonFBAActionListener);
+		
 		aboutDialog.setIconImages(icons);					
 		aboutDialog.setSize(400, 180);
 		aboutDialog.setResizable(false);
@@ -1379,6 +1407,7 @@ public class GraphicalInterface extends JFrame {
 			@Override
 			public void actionPerformed( ActionEvent a )
 			{
+				getFbaDialog().setVisible(true);
 				Utilities u = new Utilities();
 
 				highlightUnusedMetabolites = false;
@@ -11287,6 +11316,24 @@ public class GraphicalInterface extends JFrame {
 			}
 		}
 	}
+	
+	ActionListener okButtonFBAActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {	
+			if (getFbaDialog().normBox.isSelected()) {
+				minEuclideanNorm = true;
+			} else {
+				minEuclideanNorm = false;
+			}
+			if (getFbaDialog().fvaBox.isSelected()) {
+				runFVA = true;
+			} else {
+				runFVA = false;
+			}
+			getFbaDialog().setVisible(false);
+//			System.out.println(minEuclideanNorm);
+//			System.out.println(runFVA);
+		}
+	};
 	
 	public static void main(String[] args) {
 	//public static void main(String[] args) throws Exception {

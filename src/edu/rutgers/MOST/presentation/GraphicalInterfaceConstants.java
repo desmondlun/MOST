@@ -493,5 +493,6 @@ public class GraphicalInterfaceConstants {
     
     // Note: name must contain an "N" since keyboard shortcut is "N"
     public static final String SET_ALL_BOUNDS_NOT_CONSTANT = "Set All Bounds Not Constant";
+    
 }
 
