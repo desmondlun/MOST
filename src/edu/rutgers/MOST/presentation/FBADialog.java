@@ -23,7 +23,10 @@ public class FBADialog  extends JDialog {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public JCheckBox normBox = new JCheckBox("Minimize Euclidean Norm ");
+	
+	// minimizing the Euclidean norm makes this E-flux2, which we already
+	// a unique analysis option for
+	// public JCheckBox normBox = new JCheckBox("Minimize Euclidean Norm ");
 	public JCheckBox fvaBox = new JCheckBox("Include FVA Results           ");
 	public JButton okButton = new JButton("    OK    ");
 	public JButton cancelButton = new JButton("  Cancel  ");
@@ -42,7 +45,7 @@ public class FBADialog  extends JDialog {
 		Box hbLabel = Box.createHorizontalBox();
 		Box hbButton = Box.createHorizontalBox();
 
-		topLabel.setSize(new Dimension(150, 10));
+		topLabel.setSize(new Dimension(120, 10));
 		//top, left, bottom. right
 		topLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 		topLabel.setAlignmentX(CENTER_ALIGNMENT);
@@ -62,7 +65,7 @@ public class FBADialog  extends JDialog {
 		
 		JPanel normPanel = new JPanel();
 		normPanel.setLayout(new BoxLayout(normPanel, BoxLayout.X_AXIS));
-		normPanel.add(normBox);
+		//normPanel.add(normBox);
 		normPanel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
 		
 		JPanel fvaPanel = new JPanel();
@@ -86,7 +89,7 @@ public class FBADialog  extends JDialog {
 		vb.add(hbButton);
 		add(vb);	
 		
-		normBox.setSelected(FBAConstants.EUCLIDEAN_NORM_DEFAULT);
+	//	normBox.setSelected(FBAConstants.EUCLIDEAN_NORM_DEFAULT);
 		fvaBox.setSelected(FBAConstants.FVA_DEFAULT);
 		
 //		ActionListener okButtonActionListener = new ActionListener() {
@@ -124,7 +127,8 @@ public class FBADialog  extends JDialog {
 
 		FBADialog frame = new FBADialog();
 		frame.setIconImages(icons);
-		frame.setSize(300, 160);
+		//frame.setSize(100, 160);
+		frame.pack();
 		frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);

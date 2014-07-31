@@ -283,7 +283,7 @@ public class GraphicalInterface extends JFrame {
 	public boolean gdbbRunning;
 	public boolean gdbbProcessed;
 	
-	public boolean minEuclideanNorm;
+//	public boolean minEuclideanNorm;
 	public boolean runFVA;
 
 	/*****************************************************************************/
@@ -1039,7 +1039,8 @@ public class GraphicalInterface extends JFrame {
 		CSVLoadInterface.cancelButton.addActionListener(cancelButtonCSVLoadActionListener);
 		
 		FBADialog fbaDialog = new FBADialog();
-		fbaDialog.setSize(300, 160);
+		// fbaDialog.setSize(300, 160);
+		fbaDialog.pack(); // automatic-size
 		fbaDialog.setResizable(false);
 		fbaDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		fbaDialog.setLocationRelativeTo(null);		
@@ -1407,7 +1408,6 @@ public class GraphicalInterface extends JFrame {
 			@Override
 			public void actionPerformed( ActionEvent a )
 			{
-				getFbaDialog().setVisible(true);
 				Utilities u = new Utilities();
 
 				highlightUnusedMetabolites = false;
@@ -1521,6 +1521,7 @@ public class GraphicalInterface extends JFrame {
 			@Override
 			protected ArrayList< Double > analysisPart( Model model )
 			{
+				getFbaDialog().setVisible(true);
 				FBA fba = new FBA();
 				fba.setModel(model);
 				ArrayList< Double > soln = fba.run();
@@ -11319,11 +11320,12 @@ public class GraphicalInterface extends JFrame {
 	
 	ActionListener okButtonFBAActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {	
-			if (getFbaDialog().normBox.isSelected()) {
+		/*	if (getFbaDialog().normBox.isSelected()) {
 				minEuclideanNorm = true;
 			} else {
 				minEuclideanNorm = false;
 			}
+		*/
 			if (getFbaDialog().fvaBox.isSelected()) {
 				runFVA = true;
 			} else {
