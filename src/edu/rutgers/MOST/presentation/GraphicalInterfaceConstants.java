@@ -491,8 +491,8 @@ public class GraphicalInterfaceConstants {
 
     public static final String GDBB_PREFIX = "GDBB_";
     
-    // Note: name must contain an "N" since keyboard shortcut is "N"
-    public static final String SET_ALL_BOUNDS_NOT_CONSTANT = "Set All Bounds Not Constant";
+    // Note: name must contain an "R" since keyboard shortcut is "R"
+    public static final String RESET_BOUNDS_MUTABLE = "Reset bounds to mutable";
     
 }
 

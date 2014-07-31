@@ -581,7 +581,7 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem addMetabColumnItem = new JMenuItem("Add Column to Metabolites Table"); 
 	public final JMenuItem deleteReactionRowMenuItem = new JMenuItem("Delete Row(s)");
 	public final JMenuItem deleteMetaboliteRowMenuItem = new JMenuItem("Delete Row(s)");
-	public final JMenuItem setBoundsNotConstantMenu = new JMenuItem(GraphicalInterfaceConstants.SET_ALL_BOUNDS_NOT_CONSTANT);
+	public final JMenuItem resetBoundsMutableMenuItem = new JMenuItem(GraphicalInterfaceConstants.RESET_BOUNDS_MUTABLE);
 	public final JMenuItem editorMenu = new JMenuItem("Launch Reaction Editor");
 	public final JCheckBoxMenuItem boundsConstantMenuItem = new JCheckBoxMenuItem("Set Bounds Constant");
 	public final JMenuItem unsortReacMenuItem = new JMenuItem("Unsort Reactions Table");
@@ -1529,7 +1529,8 @@ public class GraphicalInterface extends JFrame {
 			@Override
 			protected ArrayList< Double > analysisPart( Model model ) throws Exception
 			{
-				getFbaDialog().setVisible(true);
+				//release version v10 does not have FVA
+				//getFbaDialog().setVisible(true);
 				FBA fba = new FBA();
 				fba.setModel(model);
 				ArrayList< Double > soln = fba.run();
@@ -1866,10 +1867,10 @@ public class GraphicalInterface extends JFrame {
 
 		editMenu.addSeparator(); 
 		
-		editMenu.add(setBoundsNotConstantMenu);
-		setBoundsNotConstantMenu.setMnemonic(KeyEvent.VK_N);
+		editMenu.add(resetBoundsMutableMenuItem);
+		resetBoundsMutableMenuItem.setMnemonic(KeyEvent.VK_R);
 		
-		setBoundsNotConstantMenu.addActionListener(new ActionListener() {
+		resetBoundsMutableMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
 				LocalConfig.getInstance().getConstantBoundsIdList().clear();
 				reactionsTable.repaint();
@@ -10575,7 +10576,7 @@ public class GraphicalInterface extends JFrame {
 		editorMenu.setEnabled(true);
 		pastebutton.setEnabled(true);
 		boundsConstantMenuItem.setEnabled(true);
-		setBoundsNotConstantMenu.setEnabled(true);
+		resetBoundsMutableMenuItem.setEnabled(true);
 		if (undoCount > 1) {
 			enableOptionComponent(undoSplitButton, undoLabel, undoGrayedLabel);
 			undoItem.setEnabled(true);
@@ -10611,7 +10612,7 @@ public class GraphicalInterface extends JFrame {
 		formulaBar.setBackground(Color.WHITE);
 		editorMenu.setEnabled(false);
 		boundsConstantMenuItem.setEnabled(false);
-		setBoundsNotConstantMenu.setEnabled(false);
+		resetBoundsMutableMenuItem.setEnabled(false);
 		
 		FindReplaceDialog.replaceButton.setEnabled(false);
 		
@@ -10703,7 +10704,6 @@ public class GraphicalInterface extends JFrame {
 
 		@Override
 		public void done() {
-			System.out.println( "Task done!" );
 		}
 
 		@Override
