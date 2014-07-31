@@ -11,7 +11,7 @@ public class SolverFactory
 	 * @return A linear optimizer
 	 * @see edu.rutgers.MOST.Analysis.FBA
 	 */
-	public static LinearSolver createLinearSolver()
+	public static LinearSolver createFBASolver()
 	{
 		LinearSolver solver = null;
 		switch( GraphicalInterface.getMixedIntegerLinearSolverName() )
@@ -33,7 +33,7 @@ public class SolverFactory
 	 * @see edu.rutgers.MOST.Analysis.FBA
 	 * @see edu.rutgers.MOST.Analysis.GDBB
 	 */
-	public static MILSolver createMILSolver()
+	public static MILSolver createGDBBSolver()
 	{
 		MILSolver solver = null;
 		switch( GraphicalInterface.getMixedIntegerLinearSolverName() )
@@ -70,16 +70,32 @@ public class SolverFactory
 	}
 	
 	/**
-	 * Create a solver capable of nonlinear optimizations
+	 * Create a solver capable of the nonlinear SPOTv1 optimization
 	 * @return A nonlinear optimizer
 	 */
-	public static NonlinearSolver createNonlinearSolver()
+	public static NonlinearSolver CreateSPOTv1Solver()
 	{
 		NonlinearSolver solver = null;
 		switch( GraphicalInterface.getNonlinearSolverName() )
 		{
 		case GraphicalInterfaceConstants.IPOPT_SOLVER_NAME:
-			solver = new NonlinearIPoptSolver();
+			solver = new SPOTv1IPoptSolver();
+			break;
+		}
+		return solver;
+	}
+	
+	/**
+	 * Create a solver capable of the nonlinear SPOTv2 optimization
+	 * @return A nonlinear optimizer
+	 */
+	public static NonlinearSolver CreateSPOTv2Solver()
+	{
+		NonlinearSolver solver = null;
+		switch( GraphicalInterface.getNonlinearSolverName() )
+		{
+		case GraphicalInterfaceConstants.IPOPT_SOLVER_NAME:
+			solver = new SPOTv2IPoptSolver();
 			break;
 		}
 		return solver;

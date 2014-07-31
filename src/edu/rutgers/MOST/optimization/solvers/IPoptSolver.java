@@ -9,6 +9,7 @@ import org.coinor.Ipopt;
 
 public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, LinearSolver
 {
+	private boolean usingNormalConstraint = false;
 	private boolean obj_set = false;
 	SolverComponent component = new SolverComponentHeavyWeight();
 	protected ArrayList< Double > objCoefs = new ArrayList< Double >();
@@ -71,10 +72,11 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 			for( int j = 0; j < component.variableCount(); ++j )
 				startingPoint.add( 0.0 );
 		
+		int constraintCount = component.constraintCount() + (usingNormalConstraint? 1 : 0 );
 		double[] x_L = new double[ component.variableCount() ];
 		double[] x_U = new double[ component.variableCount() ];
-		double[] g_L = new double[ component.constraintCount() ];
-		double[] g_U = new double[ component.constraintCount() ];
+		double[] g_L = new double[ constraintCount ];
+		double[] g_U = new double[ constraintCount ];
 		
 		for( int j = 0; j < component.variableCount(); ++j )
 		{
@@ -101,12 +103,18 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 			}
 		}
 		
-		this.create( component.variableCount(), x_L, x_U, component.constraintCount(), g_L, g_U,
-				component.constraintCount() * component.variableCount(), component.variableCount() * component.variableCount(), Ipopt.C_STYLE );
+		if( this.usingNormalConstraint )
+		{
+			g_L[ component.constraintCount() ] = 0.0;
+			g_U[ component.constraintCount() ] = 1.0;
+		}
+		
+		this.create( component.variableCount(), x_L, x_U, constraintCount, g_L, g_U,
+				constraintCount * component.variableCount(), component.variableCount() * component.variableCount(), Ipopt.C_STYLE );
 		
 		double[] vars = new double[ component.variableCount() ];
 		for( int j = 0; j < vars.length; ++j )
-			vars[ j ] = startingPoint.get( j );
+			vars[ j ] = (this.usingNormalConstraint? 0.0: startingPoint.get( j ) );
 		
 		ArrayList< Double > constraint_vals = new ArrayList< Double >();
 		
@@ -227,5 +235,11 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 	{
 		this.startingPoint = x0;
 		return optimize();
+	}
+
+	@Override
+	public void addNormalizeConstraint()
+	{
+		usingNormalConstraint = true;
 	}
 }

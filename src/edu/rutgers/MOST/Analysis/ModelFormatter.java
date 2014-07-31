@@ -69,7 +69,7 @@ public class ModelFormatter
 		}
 		return gene_expr;
 	}
-	Vector< Double > parseGeneExpressionDataSPOT( File file, Model model )
+	Vector< Double > parseGeneExpressionDataSPOT( File file, Model model, boolean originalSPOT )
 	{
 		Vector< Double > gene_expr = new Vector< Double >();
 		if( file == null || !file.exists() )
@@ -112,16 +112,28 @@ public class ModelFormatter
 				};
 				Double parse_expr = new Double( parser.getValue() );
 				
-				if( !LocalConfig.getInstance().getConstantBoundsIdList().contains( reaction.getId() ) )
+				if( originalSPOT )
 				{
-					reaction.setLowerBound( reaction.getLowerBound() < 0.0 ? Double.NEGATIVE_INFINITY : 0.0 );
-					reaction.setUpperBound( reaction.getUpperBound() > 0.0 ? Double.POSITIVE_INFINITY : 0.0 );
-				}
-				
-				if( parse_expr.isInfinite() || reaction.getReversible().toLowerCase().equals( "true" ) )
-					gene_expr.add( 0.0 );
+					if( !LocalConfig.getInstance().getConstantBoundsIdList().contains( reaction.getId() ) )
+					{
+						reaction.setLowerBound( reaction.getLowerBound() < 0.0 ? Double.NEGATIVE_INFINITY : 0.0 );
+						reaction.setUpperBound( reaction.getUpperBound() > 0.0 ? Double.POSITIVE_INFINITY : 0.0 );
+					}
+					
+					if( parse_expr.isInfinite() || reaction.getReversible().toLowerCase().equals( "true" ) )
+						gene_expr.add( 0.0 );
+					else
+						gene_expr.add( parse_expr );
+					}
 				else
-					gene_expr.add( parse_expr );
+				{
+					if( !parse_expr.isInfinite() && reaction.getLowerBound() >= 0.0 )
+						gene_expr.add( parse_expr );
+					else if( !parse_expr.isInfinite() && reaction.getUpperBound() <= 0.0 )
+						gene_expr.add( -parse_expr );
+					else
+						gene_expr.add( 0.0 );
+				}
 			}
 			
 			model.setReactions( model.getReactions() );

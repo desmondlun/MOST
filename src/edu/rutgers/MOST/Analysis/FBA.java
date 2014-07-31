@@ -6,7 +6,7 @@ import edu.rutgers.MOST.optimization.solvers.SolverFactory;
 
 public class FBA extends Analysis
 {
-	protected LinearSolver linearSolver = SolverFactory.createLinearSolver();
+	protected LinearSolver linearSolver = SolverFactory.createFBASolver();
 	
 	public FBA()
 	{

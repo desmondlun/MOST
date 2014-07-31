@@ -16,4 +16,9 @@ public interface NonlinearSolver extends Solver
 	 * @return The optimized values
 	 */
 	abstract double optimize( ArrayList< Double > x0 );
+	
+	/**
+	 * Adds the normalize constraint such that ||v|| <= 1
+	 */
+	abstract void addNormalizeConstraint();
 }

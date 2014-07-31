@@ -7,7 +7,7 @@ import edu.rutgers.MOST.presentation.GraphicalInterface;
 
 public class Eflux2 extends Analysis
 {	
-	private LinearSolver linearSolver = SolverFactory.createLinearSolver();
+	private LinearSolver linearSolver = SolverFactory.createFBASolver();
 	
  	public Eflux2()
 	{
