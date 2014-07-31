@@ -47,7 +47,23 @@ public class SPOT extends Analysis
 		nonlinearSolver.setSolverComponent( linearSolver.getSolverComponent() );
 		nonlinearSolver.setGeneExpr( geneExpr );
 		nonlinearSolver.optimize( super.run() );
-		return nonlinearSolver.getSoln();
+		
+		ArrayList< Double > optimizedFluxes = nonlinearSolver.getSoln();
+		
+		Double v_length = 0.0;
+		Double g_length = 0.0;
+		Double g_dot_v = 0.0;
+		for( int j = 0; j < optimizedFluxes.size(); ++j )
+		{
+			g_dot_v += geneExpr.get( j ) * optimizedFluxes.get( j );
+			v_length += optimizedFluxes.get( j ) * optimizedFluxes.get( j );
+			g_length += geneExpr.get( j ) * geneExpr.get( j );
+		}
+		v_length = Math.sqrt( v_length );
+		g_length = Math.sqrt( g_length );
+		this.maxObj = g_dot_v / (v_length*g_length);
+		
+		return optimizedFluxes;
 	}
 
 	@Override

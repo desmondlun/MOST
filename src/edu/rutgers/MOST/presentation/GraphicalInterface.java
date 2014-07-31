@@ -1744,6 +1744,8 @@ public class GraphicalInterface extends JFrame {
         spotItem.setMnemonic( KeyEvent.VK_S );
         
         spotItem.addActionListener( new AnalysisCommonActionListener(){
+        	private Double maxObj = 0.0;
+        	
 			@Override
 			protected ArrayList< Double > analysisPart( Model model ) throws Exception
 			{
@@ -1754,7 +1756,9 @@ public class GraphicalInterface extends JFrame {
 				// JScrollPane scrollPaneGene = new JScrollPane();
 				// tabbedPane.addTab("Genes", scrollPaneGene);
 				// tabbedPane.repaint();
-				return spot.run();
+				ArrayList< Double > soln = spot.run();
+				maxObj = spot.getMaxObj();
+				return soln;
 			}
 
 			@Override
@@ -1766,7 +1770,7 @@ public class GraphicalInterface extends JFrame {
 				outputText.append( model.getNumMetabolites()
 						+ " metabolites, " + model.getNumReactions()
 						+ " reactions\n" );
-										
+				outputText.append( "SPOT value: " + maxObj + "\n" );
 				outputText.append("MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() + "\n" );
 				outputText.append("Nonlinear solver = " + GraphicalInterface.getNonlinearSolverName() + "\n" );
 			}
