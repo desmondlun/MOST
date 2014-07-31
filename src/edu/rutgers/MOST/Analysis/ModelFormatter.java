@@ -1,6 +1,7 @@
 package edu.rutgers.MOST.Analysis;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashMap;
 import java.util.List;
@@ -15,11 +16,13 @@ import edu.rutgers.MOST.data.SBMLReaction;
 
 public class ModelFormatter
 {
-	public Vector< Double > formatFluxBoundsfromGeneExpressionData( File file, Model model )
+	public Vector< Double > formatFluxBoundsfromGeneExpressionData( File file, Model model ) throws FileNotFoundException
 	{		
 		Vector< Double > gene_expr = new Vector< Double >();
 		if( file == null || !file.exists() )
-			return gene_expr;
+		{
+			throw new FileNotFoundException( "formatFluxBoundsfromGeneExpressionData" );
+		}
 		try
 		{
 			
@@ -69,11 +72,11 @@ public class ModelFormatter
 		}
 		return gene_expr;
 	}
-	Vector< Double > parseGeneExpressionDataSPOT( File file, Model model, boolean originalSPOT )
+	Vector< Double > parseGeneExpressionDataSPOT( File file, Model model, boolean originalSPOT ) throws Exception
 	{
 		Vector< Double > gene_expr = new Vector< Double >();
 		if( file == null || !file.exists() )
-			return gene_expr;
+			throw new FileNotFoundException( "parseGeneExpressionDataSPOT" );
 		try
 		{
 			

@@ -20,7 +20,7 @@ public class SPOT extends Analysis
 		super();
 	}
 
-	public ArrayList< Double > run()
+	public ArrayList< Double > run() throws Exception
 	{
 		boolean usingNormalSPOT = false;
 		for( SBMLReaction reaction : model.getReactions() )

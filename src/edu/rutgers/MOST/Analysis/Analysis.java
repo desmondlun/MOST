@@ -83,7 +83,7 @@ public abstract class Analysis
 		this.setObjective();
 	}
 	
-	public ArrayList< Double > run()
+	public ArrayList< Double > run() throws Exception
 	{
 		this.setSolverParameters();
 		this.maxObj = this.getSolver().optimize();

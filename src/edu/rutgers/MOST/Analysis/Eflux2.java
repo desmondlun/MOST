@@ -14,7 +14,7 @@ public class Eflux2 extends Analysis
 		super();
 	}
  	
- 	public ArrayList< Double > run()
+ 	public ArrayList< Double > run() throws Exception
  	{
  		ModelFormatter modelFormatter = new ModelFormatter();
  		modelFormatter.formatFluxBoundsfromGeneExpressionData( GraphicalInterface.chooseCSVFile( "Load Gene Expressions" ), this.model );

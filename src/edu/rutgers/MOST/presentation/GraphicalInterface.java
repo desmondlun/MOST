@@ -1429,7 +1429,15 @@ public class GraphicalInterface extends JFrame {
 
 				// Begin optimization
 				Model model = new Model();
-				ArrayList< Double > soln = analysisPart( model );
+				ArrayList< Double > soln = null;
+				try
+				{
+					soln = analysisPart( model );
+				}
+				catch( Exception e )
+				{
+					return;
+				}
 				//End optimization
 
 				ReactionFactory rFactory = new ReactionFactory("SBML");
@@ -1485,7 +1493,7 @@ public class GraphicalInterface extends JFrame {
 			 * @param model The data model used for this problem
 			 * @return The vector of optimized fluxes
 			 */
-			protected abstract ArrayList< Double > analysisPart( Model model );
+			protected abstract ArrayList< Double > analysisPart( Model model ) throws Exception;
 			
 			/**
 			 * This is output portion that runs after the optimization.
@@ -1519,7 +1527,7 @@ public class GraphicalInterface extends JFrame {
 			private	Double maxObj = 0.0;
 			
 			@Override
-			protected ArrayList< Double > analysisPart( Model model )
+			protected ArrayList< Double > analysisPart( Model model ) throws Exception
 			{
 				getFbaDialog().setVisible(true);
 				FBA fba = new FBA();
@@ -1703,7 +1711,7 @@ public class GraphicalInterface extends JFrame {
 			private	Double maxObj = 0.0;
 			
 			@Override
-			protected ArrayList< Double > analysisPart( Model model )
+			protected ArrayList< Double > analysisPart( Model model ) throws Exception
 			{
 				Eflux2 eflux2 = new Eflux2();
 				eflux2.setModel(model);
@@ -1737,7 +1745,7 @@ public class GraphicalInterface extends JFrame {
         
         spotItem.addActionListener( new AnalysisCommonActionListener(){
 			@Override
-			protected ArrayList< Double > analysisPart( Model model )
+			protected ArrayList< Double > analysisPart( Model model ) throws Exception
 			{
 				SPOT spot = new SPOT();
 				spot.setModel( model );
