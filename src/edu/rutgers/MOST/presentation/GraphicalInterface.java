@@ -925,7 +925,7 @@ public class GraphicalInterface extends JFrame {
 		isRoot = true;
 		
 		enableSaveItems(false);
-		setEnableAnalysisMenuItems( false );
+		//setEnableAnalysisMenuItems( false );
 
 		// Tree Panel
 		treePanel = new DynamicTreePanel(new DynamicTree() {
