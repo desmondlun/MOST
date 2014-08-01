@@ -68,68 +68,26 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 	@Override
 	public double optimize()
 	{
-		if( startingPoint.size() == 0 )
-			for( int j = 0; j < component.variableCount(); ++j )
-				startingPoint.add( 0.0 );
-		
 		int constraintCount = component.constraintCount() + (usingNormalConstraint? 1 : 0 );
-		double[] x_L = new double[ component.variableCount() ];
-		double[] x_U = new double[ component.variableCount() ];
-		double[] g_L = new double[ constraintCount ];
-		double[] g_U = new double[ constraintCount ];
 		
-		for( int j = 0; j < component.variableCount(); ++j )
-		{
-			x_L[ j ] = component.getVariable( j ).lb;
-			x_U[ j ] = component.getVariable( j ).ub;
-		}
-		
-		for( int i = 0; i < component.constraintCount(); ++i )
-		{
-			switch( component.getConstraint( i ).type )
-			{
-			case LESS_EQUAL:
-				g_L[ i ] = Double.NEGATIVE_INFINITY;
-				g_U[ i ] = component.getConstraint( i ).value;
-				break;
-			case EQUAL:
-				g_L[ i ] = component.getConstraint( i ).value;
-				g_U[ i ] = component.getConstraint( i ).value;
-				break;
-			case GREATER_EQUAL:
-				g_L[ i ] = component.getConstraint( i ).value;
-				g_U[ i ] = Double.POSITIVE_INFINITY;
-				break;
-			}
-		}
-		
-		if( this.usingNormalConstraint )
-		{
-			g_L[ component.constraintCount() ] = 0.0;
-			g_U[ component.constraintCount() ] = 1.0;
-		}
-		
-		this.create( component.variableCount(), x_L, x_U, constraintCount, g_L, g_U,
+		this.create( component.variableCount(), constraintCount,
 				constraintCount * component.variableCount(), component.variableCount() * component.variableCount(), Ipopt.C_STYLE );
 		
-		double[] vars = new double[ component.variableCount() ];
-		for( int j = 0; j < vars.length; ++j )
-			vars[ j ] = (this.usingNormalConstraint? 0.0: startingPoint.get( j ) );
-		
-		this.addNumOption( KEY_OBJ_SCALING_FACTOR, -1.0 );
-		this.addIntOption( "mumps_mem_percent", 500 );
-		this.addIntOption( KEY_MAX_ITER, 30000 );
-		this.addStrOption( KEY_HESSIAN_APPROXIMATION, "limited-memory" );
+		this.setNumericOption( KEY_OBJ_SCALING_FACTOR, -1.0 );
+		this.setIntegerOption( "mumps_mem_percent", 500 );
+		this.setIntegerOption( KEY_MAX_ITER, 30000 );
+		this.setStringOption( KEY_HESSIAN_APPROXIMATION, "limited-memory" );
 		//this.addNumOption( KEY_ACCEPTABLE_TOL, 1e-9 );
-		this.solve( vars );
+		this.OptimizeNLP();
+		
+		for( double d : this.getState() )
+			soln.add( d );
 		
 		double value = 0.0;
 		if( objCoefs.size() != 0 )
-		for( int j = 0; j < component.variableCount(); ++j )
-			value += objCoefs.get( j ) * vars[ j ];
+			for( int j = 0; j < component.variableCount(); ++j )
+				value += objCoefs.get( j ) * soln.get( j );
 		
-		for( double d : vars )
-			soln.add( d );
 		return value;
 	}
 
@@ -188,7 +146,58 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 		this.startingPoint = x0;
 		return optimize();
 	}
-
+	
+    protected boolean get_starting_point(int n, boolean init_x, double[] x,
+            boolean init_z, double[] z_L, double[] z_U,
+            int m, boolean init_lambda,double[] lambda){
+      
+    	if( this.startingPoint.size() == 0 )
+    		for( int j = 0; j < component.variableCount(); ++j )
+				startingPoint.add( 0.0 );
+    	
+    	for( int j = 0; j < component.variableCount(); ++j )
+			x[ j ] = (this.usingNormalConstraint? 0.0: startingPoint.get( j ) );
+        
+        return true;
+    }
+	
+	 protected boolean get_bounds_info(int n, double[] x_L, double[] x_U,
+	            int m, double[] g_L, double[] g_U){
+		
+		for( int j = 0; j < component.variableCount(); ++j )
+		{
+			x_L[ j ] = component.getVariable( j ).lb;
+			x_U[ j ] = component.getVariable( j ).ub;
+		}
+		
+		for( int i = 0; i < component.constraintCount(); ++i )
+		{
+			switch( component.getConstraint( i ).type )
+			{
+			case LESS_EQUAL:
+				g_L[ i ] = Double.NEGATIVE_INFINITY;
+				g_U[ i ] = component.getConstraint( i ).value;
+				break;
+			case EQUAL:
+				g_L[ i ] = component.getConstraint( i ).value;
+				g_U[ i ] = component.getConstraint( i ).value;
+				break;
+			case GREATER_EQUAL:
+				g_L[ i ] = component.getConstraint( i ).value;
+				g_U[ i ] = Double.POSITIVE_INFINITY;
+				break;
+			}
+		}
+		
+		if( this.usingNormalConstraint )
+		{
+			g_L[ component.constraintCount() ] = 0.0;
+			g_U[ component.constraintCount() ] = 1.0;
+		}
+		
+		return true;
+	 }
+	
 	@Override
 	public void addNormalizeConstraint()
 	{
