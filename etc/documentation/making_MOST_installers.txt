@@ -1,8 +1,8 @@
 1. Change version in about box - GraphicalInterfaceConstants.ABOUT_BOX_VERSION_TEXT
 
 2. Create a folder MOST_distXXXXXX where XXXXXX is the date.  The etc folder, ModelCollection.csv,
-dll's, README, and SOURCES must be placed in this folder. The backup folder and documentation folder 
-should be removed from etc.
+README, and SOURCES must be placed in this folder. The backup folder and documentation folder 
+should be removed from etc folder.
 Create folder named lib in this folder and copy linux, mac, win32 and win64 folders in lib folder into this folder.
 
 Note if Project is loaded through git into Eclipse, you will not be able to make an executable jar.

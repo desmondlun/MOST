@@ -1529,7 +1529,7 @@ public class GraphicalInterface extends JFrame {
 			@Override
 			protected ArrayList< Double > analysisPart( Model model ) throws Exception
 			{
-				getFbaDialog().setVisible(true);
+				//getFbaDialog().setVisible(true);
 				FBA fba = new FBA();
 				fba.setModel(model);
 				ArrayList< Double > soln = fba.run();
