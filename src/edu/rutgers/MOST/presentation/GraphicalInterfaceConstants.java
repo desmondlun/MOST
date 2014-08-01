@@ -348,7 +348,7 @@ public class GraphicalInterfaceConstants {
     // about
     public static final String ABOUT_BOX_TITLE = "About MOST";
     public static final String ABOUT_BOX_TEXT = "MOST - Metabolic Optimization and Simulation Tool.";	
-    public static final String ABOUT_BOX_VERSION_TEXT = "Version: alpha-9";
+    public static final String ABOUT_BOX_VERSION_TEXT = "Version: alpha-10";
     
     public static final String ABOUT_LICENSE_URL = "http://most.ccib.rutgers.edu/help.html#about";
     
@@ -492,7 +492,7 @@ public class GraphicalInterfaceConstants {
     public static final String GDBB_PREFIX = "GDBB_";
     
     // Note: name must contain an "N" since keyboard shortcut is "N"
-    public static final String SET_ALL_BOUNDS_NOT_CONSTANT = "Set All Bounds Not Constant";
+    public static final String SET_ALL_BOUNDS_NOT_CONSTANT = "Reset Bounds to Mutable";
     
 }
 
