@@ -1637,6 +1637,7 @@ public class GraphicalInterface extends JFrame {
 
         		timeCount = 0;
         		dotCount = 0;
+        		gdbbStopped = false;
 
         		try {
         			GDBBDialog gdbbDialog = new GDBBDialog();
