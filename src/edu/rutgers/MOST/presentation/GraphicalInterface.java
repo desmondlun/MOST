@@ -3651,6 +3651,7 @@ public class GraphicalInterface extends JFrame {
 	}
 	
 	public void saveCSVWithInterface() {
+		saveFile = true;
 		updateCSVSaveInterface();
 		getCSVSaveInterface().setVisible(true);
 	}
@@ -3677,10 +3678,19 @@ public class GraphicalInterface extends JFrame {
 	}
 	
 	ActionListener okButtonCSVSaveActionListener = new ActionListener() {
-		public void actionPerformed(ActionEvent ae) {	
+		public void actionPerformed(ActionEvent ae) {
+			String metabPath = getCSVSaveInterface().metabolitesPath();
+			String reacPath = getCSVSaveInterface().reactionsPath();
 			getCSVSaveInterface().setVisible(false);
-			getCSVSaveInterface().dispose();	
-			
+			getCSVSaveInterface().dispose();
+			if (metabPath != null && metabPath.length() > 0) {
+				File f1 = new File(metabPath);
+				saveMetabolitesTextFile(f1.getPath(), f1.getName());
+			}
+			if (reacPath != null && reacPath.length() > 0) {
+				File f2 = new File(reacPath);
+				saveReactionsTextFile(f2.getPath(), f2.getName());
+			}
 		}
 	}; 
 
@@ -3716,6 +3726,9 @@ public class GraphicalInterface extends JFrame {
 
 		setUpTables();
 		setFileType(GraphicalInterfaceConstants.CSV_FILE_TYPE);
+		LocalConfig.getInstance().metabolitesTableChanged = false;
+		curSettings.add("LastCSV", path);
+		curSettings.add("LastCSVMetabolites", path);
 	}
 
 	public void saveMetabolitesTextFileChooser() {
@@ -3805,6 +3818,9 @@ public class GraphicalInterface extends JFrame {
 			
 			setUpTables();
 			setFileType(GraphicalInterfaceConstants.CSV_FILE_TYPE);
+			LocalConfig.getInstance().reactionsTableChanged = false;
+			curSettings.add("LastCSV", path);
+			curSettings.add("LastCSVReactions", path);
 		}	
 		saveOptFile = false;
 	}
@@ -6397,7 +6413,6 @@ public class GraphicalInterface extends JFrame {
 			int viewRow = reactionsTable.convertRowIndexToModel(getCurrentReactionsRow());
 //			int viewRow = reactionsTable.convertRowIndexToModel(reactionsTable.getSelectedRow());
 			int id = (Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
-			System.out.println(id);
 			String oldValue = (String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 			reactionEditor.setReactionEquation(reactionEditor.reactionArea.getText());
 			reactionsTable.getModel().setValueAt(reactionEditor.getReactionEquation(), viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);

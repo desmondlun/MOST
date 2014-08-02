@@ -189,6 +189,7 @@ public class CSVSaveInterface  extends JDialog {
 				Utilities u = new Utilities();
 				// if path is null or does not exist, default used, else last path used		
 				fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));	
+				fileChooser.setApproveButtonText("Save");
 				
 				//... Open a file dialog.
 				int retval = fileChooser.showOpenDialog(output);
@@ -196,24 +197,10 @@ public class CSVSaveInterface  extends JDialog {
 					//... The user selected a file, get it, use it.          	
 					File file = fileChooser.getSelectedFile();
 					String rawPathName = file.getAbsolutePath();
-					GraphicalInterface.curSettings.add("LastCSV", rawPathName);
-					GraphicalInterface.curSettings.add("LastCSVMetabolites", rawPathName);
-
-					String rawFilename = file.getName();
-					String filename = rawFilename.substring(0, rawFilename.length() - 4); 
-					
-					String path = file.getPath();
-					if (!path.endsWith(".csv")) {
-						JOptionPane.showMessageDialog(null,                
-								"Not a Valid CSV File.",                
-								"Invalid CSV File",                                
-								JOptionPane.ERROR_MESSAGE);
-					} else {
-						textMetabField.setText(path);
-						if (!LocalConfig.getInstance().hasReactionsFile) {
-							LocalConfig.getInstance().setModelName(filename);
-						}						
+					if (!rawPathName.endsWith(".csv")) {
+						rawPathName = rawPathName + ".csv";
 					}
+					textMetabField.setText(rawPathName);
 				}				
 			}
 		};
@@ -229,6 +216,7 @@ public class CSVSaveInterface  extends JDialog {
 				Utilities u = new Utilities();
 				// if path is null or does not exist, default used, else last path used		
 				fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));	
+				fileChooser.setApproveButtonText("Save");
 				
 				//... Open a file dialog.
 				int retval = fileChooser.showOpenDialog(output);
@@ -236,22 +224,10 @@ public class CSVSaveInterface  extends JDialog {
 					//... The user selected a file, get it, use it.          	
 					File file = fileChooser.getSelectedFile();
 					String rawPathName = file.getAbsolutePath();
-					GraphicalInterface.curSettings.add("LastCSV", rawPathName);
-					GraphicalInterface.curSettings.add("LastCSVReactions", rawPathName);
-					
-					String rawFilename = file.getName();
-					String filename = rawFilename.substring(0, rawFilename.length() - 4); 
-					
-					String path = file.getPath();
-					if (!path.endsWith(".csv")) {
-						JOptionPane.showMessageDialog(null,                
-								"Not a Valid CSV File.",                
-								"Invalid CSV File",                                
-								JOptionPane.ERROR_MESSAGE);
-					} else {
-						textReacField.setText(path);
-						LocalConfig.getInstance().setModelName(filename);
+					if (!rawPathName.endsWith(".csv")) {
+						rawPathName = rawPathName + ".csv";
 					}
+					textReacField.setText(rawPathName);
 				}				
 			}
 		};
@@ -295,6 +271,14 @@ public class CSVSaveInterface  extends JDialog {
 	
 	public void updateReactionsPath(String path) {
 		textReacField.setText(path);
+	}
+	
+	public String metabolitesPath() {
+		return textMetabField.getText();
+	}
+	
+	public String reactionsPath() {
+		return textReacField.getText();
 	}
 	
 	public static void main(String[] args) throws Exception {

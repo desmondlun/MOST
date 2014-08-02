@@ -155,15 +155,18 @@ public class TextReactionsWriter {
 				
 				String metaString = "";
 				String value = " ";
-				for (int i = 0; i < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); i++) {
-					if (GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length + i)!= null) {
-						if (GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length + i).toString().length() > 0) {
-							value = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length + i);
-						} else {
-							value = " ";
+				
+				if (LocalConfig.getInstance().getReactionsMetaColumnNames().size() > 0) {
+					for (int i = 0; i < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); i++) {
+						if (GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length + i)!= null) {
+							if (GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length + i).toString().length() > 0) {
+								value = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length + i);
+							} else {
+								value = " ";
+							}
 						}
+						metaString += value + "\t";
 					}
-					metaString += value + "\t";
 				}
 				
 				if (metaString.length() > 0) {

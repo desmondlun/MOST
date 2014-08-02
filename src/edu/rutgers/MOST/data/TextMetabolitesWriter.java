@@ -81,15 +81,17 @@ public class TextMetabolitesWriter {
 
 				String metaString = "";
 				String value = " ";
-				for (int i = 0; i < LocalConfig.getInstance().getMetabolitesMetaColumnNames().size(); i++) {
-					if (GraphicalInterface.metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length + i)!= null) {
-						if (GraphicalInterface.metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length + i).toString().length() > 0) {
-							value = (String) GraphicalInterface.metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length + i);
-						} else {
-							value = " ";
+				if (LocalConfig.getInstance().getMetabolitesMetaColumnNames().size() > 0) {
+					for (int i = 0; i < LocalConfig.getInstance().getMetabolitesMetaColumnNames().size(); i++) {
+						if (GraphicalInterface.metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length + i)!= null) {
+							if (GraphicalInterface.metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length + i).toString().length() > 0) {
+								value = (String) GraphicalInterface.metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length + i);
+							} else {
+								value = " ";
+							}
 						}
+						metaString += value + "\t";
 					}
-					metaString += value + "\t";
 				}
 
 				if (metaString.length() > 0) {
