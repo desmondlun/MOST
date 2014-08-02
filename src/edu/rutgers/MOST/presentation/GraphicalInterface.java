@@ -1677,7 +1677,8 @@ public class GraphicalInterface extends JFrame {
         				}
         			});	
 
-        			ActionListener startButtonActionListener = new ActionListener() {
+
+        			gdbbDialog.startButton.addActionListener(new ActionListener() {
         				public void actionPerformed(ActionEvent prodActionEvent) {
         					gdbbStopped = false;       				
         					// check if all entries are valid
@@ -1738,17 +1739,14 @@ public class GraphicalInterface extends JFrame {
         						gdbbProcessed = false;
         					}       				
         				}
-        			};
+        			});
 
-        			gdbbDialog.startButton.addActionListener(startButtonActionListener);
 
-        			ActionListener stopButtonActionListener = new ActionListener() {
+        			gdbbDialog.stopButton.addActionListener(new ActionListener() {
         				public void actionPerformed(ActionEvent prodActionEvent) {
         					stopGDBBAction();
         				}
-        			};
-
-        			gdbbDialog.stopButton.addActionListener(stopButtonActionListener);
+        			});
         			gdbbDialog.setVisible(true);
         		} catch (Exception e) {
         			
@@ -10878,7 +10876,7 @@ public class GraphicalInterface extends JFrame {
 
 			//                log.debug("create an optimize");
 			gdbb = new GDBB();
-			GDBB.intermediateSolution.clear();
+			GDBB.getintermediateSolution().clear();
 
 			gdbb.setGDBBModel(model);
 			gdbb.start();
@@ -10890,11 +10888,11 @@ public class GraphicalInterface extends JFrame {
 
 			int index = 1;
 			try {
-				while (gdbb.isAlive() || GDBB.intermediateSolution.size() > 0) {
+				while (gdbb.isAlive() || GDBB.getintermediateSolution().size() > 0) {
 					try {
-						if (GDBB.intermediateSolution.size() > 0) {
+						if (GDBB.getintermediateSolution().size() > 0) {
 							// need to lock if process is busy
-							solution = GDBB.intermediateSolution.poll();
+							solution = GDBB.getintermediateSolution().poll();
 							solutionName = optimizeName + "_" + Double.toString(solution.getObjectiveValue());
 							//listModel.addElement(solutionName);
 							solution.setSolutionName(solutionName);					
@@ -10992,14 +10990,13 @@ public class GraphicalInterface extends JFrame {
 							getGdbbDialog().selectIndefiniteTimeButton();
 							// fixes bug where column header not aligned with columns when gdbb closes
 							reactionsTable.repaint();
-							gdbb.getSolver().setAbort(false);
 						}
 					} catch (Exception e) {
 						JOptionPane.showMessageDialog(null,                
 								"Solver Error.",                
 								"Error",                                
 								JOptionPane.ERROR_MESSAGE);
-						//e.printStackTrace();
+						e.printStackTrace();
 					}
 				}
 			} catch (Exception e) {
@@ -11227,7 +11224,7 @@ public class GraphicalInterface extends JFrame {
 	}
 	
 	// used when stop button or finite time stops GDBB
-	public void stopGDBBAction() {
+	public synchronized void stopGDBBAction() {
 		gdbbTask.getGdbb().stopGDBB();
 		getGdbbDialog().stopButton.setEnabled(false);
 		gdbbStopped = true;

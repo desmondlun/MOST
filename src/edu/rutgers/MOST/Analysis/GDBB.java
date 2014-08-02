@@ -28,7 +28,7 @@ public class GDBB extends Thread {
 //  public static ArrayList<Double> objIntermediate;
 //  public static ArrayList<double[]> knockoutVectors;
 
-	public static Queue<Solution> intermediateSolution;
+	private static Queue<Solution> intermediateSolution;
 	/*        Ma:
 	 *        [I(n, n) 0(n, n) 0(n, n) 0(n, n) 0(n, m) ad.G']
 	 *        [0(n, n) 0(n, n) 0(n, n) I(n, n) 0(n, m) D.G' ]
@@ -62,6 +62,11 @@ public class GDBB extends Thread {
 	private ArrayList<Double> solution;
 
 	private ArrayList<SBMLReaction> reac;
+	
+	public synchronized static Queue<Solution> getintermediateSolution()
+	{
+		return intermediateSolution;
+	}
 
 	public GDBB() {
 		this.setSolver( SolverFactory.createGDBBSolver() );

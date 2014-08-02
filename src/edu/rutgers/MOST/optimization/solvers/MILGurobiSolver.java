@@ -29,7 +29,7 @@ public class MILGurobiSolver extends GurobiSolver
 					else if( this.where == GRB.CB_MIPSOL ) //MIP
 					{
 						// GDBB intermediate solutions
-						GDBB.intermediateSolution.add( new Solution( this
+						GDBB.getintermediateSolution().add( new Solution( this
 								.getDoubleInfo( GRB.CB_MIPSOL_OBJ ), this
 								.getSolution( model.getVars() ) ) );
 						objval = getDoubleInfo( GRB.CB_MIPSOL_OBJ ); 

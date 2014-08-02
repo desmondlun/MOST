@@ -414,7 +414,7 @@ public abstract class GurobiSolver implements MILSolver
 		abort = false;
 	}
 	@Override
-	public void setAbort( boolean abort )
+	public synchronized void setAbort( boolean abort )
 	{
 		this.abort = abort;
 	}

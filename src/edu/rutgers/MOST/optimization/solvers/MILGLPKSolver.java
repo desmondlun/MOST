@@ -37,7 +37,7 @@ public class MILGLPKSolver extends GLPKSolver implements MILSolver, GlpkCallback
 			double[] darray = ArrayUtils.toPrimitive( soln
 					.toArray( new Double[] {} ) );
 			Solution sn = new Solution( objval, darray );
-			GDBB.intermediateSolution.add( sn );
+			GDBB.getintermediateSolution().add( sn );
 		}
 	}
 }
