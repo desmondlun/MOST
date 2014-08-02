@@ -1677,7 +1677,6 @@ public class GraphicalInterface extends JFrame {
         				}
         			});	
 
-
         			gdbbDialog.startButton.addActionListener(new ActionListener() {
         				public void actionPerformed(ActionEvent prodActionEvent) {
         					gdbbStopped = false;       				
@@ -1740,7 +1739,6 @@ public class GraphicalInterface extends JFrame {
         					}       				
         				}
         			});
-
 
         			gdbbDialog.stopButton.addActionListener(new ActionListener() {
         				public void actionPerformed(ActionEvent prodActionEvent) {
@@ -10846,7 +10844,7 @@ public class GraphicalInterface extends JFrame {
 	}
 	
 	class GDBBTask extends SwingWorker<Void, Solution> {
-		private GDBB gdbb;
+		private GDBB gdbb = new GDBB();
 		private GDBBModel model;
 		private ReactionFactory rFactory;
 		private Vector<String> uniqueGeneAssociations;
@@ -10874,12 +10872,10 @@ public class GraphicalInterface extends JFrame {
  
 			setOutputText( new StringBuffer() );
 
-			//                log.debug("create an optimize");
-			gdbb = new GDBB();
 			GDBB.getintermediateSolution().clear();
 
-			gdbb.setGDBBModel(model);
-			gdbb.start();
+			this.getGdbb().setGDBBModel(model);
+			this.getGdbb().start();
 
 			knockoutOffset = 4*model.getNumReactions() + model.getNumMetabolites();
 
@@ -10888,7 +10884,7 @@ public class GraphicalInterface extends JFrame {
 
 			int index = 1;
 			try {
-				while (gdbb.isAlive() || GDBB.getintermediateSolution().size() > 0) {
+				while (this.getGdbb().isAlive() || GDBB.getintermediateSolution().size() > 0) {
 					try {
 						if (GDBB.getintermediateSolution().size() > 0) {
 							// need to lock if process is busy
@@ -10897,8 +10893,7 @@ public class GraphicalInterface extends JFrame {
 							//listModel.addElement(solutionName);
 							solution.setSolutionName(solutionName);					
 							solution.setDatabaseName(optimizeName);
-							solution.setIndex(index);
-							index += 1;
+							solution.setIndex(index++);
 							publish(solution);
 							
 							// copy models, run optimization on these model
@@ -11005,7 +11000,7 @@ public class GraphicalInterface extends JFrame {
 			return null;
 		}
 
-		public GDBB getGdbb() {
+		public synchronized GDBB getGdbb() {
 			return gdbb;
 		}
 
@@ -11055,7 +11050,7 @@ public class GraphicalInterface extends JFrame {
 		protected void done() {
 			try {
 				//System.out.println("GDBB is done!");
-				soln = gdbb.getSolution();
+				soln = this.getGdbb().getSolution();
 
 				if (soln == null || soln.isEmpty())
 					return;
@@ -11089,7 +11084,7 @@ public class GraphicalInterface extends JFrame {
 				getGdbbDialog().selectIndefiniteTimeButton();
 				// fixes bug where column header not aligned with columns when gdbb closes
 				reactionsTable.repaint();
-				gdbb.getSolver().setAbort(false);
+				this.getGdbb().getSolver().setAbort(false);
 				// set table model to be loaded when folder GDBB clicked
 				// this will result in the last solution being loaded when folder clicked
 				LocalConfig.getInstance().getMetabolitesTableModelMap().remove(getOptimizeName());
