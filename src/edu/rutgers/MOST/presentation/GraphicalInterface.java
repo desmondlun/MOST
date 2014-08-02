@@ -3534,6 +3534,7 @@ public class GraphicalInterface extends JFrame {
 	} 
 	
 	public void saveLoadedFile() {
+		saveFile = true;
 		if (!LocalConfig.getInstance().getModelName().equals(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME)) {			
 			// if user has loaded an sbml file, lastsbml will not be null, but must check if file exists
 			// since settings file may not be correct
@@ -3561,45 +3562,27 @@ public class GraphicalInterface extends JFrame {
 			} else if (getFileType().equals(GraphicalInterfaceConstants.CSV_FILE_TYPE)) {
 				// will need a last csv metabolites and last csv reactions in settings
 				//curSettings.get("LastCSV")
-				if (curSettings.get("LastCSVMetabolites") != null && !curSettings.get("LastCSVMetabolites").equals("none") && isRoot) {
-					LocalConfig.getInstance().metabolitesTableChanged = false;
-					File f = new File(curSettings.get("LastCSVMetabolites"));
-					if (f.exists()) {
-						saveMetabolitesTextFile(f.getPath(), f.getName());
+				if (curSettings.get("LastCSVMetabolites") != null && !curSettings.get("LastCSVMetabolites").equals("none") && 
+						curSettings.get("LastCSVReactions") != null && !curSettings.get("LastCSVReactions").equals("none") && isRoot) {
+					File f1 = new File(curSettings.get("LastCSVMetabolites"));
+					File f2 = new File(curSettings.get("LastCSVReactions"));
+					if (f1.exists() && f2.exists()) {
+						saveMetabolitesTextFile(f1.getPath(), f1.getName());
+						saveReactionsTextFile(f2.getPath(), f2.getName());
+						LocalConfig.getInstance().metabolitesTableChanged = false;
+						LocalConfig.getInstance().reactionsTableChanged = false;
 					} else {
-						saveMetabolitesTextFileChooser();
+						saveCSVWithInterface();
 					}
 				} else {
-					saveMetabolitesTextFileChooser();
-				}
-				if (curSettings.get("LastCSVReactions") != null && !curSettings.get("LastCSVReactions").equals("none") && isRoot) {
-					LocalConfig.getInstance().reactionsTableChanged = false;
-					File f = new File(curSettings.get("LastCSVReactions"));
-					if (f.exists()) {
-						saveReactionsTextFile(f.getPath(), f.getName());
-					} else {
-						saveReactionsTextFileChooser();
-					}
-				} else {
-					// if only metabolites file is loaded, and no changes have been made to
-					// the reactions table, no need for saving empty reactions table
-					if (!curSettings.get("LastCSVReactions").equals("none")) {
-						saveReactionsTextFileChooser();
-					} else if (LocalConfig.getInstance().reactionsTableChanged) {
-						saveReactionsTextFileChooser();
-					}
+					saveCSVWithInterface();
 				}
 			} 
 		} else {
 			// if "untitled" model name - that is file not saved, save default is csv
 			// since it may be very confusing if the model the user just built is rewritten.
 			// with save as csv the model remains unchanged
-			saveFile = true;
-			if (tabbedPane.getSelectedIndex() == 0) {
-				saveReactionsTextFileChooser();
-			} else if (tabbedPane.getSelectedIndex() == 1) {				
-				saveMetabolitesTextFileChooser();
-			}			
+			saveCSVWithInterface();
 		}
 		// fixes bug where if cancel is pressed on file chooser, exit does not work
 		exit = true;
@@ -3662,25 +3645,33 @@ public class GraphicalInterface extends JFrame {
 	
 	class SaveCSVItemAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
-			// If loaded file is of csv type. last csv reactions and metabolites will be correct
-			// for loaded model. Since default file type is csv, if model is untitled, don't want
-			// user to overwrite last loaded csv from a previous session
-			if (getFileType().equals(GraphicalInterfaceConstants.CSV_FILE_TYPE) && !LocalConfig.getInstance().getModelName().equals(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME)) {
-				if (curSettings.get("LastCSVMetabolites") != null && !curSettings.get("LastCSVMetabolites").equals("none")) {
-					getCSVSaveInterface().updateMetabolitesPath(curSettings.get("LastCSVMetabolites"));
-				} else {
-					getCSVSaveInterface().updateMetabolitesPath("");
-				}
-				if (curSettings.get("LastCSVReactions") != null && !curSettings.get("LastCSVReactions").equals("none")) {
-					getCSVSaveInterface().updateReactionsPath(curSettings.get("LastCSVReactions"));
-				} else {
-					getCSVSaveInterface().updateReactionsPath("");
-				}
+			saveCSVWithInterface();
+		}
+	}
+	
+	public void saveCSVWithInterface() {
+		updateCSVSaveInterface();
+		getCSVSaveInterface().setVisible(true);
+	}
+	
+	public void updateCSVSaveInterface() {
+		// If loaded file is of csv type. last csv reactions and metabolites will be correct
+		// for loaded model. Since default file type is csv, if model is untitled, don't want
+		// user to overwrite last loaded csv from a previous session
+		if (getFileType().equals(GraphicalInterfaceConstants.CSV_FILE_TYPE) && !LocalConfig.getInstance().getModelName().equals(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME)) {
+			if (curSettings.get("LastCSVMetabolites") != null && !curSettings.get("LastCSVMetabolites").equals("none")) {
+				getCSVSaveInterface().updateMetabolitesPath(curSettings.get("LastCSVMetabolites"));
 			} else {
 				getCSVSaveInterface().updateMetabolitesPath("");
+			}
+			if (curSettings.get("LastCSVReactions") != null && !curSettings.get("LastCSVReactions").equals("none")) {
+				getCSVSaveInterface().updateReactionsPath(curSettings.get("LastCSVReactions"));
+			} else {
 				getCSVSaveInterface().updateReactionsPath("");
 			}
-			getCSVSaveInterface().setVisible(true);
+		} else {
+			getCSVSaveInterface().updateMetabolitesPath("");
+			getCSVSaveInterface().updateReactionsPath("");
 		}
 	}
 	
@@ -4982,9 +4973,11 @@ public class GraphicalInterface extends JFrame {
 		if (saveEnabled) {
 			enableSaveItems(true);
 		}
-		tabbedPane.setSelectedIndex(0);
-		metabolitesTable.scrollRectToVisible(metabolitesTable.getCellRect(0, 1, false));
-		scrollToLocation(reactionsTable, 0, 1);
+		if (!saveFile) {
+			tabbedPane.setSelectedIndex(0);
+			metabolitesTable.scrollRectToVisible(metabolitesTable.getCellRect(0, 1, false));
+			scrollToLocation(reactionsTable, 0, 1);
+		}
 		
 		try {
 			formulaBar.setText((String) reactionsTable.getModel().getValueAt(0, 1));  
