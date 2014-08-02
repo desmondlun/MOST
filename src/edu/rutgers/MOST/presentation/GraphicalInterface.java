@@ -3662,6 +3662,24 @@ public class GraphicalInterface extends JFrame {
 	
 	class SaveCSVItemAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
+			// If loaded file is of csv type. last csv reactions and metabolites will be correct
+			// for loaded model. Since default file type is csv, if model is untitled, don't want
+			// user to overwrite last loaded csv from a previous session
+			if (getFileType().equals(GraphicalInterfaceConstants.CSV_FILE_TYPE) && !LocalConfig.getInstance().getModelName().equals(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME)) {
+				if (curSettings.get("LastCSVMetabolites") != null && !curSettings.get("LastCSVMetabolites").equals("none")) {
+					getCSVSaveInterface().updateMetabolitesPath(curSettings.get("LastCSVMetabolites"));
+				} else {
+					getCSVSaveInterface().updateMetabolitesPath("");
+				}
+				if (curSettings.get("LastCSVReactions") != null && !curSettings.get("LastCSVReactions").equals("none")) {
+					getCSVSaveInterface().updateReactionsPath(curSettings.get("LastCSVReactions"));
+				} else {
+					getCSVSaveInterface().updateReactionsPath("");
+				}
+			} else {
+				getCSVSaveInterface().updateMetabolitesPath("");
+				getCSVSaveInterface().updateReactionsPath("");
+			}
 			getCSVSaveInterface().setVisible(true);
 		}
 	}

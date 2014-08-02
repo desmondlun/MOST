@@ -38,8 +38,8 @@ public class CSVSaveInterface  extends JDialog {
 	public JButton cancelButton = new JButton("  Cancel  ");
 	public JButton clearMetabButton = new JButton("Clear");
 	public JButton clearReacButton = new JButton("Clear");
-	public final JTextField textMetabField = new JTextField();
-	public final JTextField textReacField = new JTextField();
+	private final JTextField textMetabField = new JTextField();
+	private final JTextField textReacField = new JTextField();
 
 	public CSVSaveInterface() {
 
@@ -47,12 +47,6 @@ public class CSVSaveInterface  extends JDialog {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
 		getRootPane().setDefaultButton(okButton);
-		
-		textMetabField.setText("");
-		textReacField.setText("");
-		
-		LocalConfig.getInstance().hasMetabolitesFile = false;
-		LocalConfig.getInstance().hasReactionsFile = false;
 		
 		//box layout
 		Box vb = Box.createVerticalBox();
@@ -293,22 +287,32 @@ public class CSVSaveInterface  extends JDialog {
 		clearMetabButton.addActionListener(clearMetabButtonActionListener);
 		clearReacButton.addActionListener(clearReacButtonActionListener);
 		
-	} 	
+	} 
+	
+	public void updateMetabolitesPath(String path) {
+		textMetabField.setText(path);
+	}
+	
+	public void updateReactionsPath(String path) {
+		textReacField.setText(path);
+	}
 	
 	public static void main(String[] args) throws Exception {
 
+		//Main will not work unless GraphicalInterface.curSetting lines commented out
+		
 		//based on code from http://stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
-		final ArrayList<Image> icons = new ArrayList<Image>(); 
-		icons.add(new ImageIcon("images/most16.jpg").getImage()); 
-		icons.add(new ImageIcon("images/most32.jpg").getImage());
-
-		CSVSaveInterface frame = new CSVSaveInterface();
-
-		frame.setIconImages(icons);
-		frame.setSize(600, 200);
-		frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
+//		final ArrayList<Image> icons = new ArrayList<Image>(); 
+//		icons.add(new ImageIcon("images/most16.jpg").getImage()); 
+//		icons.add(new ImageIcon("images/most32.jpg").getImage());
+//
+//		CSVSaveInterface frame = new CSVSaveInterface();
+//
+//		frame.setIconImages(icons);
+//		frame.setSize(600, 200);
+//		frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+//		frame.setLocationRelativeTo(null);
+//		frame.setVisible(true);
 	}
 }
 
