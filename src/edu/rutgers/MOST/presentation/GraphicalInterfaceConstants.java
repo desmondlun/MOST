@@ -333,6 +333,10 @@ public class GraphicalInterfaceConstants {
     public static final String CSV_FILE_LOAD_METAB_BUTTON = "Load Metabolites File";
     public static final String CSV_FILE_LOAD_REAC_BUTTON = " Load Reactions File  "; 
     
+    public static final String CSV_FILE_SAVE_INTERFACE_TITLE = "Save As CSV";    
+    public static final String CSV_FILE_SAVE_METAB_BUTTON = "Save Metabolites File";
+    public static final String CSV_FILE_SAVE_REAC_BUTTON = " Save Reactions File  "; 
+    
     // delete optimize database and log files
     public static final String DELETE_ASSOCIATED_FILES_TITLE = "Delete Associated Files?";
     public static final String DELETE_ASSOCIATED_FILES = "Delete Associated log Files?";

@@ -26,14 +26,14 @@ import javax.swing.event.DocumentListener;
 
 import edu.rutgers.MOST.config.LocalConfig;
 
-public class CSVLoadInterface  extends JDialog {
+public class CSVSaveInterface  extends JDialog {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public JButton metabFileButton = new JButton(GraphicalInterfaceConstants.CSV_FILE_LOAD_METAB_BUTTON);
-	public JButton reacFileButton = new JButton(GraphicalInterfaceConstants.CSV_FILE_LOAD_REAC_BUTTON);	
+	public JButton metabFileButton = new JButton(GraphicalInterfaceConstants.CSV_FILE_SAVE_METAB_BUTTON);
+	public JButton reacFileButton = new JButton(GraphicalInterfaceConstants.CSV_FILE_SAVE_REAC_BUTTON);	
 	public JButton okButton = new JButton("    OK    ");
 	public JButton cancelButton = new JButton("  Cancel  ");
 	public JButton clearMetabButton = new JButton("Clear");
@@ -41,9 +41,9 @@ public class CSVLoadInterface  extends JDialog {
 	public final JTextField textMetabField = new JTextField();
 	public final JTextField textReacField = new JTextField();
 
-	public CSVLoadInterface() {
+	public CSVSaveInterface() {
 
-		setTitle(GraphicalInterfaceConstants.CSV_FILE_LOAD_INTERFACE_TITLE);		
+		setTitle(GraphicalInterfaceConstants.CSV_FILE_SAVE_INTERFACE_TITLE);		
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
 		getRootPane().setDefaultButton(okButton);
@@ -128,10 +128,7 @@ public class CSVLoadInterface  extends JDialog {
 			public void enableOKButton() {
 				if (textReacField.getText() != null && textReacField.getText().length() > 0) {
 					okButton.setEnabled(true);
-					LocalConfig.getInstance().hasReactionsFile = true;
-				} else {
-					LocalConfig.getInstance().hasReactionsFile = false;
-				}
+				} 
 				/*
 				if (textMetabField.getText() != null && textMetabField.getText().length() > 0) {
 					okButton.setEnabled(true);
@@ -191,8 +188,8 @@ public class CSVLoadInterface  extends JDialog {
 			public void actionPerformed(ActionEvent prodActionEvent) {
 				JTextArea output = null;
 				JFileChooser fileChooser = new JFileChooser(); 
-				fileChooser.setDialogTitle("Load CSV Metabolite File");
-				fileChooser.setFileFilter(new CSVFileFilter());
+				fileChooser.setDialogTitle("Save CSV Metabolite File");
+				fileChooser.setFileFilter(new CSVFileFilter1());
 				fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 				String lastCSV_path = GraphicalInterface.curSettings.get("LastCSV");
 				Utilities u = new Utilities();
@@ -219,7 +216,6 @@ public class CSVLoadInterface  extends JDialog {
 								JOptionPane.ERROR_MESSAGE);
 					} else {
 						textMetabField.setText(path);
-						LocalConfig.getInstance().setMetabolitesCSVFile(file); 
 						if (!LocalConfig.getInstance().hasReactionsFile) {
 							LocalConfig.getInstance().setModelName(filename);
 						}						
@@ -232,8 +228,8 @@ public class CSVLoadInterface  extends JDialog {
 			public void actionPerformed(ActionEvent prodActionEvent) {
 				JTextArea output = null;
 				JFileChooser fileChooser = new JFileChooser(); 
-				fileChooser.setDialogTitle("Load CSV Reaction File");
-				fileChooser.setFileFilter(new CSVFileFilter());
+				fileChooser.setDialogTitle("Save CSV Reaction File");
+				fileChooser.setFileFilter(new CSVFileFilter1());
 				fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);				
 				String lastCSV_path = GraphicalInterface.curSettings.get("LastCSV");
 				Utilities u = new Utilities();
@@ -260,7 +256,6 @@ public class CSVLoadInterface  extends JDialog {
 								JOptionPane.ERROR_MESSAGE);
 					} else {
 						textReacField.setText(path);
-						LocalConfig.getInstance().setReactionsCSVFile(file);
 						LocalConfig.getInstance().setModelName(filename);
 					}
 				}				
@@ -277,8 +272,6 @@ public class CSVLoadInterface  extends JDialog {
 		ActionListener clearMetabButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
 				textMetabField.setText("");	
-				LocalConfig.getInstance().hasMetabolitesFile = false;
-				LocalConfig.getInstance().setMetabolitesCSVFile(null); 
 				if (textReacField.getText().trim().length() == 0) {
 					okButton.setEnabled(false);
 				}
@@ -288,8 +281,6 @@ public class CSVLoadInterface  extends JDialog {
 		ActionListener clearReacButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
 				textReacField.setText("");
-				LocalConfig.getInstance().hasReactionsFile = false;
-				LocalConfig.getInstance().setReactionsCSVFile(null);
 				if (textMetabField.getText().trim().length() == 0) {
 					okButton.setEnabled(false);
 				}
@@ -311,7 +302,7 @@ public class CSVLoadInterface  extends JDialog {
 		icons.add(new ImageIcon("images/most16.jpg").getImage()); 
 		icons.add(new ImageIcon("images/most32.jpg").getImage());
 
-		CSVLoadInterface frame = new CSVLoadInterface();
+		CSVSaveInterface frame = new CSVSaveInterface();
 
 		frame.setIconImages(icons);
 		frame.setSize(600, 200);
@@ -321,7 +312,7 @@ public class CSVLoadInterface  extends JDialog {
 	}
 }
 
-class CSVFileFilter extends javax.swing.filechooser.FileFilter {
+class CSVFileFilter1 extends javax.swing.filechooser.FileFilter {
     public boolean accept(File f) {
         return f.isDirectory() || f.getName().toLowerCase().endsWith(".csv");
     }
@@ -330,9 +321,4 @@ class CSVFileFilter extends javax.swing.filechooser.FileFilter {
         return ".csv files";
     }
 }
-
-
-
-
-
 

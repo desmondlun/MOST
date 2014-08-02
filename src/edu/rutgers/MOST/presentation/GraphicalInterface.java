@@ -294,8 +294,16 @@ public class GraphicalInterface extends JFrame {
 	// components
 	/*****************************************************************************/		
 
-	private static AboutDialog aboutDialog = new AboutDialog();
+	private static AboutDialog aboutDialog;
 	
+	private static AboutDialog getAboutDialog() {
+		return aboutDialog;
+	}
+
+	private static void setAboutDialog(AboutDialog aboutDialog) {
+		GraphicalInterface.aboutDialog = aboutDialog;
+	}
+
 	private static AddMetaboliteRowsDialog addMetaboliteRowsDialog;
 	
 	public static AddMetaboliteRowsDialog getAddMetaboliteRowsDialog() {
@@ -318,7 +326,25 @@ public class GraphicalInterface extends JFrame {
 		GraphicalInterface.addReactionRowsDialog = addReactionRowsDialog;
 	}
 
-	public final CSVLoadInterface csvLoadInterface = new CSVLoadInterface();
+	private static CSVLoadInterface csvLoadInterface;
+	
+	public static CSVLoadInterface getCSVLoadInterface() {
+		return csvLoadInterface;
+	}
+
+	public static void setCSVLoadInterface(CSVLoadInterface csvLoadInterface) {
+		GraphicalInterface.csvLoadInterface = csvLoadInterface;
+	}
+	
+	private static CSVSaveInterface csvSaveInterface;
+
+	private static CSVSaveInterface getCSVSaveInterface() {
+		return csvSaveInterface;
+	}
+
+	private static void setCSVSaveInterface(CSVSaveInterface csvSaveInterface) {
+		GraphicalInterface.csvSaveInterface = csvSaveInterface;
+	}
 
 	private static FBADialog fbaDialog;
 	
@@ -559,6 +585,7 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem loadExistingItem = new JMenuItem(GraphicalInterfaceConstants.LOAD_FROM_MODEL_COLLECTION_TABLE_TITLE);
 	public final JMenuItem saveItem = new JMenuItem("Save");
 	public final JMenuItem saveSBMLItem = new JMenuItem("Save As SBML");
+	public final JMenuItem saveCSVItem = new JMenuItem("Save As CSV");
 	public final JMenuItem saveCSVMetabolitesItem = new JMenuItem("Save As CSV Metabolites");
 	public final JMenuItem saveCSVReactionsItem = new JMenuItem("Save As CSV Reactions");
 	public final JMenuItem clearItem = new JMenuItem("Clear Tables");
@@ -1023,6 +1050,7 @@ public class GraphicalInterface extends JFrame {
 		progressBar.setVisible(false);
 		progressBar.setAlwaysOnTop(true);
 
+		CSVLoadInterface csvLoadInterface = new CSVLoadInterface();
 		csvLoadInterface.setIconImages(icons);					
 		csvLoadInterface.setSize(600, 200);
 		csvLoadInterface.setResizable(false);
@@ -1030,13 +1058,31 @@ public class GraphicalInterface extends JFrame {
 		csvLoadInterface.setLocationRelativeTo(null);		
 		csvLoadInterface.setVisible(false);	
 		csvLoadInterface.setModal(true);
+		setCSVLoadInterface(csvLoadInterface);
 		csvLoadInterface.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent evt) {
-				csvLoadInterface.setVisible(false);	        	
+				getCSVLoadInterface().setVisible(false);	        	
 			}
 		});			
-		CSVLoadInterface.okButton.addActionListener(okButtonCSVLoadActionListener);
-		CSVLoadInterface.cancelButton.addActionListener(cancelButtonCSVLoadActionListener);
+		getCSVLoadInterface().okButton.addActionListener(okButtonCSVLoadActionListener);
+		getCSVLoadInterface().cancelButton.addActionListener(cancelButtonCSVLoadActionListener);
+		
+		CSVSaveInterface csvSaveInterface = new CSVSaveInterface();
+		csvSaveInterface.setIconImages(icons);					
+		csvSaveInterface.setSize(600, 200);
+		csvSaveInterface.setResizable(false);
+		csvSaveInterface.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		csvSaveInterface.setLocationRelativeTo(null);		
+		csvSaveInterface.setVisible(false);	
+		csvSaveInterface.setModal(true);
+		setCSVSaveInterface(csvSaveInterface);
+		csvSaveInterface.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent evt) {
+				getCSVSaveInterface().setVisible(false);	        	
+			}
+		});			
+		getCSVSaveInterface().okButton.addActionListener(okButtonCSVSaveActionListener);
+		getCSVSaveInterface().cancelButton.addActionListener(cancelButtonCSVSaveActionListener);
 		
 		FBADialog fbaDialog = new FBADialog();
 		// fbaDialog.setSize(300, 160);
@@ -1054,13 +1100,15 @@ public class GraphicalInterface extends JFrame {
 		});	
 		getFbaDialog().okButton.addActionListener(okButtonFBAActionListener);
 		
+		AboutDialog aboutDialog = new AboutDialog();
 		aboutDialog.setIconImages(icons);					
 		aboutDialog.setSize(400, 180);
 		aboutDialog.setResizable(false);
 		aboutDialog.setLocationRelativeTo(null);		
 		aboutDialog.setVisible(false);	
 		aboutDialog.setModal(true);
-		AboutDialog.licenseButton.addActionListener(new OpenUrlAction());
+		setAboutDialog(aboutDialog);
+		getAboutDialog().licenseButton.addActionListener(new OpenUrlAction());
 		
 		File f = new File(ModelCollectionConstants.MODEL_COLLECTION_FILE_NAME);
 		ModelCollectionTable mcTable = new ModelCollectionTable(f);
@@ -1370,6 +1418,10 @@ public class GraphicalInterface extends JFrame {
 		saveSBMLItem.setMnemonic(KeyEvent.VK_B);
 		saveSBMLItem.addActionListener(new SaveSBMLItemAction());
 
+		modelMenu.add(saveCSVItem);
+		saveCSVItem.setMnemonic(KeyEvent.VK_A);
+		saveCSVItem.addActionListener(new SaveCSVItemAction());
+		
 		modelMenu.add(saveCSVMetabolitesItem);
 		saveCSVMetabolitesItem.setMnemonic(KeyEvent.VK_O);
 		saveCSVMetabolitesItem.addActionListener(new SaveCSVMetabolitesItemAction());
@@ -2486,7 +2538,7 @@ public class GraphicalInterface extends JFrame {
 		aboutBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
                 setUrlString(GraphicalInterfaceConstants.ABOUT_LICENSE_URL);
-				aboutDialog.setVisible(true);
+				getAboutDialog().setVisible(true);
 			}    	     
 		});
 
@@ -3207,12 +3259,12 @@ public class GraphicalInterface extends JFrame {
 			saveFile = false;
 			if (openFileChooser) {
 				//setExtension(".csv");	
-				CSVLoadInterface.textMetabField.setText("");
-				CSVLoadInterface.textReacField.setText("");
+				getCSVLoadInterface().textMetabField.setText("");
+				getCSVLoadInterface().textReacField.setText("");
 				LocalConfig.getInstance().setMetabolitesCSVFile(null);
 				LocalConfig.getInstance().hasMetabolitesFile = false;
 				LocalConfig.getInstance().hasReactionsFile = false;
-				CSVLoadInterface.okButton.setEnabled(false);
+				getCSVLoadInterface().okButton.setEnabled(false);
 				csvLoadInterface.setVisible(true);
 			}				
 		}
@@ -3220,8 +3272,8 @@ public class GraphicalInterface extends JFrame {
 
 	ActionListener okButtonCSVLoadActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {	
-			csvLoadInterface.setVisible(false);
-			csvLoadInterface.dispose();	
+			getCSVLoadInterface().setVisible(false);
+			getCSVLoadInterface().dispose();	
 			//loadSetUp();
 			//isCSVFile = true;
 			loadCSV();
@@ -3230,7 +3282,7 @@ public class GraphicalInterface extends JFrame {
 
 	ActionListener cancelButtonCSVLoadActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {	
-			csvLoadInterface.setVisible(false);
+			getCSVLoadInterface().setVisible(false);
 		}
 	};
 
@@ -3607,6 +3659,26 @@ public class GraphicalInterface extends JFrame {
 			saveAsSBML();
 		}
 	}
+	
+	class SaveCSVItemAction implements ActionListener {
+		public void actionPerformed(ActionEvent ae) {
+			getCSVSaveInterface().setVisible(true);
+		}
+	}
+	
+	ActionListener okButtonCSVSaveActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {	
+			getCSVSaveInterface().setVisible(false);
+			getCSVSaveInterface().dispose();	
+			
+		}
+	}; 
+
+	ActionListener cancelButtonCSVSaveActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {	
+			getCSVSaveInterface().setVisible(false);
+		}
+	};
 
 	class SaveCSVMetabolitesItemAction implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {

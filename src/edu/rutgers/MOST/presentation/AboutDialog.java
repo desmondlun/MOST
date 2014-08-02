@@ -20,10 +20,10 @@ public class AboutDialog extends JDialog {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public static JLabel mostLabel = new JLabel(GraphicalInterfaceConstants.ABOUT_BOX_TEXT);
-	public static JLabel versionLabel = new JLabel(GraphicalInterfaceConstants.ABOUT_BOX_VERSION_TEXT);
-	public static JButton licenseButton = new JButton();	
-	public static JButton okButton = new JButton("OK");	
+	public JLabel mostLabel = new JLabel(GraphicalInterfaceConstants.ABOUT_BOX_TEXT);
+	public JLabel versionLabel = new JLabel(GraphicalInterfaceConstants.ABOUT_BOX_VERSION_TEXT);
+	public JButton licenseButton = new JButton();	
+	public JButton okButton = new JButton("OK");	
 	
 	public AboutDialog() {
 		// need to set up box layout
