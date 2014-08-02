@@ -4016,14 +4016,7 @@ public class GraphicalInterface extends JFrame {
 			if (choice == JOptionPane.YES_OPTION)
 			{
 				if (getFileType().equals("csv")) {
-					if (LocalConfig.getInstance().metabolitesTableChanged) {
-						saveMetabolitesTextFileChooser();
-						LocalConfig.getInstance().metabolitesTableChanged = false;
-					}
-					if (LocalConfig.getInstance().reactionsTableChanged) {
-						saveReactionsTextFileChooser();
-						LocalConfig.getInstance().reactionsTableChanged = false;
-					}	
+					saveCSVWithInterface();
 				} else if (getFileType().equals("sbml")) {
 					if (LocalConfig.getInstance().metabolitesTableChanged ||
 							LocalConfig.getInstance().reactionsTableChanged) {
