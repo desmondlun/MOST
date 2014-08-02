@@ -123,15 +123,6 @@ public class CSVSaveInterface  extends JDialog {
 				if (textReacField.getText() != null && textReacField.getText().length() > 0) {
 					okButton.setEnabled(true);
 				} 
-				/*
-				if (textMetabField.getText() != null && textMetabField.getText().length() > 0) {
-					okButton.setEnabled(true);
-					LocalConfig.getInstance().hasMetabolitesFile = true;
-				} else {
-					LocalConfig.getInstance().hasMetabolitesFile = false;
-				}
-				*/
-				//System.out.println("csv load " + LocalConfig.getInstance().hasMetabolitesFile);
 			}
 		});
 		
@@ -190,6 +181,8 @@ public class CSVSaveInterface  extends JDialog {
 				// if path is null or does not exist, default used, else last path used		
 				fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));	
 				fileChooser.setApproveButtonText("Save");
+				File f = new File(metabolitesPath());
+				fileChooser.setSelectedFile(f);
 				
 				//... Open a file dialog.
 				int retval = fileChooser.showOpenDialog(output);
@@ -217,6 +210,8 @@ public class CSVSaveInterface  extends JDialog {
 				// if path is null or does not exist, default used, else last path used		
 				fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));	
 				fileChooser.setApproveButtonText("Save");
+				File f = new File(reactionsPath());
+				fileChooser.setSelectedFile(f);
 				
 				//... Open a file dialog.
 				int retval = fileChooser.showOpenDialog(output);
