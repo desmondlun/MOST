@@ -212,4 +212,12 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 		
 		return true;
 	}
+	@Override
+	public void FVA( ArrayList< Double > objCoefs, Double objVal,
+			ArrayList< Double > min, ArrayList< Double > max,
+			SolverComponent component )
+	{
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -189,7 +189,7 @@ public class QuadraticGurobiSolver implements QuadraticSolver
 			GRBQuadExpr expr = new GRBQuadExpr();
 			for( GRBVar var : quad_model.getVars() ) 
 				expr.addTerm( 1.0, var, var );
-			quad_model.setObjective( expr );
+			quad_model.setObjective( expr, GRB.MINIMIZE );
 			
 			// optimize the model
 			quad_model.optimize();
@@ -213,5 +213,81 @@ public class QuadraticGurobiSolver implements QuadraticSolver
 		}
 		
 		return soln;
+	}
+	@Override
+	public void FVA( ArrayList< Double > objCoefs, Double objVal, ArrayList< Double > min,
+			ArrayList< Double > max, SolverComponent component )
+	{
+		try
+		{
+			GRBEnv quad_env = new GRBEnv();
+			GRBModel quad_model = new GRBModel( quad_env );
+			ArrayList< GRBVar > vars = new ArrayList< GRBVar >();
+			quad_env.set( GRB.DoubleParam.IntFeasTol, 1.0E-9 );
+			quad_env.set( GRB.DoubleParam.FeasibilityTol, 1.0E-9 );
+			quad_env.set( GRB.IntParam.OutputFlag, 0 );
+			
+			// create the variables
+			for( int j = 0; j < component.variableCount(); ++ j )
+			{
+				Variable var = component.getVariable( j );
+
+				vars.add( quad_model.addVar( var.lb, var.ub, 0.0, getGRBVarType( var.type ),
+						null ) );
+			}
+			quad_model.update();
+			
+			// Fv = z extra constraint
+			component.addConstraint( objCoefs, ConType.EQUAL, objVal );
+			
+			// set constraints to Gurobi
+			for( int i = 0; i < component.constraintCount(); ++i )
+			{
+				Constraint constraint = component.getConstraint( i );
+
+				GRBLinExpr expr = new GRBLinExpr();
+				for( int j = 0; j < component.variableCount(); ++j )
+				{
+					expr.addTerm( constraint.getCoefficient( j ), vars.get( j ) );
+				}
+				quad_model.addConstr( expr, getGRBConType( constraint.type ), constraint.value, null );
+			}
+			
+			for( int j = 0; j < component.variableCount(); ++j )
+			{
+				// add the term to the objective expression
+				GRBLinExpr objExpr = new GRBLinExpr();
+				objExpr.addTerm( 1.0, vars.get( j ) );
+				
+				// set the objective to minimize the flux
+				quad_model.setObjective( objExpr, GRB.MINIMIZE );
+				
+				// optimize the model
+				quad_model.optimize();
+				
+				// add to the minimized flux vector
+				min.add( vars.get( j ).get(  GRB.DoubleAttr.X ) );
+				
+				// set the objective to maximize the flux
+				quad_model.setObjective( objExpr, GRB.MAXIMIZE );
+				
+				// optimize the model
+				quad_model.optimize();
+				
+				// add to the maximized flux vector
+				max.add( vars.get( j ).get( GRB.DoubleAttr.X ) );
+			}
+			
+			// remove the extra constraint
+			component.removeConstraint( component.constraintCount() - 1 );
+			
+			// clean up
+			quad_model.dispose();
+			quad_env.dispose();
+		}
+		catch( GRBException e )
+		{
+			promptGRBError( e );
+		}
 	}
 }
