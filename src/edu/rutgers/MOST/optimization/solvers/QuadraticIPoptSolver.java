@@ -14,6 +14,8 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 	private SolverComponent component = new SolverComponentLightWeight();
 	protected ResizableDialog dialog = new ResizableDialog( "Error",
 			"IPopt Quadratic Solver Error", "IPopt Quadratic Solver Error" );
+	private int current = 0;
+	private boolean FVA = false;
 	
 	/**
 	 * Process the stack trace for exceptions or errors
@@ -46,6 +48,7 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 			ArrayList< Double > objCoefs, Double objVal,
 			SolverComponent componentSource )
 	{
+		this.FVA = false;
 		try
 		{
 			// Fv = z extra constraint
@@ -112,10 +115,17 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 	protected boolean eval_f( int n, double[] x, boolean new_x,
 			double[] obj_value )
 	{
-		double value = 0.0;
-		for( int j = 0; j < component.variableCount(); ++j )
-			value += x[ j ] * x[ j ];
-		obj_value[ 0 ] = value;
+		if( FVA )
+		{
+			obj_value[ 0 ] = x[ current ];
+		}
+		else
+		{
+			double value = 0.0;
+			for( int j = 0; j < component.variableCount(); ++j )
+				value += x[ j ] * x[ j ];
+			obj_value[ 0 ] = value;
+		}
 		
 		return true;
 	}
@@ -124,8 +134,16 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 	protected boolean eval_grad_f( int n, double[] x, boolean new_x,
 			double[] grad_f )
 	{
-		for( int j = 0; j < component.variableCount(); ++j )
-			grad_f[ j ] = 2 * x[ j ];
+		if( FVA )
+		{
+			for( int j = 0; j < component.variableCount(); ++j )
+				grad_f[ j ] = (j == this.current ? 0.0 : 1.0);
+		}
+		else
+		{
+			for( int j = 0; j < component.variableCount(); ++j )
+				grad_f[ j ] = 2 * x[ j ];
+		}
 		
 		return true;
 	}
@@ -192,6 +210,9 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 			int nele_hess, int[] iRow, int[] jCol, double[] values )
 	{
 		// The Hessian constraint of the jacobian
+		if( FVA )
+			return true;
+		
 		if( values == null )
 		{
 			// [ x 0 0 0 ]
@@ -212,12 +233,78 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 		
 		return true;
 	}
+	
 	@Override
 	public void FVA( ArrayList< Double > objCoefs, Double objVal,
 			ArrayList< Double > min, ArrayList< Double > max,
 			SolverComponent component )
 	{
-		// TODO Auto-generated method stub
-		
+		this.FVA = true;
+		try
+		{
+			
+			// Fv = z extra constraint
+			component.addConstraint( objCoefs, ConType.EQUAL, objVal );
+			
+			// set up the constraints and variables
+			double[] x_L = new double[ component.variableCount() ];
+			double[] x_U = new double[ component.variableCount() ];
+			double[] g_L = new double[ component.constraintCount() ]; 
+			double[] g_U = new double[ component.constraintCount() ];
+			
+			for( int j = 0; j < component.variableCount(); ++j )
+			{
+				x_L[ j ] = component.getVariable( j ).lb;
+				x_U[ j ] = component.getVariable( j ).ub;
+			}
+			
+			for( int i = 0; i < component.constraintCount(); ++i )
+			{
+				switch( component.getConstraint( i ).type )
+				{
+				case LESS_EQUAL:
+					g_L[ i ] = Double.NEGATIVE_INFINITY;
+					g_U[ i ] = component.getConstraint( i ).value;
+					break;
+				case EQUAL:
+					g_L[ i ] = component.getConstraint( i ).value;
+					g_U[ i ] = component.getConstraint( i ).value;
+					break;
+				case GREATER_EQUAL:
+					g_L[ i ] = component.getConstraint( i ).value;
+					g_U[ i ] = Double.POSITIVE_INFINITY;
+					break;
+				}
+			}
+			
+			this.create( component.variableCount(), x_L, x_U, component.constraintCount(), g_L, g_U,
+					component.constraintCount() * component.variableCount(), 0, Ipopt.C_STYLE );
+			
+			double[] vars = new double[ component.variableCount() ];
+			for( int j = 0; j < vars.length; ++j )
+				vars[ j ] = 0;
+			
+
+			this.addIntOption( "mumps_mem_percent", 500 );
+			this.addStrOption( KEY_HESSIAN_APPROXIMATION, "limited-memory" );
+			for( this.current = 0; this.current < component.variableCount(); ++current )
+			{
+				this.addNumOption( KEY_OBJ_SCALING_FACTOR, 1.0 );
+				this.solve( vars );
+				min.add( vars[ current ] );
+				
+				this.addNumOption( KEY_OBJ_SCALING_FACTOR, -1.0 );
+				this.solve( vars );
+				max.add( vars[ current ] );
+				
+			}
+			
+			// remove the extra constraint
+			component.removeConstraint( component.constraintCount() - 1 );
+		}
+		catch( Error | Exception thrown )
+		{
+			processStackTrace( thrown );
+		}
 	}
 }
