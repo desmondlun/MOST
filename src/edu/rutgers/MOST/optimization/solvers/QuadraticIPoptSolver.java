@@ -235,7 +235,7 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 	}
 	
 	@Override
-	public void FVA( ArrayList< Double > objCoefs, Double objVal,
+	public void FVA( ArrayList< Double > objCoefs, Double objVal, ArrayList< Double > fbaSoln,
 			ArrayList< Double > min, ArrayList< Double > max,
 			SolverComponent component )
 	{
@@ -281,17 +281,20 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 					component.constraintCount() * component.variableCount(), 0, Ipopt.C_STYLE );
 			
 			double[] vars = new double[ component.variableCount() ];
-			for( int j = 0; j < vars.length; ++j )
-				vars[ j ] = 0;
-			
 
 			this.addIntOption( "mumps_mem_percent", 500 );
 			this.addStrOption( KEY_HESSIAN_APPROXIMATION, "limited-memory" );
 			for( this.current = 0; this.current < component.variableCount(); ++current )
 			{
+				for( int j = 0; j < vars.length; ++j )
+					vars[ j ] = fbaSoln.get( j );
+				
 				this.addNumOption( KEY_OBJ_SCALING_FACTOR, 1.0 );
 				this.solve( vars );
 				min.add( vars[ current ] );
+				
+				for( int j = 0; j < vars.length; ++j )
+					vars[ j ] = fbaSoln.get( j );
 				
 				this.addNumOption( KEY_OBJ_SCALING_FACTOR, -1.0 );
 				this.solve( vars );

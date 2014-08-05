@@ -25,7 +25,7 @@ public class FBA extends Analysis
  		ArrayList< Double > minVariability = new ArrayList< Double >();
  		ArrayList< Double > maxVariability = new ArrayList< Double >();
  	
- 		quadraticSolver.FVA( linearSolver.getObjectiveCoefs(), this.getMaxObj(), minVariability,
+ 		quadraticSolver.FVA( linearSolver.getObjectiveCoefs(), this.getMaxObj(), linearSolver.getSoln(), minVariability,
  				maxVariability, linearSolver.getSolverComponent() );
  		
  		for( int i = 0; i < linearSolver.getSolverComponent().variableCount(); ++i )
