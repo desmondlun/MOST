@@ -283,7 +283,7 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 			double[] vars = new double[ component.variableCount() ];
 
 			this.addIntOption( "mumps_mem_percent", 500 );
-			this.addStrOption( KEY_HESSIAN_APPROXIMATION, "limited-memory" );
+			//this.addStrOption( KEY_HESSIAN_APPROXIMATION, "limited-memory" );
 			for( this.current = 0; this.current < component.variableCount(); ++current )
 			{
 				for( int j = 0; j < vars.length; ++j )
