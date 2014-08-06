@@ -204,7 +204,7 @@ public class GraphicalInterface extends JFrame {
 	public javax.swing.Timer gdbbTimer = new javax.swing.Timer(1000, new GDBBTimeListener());
 
 	private Task task;	
-	public final ProgressBar progressBar = new ProgressBar();	
+	public final static ProgressBar progressBar = new ProgressBar();	
 	javax.swing.Timer timer = new javax.swing.Timer(100, new TimeListener());
 
 	/*****************************************************************************/
