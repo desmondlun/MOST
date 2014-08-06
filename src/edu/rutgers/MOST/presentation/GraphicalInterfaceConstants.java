@@ -12,83 +12,115 @@ public class GraphicalInterfaceConstants {
 	public static final int BLANK_METABOLITE_ROW_COUNT = 2000;
 	public static final int BLANK_REACTION_ROW_COUNT = 2000;
 	
+	public static final String REACTION_ID_COLUMN_NAME = "ID";
+	public static final String KNOCKOUT_COLUMN_NAME = "KO";
+	public static final String FLUX_VALUE_COLUMN_NAME = "Flux Value";
+	public static final String MINIMUM_FLUX_COLUMN_NAME = "Min Flux";
+	public static final String MAXIMUM_FLUX_COLUMN_NAME = "Max Flux";
+	public static final String REACTION_ABBREVIATION_COLUMN_NAME = "Reaction Abbreviation";
+	public static final String REACTION_NAME_COLUMN_NAME = "Reaction Name";
+	public static final String REACTION_EQUATION_ABBR_COLUMN_NAME = "Reaction Equation (Metabolite Abbreviation)";
+	public static final String REACTION_EQUATION_NAMES_COLUMN_NAME = "Reaction Equation (Metabolite Name)";
+	public static final String REVERSIBLE_COLUMN_NAME = "Reversible";
+	public static final String LOWER_BOUND_COLUMN_NAME = "Lower Bound";
+	public static final String UPPER_BOUND_COLUMN_NAME = "Upper Bound";
+	public static final String BIOLOGICAL_OBJECTIVE_COLUMN_NAME = "Biological Objective";
+	public static final String SYNTHETIC_OBJECTIVE_COLUMN_NAME = "Synthetic Objective";
+	public static final String GENE_ASSOCIATION_COLUMN_NAME = "Gene Association";
+	public static final String PROTEIN_ASSOCIATION_COLUMN_NAME = "Protein Association";
+	public static final String SUBSYSTEM_COLUMN_NAME = "Subsystem";
+	public static final String PROTEIN_CLASS_COLUMN_NAME = "Protein Class";
+	
 	public static final String[] REACTIONS_COLUMN_NAMES = 
 	{ 
-		"ID",
-		"KO",
-		"Flux Value",		
-		"Reaction Abbreviation",
-		"Reaction Name",
-		"Reaction Equation (Metabolite Abbreviation)",
-		"Reaction Equation (Metabolite Name)",
-		"Reversible",		
-		"Lower Bound",
-		"Upper Bound",	
-		"Biological Objective",
-		"Synthetic Objective",
-		"Gene Association", 
-		"Protein Association",
-		"Subsystem", 
-		"Protein Class"
+		REACTION_ID_COLUMN_NAME,
+		KNOCKOUT_COLUMN_NAME,
+		FLUX_VALUE_COLUMN_NAME,
+		//MINIMUM_FLUX_COLUMN_NAME,
+		//MAXIMUM_FLUX_COLUMN_NAME,
+		REACTION_ABBREVIATION_COLUMN_NAME,
+		REACTION_NAME_COLUMN_NAME,
+		REACTION_EQUATION_ABBR_COLUMN_NAME,
+		REACTION_EQUATION_NAMES_COLUMN_NAME,
+		REVERSIBLE_COLUMN_NAME,		
+		LOWER_BOUND_COLUMN_NAME,
+		UPPER_BOUND_COLUMN_NAME,	
+		BIOLOGICAL_OBJECTIVE_COLUMN_NAME,
+		SYNTHETIC_OBJECTIVE_COLUMN_NAME,
+		GENE_ASSOCIATION_COLUMN_NAME, 
+		PROTEIN_ASSOCIATION_COLUMN_NAME,
+		SUBSYSTEM_COLUMN_NAME, 
+		PROTEIN_CLASS_COLUMN_NAME
 	};
 	
 	private static java.util.List<String> reactionsList = Arrays.asList(REACTIONS_COLUMN_NAMES);
 	
 	public static final String KNOCKOUT_TOOLTIP = "Knockout";	
+	public static final String MIN_FLUX_TOOLTIP = "Minimum Flux Value";
+	public static final String MAX_FLUX_TOOLTIP = "Maximum Flux Value";
+	
+	public static final String METABOLITE_ID_COLUMN_NAME = "ID";
+	public static final String METABOLITE_ABBREVIATION_COLUMN_NAME = "Metabolite Abbreviation";
+	public static final String METABOLITE_NAME_COLUMN_NAME = "Metabolite Name";
+	public static final String CHARGE_COLUMN_NAME = "Charge";
+	public static final String COMPARTMENT_COLUMN_NAME = "Compartment";
+	public static final String BOUNDARY_CONDITION_COLUMN_NAME = "Boundary Condition";
 	
 	public static final String[] METABOLITES_COLUMN_NAMES = 
 	{ 
-		"ID",
-		"Metabolite Abbreviation",
-		"Metabolite Name",		
-		"Charge",
-		"Compartment",
-		"Boundary Condition"
+		METABOLITE_ID_COLUMN_NAME,
+		METABOLITE_ABBREVIATION_COLUMN_NAME,
+		METABOLITE_NAME_COLUMN_NAME,		
+		CHARGE_COLUMN_NAME,
+		COMPARTMENT_COLUMN_NAME,
+		BOUNDARY_CONDITION_COLUMN_NAME
 	};
 	
 	private static java.util.List<String> metabolitesList = Arrays.asList(METABOLITES_COLUMN_NAMES);
 	
 	//reactions table column numbers and associated widths
 	public static final int DEFAULT_WIDTH = 90; //columns with no assigned width use default	
-	public static final int REACTIONS_ID_COLUMN = reactionsList.indexOf("ID"); 
+	public static final int REACTIONS_ID_COLUMN = reactionsList.indexOf(REACTION_ID_COLUMN_NAME); 
 	public static final int REACTIONS_ID_WIDTH = 50;    
-    public static final int KO_COLUMN = reactionsList.indexOf("KO");
+    public static final int KO_COLUMN = reactionsList.indexOf(KNOCKOUT_COLUMN_NAME);
     public static final int KO_WIDTH = 60;    
-    public static final int FLUX_VALUE_COLUMN = reactionsList.indexOf("Flux Value");
+    public static final int FLUX_VALUE_COLUMN = reactionsList.indexOf(FLUX_VALUE_COLUMN_NAME);
+    //public static final int MIN_FLUX_COLUMN = reactionsList.indexOf(MINIMUM_FLUX_COLUMN_NAME);
+    //public static final int MAX_FLUX_COLUMN = reactionsList.indexOf(MAXIMUM_FLUX_COLUMN_NAME);
     public static final int REACTION_ABBREVIATION_WIDTH = 150;
-    public static final int REACTION_ABBREVIATION_COLUMN = reactionsList.indexOf("Reaction Abbreviation");
+    public static final int REACTION_ABBREVIATION_COLUMN = reactionsList.indexOf(REACTION_ABBREVIATION_COLUMN_NAME);
     public static final int REACTION_NAME_WIDTH = 200; 
-    public static final int REACTION_NAME_COLUMN = reactionsList.indexOf("Reaction Name");
+    public static final int REACTION_NAME_COLUMN = reactionsList.indexOf(REACTION_NAME_COLUMN_NAME);
     public static final int REACTION_EQUN_ABBR_WIDTH = 300;
-    public static final int REACTION_EQUN_ABBR_COLUMN = reactionsList.indexOf("Reaction Equation (Metabolite Abbreviation)");
+    public static final int REACTION_EQUN_ABBR_COLUMN = reactionsList.indexOf(REACTION_EQUATION_ABBR_COLUMN_NAME);
     public static final int REACTION_EQUN_NAMES_WIDTH = 300;
-    public static final int REACTION_EQUN_NAMES_COLUMN = reactionsList.indexOf("Reaction Equation (Metabolite Name)");
+    public static final int REACTION_EQUN_NAMES_COLUMN = reactionsList.indexOf(REACTION_EQUATION_NAMES_COLUMN_NAME);
     public static final int REVERSIBLE_WIDTH = 60;
-    public static final int REVERSIBLE_COLUMN = reactionsList.indexOf("Reversible");         
-    public static final int LOWER_BOUND_COLUMN = reactionsList.indexOf("Lower Bound");
-    public static final int UPPER_BOUND_COLUMN = reactionsList.indexOf("Upper Bound");
-    public static final int BIOLOGICAL_OBJECTIVE_COLUMN = reactionsList.indexOf("Biological Objective"); 
-    public static final int SYNTHETIC_OBJECTIVE_COLUMN = reactionsList.indexOf("Synthetic Objective");
-    public static final int GENE_ASSOCIATION_COLUMN = reactionsList.indexOf("Gene Association");
-    public static final int PROTEIN_ASSOCIATION_COLUMN = reactionsList.indexOf("Protein Association");
-    public static final int SUBSYSTEM_COLUMN = reactionsList.indexOf("Subsystem");
-    public static final int PROTEIN_CLASS_COLUMN = reactionsList.indexOf("Protein Class");
+    public static final int REVERSIBLE_COLUMN = reactionsList.indexOf(REVERSIBLE_COLUMN_NAME);         
+    public static final int LOWER_BOUND_COLUMN = reactionsList.indexOf(LOWER_BOUND_COLUMN_NAME);
+    public static final int UPPER_BOUND_COLUMN = reactionsList.indexOf(UPPER_BOUND_COLUMN_NAME);
+    public static final int BIOLOGICAL_OBJECTIVE_COLUMN = reactionsList.indexOf(BIOLOGICAL_OBJECTIVE_COLUMN_NAME); 
+    public static final int SYNTHETIC_OBJECTIVE_COLUMN = reactionsList.indexOf(SYNTHETIC_OBJECTIVE_COLUMN_NAME);
+    public static final int GENE_ASSOCIATION_COLUMN = reactionsList.indexOf(GENE_ASSOCIATION_COLUMN_NAME);
+    public static final int PROTEIN_ASSOCIATION_COLUMN = reactionsList.indexOf(PROTEIN_ASSOCIATION_COLUMN_NAME);
+    public static final int SUBSYSTEM_COLUMN = reactionsList.indexOf(SUBSYSTEM_COLUMN_NAME);
+    public static final int PROTEIN_CLASS_COLUMN = reactionsList.indexOf(PROTEIN_CLASS_COLUMN_NAME);
     public static final int REACTION_META_DEFAULT_WIDTH = 150;
     
     //metabolites table column numbers and associated widths
     public static final int METABOLITE_ID_WIDTH = 50;  
     //"id_m" to distinguish between numerical id in reactions table and metabolites table
-    public static final int METABOLITE_ID_COLUMN = metabolitesList.indexOf("ID");
+    public static final int METABOLITE_ID_COLUMN = metabolitesList.indexOf(METABOLITE_ID_COLUMN_NAME);
     public static final int METABOLITE_ABBREVIATION_WIDTH = 200;
-    public static final int METABOLITE_ABBREVIATION_COLUMN = metabolitesList.indexOf("Metabolite Abbreviation");
+    public static final int METABOLITE_ABBREVIATION_COLUMN = metabolitesList.indexOf(METABOLITE_ABBREVIATION_COLUMN_NAME);
     public static final int METABOLITE_NAME_WIDTH = 300;
-    public static final int METABOLITE_NAME_COLUMN = metabolitesList.indexOf("Metabolite Name");
+    public static final int METABOLITE_NAME_COLUMN = metabolitesList.indexOf(METABOLITE_NAME_COLUMN_NAME);
     public static final int CHARGE_WIDTH = 80;
-    public static final int CHARGE_COLUMN = metabolitesList.indexOf("Charge");
+    public static final int CHARGE_COLUMN = metabolitesList.indexOf(CHARGE_COLUMN_NAME);
     public static final int COMPARTMENT_WIDTH = 150;
-    public static final int COMPARTMENT_COLUMN = metabolitesList.indexOf("Compartment");
+    public static final int COMPARTMENT_COLUMN = metabolitesList.indexOf(COMPARTMENT_COLUMN_NAME);
     public static final int BOUNDARY_WIDTH = 60;
-    public static final int BOUNDARY_COLUMN = metabolitesList.indexOf("Boundary Condition");
+    public static final int BOUNDARY_COLUMN = metabolitesList.indexOf(BOUNDARY_CONDITION_COLUMN_NAME);
     public static final int METABOLITE_META_DEFAULT_WIDTH = 150;
     
     public static final double FLUX_VALUE_DEFAULT = 0;
