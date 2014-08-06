@@ -2,6 +2,8 @@ package edu.rutgers.MOST.Analysis;
 
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import edu.rutgers.MOST.optimization.solvers.LinearSolver;
 import edu.rutgers.MOST.optimization.solvers.QuadraticSolver;
 import edu.rutgers.MOST.optimization.solvers.Solver;
@@ -21,17 +23,23 @@ public class FBA extends Analysis
  	{	
  		this.setSolverParameters();
  		this.maxObj = linearSolver.optimize();
- 		QuadraticSolver quadraticSolver = SolverFactory.createQuadraticSolver();
- 		ArrayList< Double > minVariability = new ArrayList< Double >();
- 		ArrayList< Double > maxVariability = new ArrayList< Double >();
- 	
- 		quadraticSolver.FVA( linearSolver.getObjectiveCoefs(), this.getMaxObj(), linearSolver.getSoln(), minVariability,
- 				maxVariability, linearSolver.getSolverComponent() );
  		
- 		for( int i = 0; i < linearSolver.getSolverComponent().variableCount(); ++i )
+ 		if( JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog( null, 
+ 				"Do you want to perform Flux Variability Analysis?", "FVA analysis", 
+ 				JOptionPane.YES_NO_OPTION ) )
  		{
- 			if( !minVariability.get( i ).equals( maxVariability.get( i ) ) )
- 				System.out.println( "index: " + i + "\nmin: " + minVariability.get( i ) + "\nmax: " + maxVariability.get( i ) + "\n" );
+ 	 		QuadraticSolver quadraticSolver = SolverFactory.createQuadraticSolver();
+ 	 		ArrayList< Double > minVariability = new ArrayList< Double >();
+ 	 		ArrayList< Double > maxVariability = new ArrayList< Double >();
+ 	 		
+	 		quadraticSolver.FVA( linearSolver.getObjectiveCoefs(), this.getMaxObj(), linearSolver.getSoln(), minVariability,
+	 				maxVariability, linearSolver.getSolverComponent() );
+	 		
+	 		for( int i = 0; i < linearSolver.getSolverComponent().variableCount(); ++i )
+	 		{
+	 			if( !minVariability.get( i ).equals( maxVariability.get( i ) ) )
+	 				System.out.println( "index: " + i + "\nmin: " + minVariability.get( i ) + "\nmax: " + maxVariability.get( i ) + "\n" );
+	 		}
  		}
  		return linearSolver.getSoln();
  	}
