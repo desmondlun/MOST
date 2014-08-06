@@ -4,6 +4,7 @@ import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 import edu.rutgers.MOST.presentation.ResizableDialog;
+import edu.rutgers.MOST.presentation.SimpleProgressBar;
 import gurobi.GRB;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
@@ -252,6 +253,12 @@ public class QuadraticGurobiSolver implements QuadraticSolver
 				}
 				quad_model.addConstr( expr, getGRBConType( constraint.type ), constraint.value, null );
 			}
+			
+			SimpleProgressBar progress = new SimpleProgressBar( "title", "border" );
+			progress.progressBar.setIndeterminate( false );
+			progress.progressBar.setMaximum( 150 );
+			progress.progressBar.setValue( 0 );
+			progress.progressBar.setStringPainted( true );
 			
 			for( int j = 0; j < component.variableCount(); ++j )
 			{

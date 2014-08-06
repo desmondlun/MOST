@@ -11426,6 +11426,7 @@ public class GraphicalInterface extends JFrame {
 	};
 	
 	public static void main(String[] args) {
+		
 	//public static void main(String[] args) throws Exception {
 		ResizableDialog dialog = new ResizableDialog("Error", "Error", "Error");
 		dialog.setLocationRelativeTo(null);
