@@ -2,13 +2,17 @@ package edu.rutgers.MOST.presentation;
 
 import java.awt.Color;
 import java.awt.Dimension;
+//import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
+//import java.util.ArrayList;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+//import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -274,6 +278,7 @@ public class CSVSaveInterface  extends JDialog {
 	public static void main(String[] args) throws Exception {
 
 		//Main will not work unless GraphicalInterface.curSetting lines commented out
+		//Uncomment imports to run main
 		
 		//based on code from http://stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
 //		final ArrayList<Image> icons = new ArrayList<Image>(); 
