@@ -24,10 +24,7 @@ public class FBADialog  extends JDialog {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	// minimizing the Euclidean norm makes this E-flux2, which we already
-	// a unique analysis option for
-	// public JCheckBox normBox = new JCheckBox("Minimize Euclidean Norm ");
-	public JCheckBox fvaBox = new JCheckBox("Include FVA Results           ");
+	public JCheckBox fvaBox = new JCheckBox("Include FVA Results");
 	public JButton okButton = new JButton("    OK    ");
 	public JButton cancelButton = new JButton("  Cancel  ");
 	public JLabel topLabel = new JLabel();
@@ -63,11 +60,6 @@ public class FBADialog  extends JDialog {
 		JLabel blank = new JLabel("    "); 
 		cancelButton.setMnemonic(KeyEvent.VK_C);
 		
-		JPanel normPanel = new JPanel();
-		normPanel.setLayout(new BoxLayout(normPanel, BoxLayout.X_AXIS));
-		//normPanel.add(normBox);
-		normPanel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
-		
 		JPanel fvaPanel = new JPanel();
 		fvaPanel.setLayout(new BoxLayout(fvaPanel, BoxLayout.X_AXIS));
 		fvaPanel.add(fvaBox);
@@ -84,21 +76,14 @@ public class FBADialog  extends JDialog {
 		hbButton.add(buttonPanel);
 
 		vb.add(hbLabel);
-		vb.add(normPanel);
 		vb.add(fvaPanel);
 		vb.add(hbButton);
 		add(vb);	
 		
-	//	normBox.setSelected(FBAConstants.EUCLIDEAN_NORM_DEFAULT);
 		fvaBox.setSelected(FBAConstants.FVA_DEFAULT);
 		
 //		ActionListener okButtonActionListener = new ActionListener() {
 //			public void actionPerformed(ActionEvent prodActionEvent) {
-//				if (normBox.isSelected()) {
-//					minEuclideanNorm = true;
-//				} else {
-//					minEuclideanNorm = false;
-//				}
 //				if (fvaBox.isSelected()) {
 //					runFVA = true;
 //				} else {

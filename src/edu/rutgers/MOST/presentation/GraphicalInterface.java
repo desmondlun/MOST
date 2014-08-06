@@ -283,7 +283,6 @@ public class GraphicalInterface extends JFrame {
 	public boolean gdbbRunning;
 	public boolean gdbbProcessed;
 	
-//	public boolean minEuclideanNorm;
 	public boolean runFVA;
 
 	/*****************************************************************************/
@@ -11416,19 +11415,12 @@ public class GraphicalInterface extends JFrame {
 	
 	ActionListener okButtonFBAActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {	
-		/*	if (getFbaDialog().normBox.isSelected()) {
-				minEuclideanNorm = true;
-			} else {
-				minEuclideanNorm = false;
-			}
-		*/
 			if (getFbaDialog().fvaBox.isSelected()) {
 				runFVA = true;
 			} else {
 				runFVA = false;
 			}
 			getFbaDialog().setVisible(false);
-//			System.out.println(minEuclideanNorm);
 //			System.out.println(runFVA);
 		}
 	};
