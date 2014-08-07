@@ -1591,12 +1591,12 @@ public class GraphicalInterface extends JFrame {
 
 		fbaItem.addActionListener( new AnalysisCommonActionListener(){
 			private	Double maxObj = 0.0;
+			FBA fba = new FBA();
 			
 			@Override
 			protected ArrayList< Double > analysisPart( Model model ) throws Exception
 			{
 				//getFbaDialog().setVisible(true);
-				FBA fba = new FBA();
 				fba.setModel(model);
 				ArrayList< Double > soln = fba.run();
 				maxObj = fba.getMaxObj();
