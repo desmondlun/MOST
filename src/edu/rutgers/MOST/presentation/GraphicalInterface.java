@@ -1488,7 +1488,7 @@ public class GraphicalInterface extends JFrame {
 				{
 					public void run()
 					{
-						
+						disableMenuItems();
 						ArrayList< Double > soln = null;
 						try
 						{
@@ -1498,6 +1498,7 @@ public class GraphicalInterface extends JFrame {
 						{
 							return;
 						}
+						enableMenuItems();
 						//End optimization
 		
 						ReactionFactory rFactory = new ReactionFactory("SBML");

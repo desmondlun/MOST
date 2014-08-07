@@ -11,6 +11,7 @@ import edu.rutgers.MOST.optimization.solvers.SolverFactory;
 public class FBA extends Analysis
 {
 	protected LinearSolver linearSolver = SolverFactory.createFBASolver();
+	public static boolean FVASelected = false;
 	
 	public FBA()
 	{
@@ -27,6 +28,7 @@ public class FBA extends Analysis
  				"Do you want to perform Flux Variability Analysis?", "FVA analysis", 
  				JOptionPane.YES_NO_OPTION ) )
  		{
+ 			FVASelected = true;
  	 		QuadraticSolver quadraticSolver = SolverFactory.createQuadraticSolver();
  	 		ArrayList< Double > minVariability = new ArrayList< Double >();
  	 		ArrayList< Double > maxVariability = new ArrayList< Double >();
@@ -40,6 +42,8 @@ public class FBA extends Analysis
 	 				System.out.println( "index: " + i + "\nmin: " + minVariability.get( i ) + "\nmax: " + maxVariability.get( i ) + "\n" );
 	 		}
  		}
+ 		else
+ 			FVASelected = false;
  		return linearSolver.getSoln();
  	}
 
