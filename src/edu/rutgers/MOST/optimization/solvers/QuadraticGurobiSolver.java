@@ -259,6 +259,8 @@ public class QuadraticGurobiSolver implements QuadraticSolver
 			progress.progressBar.setMaximum( component.variableCount() );
 			progress.progressBar.setValue( 0 );
 			progress.progressBar.setStringPainted( true );
+			progress.setAlwaysOnTop( true );
+			progress.setLocationRelativeTo( null );
 			
 			for( int j = 0; j < component.variableCount(); ++j )
 			{
