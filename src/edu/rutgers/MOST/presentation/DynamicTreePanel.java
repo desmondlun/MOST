@@ -49,8 +49,13 @@ public class DynamicTreePanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	public static int newNodeSuffix = 1;	// changed to public static
     
-    public static DynamicTree treePanel;	// Changed to public static
-
+    private static DynamicTree treePanel;
+    
+    public static synchronized DynamicTree getTreePanel()
+    {
+    	return treePanel;
+    }
+    
 	public DynamicTreePanel(DynamicTree treePanel) {
         super(new BorderLayout());
         

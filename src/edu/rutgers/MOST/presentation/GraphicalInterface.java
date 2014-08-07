@@ -187,7 +187,11 @@ public class GraphicalInterface extends JFrame {
 
 	protected GraphicalInterface gi;
 
-	public static DefaultListModel<String> listModel = new DefaultListModel<String>();	
+	public static DefaultListModel<String> listModel = new DefaultListModel<String>();
+	public static synchronized int getListModelSize()
+	{
+		return listModel.size();
+	}
 
 	public static JTextArea outputTextArea = new JTextArea();
 	public static JScrollPane outputPane = new JScrollPane(outputTextArea);
@@ -1181,7 +1185,7 @@ public class GraphicalInterface extends JFrame {
 		outputTextArea.setEditable(false);
 
 		listModel.addElement(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME);
-		DynamicTreePanel.treePanel.addObject(new Solution(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME, GraphicalInterfaceConstants.DEFAULT_MODEL_NAME));
+		DynamicTreePanel.getTreePanel().addObject(new Solution(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME, GraphicalInterfaceConstants.DEFAULT_MODEL_NAME));
 
 		// lists populated in file load
 		Map<String, Object> metaboliteAbbreviationIdMap = new HashMap<String, Object>();
@@ -1299,14 +1303,14 @@ public class GraphicalInterface extends JFrame {
 		ArrayList<Integer> addedMetabolites = new ArrayList<Integer>();
 		LocalConfig.getInstance().setAddedMetabolites(addedMetabolites);
 
-		DynamicTreePanel.treePanel.deleteItem.addActionListener(new ActionListener() {
+		DynamicTreePanel.getTreePanel().deleteItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
 				deleteItemFromDynamicTree();
 				
 			}
 		});
 
-		DynamicTreePanel.treePanel.clearItem.addActionListener(new ActionListener() {
+		DynamicTreePanel.getTreePanel().clearItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
 				deleteAllItemsFromDynamicTree();
 			}
@@ -1459,13 +1463,13 @@ public class GraphicalInterface extends JFrame {
 			@Override
 			public void actionPerformed( ActionEvent a )
 			{
-				Utilities u = new Utilities();
-
+				final Utilities u = new Utilities();
+				
 				highlightUnusedMetabolites = false;
 				highlightUnusedMetabolitesItem.setState(false);
 
 				String dateTimeStamp = u.createDateTimeStamp();
-				String optimizeName = GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
+				final String optimizeName = GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
 						+ LocalConfig.getInstance().getModelName() + dateTimeStamp;
 				setOptimizeName(optimizeName);
 
@@ -1479,64 +1483,73 @@ public class GraphicalInterface extends JFrame {
 				LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
 
 				// Begin optimization
-				Model model = new Model();
-				ArrayList< Double > soln = null;
-				try
+				final Model model = new Model();
+				Thread t = new Thread()
 				{
-					soln = analysisPart( model );
-				}
-				catch( Exception e )
-				{
-					return;
-				}
-				//End optimization
-
-				ReactionFactory rFactory = new ReactionFactory("SBML");
-				rFactory.setFluxes(soln);
-
-				if (LocalConfig.getInstance().hasValidGurobiKey) {
-					Writer writer = null;
-					try {
-						StringBuffer outputText = new StringBuffer();
-						outputPart( model, outputText );
+					public void run()
+					{
 						
-						File file = new File(u.createLogFileName(optimizeName + ".log"));
-						writer = new BufferedWriter(new FileWriter(file));
-						writer.write(outputText.toString());
-
-					} catch (FileNotFoundException e) {
-						JOptionPane.showMessageDialog(null,                
-								"File Not Found.",                
-								"Error",                                
-								JOptionPane.ERROR_MESSAGE);
-						//e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					} finally {
-						try {
-							if (writer != null) {
-								writer.close();
-							}
-						} catch (IOException e) {
-							JOptionPane.showMessageDialog(null,                
-									"File Not Found.",                
-									"Error",                                
-									JOptionPane.ERROR_MESSAGE);
-							//e.printStackTrace();
+						ArrayList< Double > soln = null;
+						try
+						{
+							soln = analysisPart( model );
 						}
+						catch( Exception e )
+						{
+							return;
+						}
+						//End optimization
+		
+						ReactionFactory rFactory = new ReactionFactory("SBML");
+						rFactory.setFluxes( new ArrayList< Double >( soln ) );
+		
+						if (LocalConfig.getInstance().hasValidGurobiKey) {
+							Writer writer = null;
+							try {
+								StringBuffer outputText = new StringBuffer();
+								outputPart( model, outputText );
+								
+								File file = new File(u.createLogFileName(optimizeName + ".log"));
+								writer = new BufferedWriter(new FileWriter(file));
+								writer.write(outputText.toString());
+		
+							} catch (FileNotFoundException e) {
+								JOptionPane.showMessageDialog(null,                
+										"File Not Found.",                
+										"Error",                                
+										JOptionPane.ERROR_MESSAGE);
+								//e.printStackTrace();
+							} catch (IOException e) {
+								e.printStackTrace();
+							} finally {
+								try {
+									if (writer != null) {
+										writer.close();
+									}
+								} catch (IOException e) {
+									JOptionPane.showMessageDialog(null,                
+											"File Not Found.",                
+											"Error",                                
+											JOptionPane.ERROR_MESSAGE);
+									//e.printStackTrace();
+								}
+							}
+							loadOutputPane(u.createLogFileName(optimizeName + ".log"));
+							if (getPopout() != null) {
+								getPopout().load(u.createLogFileName(optimizeName + ".log"), gi.getTitle());
+							}
+							setTitle(GraphicalInterfaceConstants.TITLE + " - " + optimizeName);
+							listModel.addElement(optimizeName);				
+							DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName, optimizeName));
+							// uncomment the following line to get ConcurrentException
+							// DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
+						} else {
+							DynamicTreePanel.getTreePanel().setNodeSelected(0);
+						}
+						LocalConfig.getInstance().hasValidGurobiKey = true;
 					}
-					loadOutputPane(u.createLogFileName(optimizeName + ".log"));
-					if (getPopout() != null) {
-						getPopout().load(u.createLogFileName(optimizeName + ".log"), gi.getTitle());
-					}
-					setTitle(GraphicalInterfaceConstants.TITLE + " - " + optimizeName);
-					listModel.addElement(optimizeName);				
-					DynamicTreePanel.treePanel.addObject(new Solution(optimizeName, optimizeName));
-					DynamicTreePanel.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
-				} else {
-					DynamicTreePanel.treePanel.setNodeSelected(0);
-				}
-				LocalConfig.getInstance().hasValidGurobiKey = true;
+				};
+				t.start();
 			}
 			
 			/**
@@ -1566,7 +1579,7 @@ public class GraphicalInterface extends JFrame {
 			}
 			@Override
 			public void menuSelected(MenuEvent arg0) {
-				DynamicTreePanel.treePanel.setNodeSelected(0);
+				DynamicTreePanel.getTreePanel().setNodeSelected(0);
 			}
 	    });
 
@@ -1610,8 +1623,7 @@ public class GraphicalInterface extends JFrame {
 
         gdbbItem.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent a) {
-        		//E-flux2 is disabled for gdbb
-        		
+        	       		
         		Utilities u = new Utilities();
 
         		String dateTimeStamp = u.createDateTimeStamp();
@@ -1716,7 +1728,7 @@ public class GraphicalInterface extends JFrame {
         						getGdbbDialog().stopButton.setEnabled(true);
         						gdbbTimer.start();
         						String solutionName = GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1);
-        						DynamicTreePanel.treePanel.addObject(new Solution(solutionName, solutionName));
+        						DynamicTreePanel.getTreePanel().addObject(new Solution(solutionName, solutionName));
 
         						gdbbTask = new GDBBTask();
 
@@ -2811,7 +2823,7 @@ public class GraphicalInterface extends JFrame {
 		metabolitesTable.registerKeyboardAction(metabolitesSaveActionListener,metabSave,JComponent.WHEN_FOCUSED);
 		metabolitesTable.registerKeyboardAction(metabolitesSelectAllActionListener,metabSelectAll,JComponent.WHEN_FOCUSED);  			
 
-		DynamicTreePanel.treePanel.setNodeSelected(0);
+		DynamicTreePanel.getTreePanel().setNodeSelected(0);
 		
 		/************************************************************************/
 		// end set up tables
@@ -3223,7 +3235,7 @@ public class GraphicalInterface extends JFrame {
 						validFile = false;
 					} else {
 						listModel.clear();						
-						DynamicTreePanel.treePanel.clear();
+						DynamicTreePanel.getTreePanel().clear();
 						String filename;
 						if (rawFilename.endsWith(".xml")) {
 							filename = rawFilename.substring(0, rawFilename.length() - 4);
@@ -3432,7 +3444,7 @@ public class GraphicalInterface extends JFrame {
 				getReactionColumnNameInterface().setVisible(false);
 				getReactionColumnNameInterface().dispose();
 
-				DynamicTreePanel.treePanel.clear();
+				DynamicTreePanel.getTreePanel().clear();
 				listModel.clear();
 				setFileType(GraphicalInterfaceConstants.CSV_FILE_TYPE);
 				
@@ -3479,7 +3491,7 @@ public class GraphicalInterface extends JFrame {
 			if (openFileChooser) {
 				loadSetUp();
 				listModel.clear();
-				DynamicTreePanel.treePanel.clear();
+				DynamicTreePanel.getTreePanel().clear();
 				saveEnabled = false;
 				enableSaveItems(false);
 				modelCollectionLoad = true;
@@ -3591,7 +3603,7 @@ public class GraphicalInterface extends JFrame {
 			JSBMLWriter jWrite = new JSBMLWriter();
 			if (saveOptFile) {
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-						DynamicTreePanel.treePanel.tree.getLastSelectedPathComponent();
+						DynamicTreePanel.getTreePanel().tree.getLastSelectedPathComponent();
 				Solution nodeInfo = (Solution)node.getUserObject();	
 				String suffix = "";
 				if (nodeInfo.getIndex() > 0) {
@@ -3838,7 +3850,7 @@ public class GraphicalInterface extends JFrame {
 			File file = null;
 			if (saveOptFile) {
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-						DynamicTreePanel.treePanel.tree.getLastSelectedPathComponent();
+						DynamicTreePanel.getTreePanel().tree.getLastSelectedPathComponent();
 				Solution nodeInfo = (Solution)node.getUserObject();	
 				String suffix = "";
 				if (nodeInfo.getIndex() > 0) {
@@ -3909,7 +3921,7 @@ public class GraphicalInterface extends JFrame {
 		SaveChangesPrompt();
 		loadSetUp();
 		listModel.clear();
-		DynamicTreePanel.treePanel.clear();
+		DynamicTreePanel.getTreePanel().clear();
 		DefaultTableModel blankReacModel = createBlankReactionsTableModel();
 		setUpReactionsTable(blankReacModel);
 		LocalConfig.getInstance().getReactionsTableModelMap().put(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME, blankReacModel);
@@ -4037,7 +4049,7 @@ public class GraphicalInterface extends JFrame {
 								}
 								jWrite.setOptFilePath(path + "/" + LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".xml");
 //								System.out.println(LocalConfig.getInstance().getOptimizationFilesList().get(i));
-//								jWrite.setOptFilePath(DynamicTreePanel.treePanel.getTree().getLastSelectedPathComponent().toString());
+//								jWrite.setOptFilePath(DynamicTreePanel.getTreePanel().getTree().getLastSelectedPathComponent().toString());
 								jWrite.formConnect(LocalConfig.getInstance());
 								
 							} catch (Exception e) {
@@ -4954,22 +4966,22 @@ public class GraphicalInterface extends JFrame {
 	public void setUpTables() {
 		setTitle(GraphicalInterfaceConstants.TITLE + " - " + LocalConfig.getInstance().getModelName());				
 		if (saveFile) {
-			DynamicTreePanel.treePanel.setNodeSelected(0);
+			DynamicTreePanel.getTreePanel().setNodeSelected(0);
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-					DynamicTreePanel.treePanel.tree.getLastSelectedPathComponent();
+					DynamicTreePanel.getTreePanel().tree.getLastSelectedPathComponent();
 			Solution nodeInfo = (Solution)node.getUserObject();		
 			nodeInfo.setSolutionName(LocalConfig.getInstance().getModelName());
 			node.setUserObject((new Solution(LocalConfig.getInstance().getModelName(), LocalConfig.getInstance().getModelName())));			
 			treePanel.repaint();
 		} else {
-			DynamicTreePanel.treePanel.clear();
+			DynamicTreePanel.getTreePanel().clear();
 			listModel.addElement(LocalConfig.getInstance().getModelName());
-			DynamicTreePanel.treePanel.addObject(new Solution(LocalConfig.getInstance().getModelName(), LocalConfig.getInstance().getModelName()));				
+			DynamicTreePanel.getTreePanel().addObject(new Solution(LocalConfig.getInstance().getModelName(), LocalConfig.getInstance().getModelName()));				
 			setSortDefault();
 			deleteAllOptimizationFiles();
 			LocalConfig.getInstance().getOptimizationFilesList().clear();
 		}
-		DynamicTreePanel.treePanel.setNodeSelected(0);
+		DynamicTreePanel.getTreePanel().setNodeSelected(0);
 		// enables or disables menu items depending on if there are unused items present
 		createUnusedMetabolitesList();
 		enableMenuItems();
@@ -10894,7 +10906,7 @@ public class GraphicalInterface extends JFrame {
 							solution.setDatabaseName(optimizeName);
 							solution.setIndex(index++);
 							publish(solution);
-							
+
 							// copy models, run optimization on these model
 							DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel(LocalConfig.getInstance().getMetabolitesTableModelMap().get(LocalConfig.getInstance().getModelName()));
 							DefaultTableModel reactionsOptModel = copyReactionsTableModel(LocalConfig.getInstance().getReactionsTableModelMap().get(LocalConfig.getInstance().getModelName()));				
@@ -10903,7 +10915,7 @@ public class GraphicalInterface extends JFrame {
 							
 							LocalConfig.getInstance().getOptimizationFilesList().add(solution.getSolutionName());
 
-							//DynamicTreePanel.treePanel.addObject((DefaultMutableTreeNode)DynamicTreePanel.treePanel.getRootNode().getChildAt(DynamicTreePanel.treePanel.getRootNode().getChildCount() - 1), solution, true);
+							//DynamicTreePanel.getTreePanel().addObject((DefaultMutableTreeNode)DynamicTreePanel.getTreePanel().getRootNode().getChildAt(DynamicTreePanel.getTreePanel().getRootNode().getChildCount() - 1), solution, true);
 							writer = null;
 							try {
 								String synObjString = "";
@@ -10962,7 +10974,7 @@ public class GraphicalInterface extends JFrame {
 								gdbbItem.setEnabled(false);
 								if (gdbbProcessed) {	
 									listModel.addElement(solutionName);
-									DynamicTreePanel.treePanel.addObject((DefaultMutableTreeNode)DynamicTreePanel.treePanel.getRootNode().getChildAt(DynamicTreePanel.treePanel.getRootNode().getChildCount() - 1), solution, true);
+									DynamicTreePanel.getTreePanel().addObject((DefaultMutableTreeNode)DynamicTreePanel.getTreePanel().getRootNode().getChildAt(DynamicTreePanel.getTreePanel().getRootNode().getChildCount() - 1), solution, true);
 								}						
 								outputTextArea.setText(output);
 								if (getPopout() != null) {
@@ -11035,7 +11047,7 @@ public class GraphicalInterface extends JFrame {
 				LocalConfig.getInstance().getGdbbKnockoutsMap().put(solution.getSolutionName(), LocalConfig.getInstance().getGdbbKnockoutsList());
 				gdbbProcessed = true;
                 
-				DynamicTreePanel.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);	
+				DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);	
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(null,                
 						"Solver Error.",                
@@ -11055,7 +11067,7 @@ public class GraphicalInterface extends JFrame {
 					return;
 
 				getGdbbDialog().enableStart();
-				DynamicTreePanel.treePanel.setNodeSelected(GraphicalInterface.listModel.getSize() - 1);		
+				DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);		
 
 				setrFactory(new ReactionFactory("SBML"));
 				getrFactory().setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())));

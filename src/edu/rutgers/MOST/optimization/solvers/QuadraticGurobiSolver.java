@@ -254,14 +254,15 @@ public class QuadraticGurobiSolver implements QuadraticSolver
 				quad_model.addConstr( expr, getGRBConType( constraint.type ), constraint.value, null );
 			}
 			
-			SimpleProgressBar progress = new SimpleProgressBar( "title", "border" );
+			SimpleProgressBar progress = new SimpleProgressBar( "Flux Variability Analysis", "Progress" );
 			progress.progressBar.setIndeterminate( false );
-			progress.progressBar.setMaximum( 150 );
+			progress.progressBar.setMaximum( component.variableCount() );
 			progress.progressBar.setValue( 0 );
 			progress.progressBar.setStringPainted( true );
 			
 			for( int j = 0; j < component.variableCount(); ++j )
 			{
+				progress.progressBar.setValue( j );
 				// add the term to the objective expression
 				GRBLinExpr objExpr = new GRBLinExpr();
 				objExpr.addTerm( 1.0, vars.get( j ) );
@@ -273,7 +274,7 @@ public class QuadraticGurobiSolver implements QuadraticSolver
 				quad_model.optimize();
 				
 				// add to the minimized flux vector
-				min.add( vars.get( j ).get(  GRB.DoubleAttr.X ) );
+				min.add( vars.get( j ).get( GRB.DoubleAttr.X ) );
 				
 				// set the objective to maximize the flux
 				quad_model.setObjective( objExpr, GRB.MAXIMIZE );
@@ -284,6 +285,8 @@ public class QuadraticGurobiSolver implements QuadraticSolver
 				// add to the maximized flux vector
 				max.add( vars.get( j ).get( GRB.DoubleAttr.X ) );
 			}
+			progress.setVisible( false );
+			progress.dispose();
 			
 			// remove the extra constraint
 			component.removeConstraint( component.constraintCount() - 1 );

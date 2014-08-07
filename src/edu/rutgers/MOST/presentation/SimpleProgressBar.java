@@ -18,7 +18,7 @@ public class SimpleProgressBar extends JFrame
 		this.getContentPane().add( progressBar, BorderLayout.NORTH );
 		this.setSize( 300, 100 );
 		this.setVisible( true );
-		this.setDefaultCloseOperation( EXIT_ON_CLOSE );
+		this.setDefaultCloseOperation( DISPOSE_ON_CLOSE );
 	}
 	
 	public static void main( String[] args )

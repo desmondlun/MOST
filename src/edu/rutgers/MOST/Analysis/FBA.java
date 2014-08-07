@@ -34,14 +34,11 @@ public class FBA extends Analysis
 	 		quadraticSolver.FVA( linearSolver.getObjectiveCoefs(), this.getMaxObj(), linearSolver.getSoln(), minVariability,
 	 				maxVariability, linearSolver.getSolverComponent() );
 	 		
-	 		// the progress bar max must be "linearSolver.getSolverComponent().variableCount();"
 	 		for( int i = 0; i < linearSolver.getSolverComponent().variableCount(); ++i )
 	 		{
-	 			// the progress bar 'current' should be 'i'
 	 			if( !minVariability.get( i ).equals( maxVariability.get( i ) ) )
 	 				System.out.println( "index: " + i + "\nmin: " + minVariability.get( i ) + "\nmax: " + maxVariability.get( i ) + "\n" );
 	 		}
-	 		// the progress bar can be closed here
  		}
  		return linearSolver.getSoln();
  	}
