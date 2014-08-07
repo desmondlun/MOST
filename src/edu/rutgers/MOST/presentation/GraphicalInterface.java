@@ -1538,11 +1538,7 @@ public class GraphicalInterface extends JFrame {
 							if (getPopout() != null) {
 								getPopout().load(u.createLogFileName(optimizeName + ".log"), gi.getTitle());
 							}
-							setTitle(GraphicalInterfaceConstants.TITLE + " - " + optimizeName);
-							listModel.addElement(optimizeName);				
-							DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName, optimizeName));
-							// uncomment the following line to get ConcurrentException
-							// DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
+								
 						} else {
 							DynamicTreePanel.getTreePanel().setNodeSelected(0);
 						}
@@ -1550,6 +1546,11 @@ public class GraphicalInterface extends JFrame {
 					}
 				};
 				t.start();
+				setTitle(GraphicalInterfaceConstants.TITLE + " - " + optimizeName);	
+				listModel.addElement(optimizeName);		
+				DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName, optimizeName));
+				// uncomment the following line to get ConcurrentException
+				DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 			}
 			
 			/**
