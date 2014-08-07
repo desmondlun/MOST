@@ -11,7 +11,9 @@ import edu.rutgers.MOST.optimization.solvers.SolverFactory;
 public class FBA extends Analysis
 {
 	protected LinearSolver linearSolver = SolverFactory.createFBASolver();
-	public static boolean FVASelected = false;
+	public boolean FVASelected = false;
+	public ArrayList< Double > minVariability = new ArrayList< Double >();
+	public ArrayList< Double > maxVariability = new ArrayList< Double >();
 	
 	public FBA()
 	{
@@ -30,8 +32,6 @@ public class FBA extends Analysis
  		{
  			FVASelected = true;
  	 		QuadraticSolver quadraticSolver = SolverFactory.createQuadraticSolver();
- 	 		ArrayList< Double > minVariability = new ArrayList< Double >();
- 	 		ArrayList< Double > maxVariability = new ArrayList< Double >();
  	 		
 	 		quadraticSolver.FVA( linearSolver.getObjectiveCoefs(), this.getMaxObj(), linearSolver.getSoln(), minVariability,
 	 				maxVariability, linearSolver.getSolverComponent() );
