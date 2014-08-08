@@ -21,9 +21,18 @@ public class TextReactionsWriter {
 			String headerNames = "";
 			//start with 1 to avoid reading database id
 			for (int i = 1; i < GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length; i++) {
-				if (i != GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
-					headerNames += GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[i] + "\t";
-				}				
+				if (LocalConfig.getInstance().fvaColumnsVisible) {
+					if (i != GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
+						headerNames += GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[i] + "\t";
+					}	
+				} else {
+					if (i == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN ||
+							i == GraphicalInterfaceConstants.MIN_FLUX_COLUMN ||
+							i == GraphicalInterfaceConstants.MAX_FLUX_COLUMN) {
+					} else {
+						headerNames += GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[i] + "\t";
+					}
+				}
 			}
 			
 			int metaColumnCount = LocalConfig.getInstance().getReactionsMetaColumnNames().size();
@@ -40,6 +49,8 @@ public class TextReactionsWriter {
 				
 				String knockout = "false";
 				String fluxValue = "0.0";
+				String minFlux = "0.0";
+				String maxFlux = "0.0";
 				String reactionAbbreviation = " ";
 				String reactionName = " ";
 				String reactionEqunAbbr = " ";
@@ -67,7 +78,21 @@ public class TextReactionsWriter {
 					} else {
 						fluxValue = "0.0";
 					}
-				}				
+				}
+				if (GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.MIN_FLUX_COLUMN)!= null) {
+					if (GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.MIN_FLUX_COLUMN).toString().length() > 0) {							
+						minFlux = ((String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.MIN_FLUX_COLUMN));
+					} else {
+						minFlux = "0.0";
+					}
+				}
+				if (GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.MAX_FLUX_COLUMN)!= null) {
+					if (GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.MAX_FLUX_COLUMN).toString().length() > 0) {							
+						maxFlux = ((String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.MAX_FLUX_COLUMN));
+					} else {
+						maxFlux = "0.0";
+					}
+				}
 				if (GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN)!= null) {
 					if (GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN).toString().length() > 0) {							
 						reactionAbbreviation = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
@@ -169,13 +194,23 @@ public class TextReactionsWriter {
 					}
 				}
 				
-				if (metaString.length() > 0) {
-					String [] entries = (knockout + "\t" + fluxValue + "\t" + reactionAbbreviation + "\t" + reactionName + "\t" + reactionEqunAbbr + "\t" + reversible + "\t" + lowerBound + "\t" + upperBound + "\t" + biologicalObjective + "\t" + syntheticObjective + "\t" + geneAssociation + "\t" + proteinAssociation + "\t" + subsystem + "\t" + proteinClass + "\t" + metaString.substring(0, metaString.length() - 1)).split("\t");
-					writer.writeNext(entries);
+				if (LocalConfig.getInstance().fvaColumnsVisible) {
+					if (metaString.length() > 0) {
+						String [] entries = (knockout + "\t" + fluxValue + "\t" + minFlux + "\t" + maxFlux + "\t" + reactionAbbreviation + "\t" + reactionName + "\t" + reactionEqunAbbr + "\t" + reversible + "\t" + lowerBound + "\t" + upperBound + "\t" + biologicalObjective + "\t" + syntheticObjective + "\t" + geneAssociation + "\t" + proteinAssociation + "\t" + subsystem + "\t" + proteinClass + "\t" + metaString.substring(0, metaString.length() - 1)).split("\t");
+						writer.writeNext(entries);
+					} else {
+						String [] entries = (knockout + "\t" + fluxValue + "\t" + minFlux + "\t" + maxFlux + "\t" + reactionAbbreviation + "\t" + reactionName + "\t" + reactionEqunAbbr + "\t" + reversible + "\t" + lowerBound + "\t" + upperBound + "\t" + biologicalObjective + "\t" + syntheticObjective + "\t" + geneAssociation + "\t" + proteinAssociation + "\t" + subsystem + "\t" + proteinClass).split("\t");
+						writer.writeNext(entries);
+					}	
 				} else {
-					String [] entries = (knockout + "\t" + fluxValue + "\t" + reactionAbbreviation + "\t" + reactionName + "\t" + reactionEqunAbbr + "\t" + reversible + "\t" + lowerBound + "\t" + upperBound + "\t" + biologicalObjective + "\t" + syntheticObjective + "\t" + geneAssociation + "\t" + proteinAssociation + "\t" + subsystem + "\t" + proteinClass).split("\t");
-					writer.writeNext(entries);
-				}		
+					if (metaString.length() > 0) {
+						String [] entries = (knockout + "\t" + fluxValue + "\t" + reactionAbbreviation + "\t" + reactionName + "\t" + reactionEqunAbbr + "\t" + reversible + "\t" + lowerBound + "\t" + upperBound + "\t" + biologicalObjective + "\t" + syntheticObjective + "\t" + geneAssociation + "\t" + proteinAssociation + "\t" + subsystem + "\t" + proteinClass + "\t" + metaString.substring(0, metaString.length() - 1)).split("\t");
+						writer.writeNext(entries);
+					} else {
+						String [] entries = (knockout + "\t" + fluxValue + "\t" + reactionAbbreviation + "\t" + reactionName + "\t" + reactionEqunAbbr + "\t" + reversible + "\t" + lowerBound + "\t" + upperBound + "\t" + biologicalObjective + "\t" + syntheticObjective + "\t" + geneAssociation + "\t" + proteinAssociation + "\t" + subsystem + "\t" + proteinClass).split("\t");
+						writer.writeNext(entries);
+					}
+				}	
 			}	
 			writer.close();
 		} catch (IOException e) {

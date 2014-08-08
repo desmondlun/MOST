@@ -257,6 +257,8 @@ public class SBMLModelReader {
 			//System.out.println("j" + j);
 
 			String fluxValue = GraphicalInterfaceConstants.FLUX_VALUE_DEFAULT_STRING;
+			String minFlux = GraphicalInterfaceConstants.MIN_FLUX_DEFAULT_STRING;
+			String maxFlux = GraphicalInterfaceConstants.MIN_FLUX_DEFAULT_STRING;
 			String geneAssociation = "";
 			String proteinAssociation = "";
 			String subsystem = "";
@@ -278,7 +280,9 @@ public class SBMLModelReader {
 			}
 			reacRow.add(fluxValue);
 			//System.out.println("flux value " + fluxValue);
-
+			reacRow.add(minFlux);
+			reacRow.add(maxFlux);
+			
 			reacRow.add(reactions.get(j).getId());
 			reactionAbbreviationIdMap.put(reactions.get(j).getId(), new Integer(j));
 			//System.out.println("reac id " + reactions.get(j).getId());
@@ -590,16 +594,23 @@ public class SBMLModelReader {
 						} 
 						if (columnName.compareTo("SYNTHETIC_OBJECTIVE") == 0 || columnName.compareTo("SYNTHETIC OBJECTIVE") == 0) {
 							syntheticObjective = value.trim();
-						}  else {
-							if (columnName.compareTo("LOCUS") == 0) {
-								//System.out.println(j);
-								//System.out.println(locusBfrStr);
-								reactionsMetaColumnMap.put("Genes", locusBfrStr);
-							} else {
-								if (reactionsMetaColumnNames.contains(columnName)) {
-									reactionsMetaColumnMap.put(columnName, value.trim());
-								}							
-							}
+						}
+						if (LocalConfig.getInstance().fvaColumnsVisible && columnName.compareTo(SBMLConstants.MIN_FLUX_NOTES_NAME) == 0) {
+							minFlux = value.trim();
+							reacRow.set(GraphicalInterfaceConstants.MIN_FLUX_COLUMN, minFlux);
+						}
+						if (LocalConfig.getInstance().fvaColumnsVisible && columnName.compareTo(SBMLConstants.MAX_FLUX_NOTES_NAME) == 0) {
+							maxFlux = value.trim();
+							reacRow.set(GraphicalInterfaceConstants.MAX_FLUX_COLUMN, maxFlux);
+						}
+						if (columnName.compareTo("LOCUS") == 0) {
+							//System.out.println(j);
+							//System.out.println(locusBfrStr);
+							reactionsMetaColumnMap.put("Genes", locusBfrStr);
+						} else {
+							if (reactionsMetaColumnNames.contains(columnName)) {
+								reactionsMetaColumnMap.put(columnName, value.trim());
+							}							
 						}					    
 					}					
 				}

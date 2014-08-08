@@ -36,8 +36,8 @@ public class GraphicalInterfaceConstants {
 		REACTION_ID_COLUMN_NAME,
 		KNOCKOUT_COLUMN_NAME,
 		FLUX_VALUE_COLUMN_NAME,
-		//MINIMUM_FLUX_COLUMN_NAME,
-		//MAXIMUM_FLUX_COLUMN_NAME,
+		MINIMUM_FLUX_COLUMN_NAME,
+		MAXIMUM_FLUX_COLUMN_NAME,
 		REACTION_ABBREVIATION_COLUMN_NAME,
 		REACTION_NAME_COLUMN_NAME,
 		REACTION_EQUATION_ABBR_COLUMN_NAME,
@@ -85,8 +85,8 @@ public class GraphicalInterfaceConstants {
     public static final int KO_COLUMN = reactionsList.indexOf(KNOCKOUT_COLUMN_NAME);
     public static final int KO_WIDTH = 60;    
     public static final int FLUX_VALUE_COLUMN = reactionsList.indexOf(FLUX_VALUE_COLUMN_NAME);
-    //public static final int MIN_FLUX_COLUMN = reactionsList.indexOf(MINIMUM_FLUX_COLUMN_NAME);
-    //public static final int MAX_FLUX_COLUMN = reactionsList.indexOf(MAXIMUM_FLUX_COLUMN_NAME);
+    public static final int MIN_FLUX_COLUMN = reactionsList.indexOf(MINIMUM_FLUX_COLUMN_NAME);
+    public static final int MAX_FLUX_COLUMN = reactionsList.indexOf(MAXIMUM_FLUX_COLUMN_NAME);
     public static final int REACTION_ABBREVIATION_WIDTH = 150;
     public static final int REACTION_ABBREVIATION_COLUMN = reactionsList.indexOf(REACTION_ABBREVIATION_COLUMN_NAME);
     public static final int REACTION_NAME_WIDTH = 200; 
@@ -125,6 +125,10 @@ public class GraphicalInterfaceConstants {
     
     public static final double FLUX_VALUE_DEFAULT = 0;
     public static final String FLUX_VALUE_DEFAULT_STRING = "0";
+    public static final double MIN_FLUX_DEFAULT = 0;
+    public static final String MIN_FLUX_DEFAULT_STRING = "0";
+    public static final double MAX_FLUX_DEFAULT = 0;
+    public static final String MAX_FLUX_DEFAULT_STRING = "0";
     public static final double LOWER_BOUND_DEFAULT = 0.0;
     public static final double LOWER_BOUND_REVERSIBLE_DEFAULT = -999999.0;
     public static final String LOWER_BOUND_DEFAULT_IRREVERBIBLE_STRING = "0.0";
@@ -242,6 +246,10 @@ public class GraphicalInterfaceConstants {
     
     public static final String[] FLUX_VALUE_COLUMN_FILTER =
     {"flux"
+    };
+    
+    public static final String[] FLUX_VALUE_NOT_FILTER =
+    {"min", "max"
     };
         
     public static final String[] GENE_ASSOCIATION_COLUMN_FILTER =

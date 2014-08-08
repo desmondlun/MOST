@@ -657,6 +657,14 @@ public class JSBMLWriter implements TreeModelListener{
 				String synClass = "SYNTHETIC_OBJECTIVE:" + " " + syn;
 				curReact.appendNotes(synClass);
 				
+				String minFlux = Double.toString(cur.getMinFlux());
+				String minFluxClass = SBMLConstants.MIN_FLUX_NOTES_NAME + ":" + " " + minFlux;
+				curReact.appendNotes(minFluxClass);
+				
+				String maxFlux = Double.toString(cur.getMaxFlux());
+				String maxFluxClass = SBMLConstants.MAX_FLUX_NOTES_NAME + ":" + " " + maxFlux;
+				curReact.appendNotes(maxFluxClass);
+				
 				for (int n = 0; n < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); n++) {
 					String value = "";
 					if (cur.getMetaValues().get(n) != null) {

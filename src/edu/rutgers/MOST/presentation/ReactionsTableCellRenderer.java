@@ -39,7 +39,8 @@ public class ReactionsTableCellRenderer extends DefaultTableCellRenderer{
 				if (LocalConfig.getInstance().getInvalidReactions().contains(table.getModel().getValueAt(viewRow, column).toString())) {
 					((javax.swing.JLabel) cell).setToolTipText("Error: invalid syntax : " + table.getModel().getValueAt(viewRow, column).toString()); 
 				}
-			} else if (LocalConfig.getInstance().getInvalidReactions().contains(table.getModel().getValueAt(viewRow, column).toString())) {
+			} else if (LocalConfig.getInstance().getInvalidReactions().contains(table.getModel().getValueAt(viewRow, column).toString())
+					&&  column == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
 				((javax.swing.JLabel) cell).setToolTipText("Error: invalid syntax");
 			} else {
 				((javax.swing.JLabel) cell).setToolTipText(null);

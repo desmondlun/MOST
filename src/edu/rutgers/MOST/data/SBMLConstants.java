@@ -50,4 +50,7 @@ public class SBMLConstants {
 	public static final String AMPERSAND_REPLACEMENT = "_";
 	public static final String PLUS_SIGN_REPLACEMENT = "_";
 	
+	public static final String MIN_FLUX_NOTES_NAME = "MINIMUM_FLUX";
+	public static final String MAX_FLUX_NOTES_NAME = "MAXIMUM_FLUX";
+	
 }

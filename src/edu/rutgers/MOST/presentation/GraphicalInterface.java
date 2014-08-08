@@ -954,6 +954,8 @@ public class GraphicalInterface extends JFrame {
 
 		isRoot = true;
 		
+		LocalConfig.getInstance().fvaColumnsVisible = true;
+		
 		enableSaveItems(false);
 		// setEnableAnalysisMenuItems( false );
 
@@ -1488,7 +1490,6 @@ public class GraphicalInterface extends JFrame {
 				{
 					public void run()
 					{
-						disableMenuItems();
 						ArrayList< Double > soln = null;
 						try
 						{
@@ -1498,7 +1499,6 @@ public class GraphicalInterface extends JFrame {
 						{
 							return;
 						}
-						enableMenuItems();
 						//End optimization
 		
 						ReactionFactory rFactory = new ReactionFactory("SBML");
@@ -1596,7 +1596,6 @@ public class GraphicalInterface extends JFrame {
 			@Override
 			protected ArrayList< Double > analysisPart( Model model ) throws Exception
 			{
-				//getFbaDialog().setVisible(true);
 				fba.setModel(model);
 				ArrayList< Double > soln = fba.run();
 				maxObj = fba.getMaxObj();
@@ -1614,6 +1613,9 @@ public class GraphicalInterface extends JFrame {
 				}
 				outputText.append("Maximum objective: "	+ maxObj + "\n");
 				outputText.append("MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() + "\n" );
+				System.out.println(fba.FVASelected);
+				System.out.println(fba.maxVariability);
+				System.out.println(fba.minVariability);
 			}
 		});
 
@@ -1625,7 +1627,7 @@ public class GraphicalInterface extends JFrame {
 
         gdbbItem.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent a) {
-        	       		
+        		
         		Utilities u = new Utilities();
 
         		String dateTimeStamp = u.createDateTimeStamp();
@@ -3129,6 +3131,7 @@ public class GraphicalInterface extends JFrame {
 		scrollToLocation(reactionsTable, 0, 1);
 		
 		formulaBar.setText((String) reactionsTable.getModel().getValueAt(0, 1));  
+		
 	}
 	/********************************************************************************/
 	//end constructor and layout
@@ -3421,7 +3424,7 @@ public class GraphicalInterface extends JFrame {
 				if (LocalConfig.getInstance().hasMetabolitesFile) {
 					csvReactionCancelLoadAction();
 				} else {
-					clearTables();
+					//clearTables();
 				}        	
 			}
 		});
@@ -3930,7 +3933,7 @@ public class GraphicalInterface extends JFrame {
 		DefaultTableModel blankMetabModel = createBlankMetabolitesTableModel();
 		setUpMetabolitesTable(blankMetabModel);
 		LocalConfig.getInstance().getMetabolitesTableModelMap().put(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME, blankMetabModel);
-		//LocalConfig.getInstance().setModelName(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME);
+		LocalConfig.getInstance().setModelName(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME);
 		setUpTables();
 		setEnableAnalysisMenuItems( false );
 	}
@@ -4315,6 +4318,8 @@ public class GraphicalInterface extends JFrame {
 				}				
 			}
 		} else if (colIndex == GraphicalInterfaceConstants.FLUX_VALUE_COLUMN || 
+				colIndex == GraphicalInterfaceConstants.MIN_FLUX_COLUMN ||
+				colIndex == GraphicalInterfaceConstants.MAX_FLUX_COLUMN ||
 				colIndex == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN || 
 				colIndex == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN || 
 				colIndex == GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN || 
@@ -4404,6 +4409,8 @@ public class GraphicalInterface extends JFrame {
 					}
 				} 
 				if (colIndex == GraphicalInterfaceConstants.FLUX_VALUE_COLUMN || 
+						colIndex == GraphicalInterfaceConstants.MIN_FLUX_COLUMN ||
+						colIndex == GraphicalInterfaceConstants.MAX_FLUX_COLUMN ||
 						colIndex == GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN ||
 						colIndex == GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN) {
 					reactionsTable.getModel().setValueAt(newValue, rowIndex, colIndex);
@@ -5473,7 +5480,8 @@ public class GraphicalInterface extends JFrame {
 	
 	HighlightPredicate invalidReactionPredicate = new HighlightPredicate() {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
-			if (adapter.getValue() != null && LocalConfig.getInstance().getInvalidReactions().contains(adapter.getValue().toString())) {			
+			if (adapter.getValue() != null && LocalConfig.getInstance().getInvalidReactions().contains(adapter.getValue().toString()) &&
+					adapter.column == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {			
 				return true;
 			}					
 			return false;
@@ -5521,6 +5529,8 @@ public class GraphicalInterface extends JFrame {
 		// not like strings
 		reactionsTable.getColumnExt(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.REACTIONS_ID_COLUMN]).setComparator(numberComparator);
 		reactionsTable.getColumnExt(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.FLUX_VALUE_COLUMN]).setComparator(numberComparator);
+		reactionsTable.getColumnExt(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.MIN_FLUX_COLUMN]).setComparator(numberComparator);
+		reactionsTable.getColumnExt(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.MAX_FLUX_COLUMN]).setComparator(numberComparator);
 		reactionsTable.getColumnExt(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.LOWER_BOUND_COLUMN]).setComparator(numberComparator);
 		reactionsTable.getColumnExt(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.UPPER_BOUND_COLUMN]).setComparator(numberComparator);
 		reactionsTable.getColumnExt(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN]).setComparator(numberComparator);
@@ -5552,6 +5562,12 @@ public class GraphicalInterface extends JFrame {
 			}
 			if (c == GraphicalInterfaceConstants.GENE_ASSOCIATION_COLUMN) {
 				tips.setToolTip(col, GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.GENE_ASSOCIATION_COLUMN]);
+			}
+			if (c == GraphicalInterfaceConstants.MIN_FLUX_COLUMN) {
+				tips.setToolTip(col, GraphicalInterfaceConstants.MIN_FLUX_TOOLTIP);
+			}
+			if (c == GraphicalInterfaceConstants.MAX_FLUX_COLUMN) {
+				tips.setToolTip(col, GraphicalInterfaceConstants.MAX_FLUX_TOOLTIP);
 			}
 		}
 		reactionsTable.getTableHeader().addMouseMotionListener(tips);
@@ -5586,7 +5602,9 @@ public class GraphicalInterface extends JFrame {
 				column.setCellRenderer(reacGreyRenderer);
 				//sets color of id column to grey
 				reacGreyRenderer.setHorizontalAlignment(JLabel.CENTER);	
-			} else if (i==GraphicalInterfaceConstants.FLUX_VALUE_COLUMN) {
+			} else if (i==GraphicalInterfaceConstants.FLUX_VALUE_COLUMN ||
+					i==GraphicalInterfaceConstants.MIN_FLUX_COLUMN ||
+					i==GraphicalInterfaceConstants.MAX_FLUX_COLUMN) {
 				column.setCellRenderer(numRenderer);
 				numRenderer.setHorizontalAlignment(JLabel.RIGHT);
 			} else {
@@ -5600,6 +5618,36 @@ public class GraphicalInterface extends JFrame {
 			if (i==GraphicalInterfaceConstants.FLUX_VALUE_COLUMN) {
 				ChangeName(reactionsTable, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN, 
 						GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.FLUX_VALUE_COLUMN]); 
+			}
+			if (i==GraphicalInterfaceConstants.MIN_FLUX_COLUMN) {
+				if (LocalConfig.getInstance().fvaColumnsVisible) {
+					column.setPreferredWidth(GraphicalInterfaceConstants.DEFAULT_WIDTH); 
+					column.setMinWidth(GraphicalInterfaceConstants.DEFAULT_WIDTH);
+					column.setMaxWidth(GraphicalInterfaceConstants.DEFAULT_WIDTH);
+				} else {
+					//sets column not visible
+					column.setMaxWidth(0);
+					column.setMinWidth(0); 
+					column.setWidth(0); 
+					column.setPreferredWidth(0);
+				}	
+				ChangeName(reactionsTable, GraphicalInterfaceConstants.MIN_FLUX_COLUMN, 
+						GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.MIN_FLUX_COLUMN]); 
+			}
+			if (i==GraphicalInterfaceConstants.MAX_FLUX_COLUMN) {
+				if (LocalConfig.getInstance().fvaColumnsVisible) {
+					column.setPreferredWidth(GraphicalInterfaceConstants.DEFAULT_WIDTH); 
+					column.setMinWidth(GraphicalInterfaceConstants.DEFAULT_WIDTH);
+					column.setMaxWidth(GraphicalInterfaceConstants.DEFAULT_WIDTH);
+				} else {
+					//sets column not visible
+					column.setMaxWidth(0);
+					column.setMinWidth(0); 
+					column.setWidth(0); 
+					column.setPreferredWidth(0);
+				}	
+				ChangeName(reactionsTable, GraphicalInterfaceConstants.MAX_FLUX_COLUMN, 
+						GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.MAX_FLUX_COLUMN]); 
 			}
 			if (i==GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN) {
 				column.setPreferredWidth(GraphicalInterfaceConstants.REACTION_ABBREVIATION_WIDTH);//2
@@ -5644,13 +5692,15 @@ public class GraphicalInterface extends JFrame {
 			}
 			//set alignment of columns with numerical values to right, and default width
 			if (i==GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN || i==GraphicalInterfaceConstants.LOWER_BOUND_COLUMN
-					|| i==GraphicalInterfaceConstants.UPPER_BOUND_COLUMN || i==GraphicalInterfaceConstants.FLUX_VALUE_COLUMN || 
+					|| i==GraphicalInterfaceConstants.UPPER_BOUND_COLUMN || i==GraphicalInterfaceConstants.FLUX_VALUE_COLUMN ||
+					i==GraphicalInterfaceConstants.MIN_FLUX_COLUMN || i==GraphicalInterfaceConstants.MAX_FLUX_COLUMN ||
 					i==GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN) {	  
 				reacRenderer.setHorizontalAlignment(JLabel.RIGHT); 
 				column.setPreferredWidth(GraphicalInterfaceConstants.DEFAULT_WIDTH);
 			} 
 			if (i==GraphicalInterfaceConstants.FLUX_VALUE_COLUMN) {
 				column.setMinWidth(GraphicalInterfaceConstants.DEFAULT_WIDTH);
+				column.setMaxWidth(GraphicalInterfaceConstants.DEFAULT_WIDTH);
 			}
 
 			if (i==GraphicalInterfaceConstants.GENE_ASSOCIATION_COLUMN) {
@@ -6017,6 +6067,10 @@ public class GraphicalInterface extends JFrame {
 				row.addElement(GraphicalInterfaceConstants.KO_DEFAULT);
 			} else if (i==GraphicalInterfaceConstants.FLUX_VALUE_COLUMN) {
 				row.addElement(GraphicalInterfaceConstants.FLUX_VALUE_DEFAULT_STRING);
+			} else if (i==GraphicalInterfaceConstants.MIN_FLUX_COLUMN) {	
+				row.addElement(GraphicalInterfaceConstants.MIN_FLUX_DEFAULT_STRING);
+			} else if (i==GraphicalInterfaceConstants.MAX_FLUX_COLUMN) {	
+				row.addElement(GraphicalInterfaceConstants.MAX_FLUX_DEFAULT_STRING);	
 			} else if (i==GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
 				row.addElement(GraphicalInterfaceConstants.REVERSIBLE_DEFAULT);
 			} else if (i==GraphicalInterfaceConstants.LOWER_BOUND_COLUMN) {
@@ -6596,6 +6650,7 @@ public class GraphicalInterface extends JFrame {
 		JMenuItem clearMenu = new JMenuItem("Clear Contents");
 		if (isRoot) {
 			if (columnIndex == GraphicalInterfaceConstants.KO_COLUMN || columnIndex == GraphicalInterfaceConstants.FLUX_VALUE_COLUMN ||
+					columnIndex == GraphicalInterfaceConstants.MIN_FLUX_COLUMN || columnIndex == GraphicalInterfaceConstants.MAX_FLUX_COLUMN ||
 					columnIndex == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN || columnIndex == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN ||
 					columnIndex == GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN || columnIndex == GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN ||
 					columnIndex == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN || columnIndex == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
@@ -7091,7 +7146,9 @@ public class GraphicalInterface extends JFrame {
 					LocalConfig.getInstance().getReactionAbbreviationIdMap().put(value, id);
 				}
 			}
-		} else if (col == GraphicalInterfaceConstants.FLUX_VALUE_COLUMN || 
+		} else if (col == GraphicalInterfaceConstants.FLUX_VALUE_COLUMN ||
+				col == GraphicalInterfaceConstants.MIN_FLUX_COLUMN ||
+				col == GraphicalInterfaceConstants.MAX_FLUX_COLUMN ||
 				col == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN ||
 				col == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN ||
 				col == GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN ||
@@ -7123,6 +7180,8 @@ public class GraphicalInterface extends JFrame {
 		int viewRow = reactionsTable.convertRowIndexToModel(row);
 		int id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
 		if (columnIndex == GraphicalInterfaceConstants.FLUX_VALUE_COLUMN || 
+				columnIndex == GraphicalInterfaceConstants.MIN_FLUX_COLUMN ||
+				columnIndex == GraphicalInterfaceConstants.MAX_FLUX_COLUMN ||
 				columnIndex == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN ||
 				columnIndex == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN ||
 				columnIndex == GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN ||
@@ -7230,6 +7289,7 @@ public class GraphicalInterface extends JFrame {
 			// check if columns that require values will be cleared
 			for(int j=0; j < reactionsTable.getSelectedColumns().length ;j++) { 
 				if (startCol + j == GraphicalInterfaceConstants.KO_COLUMN || startCol + j == GraphicalInterfaceConstants.FLUX_VALUE_COLUMN || 
+						startCol + j == GraphicalInterfaceConstants.MIN_FLUX_COLUMN || startCol + j == GraphicalInterfaceConstants.MAX_FLUX_COLUMN ||
 						startCol + j == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN || startCol + j == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN
 						|| startCol + j == GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN || startCol + j == GraphicalInterfaceConstants.REVERSIBLE_COLUMN ||
 						startCol + j == GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN || startCol + j == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
@@ -9949,6 +10009,8 @@ public class GraphicalInterface extends JFrame {
 					if (isReactionsEntryValid(viewRow, getReactionsFindLocationsList().get(i).get(1), replaceAllValue)) {	
 						EntryValidator validator = new EntryValidator();
 						if (getReactionsFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.FLUX_VALUE_COLUMN ||
+								getReactionsFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.MIN_FLUX_COLUMN ||
+								getReactionsFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.MAX_FLUX_COLUMN ||
 								getReactionsFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN ||
 								getReactionsFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN ||
 								getReactionsFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN ||
@@ -10908,7 +10970,7 @@ public class GraphicalInterface extends JFrame {
 							solution.setDatabaseName(optimizeName);
 							solution.setIndex(index++);
 							publish(solution);
-
+							
 							// copy models, run optimization on these model
 							DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel(LocalConfig.getInstance().getMetabolitesTableModelMap().get(LocalConfig.getInstance().getModelName()));
 							DefaultTableModel reactionsOptModel = copyReactionsTableModel(LocalConfig.getInstance().getReactionsTableModelMap().get(LocalConfig.getInstance().getModelName()));				
@@ -11069,7 +11131,7 @@ public class GraphicalInterface extends JFrame {
 					return;
 
 				getGdbbDialog().enableStart();
-				DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);		
+				DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 
 				setrFactory(new ReactionFactory("SBML"));
 				getrFactory().setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())));
@@ -11440,7 +11502,6 @@ public class GraphicalInterface extends JFrame {
 	};
 	
 	public static void main(String[] args) {
-		
 	//public static void main(String[] args) throws Exception {
 		ResizableDialog dialog = new ResizableDialog("Error", "Error", "Error");
 		dialog.setLocationRelativeTo(null);

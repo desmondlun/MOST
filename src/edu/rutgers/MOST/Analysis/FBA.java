@@ -3,10 +3,12 @@ package edu.rutgers.MOST.Analysis;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
+
 import edu.rutgers.MOST.optimization.solvers.LinearSolver;
 import edu.rutgers.MOST.optimization.solvers.QuadraticSolver;
 import edu.rutgers.MOST.optimization.solvers.Solver;
 import edu.rutgers.MOST.optimization.solvers.SolverFactory;
+import edu.rutgers.MOST.presentation.GraphicalInterface;
 
 public class FBA extends Analysis
 {

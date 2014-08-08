@@ -211,6 +211,8 @@ public class TextReactionsModelReader {
 					reacRow.add(Integer.toString(id));
 					String knockout = GraphicalInterfaceConstants.KO_DEFAULT;
 					Double fluxValue = GraphicalInterfaceConstants.FLUX_VALUE_DEFAULT;
+					Double minFlux = GraphicalInterfaceConstants.MIN_FLUX_DEFAULT;
+					Double maxFlux = GraphicalInterfaceConstants.MAX_FLUX_DEFAULT;
 					String reactionAbbreviation = "";
 					String reactionName = "";
 					String reactionEqunAbbr = "";
@@ -238,6 +240,8 @@ public class TextReactionsModelReader {
 						} 
 					} 
 					reacRow.add(Double.toString(fluxValue));
+					reacRow.add(Double.toString(minFlux));
+					reacRow.add(Double.toString(maxFlux));
 					reactionAbbreviation = dataArray[LocalConfig.getInstance().getReactionAbbreviationColumnIndex()];
 					
 					// appends suffix on duplicate abbreviations

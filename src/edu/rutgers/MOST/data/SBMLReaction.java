@@ -13,6 +13,8 @@ public class SBMLReaction implements ModelReaction {
 	private String reactionName;
 	private String knockout;
 	private double fluxValue;
+	private double minFlux;
+	private double maxFlux;
 	private String reactionEqunAbbr;
 	private String reactionEqunNames;
 	private String reversible;
@@ -66,6 +68,22 @@ public class SBMLReaction implements ModelReaction {
 		this.fluxValue = fluxValue;
 	}
 	
+	public double getMinFlux() {
+		return minFlux;
+	}
+
+	public void setMinFlux(double minFlux) {
+		this.minFlux = minFlux;
+	}
+
+	public double getMaxFlux() {
+		return maxFlux;
+	}
+
+	public void setMaxFlux(double maxFlux) {
+		this.maxFlux = maxFlux;
+	}
+
 	public String getReactionEqunAbbr() {
 		return reactionEqunAbbr;
 	}
@@ -177,6 +195,8 @@ public class SBMLReaction implements ModelReaction {
 		this.setId(Integer.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
 		this.setKnockout((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.KO_COLUMN));
 		this.setFluxValue(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN)));
+		this.setMinFlux(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.MIN_FLUX_COLUMN)));
+		this.setMaxFlux(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.MAX_FLUX_COLUMN)));
 		this.setReactionAbbreviation((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN));
 		this.setReactionName((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTION_NAME_COLUMN));
 		this.setReactionEqunAbbr((String) GraphicalInterface.reactionsTable.getModel().getValueAt(row, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN));
