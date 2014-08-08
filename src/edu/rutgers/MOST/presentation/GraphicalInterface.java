@@ -592,10 +592,12 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem saveCSVMetabolitesItem = new JMenuItem("Save As CSV Metabolites");
 	public final JMenuItem saveCSVReactionsItem = new JMenuItem("Save As CSV Reactions");
 	public final JMenuItem clearItem = new JMenuItem("Clear Tables");
+	public final JMenuItem exitItem = new JMenuItem("Exit");
 	public final JMenuItem fbaItem = new JMenuItem("FBA");
 	public final JMenuItem gdbbItem = new JMenuItem("GDBB");
 	public final JMenuItem eflux2Item = new JMenuItem( "Eflux2" );
-	public final JMenuItem spotItem = new JMenuItem( "SPOT" );
+	public final JMenuItem spotItem = new JMenuItem( "SPOT" );	
+	public final JMenuItem aboutBox = new JMenuItem("About MOST");
 	public final JCheckBoxMenuItem highlightUnusedMetabolitesItem = new JCheckBoxMenuItem("Highlight Unused Metabolites");
 	public final JMenuItem deleteUnusedItem = new JMenuItem("Delete All Unused Metabolites");
 	public final JMenuItem findSuspiciousItem = new JMenuItem("Find Suspicious Metabolites");
@@ -955,6 +957,7 @@ public class GraphicalInterface extends JFrame {
 		isRoot = true;
 		
 		LocalConfig.getInstance().fvaColumnsVisible = true;
+		LocalConfig.getInstance().fvaDone = true;
 		
 		enableSaveItems(false);
 		// setEnableAnalysisMenuItems( false );
@@ -1164,11 +1167,14 @@ public class GraphicalInterface extends JFrame {
 
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent evt) {
-				SaveChangesPrompt();
-				if (exit) {
-					// Exit the application
-					System.exit(0);	
-				}	            	        	
+				System.out.println(LocalConfig.getInstance().fvaDone);
+				if (LocalConfig.getInstance().fvaDone) {
+					SaveChangesPrompt();
+					if (exit) {
+						// Exit the application
+						System.exit(0);	
+					}	
+				}          	        	
 			}
 		});
 
@@ -1444,7 +1450,6 @@ public class GraphicalInterface extends JFrame {
 
 		modelMenu.addSeparator();
 
-		JMenuItem exitItem = new JMenuItem("Exit");
 		modelMenu.add(exitItem);
 		exitItem.setMnemonic(KeyEvent.VK_X);
 		exitItem.addActionListener(new ExitAction());
@@ -1490,6 +1495,9 @@ public class GraphicalInterface extends JFrame {
 				{
 					public void run()
 					{
+						disableMenuItems();
+						disableLoadItems();
+						disableMenuItemsForFVA(true);
 						ArrayList< Double > soln = null;
 						try
 						{
@@ -1500,6 +1508,9 @@ public class GraphicalInterface extends JFrame {
 							return;
 						}
 						//End optimization
+						enableMenuItems();
+						enableLoadItems();
+						disableMenuItemsForFVA(false);
 		
 						ReactionFactory rFactory = new ReactionFactory("SBML");
 						rFactory.setFluxes( new ArrayList< Double >( soln ) );
@@ -1550,7 +1561,6 @@ public class GraphicalInterface extends JFrame {
 				setTitle(GraphicalInterfaceConstants.TITLE + " - " + optimizeName);	
 				listModel.addElement(optimizeName);		
 				DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName, optimizeName));
-				// uncomment the following line to get ConcurrentException
 				DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 			}
 			
@@ -1581,7 +1591,9 @@ public class GraphicalInterface extends JFrame {
 			}
 			@Override
 			public void menuSelected(MenuEvent arg0) {
-				DynamicTreePanel.getTreePanel().setNodeSelected(0);
+				if (LocalConfig.getInstance().fvaDone) {
+					DynamicTreePanel.getTreePanel().setNodeSelected(0);
+				}
 			}
 	    });
 
@@ -2543,7 +2555,6 @@ public class GraphicalInterface extends JFrame {
 			}    	     
 		});
 
-		JMenuItem aboutBox = new JMenuItem("About MOST");
 		helpMenu.add(aboutBox);
 		aboutBox.setMnemonic(KeyEvent.VK_A);
 
@@ -10683,6 +10694,7 @@ public class GraphicalInterface extends JFrame {
 		clearItem.setEnabled(true);
 		enableSaveItems(true);
 		saveSBMLItem.setEnabled(true);
+		saveCSVItem.setEnabled(true);
 		if (tabbedPane.getSelectedIndex() == 0) {
 			saveCSVReactionsItem.setEnabled(true);
 		} else if (tabbedPane.getSelectedIndex() == 1) {
@@ -10703,6 +10715,7 @@ public class GraphicalInterface extends JFrame {
 		clearItem.setEnabled(false);
 		enableSaveItems(false);
 		saveSBMLItem.setEnabled(false);
+		saveCSVItem.setEnabled(false);
 		saveCSVMetabolitesItem.setEnabled(false);
 		saveCSVReactionsItem.setEnabled(false);
 		findReplaceItem.setEnabled(false);	
@@ -10713,40 +10726,42 @@ public class GraphicalInterface extends JFrame {
 
 	// enables menu items when main file is selected in analysis pane
 	public void enableMenuItems() {
-		clearItem.setEnabled(true);
-		if (LocalConfig.getInstance().getUnusedList().size() > 0) {
-			highlightUnusedMetabolitesItem.setEnabled(true);
-			deleteUnusedItem.setEnabled(true);
-		}
-		maybeDisplaySuspiciousMetabMessage(statusBarRow());	
-		// since we are still testing the new behavior where clicking the Analysis menu
-		// selects the original model in the tree, these items should remain until
-		// it is determined that the new behavior is acceptable.
-//		fbaItem.setEnabled(true);
-//		gdbbItem.setEnabled(true);
-//		eflux2Item.setEnabled( true );
-//		spotItem.setEnabled( true );
-		addReacRowItem.setEnabled(true);
-		addReacRowsItem.setEnabled(true);
-		addMetabRowItem.setEnabled(true);
-		addMetabRowsItem.setEnabled(true);
-		addReacColumnItem.setEnabled(true);
-		addMetabColumnItem.setEnabled(true);
-		reactionsTableEditable = true;
-		saveOptFile = false;
-		formulaBar.setEditable(true);		
-		editorMenu.setEnabled(true);
-		pastebutton.setEnabled(true);
-		boundsConstantMenuItem.setEnabled(true);
-		setBoundsNotConstantMenu.setEnabled(true);
-		if (undoCount > 1) {
-			enableOptionComponent(undoSplitButton, undoLabel, undoGrayedLabel);
-			undoItem.setEnabled(true);
-		}
-		if (LocalConfig.getInstance().getRedoItemMap().size() > 0) {
-			enableOptionComponent(redoSplitButton, redoLabel, redoGrayedLabel);
-			redoItem.setEnabled(true);
-		}
+		if (LocalConfig.getInstance().fvaDone) {
+			clearItem.setEnabled(true);
+			if (LocalConfig.getInstance().getUnusedList().size() > 0) {
+				highlightUnusedMetabolitesItem.setEnabled(true);
+				deleteUnusedItem.setEnabled(true);
+			}
+			maybeDisplaySuspiciousMetabMessage(statusBarRow());	
+			// since we are still testing the new behavior where clicking the Analysis menu
+			// selects the original model in the tree, these items should remain until
+			// it is determined that the new behavior is acceptable.
+//			fbaItem.setEnabled(true);
+//			gdbbItem.setEnabled(true);
+//			eflux2Item.setEnabled( true );
+//			spotItem.setEnabled( true );
+			addReacRowItem.setEnabled(true);
+			addReacRowsItem.setEnabled(true);
+			addMetabRowItem.setEnabled(true);
+			addMetabRowsItem.setEnabled(true);
+			addReacColumnItem.setEnabled(true);
+			addMetabColumnItem.setEnabled(true);
+			reactionsTableEditable = true;
+			saveOptFile = false;
+			formulaBar.setEditable(true);		
+			editorMenu.setEnabled(true);
+			pastebutton.setEnabled(true);
+			boundsConstantMenuItem.setEnabled(true);
+			setBoundsNotConstantMenu.setEnabled(true);
+			if (undoCount > 1) {
+				enableOptionComponent(undoSplitButton, undoLabel, undoGrayedLabel);
+				undoItem.setEnabled(true);
+			}
+			if (LocalConfig.getInstance().getRedoItemMap().size() > 0) {
+				enableOptionComponent(redoSplitButton, redoLabel, redoGrayedLabel);
+				redoItem.setEnabled(true);
+			}
+		} 
 	}
 	
 	// disables menu items when optimization is selected in analysis pane (tree)
@@ -10785,6 +10800,22 @@ public class GraphicalInterface extends JFrame {
 		disableOptionComponent(redoSplitButton, redoLabel, redoGrayedLabel);
 		undoItem.setEnabled(false);
 		redoItem.setEnabled(false);
+	}
+	
+	/**
+	 * 
+	 * @param enabled
+	 * Users should not be able to run an analysis while FVA is running
+	 * Also any item that causes a dialog to be launched must be disabled
+	 * while FVA progress bar is visible
+	 */
+	public void disableMenuItemsForFVA(boolean enabled) {
+		fbaItem.setEnabled(!enabled);
+		gdbbItem.setEnabled(!enabled);
+		eflux2Item.setEnabled(!enabled);
+		spotItem.setEnabled(!enabled);
+		exitItem.setEnabled(!enabled);
+		aboutBox.setEnabled(!enabled);
 	}
 
 	/**

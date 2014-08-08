@@ -559,6 +559,7 @@ public class LocalConfig {
 	
 	public boolean hasValidGurobiKey;
 	
+	public boolean fvaDone;
 	public boolean fvaColumnsVisible;
 	
 	private Integer reactionsLocationsListCount;

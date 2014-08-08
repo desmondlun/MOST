@@ -24,6 +24,7 @@ import java.util.ArrayList;
 
 public class QuadraticGurobiSolver implements QuadraticSolver
 { 
+	
 	private void promptGRBError( GRBException e )
 	{
 		String errMsg;
@@ -287,6 +288,7 @@ public class QuadraticGurobiSolver implements QuadraticSolver
 				// add to the maximized flux vector
 				max.add( vars.get( j ).get( GRB.DoubleAttr.X ) );
 			}
+			LocalConfig.getInstance().fvaDone = true;
 			progress.setVisible( false );
 			progress.dispose();
 			
