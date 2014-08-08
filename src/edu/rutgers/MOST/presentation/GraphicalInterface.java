@@ -1487,6 +1487,11 @@ public class GraphicalInterface extends JFrame {
 				setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
 				setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
 				LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
+				setTitle(GraphicalInterfaceConstants.TITLE + " - " + optimizeName);	
+				listModel.addElement(optimizeName);		
+				DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName, optimizeName));
+				DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
+			
 
 				// Begin optimization
 				final Model model = new Model();
@@ -1557,10 +1562,6 @@ public class GraphicalInterface extends JFrame {
 					}
 				};
 				t.start();
-				setTitle(GraphicalInterfaceConstants.TITLE + " - " + optimizeName);	
-				listModel.addElement(optimizeName);		
-				DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName, optimizeName));
-				DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 			}
 			
 			/**
@@ -1602,11 +1603,12 @@ public class GraphicalInterface extends JFrame {
 
 		fbaItem.addActionListener( new AnalysisCommonActionListener(){
 			private	Double maxObj = 0.0;
-			FBA fba = new FBA();
+			FBA fba = null; 
 			
 			@Override
 			protected ArrayList< Double > analysisPart( Model model ) throws Exception
 			{
+				fba = new FBA();
 				fba.setModel(model);
 				ArrayList< Double > soln = fba.run();
 				maxObj = fba.getMaxObj();
