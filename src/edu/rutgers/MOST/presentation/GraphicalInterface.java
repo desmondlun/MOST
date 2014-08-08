@@ -956,7 +956,7 @@ public class GraphicalInterface extends JFrame {
 
 		isRoot = true;
 		
-		LocalConfig.getInstance().fvaColumnsVisible = true;
+		LocalConfig.getInstance().fvaColumnsVisible = false;
 		LocalConfig.getInstance().fvaDone = true;
 		
 		enableSaveItems(false);
@@ -1624,13 +1624,16 @@ public class GraphicalInterface extends JFrame {
 				}
 				outputText.append("Maximum objective: "	+ maxObj + "\n");
 				outputText.append("MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() + "\n" );
-				System.out.println(fba.FVASelected);
-				System.out.println(fba.maxVariability);
-				System.out.println(fba.minVariability);
 				if (fba.FVASelected) {
+					LocalConfig.getInstance().fvaColumnsVisible = true;
 					ReactionFactory rFactory = new ReactionFactory("SBML");
 					rFactory.setFluxes(fba.minVariability, GraphicalInterfaceConstants.MIN_FLUX_COLUMN);
 					rFactory.setFluxes(fba.maxVariability, GraphicalInterfaceConstants.MAX_FLUX_COLUMN);
+					// reload current table model to show fva columns
+					DefaultTableModel reactionsOptModel = (DefaultTableModel) reactionsTable.getModel();	
+					setUpReactionsTable(reactionsOptModel);
+				} else {
+					LocalConfig.getInstance().fvaColumnsVisible = false;
 				}
 			}
 		});
