@@ -1000,7 +1000,7 @@ public class GraphicalInterface extends JFrame {
 								// execute this code
 								if (!gdbbRunning && nodeInfo.getIndex() > -1) {
 									ReactionFactory rFactory = new ReactionFactory("SBML");
-								    rFactory.setFluxes(getGdbbFluxesMap().get(nodeInfo.getSolutionName()));
+								    rFactory.setFluxes(getGdbbFluxesMap().get(nodeInfo.getSolutionName()), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN);
 									//System.out.println(LocalConfig.getInstance().getGdbbKnockoutsMap().get(nodeInfo.getSolutionName()));
 									rFactory.updateKnockouts(LocalConfig.getInstance().getGdbbKnockoutsMap().get(nodeInfo.getSolutionName()));
 								}								
@@ -1167,7 +1167,6 @@ public class GraphicalInterface extends JFrame {
 
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent evt) {
-				System.out.println(LocalConfig.getInstance().fvaDone);
 				if (LocalConfig.getInstance().fvaDone) {
 					SaveChangesPrompt();
 					if (exit) {
@@ -1513,7 +1512,7 @@ public class GraphicalInterface extends JFrame {
 						disableMenuItemsForFVA(false);
 		
 						ReactionFactory rFactory = new ReactionFactory("SBML");
-						rFactory.setFluxes( new ArrayList< Double >( soln ) );
+						rFactory.setFluxes( new ArrayList< Double >( soln ), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN );
 		
 						if (LocalConfig.getInstance().hasValidGurobiKey) {
 							Writer writer = null;
@@ -1628,6 +1627,11 @@ public class GraphicalInterface extends JFrame {
 				System.out.println(fba.FVASelected);
 				System.out.println(fba.maxVariability);
 				System.out.println(fba.minVariability);
+				if (fba.FVASelected) {
+					ReactionFactory rFactory = new ReactionFactory("SBML");
+					rFactory.setFluxes(fba.minVariability, GraphicalInterfaceConstants.MIN_FLUX_COLUMN);
+					rFactory.setFluxes(fba.maxVariability, GraphicalInterfaceConstants.MAX_FLUX_COLUMN);
+				}
 			}
 		});
 
@@ -11136,7 +11140,7 @@ public class GraphicalInterface extends JFrame {
 				}
 
 				rFactory = new ReactionFactory("SBML");
-				rFactory.setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())));
+				rFactory.setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN);
 				rFactory.setKnockouts(soln.subList(knockoutOffset, soln.size()));
 				getGdbbFluxesMap().put(solution.getSolutionName(), new ArrayList<Double>(soln.subList(0, model.getNumReactions())));
 				LocalConfig.getInstance().getGdbbKnockoutsMap().put(solution.getSolutionName(), LocalConfig.getInstance().getGdbbKnockoutsList());
@@ -11165,7 +11169,7 @@ public class GraphicalInterface extends JFrame {
 				DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 
 				setrFactory(new ReactionFactory("SBML"));
-				getrFactory().setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())));
+				getrFactory().setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN);
 				getrFactory().setKnockouts(soln.subList(knockoutOffset, soln.size()));
 				gdbbProcessed = true;
 
