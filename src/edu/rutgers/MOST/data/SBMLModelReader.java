@@ -674,7 +674,7 @@ public class SBMLModelReader {
 		if (containsMinFlux && containsMaxFlux) {
 			LocalConfig.getInstance().getShowFVAColumnsList().add(LocalConfig.getInstance().getModelName());
 		}
-		System.out.println(LocalConfig.getInstance().getShowFVAColumnsList());
+		//System.out.println(LocalConfig.getInstance().getShowFVAColumnsList());
 		finished = true;
 		//System.out.println("Done");
 

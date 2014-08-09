@@ -2,11 +2,15 @@ package edu.rutgers.MOST.data;
 
 public class SBMLConstants {
 		
+	public static final String MIN_FLUX_NOTES_NAME = "MINIMUM_FLUX";
+	public static final String MAX_FLUX_NOTES_NAME = "MAXIMUM_FLUX";
+	
 	public static final String[] REACTIONS_IGNORE_LIST =
     {"Abbreviation", "Equation", "GENE ASSOCIATION", "GENE_ASSOCIATION",
 		"PROTEIN ASSOCIATION", "PROTEIN_ASSOCIATION",
 		"SUBSYSTEM", "PROTEIN CLASS", "PROTEIN_CLASS",
-		"SYNTHETIC OBJECTIVE", "SYNTHETIC_OBJECTIVE"};
+		"SYNTHETIC OBJECTIVE", "SYNTHETIC_OBJECTIVE",
+		MIN_FLUX_NOTES_NAME, MAX_FLUX_NOTES_NAME};
 	
 	public static final String[] METABOLITES_IGNORE_LIST =
     {"CHARGE"
@@ -49,8 +53,5 @@ public class SBMLConstants {
 	public static final String NUMBER_SIGN_REPLACEMENT = "_";
 	public static final String AMPERSAND_REPLACEMENT = "_";
 	public static final String PLUS_SIGN_REPLACEMENT = "_";
-	
-	public static final String MIN_FLUX_NOTES_NAME = "MINIMUM_FLUX";
-	public static final String MAX_FLUX_NOTES_NAME = "MAXIMUM_FLUX";
 	
 }
