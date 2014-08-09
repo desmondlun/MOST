@@ -207,6 +207,8 @@ public class GraphicalInterface extends JFrame {
 	protected GDBBTask gdbbTask;
 	public javax.swing.Timer gdbbTimer = new javax.swing.Timer(1000, new GDBBTimeListener());
 
+	public javax.swing.Timer fvaTimer = new javax.swing.Timer(100, new FVATimeListener());
+	
 	private Task task;	
 	public final static ProgressBar progressBar = new ProgressBar();	
 	javax.swing.Timer timer = new javax.swing.Timer(100, new TimeListener());
@@ -288,6 +290,7 @@ public class GraphicalInterface extends JFrame {
 	public boolean gdbbProcessed;
 	
 	public boolean runFVA;
+	public boolean fluxesSet;
 
 	/*****************************************************************************/
 	// end boolean values
@@ -483,7 +486,7 @@ public class GraphicalInterface extends JFrame {
 	}
 
 	private DynamicTreePanel treePanel;
-	
+
 	private String urlString;
 	
 	public String getUrlString() {
@@ -975,6 +978,8 @@ public class GraphicalInterface extends JFrame {
 				Solution nodeInfo = (Solution)node.getUserObject();
 				String solutionName = nodeInfo.getSolutionName();
 				Utilities u = new Utilities();
+				maybeShowFVAColumns(solutionName);
+				fvaTimer.stop();
 				if (node.isLeaf()) {
 					if (solutionName != null) {
 						if (solutionName.equals(LocalConfig.getInstance().getModelName())) {
@@ -1250,6 +1255,8 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().setInvalidReactions(invalidReactions);
 		ArrayList<Integer> constantBoundsIdList = new ArrayList<Integer>();
 		LocalConfig.getInstance().setConstantBoundsIdList(constantBoundsIdList);
+		ArrayList<String> showFVAColumnsList = new ArrayList<String>();
+		LocalConfig.getInstance().setShowFVAColumnsList(showFVAColumnsList);
 
 		// meta column lists
 		ArrayList<String> reactionsMetaColumnNames = new ArrayList<String>();
@@ -1566,6 +1573,8 @@ public class GraphicalInterface extends JFrame {
 					}
 				};
 				t.start();
+				fluxesSet = false;
+				fvaTimer.start();
 			}
 			
 			/**
@@ -1635,9 +1644,8 @@ public class GraphicalInterface extends JFrame {
 					ReactionFactory rFactory = new ReactionFactory("SBML");
 					rFactory.setFluxes(fba.minVariability, GraphicalInterfaceConstants.MIN_FLUX_COLUMN);
 					rFactory.setFluxes(fba.maxVariability, GraphicalInterfaceConstants.MAX_FLUX_COLUMN);
-					// reload current table model to show fva columns
-					DefaultTableModel reactionsOptModel = (DefaultTableModel) reactionsTable.getModel();	
-					setUpReactionsTable(reactionsOptModel);
+					LocalConfig.getInstance().getShowFVAColumnsList().add(getOptimizeName());
+					fluxesSet = true;
 				} else {
 					LocalConfig.getInstance().fvaColumnsVisible = false;
 				}
@@ -5033,7 +5041,7 @@ public class GraphicalInterface extends JFrame {
 			formulaBar.setText((String) reactionsTable.getModel().getValueAt(0, 1));  
 		} catch (Throwable t) {
 			
-		}		
+		}
 	}
 	
 	public void enableSaveItems(boolean enabled) {
@@ -5124,6 +5132,7 @@ public class GraphicalInterface extends JFrame {
 			getGdbbFluxesMap().clear();
 			LocalConfig.getInstance().getGdbbKnockoutsList().clear();
 			LocalConfig.getInstance().getGdbbKnockoutsMap().clear();
+			LocalConfig.getInstance().getShowFVAColumnsList().clear();
 		}		
 		LocalConfig.getInstance().getAddedMetabolites().clear();
 		LocalConfig.getInstance().getReactionEquationMap().clear();
@@ -5653,7 +5662,7 @@ public class GraphicalInterface extends JFrame {
 					column.setMaxWidth(0);
 					column.setMinWidth(0); 
 					column.setWidth(0); 
-					column.setPreferredWidth(0);
+					column.setPreferredWidth(0); 
 				}	
 				ChangeName(reactionsTable, GraphicalInterfaceConstants.MIN_FLUX_COLUMN, 
 						GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.MIN_FLUX_COLUMN]); 
@@ -5717,7 +5726,6 @@ public class GraphicalInterface extends JFrame {
 			//set alignment of columns with numerical values to right, and default width
 			if (i==GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN || i==GraphicalInterfaceConstants.LOWER_BOUND_COLUMN
 					|| i==GraphicalInterfaceConstants.UPPER_BOUND_COLUMN || i==GraphicalInterfaceConstants.FLUX_VALUE_COLUMN ||
-					i==GraphicalInterfaceConstants.MIN_FLUX_COLUMN || i==GraphicalInterfaceConstants.MAX_FLUX_COLUMN ||
 					i==GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN) {	  
 				reacRenderer.setHorizontalAlignment(JLabel.RIGHT); 
 				column.setPreferredWidth(GraphicalInterfaceConstants.DEFAULT_WIDTH);
@@ -11293,6 +11301,7 @@ public class GraphicalInterface extends JFrame {
 			progressBar.progress.setValue(LocalConfig.getInstance().getProgress());
 			progressBar.progress.repaint();
 			if (LocalConfig.getInstance().getProgress() == 100) {
+				maybeShowFVAColumns(LocalConfig.getInstance().getModelName());
 				setUpReactionsTable(SBMLModelReader.getReactionsTableModel());
 				LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), SBMLModelReader.getReactionsTableModel());
 				setUpMetabolitesTable(SBMLModelReader.getMetabolitesTableModel());
@@ -11337,6 +11346,17 @@ public class GraphicalInterface extends JFrame {
 		gdbbStopped = true;
 		dotCount = 0;
 		getGdbbDialog().getCounterLabel().setText(GDBBConstants.PROCESSING);
+	}
+	
+	class FVATimeListener implements ActionListener {
+		public void actionPerformed(ActionEvent ae) {
+			if (LocalConfig.getInstance().fvaDone && fluxesSet) {
+				maybeShowFVAColumns(getOptimizeName());
+				// reload current table model to show fva columns
+				DefaultTableModel reactionsOptModel = (DefaultTableModel) reactionsTable.getModel();	
+				setUpReactionsTable(reactionsOptModel);
+			}
+		}
 	}
 	
 	/*******************************************************************************/
@@ -11538,6 +11558,14 @@ public class GraphicalInterface extends JFrame {
 		}
 	};
 	
+	public void maybeShowFVAColumns(String solutionName) {
+		if (LocalConfig.getInstance().getShowFVAColumnsList().contains(solutionName)) {
+			LocalConfig.getInstance().fvaColumnsVisible = true;
+		} else {
+			LocalConfig.getInstance().fvaColumnsVisible = false;
+		}
+	}
+	
 	public static void main(String[] args) {
 	//public static void main(String[] args) throws Exception {
 		ResizableDialog dialog = new ResizableDialog("Error", "Error", "Error");
@@ -11574,7 +11602,7 @@ public class GraphicalInterface extends JFrame {
 //	            System.out.format("%s=%s%n", envName, env.get(envName));
 //	        }
 		} catch (Exception e) {
-			//e.printStackTrace();
+			e.printStackTrace();
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
 			dialog.setErrorMessage(errors.toString());

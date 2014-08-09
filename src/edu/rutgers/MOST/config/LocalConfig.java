@@ -808,5 +808,15 @@ public class LocalConfig {
 	public void setConstantBoundsIdList(ArrayList<Integer> constantBoundsIdList) {
 		this.constantBoundsIdList = constantBoundsIdList;
 	}
+	
+	private ArrayList<String> showFVAColumnsList;
+
+	public ArrayList<String> getShowFVAColumnsList() {
+		return showFVAColumnsList;
+	}
+
+	public void setShowFVAColumnsList(ArrayList<String> showFVAColumnsList) {
+		this.showFVAColumnsList = showFVAColumnsList;
+	}
 
 }

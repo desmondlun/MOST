@@ -237,6 +237,9 @@ public class SBMLModelReader {
 		LocalConfig.getInstance().setMetabolitesMetaColumnNames(metabolitesMetaColumnNames);
         // end metabolites read
 		
+		boolean containsMinFlux = false;
+		boolean containsMaxFlux = false;
+		
 		// begin reactions read
 		DefaultTableModel reacTableModel = new DefaultTableModel();
 		for (int r = 0; r < GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length; r++) {
@@ -258,7 +261,7 @@ public class SBMLModelReader {
 
 			String fluxValue = GraphicalInterfaceConstants.FLUX_VALUE_DEFAULT_STRING;
 			String minFlux = GraphicalInterfaceConstants.MIN_FLUX_DEFAULT_STRING;
-			String maxFlux = GraphicalInterfaceConstants.MIN_FLUX_DEFAULT_STRING;
+			String maxFlux = GraphicalInterfaceConstants.MAX_FLUX_DEFAULT_STRING;
 			String geneAssociation = "";
 			String proteinAssociation = "";
 			String subsystem = "";
@@ -595,13 +598,15 @@ public class SBMLModelReader {
 						if (columnName.compareTo("SYNTHETIC_OBJECTIVE") == 0 || columnName.compareTo("SYNTHETIC OBJECTIVE") == 0) {
 							syntheticObjective = value.trim();
 						}
-						if (LocalConfig.getInstance().fvaColumnsVisible && columnName.compareTo(SBMLConstants.MIN_FLUX_NOTES_NAME) == 0) {
+						if (columnName.compareTo(SBMLConstants.MIN_FLUX_NOTES_NAME) == 0) {
 							minFlux = value.trim();
 							reacRow.set(GraphicalInterfaceConstants.MIN_FLUX_COLUMN, minFlux);
+							containsMinFlux = true;
 						}
-						if (LocalConfig.getInstance().fvaColumnsVisible && columnName.compareTo(SBMLConstants.MAX_FLUX_NOTES_NAME) == 0) {
+						if (columnName.compareTo(SBMLConstants.MAX_FLUX_NOTES_NAME) == 0) {
 							maxFlux = value.trim();
 							reacRow.set(GraphicalInterfaceConstants.MAX_FLUX_COLUMN, maxFlux);
+							containsMaxFlux = true;
 						}
 						if (columnName.compareTo("LOCUS") == 0) {
 							//System.out.println(j);
@@ -666,6 +671,10 @@ public class SBMLModelReader {
 		LocalConfig.getInstance().setReactionAbbreviationIdMap(reactionAbbreviationIdMap);
 		//System.out.println(reactionAbbreviationIdMap);
 		LocalConfig.getInstance().setProgress(100);	
+		if (containsMinFlux && containsMaxFlux) {
+			LocalConfig.getInstance().getShowFVAColumnsList().add(LocalConfig.getInstance().getModelName());
+		}
+		System.out.println(LocalConfig.getInstance().getShowFVAColumnsList());
 		finished = true;
 		//System.out.println("Done");
 
