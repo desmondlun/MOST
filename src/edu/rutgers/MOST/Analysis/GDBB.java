@@ -460,7 +460,13 @@ public class GDBB extends Thread {
 		this.setVars();
 		this.setConstraints();
 		this.setSyntheticObjective();
-		this.maxObj = this.getSolver().optimize();
+		try
+		{
+			this.maxObj = this.getSolver().optimize();
+		}
+		catch( Exception e )
+		{
+		}
 		solution = this.getSolver().getSoln();
 	}
 

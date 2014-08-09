@@ -51,8 +51,9 @@ public interface Solver
 	/**
 	 * Optimize the objective
 	 * @return The optimized objective value
+	 * @throws Exception Exception is thrown if something goes wrong
 	 */
-	public abstract double optimize();
+	public abstract double optimize() throws Exception;
 	
 	/**
 	 * (Gurobi only) This will be removed from the interface in time

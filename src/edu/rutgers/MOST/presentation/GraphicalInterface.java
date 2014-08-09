@@ -1509,6 +1509,10 @@ public class GraphicalInterface extends JFrame {
 						}
 						catch( Exception e )
 						{
+							//End optimization
+							enableMenuItems();
+							enableLoadItems();
+							disableMenuItemsForFVA(false);
 							return;
 						}
 						//End optimization
@@ -10779,13 +10783,6 @@ public class GraphicalInterface extends JFrame {
 		highlightUnusedMetabolitesItem.setEnabled(false);
 		deleteUnusedItem.setEnabled(false);
 		findSuspiciousItem.setEnabled(false);
-		// since we are still testing the new behavior where clicking the Analysis menu
-		// selects the original model in the tree, these items should remain until
-		// it is determined that the new behavior is acceptable.
-//		fbaItem.setEnabled(false);
-//		gdbbItem.setEnabled(false);
-//		eflux2Item.setEnabled( false );
-//		spotItem.setEnabled( false );
 		addReacRowItem.setEnabled(false);
 		addReacRowsItem.setEnabled(false);
 		addMetabRowItem.setEnabled(false);

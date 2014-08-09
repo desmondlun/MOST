@@ -153,10 +153,11 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 		component.addConstraint( map, conType, value );
 	}
 	@Override
-	public double optimize()
+	public double optimize() throws Exception
 	{
 		// optimize the solution and return the objective value
 		glp_prob problem = null;
+		Exception exception = null;
 		try
 		{
 			boolean terminalOutput = false;
@@ -290,12 +291,14 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 		{
 			except.printStackTrace();
 			processStackTrace( except );
+			exception = except;
 		}
 	
 		// clean up
 		GlpkCallback.removeListener( this );
 		GLPK.glp_delete_prob( problem );
 		problem_tmp = null;
+		if( exception != null ) throw exception;
 	
 		return objval;
 	}

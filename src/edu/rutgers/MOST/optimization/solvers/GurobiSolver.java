@@ -277,7 +277,7 @@ public abstract class GurobiSolver implements MILSolver
 		return result;
 	}
 	@Override
-	public double optimize()
+	public double optimize() throws Exception
 	{
 		try
 		{
@@ -374,7 +374,7 @@ public abstract class GurobiSolver implements MILSolver
 		catch ( GRBException e )
 		{
 			promptGRBError( e );
-			return Double.NaN;
+			throw new Exception( e );
 		}
 
 		return objval;
