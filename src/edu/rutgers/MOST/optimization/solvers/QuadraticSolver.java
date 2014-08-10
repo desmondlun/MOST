@@ -11,7 +11,7 @@ public interface QuadraticSolver
 	 * @param component The solver component containing the constraints
 	 * @return The optimized flux vector
 	 */
-	public ArrayList< Double > minimizeEuclideanNorm( ArrayList< Double > objCoefs, Double objVal, SolverComponent component );
+	public ArrayList< Double > minimizeEuclideanNorm( ArrayList< Double > objCoefs, Double objVal, SolverComponent component ) throws Exception;
 	
 	/**
 	 * Perform the FVA optimization associated with FBA using the same SolverComponent
@@ -21,5 +21,5 @@ public interface QuadraticSolver
 	 * @param max The maximum variability of the flux vector
 	 * @param component The solver component containing the constraints
 	 */
-	public void FVA( ArrayList< Double > objCoefs, Double objVal, ArrayList< Double > fbasoln, ArrayList< Double > min, ArrayList< Double > max, SolverComponent component );
+	public void FVA( ArrayList< Double > objCoefs, Double objVal, ArrayList< Double > fbasoln, ArrayList< Double > min, ArrayList< Double > max, SolverComponent component ) throws Exception;
 }

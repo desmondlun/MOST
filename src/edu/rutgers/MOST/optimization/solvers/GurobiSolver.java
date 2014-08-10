@@ -262,7 +262,7 @@ public abstract class GurobiSolver implements MILSolver
 		component.addConstraint( map, conType, value );
 	}
 
-	protected double minimizeEuclideanNorm()
+	protected double minimizeEuclideanNorm() throws Exception
 	{
 		double result = 0.0;
 		

@@ -146,7 +146,7 @@ public class QuadraticGurobiSolver implements QuadraticSolver
 	 * @see FBA
 	 */
 	@Override
-	public ArrayList< Double > minimizeEuclideanNorm( ArrayList< Double > objCoefs, Double objVal, SolverComponent componentSource )
+	public ArrayList< Double > minimizeEuclideanNorm( ArrayList< Double > objCoefs, Double objVal, SolverComponent componentSource ) throws Exception
 	{
 		ArrayList< Double > soln = new ArrayList< Double >();
 		final SolverComponent component = componentSource;
@@ -218,12 +218,14 @@ public class QuadraticGurobiSolver implements QuadraticSolver
 	}
 	@Override
 	public void FVA( ArrayList< Double > objCoefs, Double objVal, ArrayList< Double > fbaSoln,
-			ArrayList< Double > min, ArrayList< Double > max, SolverComponent component )
+			ArrayList< Double > min, ArrayList< Double > max, SolverComponent component ) throws Exception
 	{
+		GRBEnv quad_env = null;
+		GRBModel quad_model = null;
 		try
 		{
-			GRBEnv quad_env = new GRBEnv();
-			GRBModel quad_model = new GRBModel( quad_env );
+			quad_env = new GRBEnv();
+			quad_model = new GRBModel( quad_env );
 			ArrayList< GRBVar > vars = new ArrayList< GRBVar >();
 			quad_env.set( GRB.DoubleParam.IntFeasTol, 1.0E-9 );
 			quad_env.set( GRB.DoubleParam.FeasibilityTol, 1.0E-9 );
@@ -265,6 +267,8 @@ public class QuadraticGurobiSolver implements QuadraticSolver
 			
 			for( int j = 0; j < component.variableCount(); ++j )
 			{
+				if( !progress.isVisible() )
+					throw new Exception( "Exit" );
 				progress.progressBar.setValue( j );
 				// add the term to the objective expression
 				GRBLinExpr objExpr = new GRBLinExpr();
@@ -296,12 +300,23 @@ public class QuadraticGurobiSolver implements QuadraticSolver
 			component.removeConstraint( component.constraintCount() - 1 );
 			
 			// clean up
-			quad_model.dispose();
-			quad_env.dispose();
 		}
 		catch( GRBException e )
 		{
 			promptGRBError( e );
+			throw new Exception( e );
+		}
+		catch( Exception e )
+		{
+			e.printStackTrace();
+			throw new Exception( e );
+		}
+		finally
+		{
+			if( quad_model != null )
+				quad_model.dispose();
+			if( quad_env != null )
+				quad_env.dispose();
 		}
 	}
 }
