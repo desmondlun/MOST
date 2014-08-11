@@ -6,7 +6,9 @@ import java.util.ArrayList;
 
 import org.coinor.Ipopt;
 
+import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.ResizableDialog;
+import edu.rutgers.MOST.presentation.SimpleProgressBar;
 
 public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 {
@@ -137,7 +139,7 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 		if( FVA )
 		{
 			for( int j = 0; j < component.variableCount(); ++j )
-				grad_f[ j ] = (j == this.current ? 0.0 : 1.0);
+				grad_f[ j ] = (this.current == j ? 1.0 : 0.0 );
 		}
 		else
 		{
@@ -237,12 +239,12 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 	@Override
 	public void FVA( ArrayList< Double > objCoefs, Double objVal, ArrayList< Double > fbaSoln,
 			ArrayList< Double > min, ArrayList< Double > max,
-			SolverComponent component )
+			SolverComponent componentSource ) throws Exception
 	{
 		this.FVA = true;
 		try
 		{
-			
+			this.component = componentSource;
 			// Fv = z extra constraint
 			component.addConstraint( objCoefs, ConType.EQUAL, objVal );
 			
@@ -284,8 +286,21 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 
 			this.addIntOption( "mumps_mem_percent", 500 );
 			//this.addStrOption( KEY_HESSIAN_APPROXIMATION, "limited-memory" );
+			//this.addIntOption( KEY_MAX_ITER, 30000 );
+			SimpleProgressBar progress = new SimpleProgressBar( "Flux Variability Analysis", "Progress" );
+			progress.progressBar.setIndeterminate( false );
+			progress.progressBar.setMaximum( component.variableCount() );
+			progress.progressBar.setValue( 0 );
+			progress.progressBar.setStringPainted( true );
+			progress.setAlwaysOnTop( true );
+			progress.setLocationRelativeTo( null );
+			
 			for( this.current = 0; this.current < component.variableCount(); ++current )
 			{
+				if( !progress.isVisible() )
+					throw new Exception( "Exit" );
+				progress.progressBar.setValue( this.current );
+				
 				for( int j = 0; j < vars.length; ++j )
 					vars[ j ] = fbaSoln.get( j );
 				
@@ -302,12 +317,17 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 				
 			}
 			
+			LocalConfig.getInstance().fvaDone = true;
+			progress.setVisible( false );
+			progress.dispose();
+			
 			// remove the extra constraint
 			component.removeConstraint( component.constraintCount() - 1 );
 		}
 		catch( Error | Exception thrown )
 		{
 			processStackTrace( thrown );
+			throw new Exception( thrown );
 		}
 	}
 }
