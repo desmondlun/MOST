@@ -13,7 +13,7 @@ public class GDBBConstants {
 	public static final String COUNTER_LABEL_SUFFIX = " s";
 	
 	public static final String NUM_KNOCKOUTS_DEFAULT = "1";
-	public static final int MAX_NUM_THREADS = 4;
+	public static final int MAX_NUM_THREADS = Runtime.getRuntime().availableProcessors();
 	public static final String FINITE_TIME_DEFAULT = "300";
 	
 	// layout constants
