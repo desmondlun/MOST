@@ -990,10 +990,13 @@ public class GraphicalInterface extends JFrame {
 				String solutionName = nodeInfo.getSolutionName();
 				Utilities u = new Utilities();
 				maybeShowFVAColumns(solutionName);
-				fvaTimer.stop();
+				//fvaTimer.stop();
 				if (node.isLeaf()) {
 					if (solutionName != null) {
 						if (solutionName.equals(LocalConfig.getInstance().getModelName())) {
+							if (fluxesSet) {
+								fvaTimer.stop();
+							}
 							isRoot = true;
 							saveOptFile = false;
 							setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
@@ -1016,7 +1019,8 @@ public class GraphicalInterface extends JFrame {
 								// execute this code
 								if (!gdbbRunning && nodeInfo.getIndex() > -1) {
 									ReactionFactory rFactory = new ReactionFactory("SBML");
-								    rFactory.setFluxes(getGdbbFluxesMap().get(nodeInfo.getSolutionName()), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN);
+								    rFactory.setFluxes(getGdbbFluxesMap().get(nodeInfo.getSolutionName()), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN,
+								    		LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
 									//System.out.println(LocalConfig.getInstance().getGdbbKnockoutsMap().get(nodeInfo.getSolutionName()));
 									rFactory.updateKnockouts(LocalConfig.getInstance().getGdbbKnockoutsMap().get(nodeInfo.getSolutionName()));
 								}								
@@ -1540,7 +1544,8 @@ public class GraphicalInterface extends JFrame {
 						disableMenuItemsForFVA(false);
 		
 						ReactionFactory rFactory = new ReactionFactory("SBML");
-						rFactory.setFluxes( new ArrayList< Double >( soln ), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN );
+						rFactory.setFluxes( new ArrayList< Double >( soln ), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN,
+								LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
 		
 						if (LocalConfig.getInstance().hasValidGurobiKey) {
 							Writer writer = null;
@@ -1654,8 +1659,10 @@ public class GraphicalInterface extends JFrame {
 				if (fba.FVASelected) {
 					LocalConfig.getInstance().fvaColumnsVisible = true;
 					ReactionFactory rFactory = new ReactionFactory("SBML");
-					rFactory.setFluxes(fba.minVariability, GraphicalInterfaceConstants.MIN_FLUX_COLUMN);
-					rFactory.setFluxes(fba.maxVariability, GraphicalInterfaceConstants.MAX_FLUX_COLUMN);
+					rFactory.setFluxes(fba.minVariability, GraphicalInterfaceConstants.MIN_FLUX_COLUMN,
+							LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
+					rFactory.setFluxes(fba.maxVariability, GraphicalInterfaceConstants.MAX_FLUX_COLUMN,
+							LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
 					LocalConfig.getInstance().getShowFVAColumnsList().add(getOptimizeName());
 					fluxesSet = true;
 				} else {
@@ -2766,6 +2773,11 @@ public class GraphicalInterface extends JFrame {
 		// need tab to skip hidden columns		
 		reactionsTable.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "actionString");
 		reactionsTable.getActionMap().put("actionString", new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			public void actionPerformed(ActionEvent ae) {
 				// This overrides tab key and performs an action
 				tabToNextVisibleCell(reactionsTable, getVisibleReactionsColumns());
@@ -11214,7 +11226,8 @@ public class GraphicalInterface extends JFrame {
 				}
 
 				rFactory = new ReactionFactory("SBML");
-				rFactory.setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN);
+				rFactory.setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN, 
+						LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
 				rFactory.setKnockouts(soln.subList(knockoutOffset, soln.size()));
 				getGdbbFluxesMap().put(solution.getSolutionName(), new ArrayList<Double>(soln.subList(0, model.getNumReactions())));
 				LocalConfig.getInstance().getGdbbKnockoutsMap().put(solution.getSolutionName(), LocalConfig.getInstance().getGdbbKnockoutsList());
@@ -11243,7 +11256,8 @@ public class GraphicalInterface extends JFrame {
 				DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 
 				setrFactory(new ReactionFactory("SBML"));
-				getrFactory().setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN);
+				getrFactory().setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN, 
+						LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
 				getrFactory().setKnockouts(soln.subList(knockoutOffset, soln.size()));
 				gdbbProcessed = true;
 

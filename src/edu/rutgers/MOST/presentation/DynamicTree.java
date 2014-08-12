@@ -86,8 +86,7 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
 		DynamicTree.row = row;
 	}
 
-	public JPopupMenu jPopupMenu = new JPopupMenu();
-//	public JMenuItem saveItem = new JMenuItem("Save As SQLite");         
+	public JPopupMenu jPopupMenu = new JPopupMenu();       
 //	public JMenuItem saveAsCSVItem = new JMenuItem("Save As CSV Reactions");    
 //	public JMenuItem saveAsSBMLItem = new JMenuItem("Save As SBML");
 //	public JMenuItem saveAllItem = new JMenuItem("Save All Optimizations");

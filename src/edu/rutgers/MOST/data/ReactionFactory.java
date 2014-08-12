@@ -146,8 +146,8 @@ public class ReactionFactory {
 		return objective;
 	}
 
-	public void setFluxes(ArrayList<Double> fluxes, int columnIndex) {
-		DefaultTableModel reactionsOptModel = (DefaultTableModel) GraphicalInterface.reactionsTable.getModel();
+	public void setFluxes(ArrayList<Double> fluxes, int columnIndex, DefaultTableModel reactionsOptModel) {
+		//DefaultTableModel reactionsOptModel = (DefaultTableModel) GraphicalInterface.reactionsTable.getModel();
 		Vector<SBMLReaction> reactions = getAllReactions();
 		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
 		for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
