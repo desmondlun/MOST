@@ -801,7 +801,18 @@ public class GraphicalInterface extends JFrame {
 
 	public static String getTableCellOldValue() {
 		return tableCellOldValue;
-	}    
+	}  
+	
+	private static ArrayList<Integer> visibleReactionsColumns;
+
+	public static ArrayList<Integer> getVisibleReactionsColumns() {
+		return visibleReactionsColumns;
+	}
+
+	public static void setVisibleReactionsColumns(
+			ArrayList<Integer> visibleReactionsColumns) {
+		GraphicalInterface.visibleReactionsColumns = visibleReactionsColumns;
+	}
 
 	/*****************************************************************************/
 	// end misc
@@ -1513,6 +1524,7 @@ public class GraphicalInterface extends JFrame {
 						try
 						{
 							soln = analysisPart( model );
+							fluxesSet = false;
 						}
 						catch( Exception e )
 						{
@@ -2749,6 +2761,16 @@ public class GraphicalInterface extends JFrame {
 		reactionsTable.registerKeyboardAction(reactionsSaveActionListener,reacSave,JComponent.WHEN_IN_FOCUSED_WINDOW); 
 		reactionsTable.registerKeyboardAction(reactionsSaveActionListener,reacSave,JComponent.WHEN_FOCUSED); 
 		reactionsTable.registerKeyboardAction(reactionsSelectAllActionListener,reacSelectAll,JComponent.WHEN_FOCUSED); 
+
+		// from http://www.java.net/node/651087
+		// need tab to skip hidden columns		
+		reactionsTable.getInputMap().put(KeyStroke.getKeyStroke("TAB"), "actionString");
+		reactionsTable.getActionMap().put("actionString", new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				// This overrides tab key and performs an action
+				tabToNextVisibleCell(reactionsTable, getVisibleReactionsColumns());
+			}
+		});
 
 		ActionListener metabolitesCopyActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent actionEvent) {
@@ -4998,7 +5020,23 @@ public class GraphicalInterface extends JFrame {
 			setReactionsSortColumnIndex(0);
 			setReactionsSortOrder(SortOrder.ASCENDING);
 		}	
-		maybeDisplaySuspiciousMetabMessage(statusBarRow());			   
+		maybeDisplaySuspiciousMetabMessage(statusBarRow());	
+		// create list of visible columns when loading table, so tabbing, copy, paste
+		// and other functions account for visibility of fva columns
+		ArrayList<Integer> visibleReactionsColumns = new ArrayList<Integer>();
+		for (int i = 1; i < reactionsTable.getColumnCount(); i++) {
+			if (LocalConfig.getInstance().fvaColumnsVisible) {
+				visibleReactionsColumns.add(i);
+			} else {
+				if (i == GraphicalInterfaceConstants.MIN_FLUX_COLUMN ||
+						i == GraphicalInterfaceConstants.MAX_FLUX_COLUMN) {
+					//if column is min flux or max flux, don't add columns
+				} else {
+					visibleReactionsColumns.add(i);
+				}
+			}
+		}
+		setVisibleReactionsColumns(visibleReactionsColumns);
 	}
 
 	/**
@@ -10902,6 +10940,32 @@ public class GraphicalInterface extends JFrame {
 		getAddMetaboliteRowsDialog().setVisible(false);
 		getAddMetaboliteRowsDialog().dispose();	
 	}	
+	
+	public void tabToNextVisibleCell(JXTable table, ArrayList<Integer> visibleColumns) {
+		// This overrides tab key and performs an action	
+		// from http://www.coderanch.com/t/344392/GUI/java/Tabbing-cells-JTable
+		int row = table.getSelectedRow();  
+        int col = table.getSelectedColumn();  
+        // Make sure we start with legal values.  
+        while(col < 0) col++;  
+        while(row < 0) row++;  
+        // Find the next editable cell.  
+        col++;
+        while(!(visibleColumns.contains(col)))  
+        {  
+            col++;  
+            if(col > table.getColumnCount()-1)  
+            {  
+                col = 1;  
+                row = (row == table.getRowCount()-1) ? 0 : row+1;
+            }  
+        }
+        TableCellEditor editor = table.getCellEditor();
+        if (editor != null) {
+          editor.stopCellEditing();
+        }
+        scrollToLocation(table, row, col);        
+	}
 
 	/*******************************************************************************/
 	//progressBar methods
@@ -11355,6 +11419,10 @@ public class GraphicalInterface extends JFrame {
 				// reload current table model to show fva columns
 				DefaultTableModel reactionsOptModel = (DefaultTableModel) reactionsTable.getModel();	
 				setUpReactionsTable(reactionsOptModel);
+				// Selecting top node stops timer, then reselect node for optimization
+				// This action is too fast to be visible to user
+				DynamicTreePanel.getTreePanel().setNodeSelected(0);
+				DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 			}
 		}
 	}
