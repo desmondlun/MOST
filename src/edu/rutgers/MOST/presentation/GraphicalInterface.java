@@ -1501,7 +1501,7 @@ public class GraphicalInterface extends JFrame {
 						+ LocalConfig.getInstance().getModelName() + dateTimeStamp;
 				setOptimizeName(optimizeName);
 
-				// copy models, run optimization on these model
+				// copy models, run optimization on these models
 				DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
 				DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
 				LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
@@ -1514,7 +1514,6 @@ public class GraphicalInterface extends JFrame {
 				DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName, optimizeName));
 				DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 			
-
 				// Begin optimization
 				final Model model = new Model();
 				Thread t = new Thread()
@@ -6877,10 +6876,12 @@ public class GraphicalInterface extends JFrame {
 		if (includeRxnColumnNames == true) {
 			//add column names to clipboard
 			for (int c = 1; c < GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length; c++) {
-				sbf.append(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[c]);
-				if (c < GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length - 1) {
-					sbf.append("\t"); 
-				}				
+				//if (getVisibleReactionsColumns().contains(c)) {
+					sbf.append(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[c]);
+					if (c < GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length - 1) {
+						sbf.append("\t"); 
+					}	
+				//}			
 			}
 			for (int r = 0; r < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); r++) {
 				sbf.append("\t");
