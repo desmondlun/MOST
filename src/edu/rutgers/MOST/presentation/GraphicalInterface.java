@@ -5318,6 +5318,22 @@ public class GraphicalInterface extends JFrame {
 		}
 		return model;
 	}
+	
+	/**
+	 * 
+	 * @param solutionName
+	 * Copies table models for analysis, adds models to table model maps,
+	 * and list of solutions for deletion from temporary directory 
+	 */
+	public void copyTableModelsForAnalysis(String solutionName) {
+		// copy models, run optimization on these model
+		DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel(LocalConfig.getInstance().getMetabolitesTableModelMap().get(LocalConfig.getInstance().getModelName()));
+		DefaultTableModel reactionsOptModel = copyReactionsTableModel(LocalConfig.getInstance().getReactionsTableModelMap().get(LocalConfig.getInstance().getModelName()));				
+		LocalConfig.getInstance().getReactionsTableModelMap().put(solutionName, reactionsOptModel);
+		LocalConfig.getInstance().getMetabolitesTableModelMap().put(solutionName, metabolitesOptModel);
+		
+		LocalConfig.getInstance().getOptimizationFilesList().add(solutionName);
+	}
 
 	/******************************************************************************/
 	//end reload tables methods
@@ -11091,15 +11107,9 @@ public class GraphicalInterface extends JFrame {
 							solution.setIndex(index++);
 							publish(solution);
 							
-							// copy models, run optimization on these model
-							DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel(LocalConfig.getInstance().getMetabolitesTableModelMap().get(LocalConfig.getInstance().getModelName()));
-							DefaultTableModel reactionsOptModel = copyReactionsTableModel(LocalConfig.getInstance().getReactionsTableModelMap().get(LocalConfig.getInstance().getModelName()));				
-							LocalConfig.getInstance().getReactionsTableModelMap().put(solution.getSolutionName(), reactionsOptModel);
-							LocalConfig.getInstance().getMetabolitesTableModelMap().put(solution.getSolutionName(), metabolitesOptModel);
-							
-							LocalConfig.getInstance().getOptimizationFilesList().add(solution.getSolutionName());
-
-							//DynamicTreePanel.getTreePanel().addObject((DefaultMutableTreeNode)DynamicTreePanel.getTreePanel().getRootNode().getChildAt(DynamicTreePanel.getTreePanel().getRootNode().getChildCount() - 1), solution, true);
+							// copy models, run optimization on these models
+							copyTableModelsForAnalysis(solution.getSolutionName());
+//							
 							writer = null;
 							try {
 								String synObjString = "";
