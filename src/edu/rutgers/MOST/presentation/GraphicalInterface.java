@@ -10988,7 +10988,6 @@ public class GraphicalInterface extends JFrame {
 
 		@Override
 		public void done() {
-			System.out.println( "Task done!" );
 		}
 
 		@Override
