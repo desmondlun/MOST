@@ -205,11 +205,11 @@ public abstract class GurobiSolver implements MILSolver
 		try
 		{
 			// set up environment and the model/problem objects
-			if( env  == null )
+			if( env == null )
 				env = new GRBEnv();
 			env.set( GRB.DoubleParam.IntFeasTol, 1.0E-9 );
 			env.set( GRB.DoubleParam.FeasibilityTol, 1.0E-9 );
-			env.set( GRB.IntParam.OutputFlag, 0 );
+		//	env.set( GRB.IntParam.OutputFlag, 0 );
 			
 		}
 		catch ( GRBException e )
@@ -381,18 +381,19 @@ public abstract class GurobiSolver implements MILSolver
 	}
 	@Override
 	public void setEnv( double timeLimit, int numThreads )
-	{
-		if( env != null )
-			return;
-		
+	{		
 		try
 		{
-			env = new GRBEnv();
+			if( env == null )
+				env = new GRBEnv();
 			env.set( GRB.DoubleParam.Heuristics, 1.0 );
 			env.set( GRB.DoubleParam.ImproveStartGap, Double.POSITIVE_INFINITY );
 			env.set( GRB.DoubleParam.TimeLimit, timeLimit );
 			env.set( GRB.IntParam.MIPFocus, 1 );
 			env.set( GRB.IntParam.Threads, numThreads );
+			env.set( GRB.IntParam.Presolve, 2 );
+			env.set( GRB.IntParam.PreDepRow, 1 );
+			env.set( GRB.IntParam.PreSparsify, 1 );
 		}
 		catch ( GRBException e )
 		{
