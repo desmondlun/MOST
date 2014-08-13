@@ -242,6 +242,7 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 			SolverComponent componentSource ) throws Exception
 	{
 		this.FVA = true;
+		SimpleProgressBar progress = new SimpleProgressBar( "Flux Variability Analysis", "Progress" );
 		try
 		{
 			this.component = componentSource;
@@ -287,7 +288,6 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 			this.addIntOption( "mumps_mem_percent", 500 );
 			//this.addStrOption( KEY_HESSIAN_APPROXIMATION, "limited-memory" );
 			//this.addIntOption( KEY_MAX_ITER, 30000 );
-			SimpleProgressBar progress = new SimpleProgressBar( "Flux Variability Analysis", "Progress" );
 			progress.progressBar.setIndeterminate( false );
 			progress.progressBar.setMaximum( component.variableCount() );
 			progress.progressBar.setValue( 0 );
@@ -316,18 +316,20 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 				max.add( vars[ current ] );
 				
 			}
-			
-			LocalConfig.getInstance().fvaDone = true;
-			progress.setVisible( false );
-			progress.dispose();
-			
-			// remove the extra constraint
-			component.removeConstraint( component.constraintCount() - 1 );
 		}
 		catch( Error | Exception thrown )
 		{
+			if( !thrown.getMessage().equals( "Exit" ) )
 			processStackTrace( thrown );
 			throw new Exception( thrown );
+		}
+		finally
+		{
+			LocalConfig.getInstance().fvaDone = true;
+			progress.setVisible( false );
+			progress.dispose();
+			// remove the extra constraint
+			component.removeConstraint( component.constraintCount() - 1 );
 		}
 	}
 }

@@ -1531,16 +1531,15 @@ public class GraphicalInterface extends JFrame {
 						}
 						catch( Exception e )
 						{
-							//End optimization
+							return;
+						}
+						finally
+						{
 							enableMenuItems();
 							enableLoadItems();
 							disableMenuItemsForFVA(false);
-							return;
 						}
 						//End optimization
-						enableMenuItems();
-						enableLoadItems();
-						disableMenuItemsForFVA(false);
 		
 						ReactionFactory rFactory = new ReactionFactory("SBML");
 						rFactory.setFluxes( new ArrayList< Double >( soln ), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN,
