@@ -10999,6 +10999,17 @@ public class GraphicalInterface extends JFrame {
 	//progressBar methods
 	/*******************************************************************************/
 
+	public static class GDBBParam
+	{
+		public String string;
+		public Solution solution;
+	}
+	
+	public static void addGDBBSolution( GDBBParam param )
+	{
+		System.out.println( param.string );
+	}
+	
 	class Task extends SwingWorker<Void, Void> {
 
 		@Override
