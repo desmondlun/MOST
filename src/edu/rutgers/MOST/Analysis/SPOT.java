@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import edu.rutgers.MOST.data.SBMLReaction;
+import edu.rutgers.MOST.optimization.solvers.ConType;
 import edu.rutgers.MOST.optimization.solvers.LinearSolver;
 import edu.rutgers.MOST.optimization.solvers.NonlinearSolver;
 import edu.rutgers.MOST.optimization.solvers.Solver;
@@ -46,7 +47,14 @@ public class SPOT extends Analysis
 		}
 		nonlinearSolver.setSolverComponent( linearSolver.getSolverComponent() );
 		nonlinearSolver.setGeneExpr( geneExpr );
-		nonlinearSolver.optimize( super.run() );
+		super.setVars();
+		super.setConstraints();
+		super.setObjective();
+		linearSolver.getSolverComponent().addConstraint( new ArrayList< Double >(model.getObjective()), ConType.EQUAL, 0.0 );
+		linearSolver.optimize();
+		linearSolver.getSolverComponent().removeConstraint( linearSolver.getSolverComponent().constraintCount() - 1 );
+		
+		nonlinearSolver.optimize( linearSolver.getSoln() );
 		
 		ArrayList< Double > optimizedFluxes = nonlinearSolver.getSoln();
 		

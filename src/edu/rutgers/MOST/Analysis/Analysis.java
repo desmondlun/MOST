@@ -15,7 +15,7 @@ public abstract class Analysis
 	protected Vector< String > varNames = new Vector< String >();
 	protected double maxObj;
 
-	private void setVars()
+	protected void setVars()
 	{
 		Vector< SBMLReaction > reactions = this.model.getReactions();
 		for( int i = 0; i < reactions.size(); i++)
@@ -40,13 +40,13 @@ public abstract class Analysis
 		}
 	}
 
-	private void setConstraints()
+	protected void setConstraints()
 	{
 		Vector< SBMLReaction > reactions = this.model.getReactions();
 		setConstraints( reactions, ConType.EQUAL, 0.0 );
 	}
 
-	private void setConstraints( Vector< SBMLReaction > reactions,
+	protected void setConstraints( Vector< SBMLReaction > reactions,
 			ConType conType, double bValue )
 	{
 		ArrayList< Map< Integer, Double >> sMatrix = this.model.getSMatrix();
@@ -56,7 +56,7 @@ public abstract class Analysis
 		}
 	}
 
-	private void setObjective()
+	protected void setObjective()
 	{
 		this.getSolver().setObjType( ObjType.Maximize );
 		Vector< Double > objective = this.model.getObjective();
