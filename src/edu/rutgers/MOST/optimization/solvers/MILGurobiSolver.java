@@ -1,6 +1,7 @@
 package edu.rutgers.MOST.optimization.solvers;
 
 import edu.rutgers.MOST.Analysis.GDBB;
+import edu.rutgers.MOST.data.GDBBModel;
 import edu.rutgers.MOST.data.Solution;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import gurobi.GRB;
@@ -31,7 +32,7 @@ public class MILGurobiSolver extends GurobiSolver
 					{
 						GraphicalInterface.GDBBParam  param = new GraphicalInterface.GDBBParam();
 						param.string = "success!";
-						param.model = dataModel;
+						param.model = (GDBBModel)dataModel;
 						param.solution = new Solution( this
 								.getDoubleInfo( GRB.CB_MIPSOL_OBJ ), this
 								.getSolution( model.getVars() ) );

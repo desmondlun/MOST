@@ -55,6 +55,7 @@ import edu.rutgers.MOST.data.TextReactionsWriter;
 import edu.rutgers.MOST.data.UndoConstants;
 import edu.rutgers.MOST.logic.ReactionParser;
 import edu.rutgers.MOST.optimization.solvers.GurobiSolver;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -11159,7 +11160,7 @@ public class GraphicalInterface extends JFrame {
 		public String string;
 		public Solution solution;
 		double maxObj;
-		public Model model;
+		public GDBBModel model;
 	}
 	
 	public static void addGDBBSolution( GDBBParam param )
@@ -11174,18 +11175,32 @@ public class GraphicalInterface extends JFrame {
 		listModel.addElement(optimizeName);
 		setOptimizeName(optimizeName);
 		DynamicTreePanel.getTreePanel().addObject( param.solution );
-		DynamicTreePanel.getTreePanel().setNodeSelected( param.solution.getIndex());
-		
-		//////////////////
+		// the following line freezes GDBB due to lack of thread safety
+		//DynamicTreePanel.getTreePanel().setNodeSelected( param.solution.getIndex());
+
+		BufferedWriter writer = null;
 		try {
-			Model model = param.model;
-			ReactionFactory rFactory = new ReactionFactory("SBML");
+			GDBBModel model = param.model;
+			Solution solution = param.solution;
+			ReactionFactory rFactory = new ReactionFactory( "SBML" );
+			double[] x = solution.getKnockoutVector();
+			String synObjString = "";
 			Vector< String > uniqueGeneAssociations = rFactory.getUniqueGeneAssociations();
 			int knockoutOffset = 4*model.getNumReactions() + model.getNumMetabolites();
-			Solution solution = param.solution;
-			double[] x = solution.getKnockoutVector();
-			solution.getObjectiveValue();
+			for (int i = 0; i < rFactory.getSyntheticObjectiveVector().size(); i ++) {
+				if (rFactory.getSyntheticObjectiveVector().get(i) > 0) {
+					synObjString += "Reaction '" + rFactory.getReactionAbbreviations().get(i) + "' Synthetic Objective = " + rFactory.getSyntheticObjectiveVector().get(i) + "\n";
 
+				}
+			}
+			String output = "";
+			StringBuffer text = new StringBuffer();
+			text.append("GDBB" + "\n");
+			text.append(synObjString);
+			text.append("Number of Knockouts = " + model.getC() + "\n");
+			text.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions, " + model.getNumGeneAssociations() + " unique gene associations\n");
+			text.append("Synthetic objective: "        + Double.toString(solution.getObjectiveValue()) + "\n");				
+			text.append("Knockouts:");
 			String kString = "";
 			ArrayList< Double > soln = new ArrayList< Double >();
 			for (int j = 0; j < x.length; j++)
@@ -11196,18 +11211,41 @@ public class GraphicalInterface extends JFrame {
 					kString += "\n\t" + uniqueGeneAssociations.elementAt(j - knockoutOffset);
 				}
 			}
+			if (kString != null) {
+				text.append(kString);
+			}
+			text.append("\n");
+			text.append( "MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() );
 
-			rFactory.setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN, 
-					LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
-			rFactory.setKnockouts(soln.subList(knockoutOffset, soln.size()));
-			outputTextArea.setText( kString );
-		}
-		catch (Exception e)
-		{
+			Utilities u = new Utilities();
+			File file = new File(u.createLogFileName(solution.getSolutionName() + ".log"));
+			writer = new BufferedWriter(new FileWriter(file));
+			writer.write(text.toString()); 
+			output = text.toString();
+			outputTextArea.setText( output );
+		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(null,                
-					"Solver Error.",                
+					"File Not Found Error.",                
 					"Error",                                
 					JOptionPane.ERROR_MESSAGE);
+			//e.printStackTrace();
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null,                
+					"File Not Found Error.",                  
+					"Error",                                
+					JOptionPane.ERROR_MESSAGE);
+			//e.printStackTrace();
+		} finally {
+			try {
+				if (writer != null) {
+					writer.close();
+				}
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(null,                
+						"File Not Found Error.",                  
+						"Error",                                
+						JOptionPane.ERROR_MESSAGE);
+			}
 		}
 		//////////////////
 

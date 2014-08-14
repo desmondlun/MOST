@@ -7,6 +7,7 @@ import org.gnu.glpk.GlpkCallbackListener;
 import org.gnu.glpk.glp_tree;
 
 import edu.rutgers.MOST.Analysis.GDBB;
+import edu.rutgers.MOST.data.GDBBModel;
 import edu.rutgers.MOST.data.Solution;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterface.GDBBParam;
@@ -43,7 +44,7 @@ public class MILGLPKSolver extends GLPKSolver implements MILSolver, GlpkCallback
 			sn.setIndex( idx++ );
 			GDBBParam param = new GDBBParam();
 			param.solution = sn;
-			param.model = this.dataModel;
+			param.model = (GDBBModel)this.dataModel;
 			param.string = "success!";
 			GraphicalInterface.addGDBBSolution( param );
 			GDBB.getintermediateSolution().add( sn );
