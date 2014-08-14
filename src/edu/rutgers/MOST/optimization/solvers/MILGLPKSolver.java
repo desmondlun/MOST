@@ -8,9 +8,12 @@ import org.gnu.glpk.glp_tree;
 
 import edu.rutgers.MOST.Analysis.GDBB;
 import edu.rutgers.MOST.data.Solution;
+import edu.rutgers.MOST.presentation.GraphicalInterface;
+import edu.rutgers.MOST.presentation.GraphicalInterface.GDBBParam;
 
 public class MILGLPKSolver extends GLPKSolver implements MILSolver, GlpkCallbackListener
 {
+	int idx = 1;
 	public MILGLPKSolver()
 	{
 		super();
@@ -37,6 +40,12 @@ public class MILGLPKSolver extends GLPKSolver implements MILSolver, GlpkCallback
 			double[] darray = ArrayUtils.toPrimitive( soln
 					.toArray( new Double[] {} ) );
 			Solution sn = new Solution( objval, darray );
+			sn.setIndex( idx++ );
+			GDBBParam param = new GDBBParam();
+			param.solution = sn;
+			param.model = this.dataModel;
+			param.string = "success!";
+			GraphicalInterface.addGDBBSolution( param );
 			GDBB.getintermediateSolution().add( sn );
 		}
 	}
