@@ -25,6 +25,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import edu.rutgers.MOST.config.LocalConfig;
+import edu.rutgers.MOST.data.SettingsConstants;
 
 public class CSVLoadInterface  extends JDialog {
 
@@ -194,7 +195,7 @@ public class CSVLoadInterface  extends JDialog {
 				fileChooser.setDialogTitle("Load CSV Metabolite File");
 				fileChooser.setFileFilter(new CSVFileFilter());
 				fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-				String lastCSV_path = GraphicalInterface.curSettings.get("LastCSV");
+				String lastCSV_path = GraphicalInterface.curSettings.get(SettingsConstants.CSV_MODEL_SETTINGS_NAME);
 				Utilities u = new Utilities();
 				// if path is null or does not exist, default used, else last path used		
 				fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));	
@@ -205,7 +206,7 @@ public class CSVLoadInterface  extends JDialog {
 					//... The user selected a file, get it, use it.          	
 					File file = fileChooser.getSelectedFile();
 					String rawPathName = file.getAbsolutePath();
-					GraphicalInterface.curSettings.add("LastCSV", rawPathName);
+					GraphicalInterface.curSettings.add(SettingsConstants.CSV_MODEL_SETTINGS_NAME, rawPathName);
 					GraphicalInterface.curSettings.add("LastCSVMetabolites", rawPathName);
 
 					String rawFilename = file.getName();
@@ -235,7 +236,7 @@ public class CSVLoadInterface  extends JDialog {
 				fileChooser.setDialogTitle("Load CSV Reaction File");
 				fileChooser.setFileFilter(new CSVFileFilter());
 				fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);				
-				String lastCSV_path = GraphicalInterface.curSettings.get("LastCSV");
+				String lastCSV_path = GraphicalInterface.curSettings.get(SettingsConstants.CSV_MODEL_SETTINGS_NAME);
 				Utilities u = new Utilities();
 				// if path is null or does not exist, default used, else last path used		
 				fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));	
@@ -246,7 +247,7 @@ public class CSVLoadInterface  extends JDialog {
 					//... The user selected a file, get it, use it.          	
 					File file = fileChooser.getSelectedFile();
 					String rawPathName = file.getAbsolutePath();
-					GraphicalInterface.curSettings.add("LastCSV", rawPathName);
+					GraphicalInterface.curSettings.add(SettingsConstants.CSV_MODEL_SETTINGS_NAME, rawPathName);
 					GraphicalInterface.curSettings.add("LastCSVReactions", rawPathName);
 					
 					String rawFilename = file.getName();

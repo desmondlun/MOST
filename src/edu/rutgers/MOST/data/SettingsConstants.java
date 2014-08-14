@@ -10,4 +10,10 @@ public class SettingsConstants {
 	
 	public static final String FOLDER_NAME = "\\MOST\\";
 	
+	// This allows a separate path to be saved for csv models and 
+	// gene expression csv files in settings file
+	public static final String CSV_MODEL_SETTINGS_NAME = "LastCSVModel";
+	// gene expression string
+	public static final String CSV_SETTINGS_NAME = "LastCSV";
+	
 }

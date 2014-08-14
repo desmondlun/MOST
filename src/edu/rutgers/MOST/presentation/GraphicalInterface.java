@@ -592,8 +592,6 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem saveItem = new JMenuItem("Save");
 	public final JMenuItem saveSBMLItem = new JMenuItem("Save As SBML");
 	public final JMenuItem saveCSVItem = new JMenuItem("Save As CSV");
-	public final JMenuItem saveCSVMetabolitesItem = new JMenuItem("Save As CSV Metabolites");
-	public final JMenuItem saveCSVReactionsItem = new JMenuItem("Save As CSV Reactions");
 	public final JMenuItem clearItem = new JMenuItem("Clear Tables");
 	public final JMenuItem exitItem = new JMenuItem("Exit");
 	public final JMenuItem fbaItem = new JMenuItem("FBA");
@@ -1453,15 +1451,6 @@ public class GraphicalInterface extends JFrame {
 		modelMenu.add(saveCSVItem);
 		saveCSVItem.setMnemonic(KeyEvent.VK_A);
 		saveCSVItem.addActionListener(new SaveCSVItemAction());
-		
-		modelMenu.add(saveCSVMetabolitesItem);
-		saveCSVMetabolitesItem.setMnemonic(KeyEvent.VK_O);
-		saveCSVMetabolitesItem.addActionListener(new SaveCSVMetabolitesItemAction());
-		saveCSVMetabolitesItem.setEnabled(false);
-
-		modelMenu.add(saveCSVReactionsItem);
-		saveCSVReactionsItem.setMnemonic(KeyEvent.VK_N);
-		saveCSVReactionsItem.addActionListener(new SaveCSVReactionsItemAction());
 
 		modelMenu.addSeparator();
 
@@ -3312,16 +3301,6 @@ public class GraphicalInterface extends JFrame {
 				GraphicalInterface.this.requestFocus();
 				tabChanged = true;
 				int tabIndex = tabbedPane.getSelectedIndex();
-				if (tabIndex == 1) {
-					saveCSVMetabolitesItem.setEnabled(true);
-				} else if (tabIndex == 0) {
-					saveCSVMetabolitesItem.setEnabled(false);
-				}
-				if (tabIndex == 0) {
-					saveCSVReactionsItem.setEnabled(true);
-				} else if (tabIndex == 1) {
-					saveCSVReactionsItem.setEnabled(false);
-				}
 				String reactionRow = Integer.toString((reactionsTable.getSelectedRow() + 1));
 				String metaboliteRow = Integer.toString((metabolitesTable.getSelectedRow() + 1));
 				if (tabIndex == 0 && reactionsTable.getSelectedRow() > - 1) {
@@ -3584,8 +3563,7 @@ public class GraphicalInterface extends JFrame {
 
 	public static File chooseCSVFile( String title )
 	{
-		new String();
-		String lastCSV_path = curSettings.get("LastCSV");
+		String lastCSV_path = curSettings.get(SettingsConstants.CSV_SETTINGS_NAME);
 		Utilities u = new Utilities();
 		// if path is null or does not exist, default used, else last path used
 		final JFileChooser fileChooser = new JFileChooser();
@@ -3600,7 +3578,9 @@ public class GraphicalInterface extends JFrame {
 			{
 				if( file.isDirectory() || file.exists() && file.getName().toLowerCase().endsWith( ".csv" ) )
 				{
-					curSettings.add( "LastCSV", file.getAbsolutePath() );
+					curSettings.add( SettingsConstants.CSV_SETTINGS_NAME, file.getAbsolutePath() );
+					//bug - this prints out every file in directory
+					//System.out.println(file.getAbsolutePath());
 					return true;
 				}
 				return false;
@@ -3829,8 +3809,6 @@ public class GraphicalInterface extends JFrame {
 					saveAsSBML();
 				}
 			} else if (getFileType().equals(GraphicalInterfaceConstants.CSV_FILE_TYPE)) {
-				// will need a last csv metabolites and last csv reactions in settings
-				//curSettings.get("LastCSV")
 				if (curSettings.get("LastCSVMetabolites") != null && !curSettings.get("LastCSVMetabolites").equals("none") && 
 						curSettings.get("LastCSVReactions") != null && !curSettings.get("LastCSVReactions").equals("none") && isRoot) {
 					File f1 = new File(curSettings.get("LastCSVMetabolites"));
@@ -3943,6 +3921,8 @@ public class GraphicalInterface extends JFrame {
 			getCSVSaveInterface().updateMetabolitesPath("");
 			getCSVSaveInterface().updateReactionsPath("");
 		}
+		getCSVSaveInterface().disableMetabolitesItems(!LocalConfig.getInstance().metabolitesTableChanged);
+		getCSVSaveInterface().disableReactionsItems(!LocalConfig.getInstance().reactionsTableChanged);
 	}
 	
 	ActionListener okButtonCSVSaveActionListener = new ActionListener() {
@@ -3995,7 +3975,7 @@ public class GraphicalInterface extends JFrame {
 		setUpTables();
 		setFileType(GraphicalInterfaceConstants.CSV_FILE_TYPE);
 		LocalConfig.getInstance().metabolitesTableChanged = false;
-		curSettings.add("LastCSV", path);
+		curSettings.add(SettingsConstants.CSV_MODEL_SETTINGS_NAME, path);
 		curSettings.add("LastCSVMetabolites", path);
 	}
 
@@ -4006,7 +3986,7 @@ public class GraphicalInterface extends JFrame {
 		fileChooser.setFileFilter(new CSVFileFilter());
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
-		String lastCSV_path = curSettings.get("LastCSV");
+		String lastCSV_path = curSettings.get(SettingsConstants.CSV_MODEL_SETTINGS_NAME);
 		Utilities u = new Utilities();
 		// if path is null or does not exist, default used, else last path used		
 		fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));					
@@ -4025,7 +4005,7 @@ public class GraphicalInterface extends JFrame {
 				if (!rawPathName.endsWith(".csv")) {
 					rawPathName = rawPathName + ".csv";
 				}
-				curSettings.add("LastCSV", rawPathName);
+				curSettings.add(SettingsConstants.CSV_MODEL_SETTINGS_NAME, rawPathName);
 				curSettings.add("LastCSVMetabolites", rawPathName);
 
 				LocalConfig.getInstance().hasMetabolitesFile = true;
@@ -4087,7 +4067,7 @@ public class GraphicalInterface extends JFrame {
 			setUpTables();
 			setFileType(GraphicalInterfaceConstants.CSV_FILE_TYPE);
 			LocalConfig.getInstance().reactionsTableChanged = false;
-			curSettings.add("LastCSV", path);
+			curSettings.add(SettingsConstants.CSV_MODEL_SETTINGS_NAME, path);
 			curSettings.add("LastCSVReactions", path);
 		}	
 		saveOptFile = false;
@@ -4100,7 +4080,7 @@ public class GraphicalInterface extends JFrame {
 		fileChooser.setFileFilter(new CSVFileFilter());
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 
-		String lastCSV_path = curSettings.get("LastCSV");
+		String lastCSV_path = curSettings.get(SettingsConstants.CSV_MODEL_SETTINGS_NAME);
 		Utilities u = new Utilities();
 		// if path is null or does not exist, default used, else last path used		
 		fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));	
@@ -4131,7 +4111,7 @@ public class GraphicalInterface extends JFrame {
 				if (!rawPathName.endsWith(".csv")) {
 					rawPathName = rawPathName + ".csv";
 				}
-				curSettings.add("LastCSV", rawPathName);
+				curSettings.add(SettingsConstants.CSV_MODEL_SETTINGS_NAME, rawPathName);
 				curSettings.add("LastCSVReactions", rawPathName);
 
 				LocalConfig.getInstance().hasReactionsFile = true;
@@ -4277,6 +4257,7 @@ public class GraphicalInterface extends JFrame {
 		String suffix = " Save changes?";
 		if (LocalConfig.getInstance().metabolitesTableChanged && LocalConfig.getInstance().reactionsTableChanged) {
 			message += "Reactions table and Metabolites table changed." + suffix;
+			
 		} else if (LocalConfig.getInstance().reactionsTableChanged) {
 			message += "Reactions table changed." + suffix;
 		} else if (LocalConfig.getInstance().metabolitesTableChanged) {
@@ -10982,11 +10963,6 @@ public class GraphicalInterface extends JFrame {
 		enableSaveItems(true);
 		saveSBMLItem.setEnabled(true);
 		saveCSVItem.setEnabled(true);
-		if (tabbedPane.getSelectedIndex() == 0) {
-			saveCSVReactionsItem.setEnabled(true);
-		} else if (tabbedPane.getSelectedIndex() == 1) {
-			saveCSVMetabolitesItem.setEnabled(true);
-		}
 		findReplaceItem.setEnabled(true);
 		selectAllItem.setEnabled(true);
 	    setUpSolver.setEnabled(true);
@@ -11003,8 +10979,6 @@ public class GraphicalInterface extends JFrame {
 		enableSaveItems(false);
 		saveSBMLItem.setEnabled(false);
 		saveCSVItem.setEnabled(false);
-		saveCSVMetabolitesItem.setEnabled(false);
-		saveCSVReactionsItem.setEnabled(false);
 		findReplaceItem.setEnabled(false);	
 		selectAllItem.setEnabled(false);
 	    setUpSolver.setEnabled(false);

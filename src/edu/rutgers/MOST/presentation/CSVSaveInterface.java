@@ -275,6 +275,22 @@ public class CSVSaveInterface  extends JDialog {
 		return textReacField.getText();
 	}
 	
+	public void disableMetabolitesItems(boolean disabled) {
+		if (disabled) {
+			textMetabField.setForeground(Color.LIGHT_GRAY);
+		} else {
+			textMetabField.setForeground(Color.BLACK);
+		}
+	}
+	
+	public void disableReactionsItems(boolean disabled) {
+		if (disabled) {
+			textReacField.setForeground(Color.LIGHT_GRAY);
+		} else {
+			textReacField.setForeground(Color.BLACK);
+		}
+	}
+	
 	public static void main(String[] args) throws Exception {
 
 		//Main will not work unless GraphicalInterface.curSetting lines commented out
