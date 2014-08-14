@@ -7,8 +7,11 @@ import java.util.Map.Entry;
 
 import org.coinor.Ipopt;
 
+import edu.rutgers.MOST.data.Model;
+
 public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, LinearSolver
 {
+	protected Model dataModel;
 	private boolean usingNormalConstraint = false;
 	private boolean obj_set = false;
 	SolverComponent component = new SolverComponentHeavyWeight();
@@ -193,5 +196,11 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 	public void addNormalizeConstraint()
 	{
 		usingNormalConstraint = true;
+	}
+	
+	@Override
+	public void setDataModel( Model model )
+	{
+		this.dataModel = model;
 	}
 }

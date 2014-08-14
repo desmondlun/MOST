@@ -20,6 +20,7 @@ import org.gnu.glpk.glp_iocp;
 import org.gnu.glpk.glp_prob;
 import org.gnu.glpk.glp_tree;
 
+import edu.rutgers.MOST.data.Model;
 import edu.rutgers.MOST.presentation.ResizableDialog;
 
 public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, GlpkCallbackListener
@@ -42,6 +43,7 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 		public Vector< RowEntry > coefs = new Vector< RowEntry >();
 	}
 	
+	protected Model dataModel;
 	protected SolverComponent component = new SolverComponentLightWeight();
 	protected ObjectiveType objective = new ObjectiveType();
 	protected ArrayList< Double > soln = new ArrayList< Double >();
@@ -355,5 +357,9 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 			objCoefs.set( coef.idx, coef.value );
 		
 		return objCoefs;
+	}
+	public void setDataModel( Model model )
+	{
+		this.dataModel = model;
 	}
 }

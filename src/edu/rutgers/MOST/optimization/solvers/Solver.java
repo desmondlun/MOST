@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Vector;
 
+import edu.rutgers.MOST.data.Model;
+
 public interface Solver
 {
 	/**
@@ -95,4 +97,10 @@ public interface Solver
 	 * @see edu.rutgers.MOST.Analysis.SPOT
 	 */
 	public abstract void setGeneExpr( Vector< Double > geneExpr );
+
+	/**
+	 * Set the data model
+	 * @param model
+	 */
+	public abstract void setDataModel( Model model );
 }

@@ -55,7 +55,6 @@ import edu.rutgers.MOST.data.TextReactionsWriter;
 import edu.rutgers.MOST.data.UndoConstants;
 import edu.rutgers.MOST.logic.ReactionParser;
 import edu.rutgers.MOST.optimization.solvers.GurobiSolver;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -11160,6 +11159,7 @@ public class GraphicalInterface extends JFrame {
 		public String string;
 		public Solution solution;
 		double maxObj;
+		public Model model;
 	}
 	
 	public static void addGDBBSolution( GDBBParam param )
@@ -11174,6 +11174,43 @@ public class GraphicalInterface extends JFrame {
 		listModel.addElement(optimizeName);
 		setOptimizeName(optimizeName);
 		DynamicTreePanel.getTreePanel().addObject( param.solution );
+		DynamicTreePanel.getTreePanel().setNodeSelected( param.solution.getIndex());
+		
+		//////////////////
+		try {
+			Model model = param.model;
+			ReactionFactory rFactory = new ReactionFactory("SBML");
+			Vector< String > uniqueGeneAssociations = rFactory.getUniqueGeneAssociations();
+			int knockoutOffset = 4*model.getNumReactions() + model.getNumMetabolites();
+			Solution solution = param.solution;
+			double[] x = solution.getKnockoutVector();
+			solution.getObjectiveValue();
+
+			String kString = "";
+			//String kString = "";
+			ArrayList< Double > soln = new ArrayList< Double >();
+			for (int j = 0; j < x.length; j++)
+			{
+				soln.add(x[j]);
+				if ((j >= knockoutOffset) && (x[j] >= 0.5)) 
+				{        // compiler optimizes: boolean short circuiting
+					kString += "\n\t" + uniqueGeneAssociations.elementAt(j - knockoutOffset);
+				}
+			}
+
+			rFactory.setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN, 
+					LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
+			rFactory.setKnockouts(soln.subList(knockoutOffset, soln.size()));
+			
+		}
+		catch (Exception e)
+		{
+			JOptionPane.showMessageDialog(null,                
+					"Solver Error.",                
+					"Error",                                
+					JOptionPane.ERROR_MESSAGE);
+		}
+		//////////////////
 
 	}
 	

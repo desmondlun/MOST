@@ -19,6 +19,7 @@ import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 import edu.rutgers.MOST.presentation.ResizableDialog;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.config.LocalConfig;
+import edu.rutgers.MOST.data.Model;
 import gurobi.GRB;
 import gurobi.GRBCallback;
 import gurobi.GRBEnv;
@@ -29,6 +30,7 @@ import gurobi.GRBLinExpr;
 
 public abstract class GurobiSolver implements MILSolver
 {
+	protected Model dataModel = null;
 	protected ArrayList< Double > soln = new ArrayList< Double >();
 	Vector< Double > geneExpr = new Vector< Double >();
 	protected double objval;
@@ -262,6 +264,10 @@ public abstract class GurobiSolver implements MILSolver
 		component.addConstraint( map, conType, value );
 	}
 
+	public void setDataModel( Model model )
+	{
+		this.dataModel = model;
+	}
 	protected double minimizeEuclideanNorm() throws Exception
 	{
 		double result = 0.0;

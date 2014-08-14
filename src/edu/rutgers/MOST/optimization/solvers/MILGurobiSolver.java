@@ -9,7 +9,7 @@ import gurobi.GRBException;
 
 public class MILGurobiSolver extends GurobiSolver
 {
-
+	private int idx = 1;
 	public MILGurobiSolver()
 	{
 		super();
@@ -31,9 +31,11 @@ public class MILGurobiSolver extends GurobiSolver
 					{
 						GraphicalInterface.GDBBParam  param = new GraphicalInterface.GDBBParam();
 						param.string = "success!";
+						param.model = dataModel;
 						param.solution = new Solution( this
 								.getDoubleInfo( GRB.CB_MIPSOL_OBJ ), this
 								.getSolution( model.getVars() ) );
+						param.solution.setIndex( idx++ );
 						GraphicalInterface.addGDBBSolution( param );
 						// GDBB intermediate solutions
 						GDBB.getintermediateSolution().add( new Solution( this
