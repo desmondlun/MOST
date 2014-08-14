@@ -15,9 +15,10 @@ public class Solution extends DefaultMutableTreeNode {
 	private int index = -1;
 
 	public Solution(double objectiveValue, double[] knockoutVector) {
-		super(objectiveValue);
+		super(new Double( objectiveValue ).toString());
 		this.objectiveValue = objectiveValue;
 		this.knockoutVector = knockoutVector;
+		this.solutionName = new Double( objectiveValue ).toString();
 	}
 	
 	public Solution(String solutionName, String databaseName) {

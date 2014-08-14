@@ -1677,7 +1677,165 @@ public class GraphicalInterface extends JFrame {
 
         gdbbItem.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent a) {
-        		
+
+        		Thread t = new Thread()
+        		{
+        			final GDBB gdbb = new GDBB();
+        			@Override
+        			public void run()
+        			{
+        				//set up the table model
+                		Utilities u = new Utilities();
+                		String dateTimeStamp = u.createDateTimeStamp();
+                		String optimizeName = GraphicalInterfaceConstants.GDBB_PREFIX + LocalConfig.getInstance().getModelName() + dateTimeStamp;
+                		DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
+                		DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
+                		LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
+                		LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
+                		//setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
+                		//setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
+                		listModel.addElement(optimizeName);
+                		setOptimizeName(optimizeName);
+                		//DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName));
+        				
+        				//GDBB dialog
+                		gdbbTimer.stop();
+                		timeCount = 0;
+                		dotCount = 0;
+        				final GDBBDialog gdbbDialog = new GDBBDialog();
+        				gdbbDialog.setModal(true);
+            			gdbbDialog.setIconImages(icons);
+            			gdbbDialog.setTitle(GDBBConstants.GDBB_DIALOG_TITLE);
+            			gdbbDialog.setSize(400, 350);
+            			gdbbDialog.setResizable(false);
+            			gdbbDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+            			gdbbDialog.setLocationRelativeTo(null);
+            			setGdbbDialog(gdbbDialog);
+
+            			gdbbDialog.addWindowListener(new WindowAdapter() 
+            			{
+            				public void windowClosing(WindowEvent evt) 
+            				{
+            					if (gdbbTimer.isRunning()) 
+            					{
+            						Object[] options = {"    Yes    ", "    No    ",};
+            						int choice = JOptionPane.showOptionDialog(null, 
+            								GDBBConstants.FRAME_CLOSE_MESSAGE, 
+            								GDBBConstants.FRAME_CLOSE_TITLE, 
+            								JOptionPane.YES_NO_OPTION, 
+            								JOptionPane.QUESTION_MESSAGE, 
+            								null, options, options[0]);
+            						if (choice == JOptionPane.YES_OPTION) 
+            						{
+                    					gdbb.getSolver().abort();
+                    					gdbbDialog.setVisible( false );
+                    					gdbbDialog.dispose();
+            						}
+            						if (choice == JOptionPane.NO_OPTION) 
+            						{
+            						}
+            					}
+            					else 
+            					{
+            						gdbbDialog.setVisible(false);
+            						gdbbDialog.dispose();
+            					}
+            				}
+            			});	
+            			gdbbDialog.startButton.addActionListener(new ActionListener() 
+            			{
+            				public void actionPerformed(ActionEvent prodActionEvent) 
+            				{
+            					gdbbDialog.startButton.setEnabled( false );
+            					gdbbDialog.stopButton.setEnabled( true );
+            					gdbbStopped = false;       				
+            					// check if all entries are valid
+            					boolean isValid = true;
+            					boolean koIsInteger = true;
+            					boolean finiteTimeIsInteger = true;
+            					try 
+            					{
+            						Integer.parseInt(gdbbDialog.getNumKnockouts());
+            					}
+            					catch(NumberFormatException nfe2) 
+            					{
+            						isValid = false;
+            						koIsInteger = false;
+            					}
+            					if (gdbbDialog.finiteTimeSelected) 
+            					{
+            						try 
+            						{
+            							Integer.parseInt(gdbbDialog.getFiniteTimeString());
+            						}
+            						catch(NumberFormatException nfe2) 
+            						{
+            							isValid = false;
+            							finiteTimeIsInteger = false;
+            						}
+            					}        				
+            					if (!isValid) 
+            					{
+            						JOptionPane.showMessageDialog(null,                
+            								GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_TITLE,                
+            								GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_MESSAGE,                               
+            								JOptionPane.ERROR_MESSAGE);
+            						if (!koIsInteger) 
+            							gdbbDialog.setKnockoutDefaultValue();
+            						if (!finiteTimeIsInteger)
+            							gdbbDialog.setFiniteTimeDefaultValue();
+            					}
+            					else 
+            					{
+            						// run gdbb
+            						gdbbDialog.disableComponents();
+            						gdbbDialog.stopButton.setEnabled(true);
+            						gdbbTimer.start();
+
+            						GDBBModel model = new GDBBModel(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN]);
+            						model.setC((new Double(gdbbDialog.getNumKnockouts())).doubleValue());
+            						model.setTimeLimit((new Double(gdbbDialog.getFiniteTimeString())).doubleValue());
+
+            						if (!gdbbDialog.finiteTimeSelected)
+            							model.setTimeLimit(Double.POSITIVE_INFINITY);
+            						else
+            							model.setTimeLimit((new Double(gdbbDialog.getFiniteTimeString())).doubleValue());
+
+            						//gdbbTask.getModel().setThreadNum((Integer)gdbbDialog.cbNumThreads.getSelectedItem());
+            						model.setThreadNum(gdbbDialog.selectedNumberOfThreads());
+            						gdbb.setGDBBModel( model );
+            						gdbb.setFinalizingCallback( new GDBB.Callback()
+									{
+										@Override
+										public void invoke()
+										{
+											gdbbDialog.setVisible( false );
+											gdbbDialog.dispose();
+										}
+									} );
+            						gdbb.start();
+            						gdbbRunning = true;
+            						gdbbProcessed = false;
+            					}       				
+            				}
+            			});
+            			gdbbDialog.stopButton.addActionListener(new ActionListener() 
+            			{
+            				public void actionPerformed(ActionEvent prodActionEvent) 
+            				{
+            					gdbb.getSolver().abort();
+            					gdbbDialog.setVisible( false );
+            					gdbbDialog.dispose();
+            				}
+            			});
+            			gdbbDialog.setVisible( true );
+            			gdbbDialog.dispose();
+            			
+        			}
+        			
+        		};
+        		t.start();
+        		/*
         		Utilities u = new Utilities();
 
         		String dateTimeStamp = u.createDateTimeStamp();
@@ -1692,9 +1850,7 @@ public class GraphicalInterface extends JFrame {
         		LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
         		setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
         		setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
-
         		listModel.addElement(optimizeName);
-
         		setOptimizeName(optimizeName);
 
         		// in case timer is running due to no license error
@@ -1813,7 +1969,7 @@ public class GraphicalInterface extends JFrame {
         			gdbbDialog.setVisible(true);
         		} catch (Exception e) {
         			
-        		}
+        		}*/
         	}
         });
 
@@ -5201,7 +5357,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().setMaxMetaboliteId(0);
 	}
 
-	public DefaultTableModel copyMetabolitesTableModel(DefaultTableModel model) {
+	public static DefaultTableModel copyMetabolitesTableModel(DefaultTableModel model) {
 		DefaultTableModel metabolitesModel = new DefaultTableModel();
 		for (int m = 0; m < GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length; m++) {
 			metabolitesModel.addColumn(GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES[m]);
@@ -5219,7 +5375,7 @@ public class GraphicalInterface extends JFrame {
 		return metabolitesModel;
 	}
 
-	public DefaultTableModel copyReactionsTableModel(DefaultTableModel model) {
+	public static DefaultTableModel copyReactionsTableModel(DefaultTableModel model) {
 		DefaultTableModel reactionsModel = new DefaultTableModel();
 		for (int r = 0; r < GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length; r++) {
 			reactionsModel.addColumn(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[r]);
@@ -5237,7 +5393,7 @@ public class GraphicalInterface extends JFrame {
 		return reactionsModel;
 	}
 
-	public DefaultTableModel createBlankMetabolitesTableModel() {
+	public static DefaultTableModel createBlankMetabolitesTableModel() {
 		DefaultTableModel blankMetabModel = new DefaultTableModel();
 		for (int m = 0; m < GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length; m++) {
 			blankMetabModel.addColumn(GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES[m]);
@@ -5248,7 +5404,7 @@ public class GraphicalInterface extends JFrame {
 		return blankMetabModel;
 	}
 
-	public DefaultTableModel createBlankReactionsTableModel() {
+	public static DefaultTableModel createBlankReactionsTableModel() {
 		DefaultTableModel blankReacModel = new DefaultTableModel();		
 		for (int r = 0; r < GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length; r++) {
 			blankReacModel.addColumn(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[r]);
@@ -5259,7 +5415,7 @@ public class GraphicalInterface extends JFrame {
 		return blankReacModel;
 	}
 
-	public DefaultTableModel deletedColumnReactionsTableModel(int index) {
+	public static DefaultTableModel deletedColumnReactionsTableModel(int index) {
 		DefaultTableModel reacModel = (DefaultTableModel) reactionsTable.getModel();
 		DefaultTableModel model = new DefaultTableModel();	
 		ArrayList<String> newMetaColumnNames = new ArrayList<String>();
@@ -5289,7 +5445,7 @@ public class GraphicalInterface extends JFrame {
 		return model;
 	}
 
-	public DefaultTableModel deletedColumnMetabolitesTableModel(int index) {
+	public static DefaultTableModel deletedColumnMetabolitesTableModel(int index) {
 		DefaultTableModel metabModel = (DefaultTableModel) metabolitesTable.getModel();
 		DefaultTableModel model = new DefaultTableModel();	
 		ArrayList<String> newMetaColumnNames = new ArrayList<String>();
@@ -5325,7 +5481,7 @@ public class GraphicalInterface extends JFrame {
 	 * Copies table models for analysis, adds models to table model maps,
 	 * and list of solutions for deletion from temporary directory 
 	 */
-	public void copyTableModelsForAnalysis(String solutionName) {
+	public static void copyTableModelsForAnalysis(String solutionName) {
 		// copy models, run optimization on these model
 		DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel(LocalConfig.getInstance().getMetabolitesTableModelMap().get(LocalConfig.getInstance().getModelName()));
 		DefaultTableModel reactionsOptModel = copyReactionsTableModel(LocalConfig.getInstance().getReactionsTableModelMap().get(LocalConfig.getInstance().getModelName()));				
@@ -6153,7 +6309,7 @@ public class GraphicalInterface extends JFrame {
 		}	  
 	}
 
-	public Vector<String> createReactionsRow(int id)
+	public static Vector<String> createReactionsRow(int id)
 	{
 		Vector<String> row = new Vector<String>();
 		row.addElement(Integer.toString(id));
@@ -11003,11 +11159,22 @@ public class GraphicalInterface extends JFrame {
 	{
 		public String string;
 		public Solution solution;
+		double maxObj;
 	}
 	
 	public static void addGDBBSolution( GDBBParam param )
 	{
-		System.out.println( param.string );
+		String optimizeName = param.solution.getSolutionName();
+		DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
+		DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
+		LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
+		LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
+		//setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
+		//setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
+		listModel.addElement(optimizeName);
+		setOptimizeName(optimizeName);
+		DynamicTreePanel.getTreePanel().addObject( param.solution );
+
 	}
 	
 	class Task extends SwingWorker<Void, Void> {
