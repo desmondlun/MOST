@@ -11187,7 +11187,6 @@ public class GraphicalInterface extends JFrame {
 			solution.getObjectiveValue();
 
 			String kString = "";
-			//String kString = "";
 			ArrayList< Double > soln = new ArrayList< Double >();
 			for (int j = 0; j < x.length; j++)
 			{
@@ -11201,7 +11200,7 @@ public class GraphicalInterface extends JFrame {
 			rFactory.setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN, 
 					LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
 			rFactory.setKnockouts(soln.subList(knockoutOffset, soln.size()));
-			
+			outputTextArea.setText( kString );
 		}
 		catch (Exception e)
 		{
