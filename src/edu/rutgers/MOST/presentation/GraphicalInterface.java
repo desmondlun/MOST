@@ -55,6 +55,7 @@ import edu.rutgers.MOST.data.TextReactionsWriter;
 import edu.rutgers.MOST.data.UndoConstants;
 import edu.rutgers.MOST.logic.ReactionParser;
 import edu.rutgers.MOST.optimization.solvers.GurobiSolver;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -204,7 +205,7 @@ public class GraphicalInterface extends JFrame {
 	public static SettingsFactory curSettings;
 
 	protected GDBBTask gdbbTask;
-	public javax.swing.Timer gdbbTimer = new javax.swing.Timer(1000, new GDBBTimeListener());
+	public javax.swing.Timer gdbbTimer = null;
 
 	public javax.swing.Timer fvaTimer = new javax.swing.Timer(100, new FVATimeListener());
 	
@@ -1698,10 +1699,46 @@ public class GraphicalInterface extends JFrame {
                 		//DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName));
         				
         				//GDBB dialog
-                		gdbbTimer.stop();
-                		timeCount = 0;
-                		dotCount = 0;
         				final GDBBDialog gdbbDialog = new GDBBDialog();
+        				gdbbTimer = new javax.swing.Timer(1000, new ActionListener()
+						{
+        					private int timeCount = 0;
+        					private int dotCount = 0;
+							@Override
+							public void actionPerformed( ActionEvent ae )
+							{
+								timeCount += 1;
+								dotCount += 1;
+								StringBuffer dotBuffer = new StringBuffer();
+								int numDots = dotCount % ( GDBBConstants.MAX_NUM_DOTS + 1 );
+								for( int i = 0; i < numDots; i++)
+								{
+									dotBuffer.append( " ." );
+								}
+								if( gdbbDialog.finiteTimeSelected
+									&& timeCount == Integer.valueOf( gdbbDialog.getFiniteTimeString() ) )
+								{
+									gdbb.getSolver().abort();
+									gdbbDialog.setVisible( false );
+									gdbbDialog.dispose();
+								}
+								if( !gdbbStopped )
+								{
+									gdbbDialog.getCounterLabel().setText(
+										GDBBConstants.COUNTER_LABEL_PREFIX
+										+ timeCount
+										+ GDBBConstants.COUNTER_LABEL_SUFFIX );
+								}
+								else
+								{
+									gdbbDialog.getCounterLabel().setText(
+										GDBBConstants.PROCESSING
+										+ dotBuffer
+										.toString() );
+								}
+							}
+						});
+
         				gdbbDialog.setModal(true);
             			gdbbDialog.setIconImages(icons);
             			gdbbDialog.setTitle(GDBBConstants.GDBB_DIALOG_TITLE);
@@ -4217,103 +4254,93 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 
-	/**
-	 * Prompts user on load or exit to save table changes if changes have been made and optimizations
-	 * if any have been run. Table changes message shown first, then optimizations
-	 */
 	public void SaveChangesPrompt() {
 		new Utilities();
 		openFileChooser = true;
-		if (LocalConfig.getInstance().metabolitesTableChanged || LocalConfig.getInstance().reactionsTableChanged) {
-			saveTableChanges();
-		} else if (LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {
-			saveOptimizationsPrompt();
-		}
-	}	
-	
-	/**
-	 * Prompt shown on exit or load action if either table has been changed.
-	 */
-	public void saveTableChanges() {
-		new Utilities();
-		openFileChooser = true;
-		Object[] options = {"  Yes  ", "   No   ", "Cancel"};
-		String message = "";
-		String suffix = " Save changes?";
-		if (LocalConfig.getInstance().metabolitesTableChanged && LocalConfig.getInstance().reactionsTableChanged) {
-			message += "Reactions table and Metabolites table changed." + suffix;
-		} else if (LocalConfig.getInstance().reactionsTableChanged) {
-			message += "Reactions table changed." + suffix;
-		} else if (LocalConfig.getInstance().metabolitesTableChanged) {
-			message += "Metabolites table changed." + suffix;
-		} else {
-			message += suffix;
-		}
-		int choice = JOptionPane.showOptionDialog(null, 
-				message, 
-				"Save Changes?",  
-				JOptionPane.YES_NO_CANCEL_OPTION, 
-				JOptionPane.QUESTION_MESSAGE, 
-				null, options, options[0]);
-		//options[0] sets "Yes" as default button
-		// interpret the user's choice	  
-		if (choice == JOptionPane.YES_OPTION)
-		{
-			if (getFileType().equals("csv")) {
-				saveCSVWithInterface();
-			} else if (getFileType().equals("sbml")) {
-				if (LocalConfig.getInstance().metabolitesTableChanged ||
-						LocalConfig.getInstance().reactionsTableChanged) {
-					saveOptFile = false;
-					saveAsSBML();
-					//						showJSBMLFileChooser = true;
-				}
-			}	
+		if (LocalConfig.getInstance().metabolitesTableChanged || LocalConfig.getInstance().reactionsTableChanged || LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {
+			Object[] options = {"  Yes  ", "   No   ", "Cancel"};
+			String message = "";
+			String suffix = " Save changes?";
 			if (LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {
-				saveOptimizationsPrompt();
+				message = "Optimizations have not been saved. ";
+			}
+			if (LocalConfig.getInstance().metabolitesTableChanged && LocalConfig.getInstance().reactionsTableChanged) {
+				message += "Reactions table and Metabolites table changed." + suffix;
+			} else if (LocalConfig.getInstance().reactionsTableChanged) {
+				message += "Reactions table changed." + suffix;
+			} else if (LocalConfig.getInstance().metabolitesTableChanged) {
+				message += "Metabolites table changed." + suffix;
 			} else {
+				message += suffix;
+			}
+			int choice = JOptionPane.showOptionDialog(null, 
+					message, 
+					"Save Changes?",  
+					JOptionPane.YES_NO_CANCEL_OPTION, 
+					JOptionPane.QUESTION_MESSAGE, 
+					null, options, options[0]);
+			//options[0] sets "Yes" as default button
+			// interpret the user's choice	  
+			if (choice == JOptionPane.YES_OPTION)
+			{
+				if (getFileType().equals("csv")) {
+					saveCSVWithInterface();
+				} else if (getFileType().equals("sbml")) {
+					if (LocalConfig.getInstance().metabolitesTableChanged ||
+							LocalConfig.getInstance().reactionsTableChanged) {
+						saveOptFile = false;
+						saveAsSBML();
+//						showJSBMLFileChooser = true;
+					}
+				}	
+				if (LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {
+					for (int i = 0; i < LocalConfig.getInstance().getOptimizationFilesList().size(); i++) {
+//						System.out.println(LocalConfig.getInstance().getOptimizationFilesList().get(i));
+//						saveOptFile = true;
+						if (getFileType().equals("csv")) {
+							saveReactionsTextFileChooser();
+						} else if (getFileType().equals("sbml")) {
+							try {
+								JSBMLWriter jWrite = new JSBMLWriter();
+								String path = System.getenv("USERPROFILE");
+								if (curSettings.get("LastSBML") != null) {
+									File f = new File(curSettings.get("LastSBML"));
+//									System.out.println(f.getParent());
+									path = f.getParent();
+								}
+								jWrite.setOptFilePath(path + "/" + LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".xml");
+//								System.out.println(LocalConfig.getInstance().getOptimizationFilesList().get(i));
+//								jWrite.setOptFilePath(DynamicTreePanel.getTreePanel().getTree().getLastSelectedPathComponent().toString());
+								jWrite.formConnect(LocalConfig.getInstance());
+								
+							} catch (Exception e) {
+								JOptionPane.showMessageDialog(null,                
+										"Unable to Write Files.",                
+										"Error",                                
+										JOptionPane.ERROR_MESSAGE);
+								//e.printStackTrace();
+							}
+						} 
+					}
+				}
+//				deleteAllOptimizationFiles();
 				LocalConfig.getInstance().getOptimizationFilesList().clear();
 				exit = true;
+				//System.exit(0);
 			}
-		}
-		if (choice == JOptionPane.NO_OPTION)
-		{
-			if (LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {
-				saveOptimizationsPrompt();
-			} else {
+			if (choice == JOptionPane.NO_OPTION)
+			{
+				//TODO: if "_orig" db exists rename to db w/out "_orig", delete db w/out "_orig"
+				// or delete db
+//				deleteAllOptimizationFiles();
 				exit = true;
 			}
-		}
-		if (choice == JOptionPane.CANCEL_OPTION) {
-			exit = false;
-			openFileChooser = false;
-		}
-	}
-	
-	/**
-	 * 
-	 */
-	public void saveOptimizationsPrompt() {
-		Object[] options = {"  Yes  ", "   No   "};
-		int choice = JOptionPane.showOptionDialog(null, 
-				"Optimizations have not been saved. Save Optimizations?", 
-				"Save Optimizations?",  
-				JOptionPane.YES_NO_CANCEL_OPTION, 
-				JOptionPane.QUESTION_MESSAGE, 
-				null, options, options[0]);
-		//options[0] sets "Yes" as default button
-		// interpret the user's choice	
-		if (choice == JOptionPane.YES_OPTION)
-		{
-			// close dialog to give user a chance to save optimizations
-			// do not exit program
-			exit = false;
-		}
-		if (choice == JOptionPane.NO_OPTION)
-		{
-			exit = true;
-		}
-	}
+			if (choice == JOptionPane.CANCEL_OPTION) {
+				exit = false;
+				openFileChooser = false;
+			}
+		}		
+	}	
 
 	/*******************************************************************************/
 	//end Model menu methods and actions
@@ -11169,7 +11196,7 @@ public class GraphicalInterface extends JFrame {
 		public String string;
 		public Solution solution;
 		double maxObj;
-		public Model model;
+		public GDBBModel model;
 	}
 	
 	public static void addGDBBSolution( GDBBParam param )
@@ -11184,18 +11211,32 @@ public class GraphicalInterface extends JFrame {
 		listModel.addElement(optimizeName);
 		setOptimizeName(optimizeName);
 		DynamicTreePanel.getTreePanel().addObject( param.solution );
-		DynamicTreePanel.getTreePanel().setNodeSelected( param.solution.getIndex());
-		
-		//////////////////
+		// the following line freezes GDBB due to lack of thread safety
+		//DynamicTreePanel.getTreePanel().setNodeSelected( param.solution.getIndex());
+
+		BufferedWriter writer = null;
 		try {
-			Model model = param.model;
-			ReactionFactory rFactory = new ReactionFactory("SBML");
+			GDBBModel model = param.model;
+			Solution solution = param.solution;
+			ReactionFactory rFactory = new ReactionFactory( "SBML" );
+			double[] x = solution.getKnockoutVector();
+			String synObjString = "";
 			Vector< String > uniqueGeneAssociations = rFactory.getUniqueGeneAssociations();
 			int knockoutOffset = 4*model.getNumReactions() + model.getNumMetabolites();
-			Solution solution = param.solution;
-			double[] x = solution.getKnockoutVector();
-			solution.getObjectiveValue();
+			for (int i = 0; i < rFactory.getSyntheticObjectiveVector().size(); i ++) {
+				if (rFactory.getSyntheticObjectiveVector().get(i) > 0) {
+					synObjString += "Reaction '" + rFactory.getReactionAbbreviations().get(i) + "' Synthetic Objective = " + rFactory.getSyntheticObjectiveVector().get(i) + "\n";
 
+				}
+			}
+			String output = "";
+			StringBuffer text = new StringBuffer();
+			text.append("GDBB" + "\n");
+			text.append(synObjString);
+			text.append("Number of Knockouts = " + model.getC() + "\n");
+			text.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions, " + model.getNumGeneAssociations() + " unique gene associations\n");
+			text.append("Synthetic objective: "        + Double.toString(solution.getObjectiveValue()) + "\n");				
+			text.append("Knockouts:");
 			String kString = "";
 			ArrayList< Double > soln = new ArrayList< Double >();
 			for (int j = 0; j < x.length; j++)
@@ -11206,18 +11247,41 @@ public class GraphicalInterface extends JFrame {
 					kString += "\n\t" + uniqueGeneAssociations.elementAt(j - knockoutOffset);
 				}
 			}
+			if (kString != null) {
+				text.append(kString);
+			}
+			text.append("\n");
+			text.append( "MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() );
 
-			rFactory.setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN, 
-					LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
-			rFactory.setKnockouts(soln.subList(knockoutOffset, soln.size()));
-			outputTextArea.setText( kString );
-		}
-		catch (Exception e)
-		{
+			Utilities u = new Utilities();
+			File file = new File(u.createLogFileName(solution.getSolutionName() + ".log"));
+			writer = new BufferedWriter(new FileWriter(file));
+			writer.write(text.toString()); 
+			output = text.toString();
+			outputTextArea.setText( output );
+		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(null,                
-					"Solver Error.",                
+					"File Not Found Error.",                
 					"Error",                                
 					JOptionPane.ERROR_MESSAGE);
+			//e.printStackTrace();
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null,                
+					"File Not Found Error.",                  
+					"Error",                                
+					JOptionPane.ERROR_MESSAGE);
+			//e.printStackTrace();
+		} finally {
+			try {
+				if (writer != null) {
+					writer.close();
+				}
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(null,                
+						"File Not Found Error.",                  
+						"Error",                                
+						JOptionPane.ERROR_MESSAGE);
+			}
 		}
 		//////////////////
 
