@@ -4254,93 +4254,101 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 
+	/**
+	 * Prompts user on load or exit to save table changes if changes have been made and optimizations
+	 * if any have been run. Table changes message shown first, then optimizations
+	 */
 	public void SaveChangesPrompt() {
-		new Utilities();
 		openFileChooser = true;
-		if (LocalConfig.getInstance().metabolitesTableChanged || LocalConfig.getInstance().reactionsTableChanged || LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {
-			Object[] options = {"  Yes  ", "   No   ", "Cancel"};
-			String message = "";
-			String suffix = " Save changes?";
-			if (LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {
-				message = "Optimizations have not been saved. ";
-			}
-			if (LocalConfig.getInstance().metabolitesTableChanged && LocalConfig.getInstance().reactionsTableChanged) {
-				message += "Reactions table and Metabolites table changed." + suffix;
-			} else if (LocalConfig.getInstance().reactionsTableChanged) {
-				message += "Reactions table changed." + suffix;
-			} else if (LocalConfig.getInstance().metabolitesTableChanged) {
-				message += "Metabolites table changed." + suffix;
-			} else {
-				message += suffix;
-			}
-			int choice = JOptionPane.showOptionDialog(null, 
-					message, 
-					"Save Changes?",  
-					JOptionPane.YES_NO_CANCEL_OPTION, 
-					JOptionPane.QUESTION_MESSAGE, 
-					null, options, options[0]);
-			//options[0] sets "Yes" as default button
-			// interpret the user's choice	  
-			if (choice == JOptionPane.YES_OPTION)
-			{
-				if (getFileType().equals("csv")) {
-					saveCSVWithInterface();
-				} else if (getFileType().equals("sbml")) {
-					if (LocalConfig.getInstance().metabolitesTableChanged ||
-							LocalConfig.getInstance().reactionsTableChanged) {
-						saveOptFile = false;
-						saveAsSBML();
-//						showJSBMLFileChooser = true;
-					}
-				}	
-				if (LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {
-					for (int i = 0; i < LocalConfig.getInstance().getOptimizationFilesList().size(); i++) {
-//						System.out.println(LocalConfig.getInstance().getOptimizationFilesList().get(i));
-//						saveOptFile = true;
-						if (getFileType().equals("csv")) {
-							saveReactionsTextFileChooser();
-						} else if (getFileType().equals("sbml")) {
-							try {
-								JSBMLWriter jWrite = new JSBMLWriter();
-								String path = System.getenv("USERPROFILE");
-								if (curSettings.get("LastSBML") != null) {
-									File f = new File(curSettings.get("LastSBML"));
-//									System.out.println(f.getParent());
-									path = f.getParent();
-								}
-								jWrite.setOptFilePath(path + "/" + LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".xml");
-//								System.out.println(LocalConfig.getInstance().getOptimizationFilesList().get(i));
-//								jWrite.setOptFilePath(DynamicTreePanel.getTreePanel().getTree().getLastSelectedPathComponent().toString());
-								jWrite.formConnect(LocalConfig.getInstance());
-								
-							} catch (Exception e) {
-								JOptionPane.showMessageDialog(null,                
-										"Unable to Write Files.",                
-										"Error",                                
-										JOptionPane.ERROR_MESSAGE);
-								//e.printStackTrace();
-							}
-						} 
-					}
+		if (LocalConfig.getInstance().metabolitesTableChanged || LocalConfig.getInstance().reactionsTableChanged) {
+			saveTableChanges();
+		} else if (LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {
+			saveOptimizationsPrompt();
+		}
+	}	
+
+	/**
+	 * Prompt shown on exit or load action if either table has been changed.
+	 */
+	public void saveTableChanges() {
+		openFileChooser = true;
+		Object[] options = {"  Yes  ", "   No   ", "Cancel"};
+		String message = "";
+		String suffix = " Save changes?";
+		if (LocalConfig.getInstance().metabolitesTableChanged && LocalConfig.getInstance().reactionsTableChanged) {
+			message += "Reactions table and Metabolites table changed." + suffix;
+		} else if (LocalConfig.getInstance().reactionsTableChanged) {
+			message += "Reactions table changed." + suffix;
+		} else if (LocalConfig.getInstance().metabolitesTableChanged) {
+			message += "Metabolites table changed." + suffix;
+		} else {
+			message += suffix;
+		}
+		int choice = JOptionPane.showOptionDialog(null, 
+				message, 
+				"Save Changes?",  
+				JOptionPane.YES_NO_CANCEL_OPTION, 
+				JOptionPane.QUESTION_MESSAGE, 
+				null, options, options[0]);
+		//options[0] sets "Yes" as default button
+		// interpret the user's choice	  
+		if (choice == JOptionPane.YES_OPTION)
+		{
+			if (getFileType().equals("csv")) {
+				saveCSVWithInterface();
+			} else if (getFileType().equals("sbml")) {
+				if (LocalConfig.getInstance().metabolitesTableChanged ||
+						LocalConfig.getInstance().reactionsTableChanged) {
+					saveOptFile = false;
+					saveAsSBML();
+					//						showJSBMLFileChooser = true;
 				}
-//				deleteAllOptimizationFiles();
+			}	
+			if (LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {
+				saveOptimizationsPrompt();
+			} else {
 				LocalConfig.getInstance().getOptimizationFilesList().clear();
 				exit = true;
-				//System.exit(0);
 			}
-			if (choice == JOptionPane.NO_OPTION)
-			{
-				//TODO: if "_orig" db exists rename to db w/out "_orig", delete db w/out "_orig"
-				// or delete db
-//				deleteAllOptimizationFiles();
+		}
+		if (choice == JOptionPane.NO_OPTION)
+		{
+			if (LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {
+				saveOptimizationsPrompt();
+			} else {
 				exit = true;
 			}
-			if (choice == JOptionPane.CANCEL_OPTION) {
-				exit = false;
-				openFileChooser = false;
-			}
-		}		
-	}	
+		}
+		if (choice == JOptionPane.CANCEL_OPTION) {
+			exit = false;
+			openFileChooser = false;
+		}
+	}
+
+	/**
+	 * Prompt shown on exit or load action to save optimizations if any have been run
+	 */
+	public void saveOptimizationsPrompt() {
+		Object[] options = {"  Yes  ", "   No   "};
+		int choice = JOptionPane.showOptionDialog(null, 
+				"Optimizations have not been saved. Save Optimizations?", 
+				"Save Optimizations?",  
+				JOptionPane.YES_NO_CANCEL_OPTION, 
+				JOptionPane.QUESTION_MESSAGE, 
+				null, options, options[0]);
+		//options[0] sets "Yes" as default button
+		// interpret the user's choice	
+		if (choice == JOptionPane.YES_OPTION)
+		{
+			// close dialog to give user a chance to save optimizations
+			// do not exit program
+			exit = false;
+		}
+		if (choice == JOptionPane.NO_OPTION)
+		{
+			exit = true;
+		}
+	}
 
 	/*******************************************************************************/
 	//end Model menu methods and actions
