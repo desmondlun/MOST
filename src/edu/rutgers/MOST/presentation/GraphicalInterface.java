@@ -1705,7 +1705,7 @@ public class GraphicalInterface extends JFrame {
         				gdbbDialog.setModal(true);
             			gdbbDialog.setIconImages(icons);
             			gdbbDialog.setTitle(GDBBConstants.GDBB_DIALOG_TITLE);
-            			gdbbDialog.setSize(400, 350);
+            			gdbbDialog.setSize(GDBBConstants.GDBB_DIALOG_WIDTH, GDBBConstants.GDBB_DIALOG_HEIGHT);
             			gdbbDialog.setResizable(false);
             			gdbbDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
             			gdbbDialog.setLocationRelativeTo(null);
@@ -11284,9 +11284,6 @@ public class GraphicalInterface extends JFrame {
 				
 		GDBBTask() {
 			model = new GDBBModel(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN]);
-			// not necessary since only one column is selectable, but in future, could add column selection
-			// this is just a reminder of what method exists in old repos to implement that functionality
-			//model = new GDBBModel(getGdbbDialog().getReactionNameDBColumnMapping().getSelectedSynObjColumn();
 		}
 
 		@Override

@@ -16,6 +16,9 @@ public class GDBBConstants {
 	public static final int MAX_NUM_THREADS = Runtime.getRuntime().availableProcessors();
 	public static final String FINITE_TIME_DEFAULT = "300";
 	
+	public static final int GDBB_DIALOG_WIDTH = 400;
+	public static final int GDBB_DIALOG_HEIGHT = 320;
+	
 	// layout constants
 	public static final int COMPONENT_WIDTH = 150;
 	public static final int COMPONENT_HEIGHT = 25;
