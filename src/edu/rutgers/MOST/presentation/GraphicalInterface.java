@@ -205,7 +205,7 @@ public class GraphicalInterface extends JFrame {
 	public static SettingsFactory curSettings;
 
 	protected GDBBTask gdbbTask;
-	public javax.swing.Timer gdbbTimer = new javax.swing.Timer(1000, new GDBBTimeListener());
+	public javax.swing.Timer gdbbTimer = null;
 
 	public javax.swing.Timer fvaTimer = new javax.swing.Timer(100, new FVATimeListener());
 	
@@ -1699,10 +1699,46 @@ public class GraphicalInterface extends JFrame {
                 		//DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName));
         				
         				//GDBB dialog
-                		gdbbTimer.stop();
-                		timeCount = 0;
-                		dotCount = 0;
         				final GDBBDialog gdbbDialog = new GDBBDialog();
+        				gdbbTimer = new javax.swing.Timer(1000, new ActionListener()
+						{
+        					private int timeCount = 0;
+        					private int dotCount = 0;
+							@Override
+							public void actionPerformed( ActionEvent ae )
+							{
+								timeCount += 1;
+								dotCount += 1;
+								StringBuffer dotBuffer = new StringBuffer();
+								int numDots = dotCount % ( GDBBConstants.MAX_NUM_DOTS + 1 );
+								for( int i = 0; i < numDots; i++)
+								{
+									dotBuffer.append( " ." );
+								}
+								if( gdbbDialog.finiteTimeSelected
+									&& timeCount == Integer.valueOf( gdbbDialog.getFiniteTimeString() ) )
+								{
+									gdbb.getSolver().abort();
+									gdbbDialog.setVisible( false );
+									gdbbDialog.dispose();
+								}
+								if( !gdbbStopped )
+								{
+									gdbbDialog.getCounterLabel().setText(
+										GDBBConstants.COUNTER_LABEL_PREFIX
+										+ timeCount
+										+ GDBBConstants.COUNTER_LABEL_SUFFIX );
+								}
+								else
+								{
+									gdbbDialog.getCounterLabel().setText(
+										GDBBConstants.PROCESSING
+										+ dotBuffer
+										.toString() );
+								}
+							}
+						});
+
         				gdbbDialog.setModal(true);
             			gdbbDialog.setIconImages(icons);
             			gdbbDialog.setTitle(GDBBConstants.GDBB_DIALOG_TITLE);
