@@ -128,9 +128,10 @@ public class GDBBDialog  extends JDialog {
 		cbNumThreads.setEditable(false);
 		cbSynObj.setEditable(false);
 		
-		for (int i = 0; i <= GDBBConstants.MAX_NUM_THREADS; i++) {
+		for (int i = 1; i <= GDBBConstants.MAX_NUM_THREADS; i++) {
 			cbNumThreads.addItem(i);
 		}
+		cbNumThreads.setSelectedItem(GDBBConstants.MAX_NUM_THREADS);
 		
 		cbSynObj.addItem(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN]);
 		//cbSynObj.addItem(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_COLUMN]);		
