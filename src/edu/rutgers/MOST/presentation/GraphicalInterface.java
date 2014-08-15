@@ -643,12 +643,14 @@ public class GraphicalInterface extends JFrame {
 	// misc
 	/*****************************************************************************/
 	
-	class GISolution
+	private static class GISolution
 	{
 		protected StringBuffer stringBuffer = new StringBuffer();
 		protected ArrayList< Double > soln = new ArrayList< Double >();
+		protected ArrayList< Double > vaMin = null;
+		protected ArrayList< Double > vaMax = null;
 	}
-	Vector< GISolution > vecGISolution = new Vector< GISolution >();
+	private static Vector< GISolution > vecGISolution = new Vector< GISolution >();
 
 	private static int currentMetabolitesRow;
 
@@ -1485,7 +1487,7 @@ public class GraphicalInterface extends JFrame {
 		 */
 		abstract class AnalysisCommonActionListener implements ActionListener
 		{
-			
+			protected GISolution giSolution = new GISolution();
 			@Override
 			public void actionPerformed( ActionEvent a )
 			{
@@ -1517,7 +1519,6 @@ public class GraphicalInterface extends JFrame {
 						
 						StringBuffer outputText = new StringBuffer();
 						outputPart( model, outputText );
-						GISolution giSolution = new GISolution();
 						giSolution.soln = soln;
 						giSolution.stringBuffer = outputText;
 						vecGISolution.add( giSolution );
@@ -1576,6 +1577,11 @@ public class GraphicalInterface extends JFrame {
 				fba.setModel(model);
 				ArrayList< Double > soln = fba.run();
 				maxObj = fba.getMaxObj();
+				if( fba.FVASelected )
+				{
+					this.giSolution.vaMin = fba.minVariability;
+					this.giSolution.vaMax = fba.maxVariability;
+				}
 				return soln;
 			}
 
@@ -1590,7 +1596,7 @@ public class GraphicalInterface extends JFrame {
 				}
 				outputText.append("Maximum objective: "	+ maxObj + "\n");
 				outputText.append("MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() + "\n" );
-				if (fba.FVASelected) {
+				/*if (fba.FVASelected) {
 					LocalConfig.getInstance().fvaColumnsVisible = true;
 					ReactionFactory rFactory = new ReactionFactory("SBML");
 					rFactory.setFluxes(fba.minVariability, GraphicalInterfaceConstants.MIN_FLUX_COLUMN,
@@ -1601,7 +1607,7 @@ public class GraphicalInterface extends JFrame {
 					fluxesSet = true;
 				} else {
 					LocalConfig.getInstance().fvaColumnsVisible = false;
-				}
+				}*/
 			}
 		});
 
@@ -3339,18 +3345,26 @@ public class GraphicalInterface extends JFrame {
 					DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
 					LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
 					LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
-					setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
-					setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
+					//setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
+					//setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
 					LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
 					setTitle(GraphicalInterfaceConstants.TITLE + " - " + optimizeName);	
 					listModel.addElement(optimizeName);		
 					DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName, optimizeName));
 					DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 					
-					// finished optimization
 					ReactionFactory rFactory = new ReactionFactory("SBML");
 					rFactory.setFluxes( current_giSolution.soln, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN,
 							LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
+					if( current_giSolution.vaMin != null && current_giSolution.vaMax != null )
+					{
+						LocalConfig.getInstance().fvaColumnsVisible = true;
+						rFactory.setFluxes(current_giSolution.vaMin, GraphicalInterfaceConstants.MIN_FLUX_COLUMN,
+								LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
+						rFactory.setFluxes(current_giSolution.vaMax, GraphicalInterfaceConstants.MAX_FLUX_COLUMN,
+								LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
+						LocalConfig.getInstance().getShowFVAColumnsList().add(getOptimizeName());
+					}
 	
 					if (LocalConfig.getInstance().hasValidGurobiKey) {
 						Writer writer = null;
@@ -11211,94 +11225,47 @@ public class GraphicalInterface extends JFrame {
 	
 	public static void addGDBBSolution( GDBBParam param )
 	{
-		String optimizeName = param.solution.getSolutionName();
-		DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
-		DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
-		LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
-		LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
-		//setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
-		//setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
-		listModel.addElement(optimizeName);
-		setOptimizeName(optimizeName);
-		DynamicTreePanel.getTreePanel().addObject( param.solution );
-		// the following line freezes GDBB due to lack of thread safety
-		//DynamicTreePanel.getTreePanel().setNodeSelected( param.solution.getIndex());
+		GDBBModel model = param.model;
+		Solution solution = param.solution;
+		ReactionFactory rFactory = new ReactionFactory( "SBML" );
+		double[] x = solution.getKnockoutVector();
+		String synObjString = "";
+		Vector< String > uniqueGeneAssociations = rFactory.getUniqueGeneAssociations();
+		int knockoutOffset = 4*model.getNumReactions() + model.getNumMetabolites();
+		for (int i = 0; i < rFactory.getSyntheticObjectiveVector().size(); i ++) {
+			if (rFactory.getSyntheticObjectiveVector().get(i) > 0) {
+				synObjString += "Reaction '" + rFactory.getReactionAbbreviations().get(i) + "' Synthetic Objective = " + rFactory.getSyntheticObjectiveVector().get(i) + "\n";
 
-		BufferedWriter writer = null;
-		try {
-			GDBBModel model = param.model;
-			Solution solution = param.solution;
-			ReactionFactory rFactory = new ReactionFactory( "SBML" );
-			double[] x = solution.getKnockoutVector();
-			String synObjString = "";
-			Vector< String > uniqueGeneAssociations = rFactory.getUniqueGeneAssociations();
-			int knockoutOffset = 4*model.getNumReactions() + model.getNumMetabolites();
-			for (int i = 0; i < rFactory.getSyntheticObjectiveVector().size(); i ++) {
-				if (rFactory.getSyntheticObjectiveVector().get(i) > 0) {
-					synObjString += "Reaction '" + rFactory.getReactionAbbreviations().get(i) + "' Synthetic Objective = " + rFactory.getSyntheticObjectiveVector().get(i) + "\n";
-
-				}
-			}
-
-			
-			String output = "";
-			StringBuffer text = new StringBuffer();
-			text.append("GDBB" + "\n");
-			text.append(synObjString);
-			text.append("Number of Knockouts = " + model.getC() + "\n");
-			text.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions, " + model.getNumGeneAssociations() + " unique gene associations\n");
-			text.append("Synthetic objective: "        + Double.toString(solution.getObjectiveValue()) + "\n");				
-			text.append("Knockouts:");
-			String kString = "";
-			ArrayList< Double > soln = new ArrayList< Double >();
-			for (int j = 0; j < x.length; j++)
-			{
-				soln.add(x[j]);
-				if ((j >= knockoutOffset) && (x[j] >= 0.5)) 
-				{        // compiler optimizes: boolean short circuiting
-					kString += "\n\t" + uniqueGeneAssociations.elementAt(j - knockoutOffset);
-				}
-			}
-			rFactory.setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN,
-					LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
-					rFactory.setKnockouts(soln.subList(knockoutOffset, soln.size()));
-			if (kString != null) {
-				text.append(kString);
-			}
-			text.append("\n");
-			text.append( "MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() );
-
-			Utilities u = new Utilities();
-			File file = new File(u.createLogFileName(solution.getSolutionName() + ".log"));
-			writer = new BufferedWriter(new FileWriter(file));
-			writer.write(text.toString()); 
-			output = text.toString();
-			outputTextArea.setText( output );
-		} catch (FileNotFoundException e) {
-			JOptionPane.showMessageDialog(null,                
-					"File Not Found Error.",                
-					"Error",                                
-					JOptionPane.ERROR_MESSAGE);
-			//e.printStackTrace();
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null,                
-					"File Not Found Error.",                  
-					"Error",                                
-					JOptionPane.ERROR_MESSAGE);
-			//e.printStackTrace();
-		} finally {
-			try {
-				if (writer != null) {
-					writer.close();
-				}
-			} catch (IOException e) {
-				JOptionPane.showMessageDialog(null,                
-						"File Not Found Error.",                  
-						"Error",                                
-						JOptionPane.ERROR_MESSAGE);
 			}
 		}
-		//////////////////
+		
+		StringBuffer text = new StringBuffer();
+		text.append("GDBB" + "\n");
+		text.append(synObjString);
+		text.append("Number of Knockouts = " + model.getC() + "\n");
+		text.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions, " + model.getNumGeneAssociations() + " unique gene associations\n");
+		text.append("Synthetic objective: "        + Double.toString(solution.getObjectiveValue()) + "\n");				
+		text.append("Knockouts:");
+		String kString = "";
+		ArrayList< Double > soln = new ArrayList< Double >();
+		for (int j = 0; j < x.length; j++)
+		{
+			soln.add(x[j]);
+			if ((j >= knockoutOffset) && (x[j] >= 0.5)) 
+			{        // compiler optimizes: boolean short circuiting
+				kString += "\n\t" + uniqueGeneAssociations.elementAt(j - knockoutOffset);
+			}
+		}
+		if (kString != null) {
+			text.append(kString);
+		}
+		text.append("\n");
+		text.append( "MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() );
+		
+		GISolution current = new GISolution();
+		current.soln = soln;
+		current.stringBuffer = text;
+		vecGISolution.add( current );
 
 	}
 	

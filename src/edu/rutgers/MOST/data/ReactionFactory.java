@@ -153,12 +153,13 @@ public class ReactionFactory {
 		for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++) {
 			reactionsIdRowMap.put((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
 		}
-		for (int i = 0; i < fluxes.size(); i++) {
-			int id = ((SBMLReaction) reactions.get(i)).getId();
+		for( SBMLReaction r : reactions )
+		{
+			int id = r.getId();
 			String row = (reactionsIdRowMap.get(Integer.toString(id))).toString();
 			int rowNum = Integer.valueOf(row);
 			try {
-				reactionsOptModel.setValueAt(fluxes.get(i).toString(), rowNum, columnIndex);
+				reactionsOptModel.setValueAt(fluxes.get(id).toString(), rowNum, columnIndex);
 			} catch (Exception e) {
 				processStackTrace(e);
 			}			
