@@ -11211,6 +11211,8 @@ public class GraphicalInterface extends JFrame {
 
 				}
 			}
+
+			
 			String output = "";
 			StringBuffer text = new StringBuffer();
 			text.append("GDBB" + "\n");
@@ -11229,6 +11231,9 @@ public class GraphicalInterface extends JFrame {
 					kString += "\n\t" + uniqueGeneAssociations.elementAt(j - knockoutOffset);
 				}
 			}
+			rFactory.setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN,
+					LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
+					rFactory.setKnockouts(soln.subList(knockoutOffset, soln.size()));
 			if (kString != null) {
 				text.append(kString);
 			}
