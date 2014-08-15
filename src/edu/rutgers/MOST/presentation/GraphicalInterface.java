@@ -209,6 +209,8 @@ public class GraphicalInterface extends JFrame {
 
 	public javax.swing.Timer fvaTimer = new javax.swing.Timer(100, new FVATimeListener());
 	
+	protected javax.swing.Timer solutionTimeListener = null;
+	
 	private Task task;	
 	public final static ProgressBar progressBar = new ProgressBar();	
 	javax.swing.Timer timer = new javax.swing.Timer(100, new TimeListener());
@@ -640,6 +642,13 @@ public class GraphicalInterface extends JFrame {
 	/*****************************************************************************/
 	// misc
 	/*****************************************************************************/
+	
+	class GISolution
+	{
+		protected StringBuffer stringBuffer = new StringBuffer();
+		protected ArrayList< Double > soln = new ArrayList< Double >();
+	}
+	Vector< GISolution > vecGISolution = new Vector< GISolution >();
 
 	private static int currentMetabolitesRow;
 
@@ -1480,30 +1489,6 @@ public class GraphicalInterface extends JFrame {
 			@Override
 			public void actionPerformed( ActionEvent a )
 			{
-				final Utilities u = new Utilities();
-				
-				highlightUnusedMetabolites = false;
-				highlightUnusedMetabolitesItem.setState(false);
-
-				String dateTimeStamp = u.createDateTimeStamp();
-				final String optimizeName = GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
-						+ LocalConfig.getInstance().getModelName() + dateTimeStamp;
-				setOptimizeName(optimizeName);
-
-				// copy models, run optimization on these models
-				DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
-				DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
-				LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
-				LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
-				setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
-				setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
-				LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
-				setTitle(GraphicalInterfaceConstants.TITLE + " - " + optimizeName);	
-				listModel.addElement(optimizeName);		
-				DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName, optimizeName));
-				DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
-			
-				// Begin optimization
 				final Model model = new Model();
 				Thread t = new Thread()
 				{
@@ -1529,51 +1514,13 @@ public class GraphicalInterface extends JFrame {
 							disableMenuItemsForFVA(false);
 						}
 						//End optimization
-		
-						ReactionFactory rFactory = new ReactionFactory("SBML");
-						rFactory.setFluxes( new ArrayList< Double >( soln ), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN,
-								LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
-		
-						if (LocalConfig.getInstance().hasValidGurobiKey) {
-							Writer writer = null;
-							try {
-								StringBuffer outputText = new StringBuffer();
-								outputPart( model, outputText );
-								
-								File file = new File(u.createLogFileName(optimizeName + ".log"));
-								writer = new BufferedWriter(new FileWriter(file));
-								writer.write(outputText.toString());
-		
-							} catch (FileNotFoundException e) {
-								JOptionPane.showMessageDialog(null,                
-										"File Not Found.",                
-										"Error",                                
-										JOptionPane.ERROR_MESSAGE);
-								//e.printStackTrace();
-							} catch (IOException e) {
-								e.printStackTrace();
-							} finally {
-								try {
-									if (writer != null) {
-										writer.close();
-									}
-								} catch (IOException e) {
-									JOptionPane.showMessageDialog(null,                
-											"File Not Found.",                
-											"Error",                                
-											JOptionPane.ERROR_MESSAGE);
-									//e.printStackTrace();
-								}
-							}
-							loadOutputPane(u.createLogFileName(optimizeName + ".log"));
-							if (getPopout() != null) {
-								getPopout().load(u.createLogFileName(optimizeName + ".log"), gi.getTitle());
-							}
-								
-						} else {
-							DynamicTreePanel.getTreePanel().setNodeSelected(0);
-						}
-						LocalConfig.getInstance().hasValidGurobiKey = true;
+						
+						StringBuffer outputText = new StringBuffer();
+						outputPart( model, outputText );
+						GISolution giSolution = new GISolution();
+						giSolution.soln = soln;
+						giSolution.stringBuffer = outputText;
+						vecGISolution.add( giSolution );
 					}
 				};
 				t.start();
@@ -3367,6 +3314,87 @@ public class GraphicalInterface extends JFrame {
 		
 		formulaBar.setText((String) reactionsTable.getModel().getValueAt(0, 1));  
 		
+		this.solutionTimeListener = new javax.swing.Timer( 100, new ActionListener()
+		{
+			@Override
+			public void actionPerformed( ActionEvent ae )
+			{
+				if( vecGISolution.size() > 0 )
+				{
+					GISolution current_giSolution = vecGISolution.get( 0 );
+					vecGISolution.remove( 0 );
+					
+					final Utilities u = new Utilities();
+					
+					highlightUnusedMetabolites = false;
+					highlightUnusedMetabolitesItem.setState(false);
+
+					String dateTimeStamp = u.createDateTimeStamp();
+					final String optimizeName = GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
+							+ LocalConfig.getInstance().getModelName() + dateTimeStamp;
+					setOptimizeName(optimizeName);
+
+					// copy models, run optimization on these models
+					DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
+					DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
+					LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
+					LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
+					setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
+					setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
+					LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
+					setTitle(GraphicalInterfaceConstants.TITLE + " - " + optimizeName);	
+					listModel.addElement(optimizeName);		
+					DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName, optimizeName));
+					DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
+					
+					// finished optimization
+					ReactionFactory rFactory = new ReactionFactory("SBML");
+					rFactory.setFluxes( current_giSolution.soln, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN,
+							LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
+	
+					if (LocalConfig.getInstance().hasValidGurobiKey) {
+						Writer writer = null;
+						try {
+							StringBuffer outputText = current_giSolution.stringBuffer;
+							
+							File file = new File(u.createLogFileName(optimizeName + ".log"));
+							writer = new BufferedWriter(new FileWriter(file));
+							writer.write(outputText.toString());
+	
+						} catch (FileNotFoundException e) {
+							JOptionPane.showMessageDialog(null,                
+									"File Not Found.",                
+									"Error",                                
+									JOptionPane.ERROR_MESSAGE);
+							//e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						} finally {
+							try {
+								if (writer != null) {
+									writer.close();
+								}
+							} catch (IOException e) {
+								JOptionPane.showMessageDialog(null,                
+										"File Not Found.",                
+										"Error",                                
+										JOptionPane.ERROR_MESSAGE);
+								//e.printStackTrace();
+							}
+						}
+						loadOutputPane(u.createLogFileName(optimizeName + ".log"));
+						if (getPopout() != null) {
+							getPopout().load(u.createLogFileName(optimizeName + ".log"), gi.getTitle());
+						}
+							
+					} else {
+						DynamicTreePanel.getTreePanel().setNodeSelected(0);
+					}
+					LocalConfig.getInstance().hasValidGurobiKey = true;
+				}
+			}
+		} );
+		solutionTimeListener.start();
 	}
 	/********************************************************************************/
 	//end constructor and layout
