@@ -30,6 +30,7 @@ public class MILGurobiSolver extends GurobiSolver
 						this.abort();
 					else if( this.where == GRB.CB_MIPSOL ) //MIP
 					{
+						double[] x = this.getSolution( model.getVars() );
 						GraphicalInterface.GDBBParam  param = new GraphicalInterface.GDBBParam();
 						param.string = "success!";
 						param.model = (GDBBModel)dataModel;

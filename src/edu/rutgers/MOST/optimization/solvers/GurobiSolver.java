@@ -392,14 +392,14 @@ public abstract class GurobiSolver implements MILSolver
 		{
 			if( env == null )
 				env = new GRBEnv();
-			env.set( GRB.DoubleParam.Heuristics, 1.0 );
-			env.set( GRB.DoubleParam.ImproveStartGap, Double.POSITIVE_INFINITY );
 			env.set( GRB.DoubleParam.TimeLimit, timeLimit );
-			env.set( GRB.IntParam.MIPFocus, 1 );
 			env.set( GRB.IntParam.Threads, numThreads );
-			env.set( GRB.IntParam.Presolve, 2 );
-			env.set( GRB.IntParam.PreDepRow, 1 );
-			env.set( GRB.IntParam.PreSparsify, 1 );
+			//env.set( GRB.DoubleParam.Heuristics, 1.0 );
+			//env.set( GRB.DoubleParam.ImproveStartGap, Double.POSITIVE_INFINITY );
+			//env.set( GRB.IntParam.MIPFocus, 1 );
+			//env.set( GRB.IntParam.Presolve, 2 );
+			//env.set( GRB.IntParam.PreDepRow, 1 );
+			//env.set( GRB.IntParam.PreSparsify, 1 );
 		}
 		catch ( GRBException e )
 		{

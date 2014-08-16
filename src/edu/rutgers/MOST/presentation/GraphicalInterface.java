@@ -11271,7 +11271,7 @@ public class GraphicalInterface extends JFrame {
 		text.append( "MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() );
 		
 		GISolution current = new GISolution();
-		current.soln = soln;
+		current.soln = new ArrayList< Double >( soln.subList( 0, model.getNumReactions() ) );
 		current.stringBuffer = text;
 		vecGISolution.add( current );
 
