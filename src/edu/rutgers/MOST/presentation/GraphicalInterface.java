@@ -998,7 +998,7 @@ public class GraphicalInterface extends JFrame {
 				Solution nodeInfo = (Solution)node.getUserObject();
 				String solutionName = nodeInfo.getSolutionName();
 				Utilities u = new Utilities();
-				//(solutionName);
+				maybeShowFVAColumns(solutionName);
 				//fvaTimer.stop();
 				if (node.isLeaf()) {
 					if (solutionName != null) {
@@ -3367,7 +3367,6 @@ public class GraphicalInterface extends JFrame {
 					else
 					{
 						LocalConfig.getInstance().fvaColumnsVisible = false;
-						//LocalConfig.getInstance().getShowFVAColumnsList().clear();
 					}
 						
 					DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName, optimizeName));
@@ -5851,7 +5850,6 @@ public class GraphicalInterface extends JFrame {
 	ColorHighlighter constantBounds = new ColorHighlighter(constantBoundsPredicate, null, GraphicalInterfaceConstants.CONSTANT_BOUNDS_COLOR);
 
 	public void setReactionsTableLayout() {
-		System.out.println(LocalConfig.getInstance().fvaColumnsVisible);
 		reactionsTable.getSelectionModel().addListSelectionListener(new ReactionsRowListener());
 		reactionsTable.getColumnModel().getSelectionModel().
 		addListSelectionListener(new ReactionsColumnListener());
@@ -11669,7 +11667,7 @@ public class GraphicalInterface extends JFrame {
 			progressBar.progress.setValue(LocalConfig.getInstance().getProgress());
 			progressBar.progress.repaint();
 			if (LocalConfig.getInstance().getProgress() == 100) {
-				//(LocalConfig.getInstance().getModelName());
+				maybeShowFVAColumns(LocalConfig.getInstance().getModelName());
 				setUpReactionsTable(SBMLModelReader.getReactionsTableModel());
 				LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), SBMLModelReader.getReactionsTableModel());
 				setUpMetabolitesTable(SBMLModelReader.getMetabolitesTableModel());
