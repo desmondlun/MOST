@@ -3371,12 +3371,12 @@ public class GraphicalInterface extends JFrame {
 						
 					DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName, optimizeName));
 					DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
-					DefaultTableModel reactionsOptModel2 = (DefaultTableModel) reactionsTable.getModel();	
-					setUpReactionsTable(reactionsOptModel2);
+//					DefaultTableModel reactionsOptModel2 = (DefaultTableModel) reactionsTable.getModel();	
+//					setUpReactionsTable(reactionsOptModel2);
 					// Selecting top node stops timer, then reselect node for optimization
 					// This action is too fast to be visible to user
-					DynamicTreePanel.getTreePanel().setNodeSelected(0);
-					DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
+//					DynamicTreePanel.getTreePanel().setNodeSelected(0);
+//					DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 					
 					if (LocalConfig.getInstance().hasValidGurobiKey) {
 						Writer writer = null;
