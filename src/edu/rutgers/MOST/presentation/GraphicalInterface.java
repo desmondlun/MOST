@@ -3350,8 +3350,6 @@ public class GraphicalInterface extends JFrame {
 					LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
 					setTitle(GraphicalInterfaceConstants.TITLE + " - " + optimizeName);	
 					listModel.addElement(optimizeName);		
-					DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName, optimizeName));
-					DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 					
 					ReactionFactory rFactory = new ReactionFactory("SBML");
 					rFactory.setFluxes( current_giSolution.soln, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN,
@@ -3365,6 +3363,16 @@ public class GraphicalInterface extends JFrame {
 								LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
 						LocalConfig.getInstance().getShowFVAColumnsList().add(getOptimizeName());
 					}
+					else
+					{
+						LocalConfig.getInstance().fvaColumnsVisible = false;
+						LocalConfig.getInstance().getShowFVAColumnsList().clear();
+					}
+						
+					
+					DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName, optimizeName));
+					DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
+					
 	
 					if (LocalConfig.getInstance().hasValidGurobiKey) {
 						Writer writer = null;
