@@ -1487,10 +1487,11 @@ public class GraphicalInterface extends JFrame {
 		 */
 		abstract class AnalysisCommonActionListener implements ActionListener
 		{
-			protected GISolution giSolution = new GISolution();
+			protected GISolution giSolution = null;
 			@Override
 			public void actionPerformed( ActionEvent a )
 			{
+				this.giSolution = new GISolution();
 				final Model model = new Model();
 				Thread t = new Thread()
 				{
