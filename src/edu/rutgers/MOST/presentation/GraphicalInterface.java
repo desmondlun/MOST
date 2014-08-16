@@ -207,7 +207,7 @@ public class GraphicalInterface extends JFrame {
 	protected GDBBTask gdbbTask;
 	public javax.swing.Timer gdbbTimer = null;
 
-	public javax.swing.Timer fvaTimer = new javax.swing.Timer(100, new FVATimeListener());
+	//public javax.swing.Timer fvaTimer = new javax.swing.Timer(100, new FVATimeListener());
 	
 	protected javax.swing.Timer solutionTimeListener = null;
 	
@@ -998,14 +998,14 @@ public class GraphicalInterface extends JFrame {
 				Solution nodeInfo = (Solution)node.getUserObject();
 				String solutionName = nodeInfo.getSolutionName();
 				Utilities u = new Utilities();
-				maybeShowFVAColumns(solutionName);
+				//(solutionName);
 				//fvaTimer.stop();
 				if (node.isLeaf()) {
 					if (solutionName != null) {
 						if (solutionName.equals(LocalConfig.getInstance().getModelName())) {
-							if (fluxesSet) {
-								fvaTimer.stop();
-							}
+//							if (fluxesSet) {
+//								fvaTimer.stop();
+//							}
 							isRoot = true;
 							saveOptFile = false;
 							setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
@@ -1526,7 +1526,7 @@ public class GraphicalInterface extends JFrame {
 				};
 				t.start();
 				fluxesSet = false;
-				fvaTimer.start();
+				//fvaTimer.start();
 			}
 			
 			/**
@@ -3366,14 +3366,18 @@ public class GraphicalInterface extends JFrame {
 					else
 					{
 						LocalConfig.getInstance().fvaColumnsVisible = false;
-						LocalConfig.getInstance().getShowFVAColumnsList().clear();
+						//LocalConfig.getInstance().getShowFVAColumnsList().clear();
 					}
 						
-					
 					DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName, optimizeName));
 					DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
+					DefaultTableModel reactionsOptModel2 = (DefaultTableModel) reactionsTable.getModel();	
+					setUpReactionsTable(reactionsOptModel2);
+					// Selecting top node stops timer, then reselect node for optimization
+					// This action is too fast to be visible to user
+					DynamicTreePanel.getTreePanel().setNodeSelected(0);
+					DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 					
-	
 					if (LocalConfig.getInstance().hasValidGurobiKey) {
 						Writer writer = null;
 						try {
@@ -5846,6 +5850,7 @@ public class GraphicalInterface extends JFrame {
 	ColorHighlighter constantBounds = new ColorHighlighter(constantBoundsPredicate, null, GraphicalInterfaceConstants.CONSTANT_BOUNDS_COLOR);
 
 	public void setReactionsTableLayout() {
+		System.out.println(LocalConfig.getInstance().fvaColumnsVisible);
 		reactionsTable.getSelectionModel().addListSelectionListener(new ReactionsRowListener());
 		reactionsTable.getColumnModel().getSelectionModel().
 		addListSelectionListener(new ReactionsColumnListener());
@@ -11663,7 +11668,7 @@ public class GraphicalInterface extends JFrame {
 			progressBar.progress.setValue(LocalConfig.getInstance().getProgress());
 			progressBar.progress.repaint();
 			if (LocalConfig.getInstance().getProgress() == 100) {
-				maybeShowFVAColumns(LocalConfig.getInstance().getModelName());
+				//(LocalConfig.getInstance().getModelName());
 				setUpReactionsTable(SBMLModelReader.getReactionsTableModel());
 				LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), SBMLModelReader.getReactionsTableModel());
 				setUpMetabolitesTable(SBMLModelReader.getMetabolitesTableModel());
@@ -11710,20 +11715,20 @@ public class GraphicalInterface extends JFrame {
 		getGdbbDialog().getCounterLabel().setText(GDBBConstants.PROCESSING);
 	}
 	
-	class FVATimeListener implements ActionListener {
-		public void actionPerformed(ActionEvent ae) {
-			if (LocalConfig.getInstance().fvaDone && fluxesSet) {
-				maybeShowFVAColumns(getOptimizeName());
-				// reload current table model to show fva columns
-				DefaultTableModel reactionsOptModel = (DefaultTableModel) reactionsTable.getModel();	
-				setUpReactionsTable(reactionsOptModel);
-				// Selecting top node stops timer, then reselect node for optimization
-				// This action is too fast to be visible to user
-				DynamicTreePanel.getTreePanel().setNodeSelected(0);
-				DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
-			}
-		}
-	}
+//	class FVATimeListener implements ActionListener {
+//		public void actionPerformed(ActionEvent ae) {
+//			if (LocalConfig.getInstance().fvaDone && fluxesSet) {
+//				maybeShowFVAColumns(getOptimizeName());
+//				// reload current table model to show fva columns
+//				DefaultTableModel reactionsOptModel = (DefaultTableModel) reactionsTable.getModel();	
+//				setUpReactionsTable(reactionsOptModel);
+//				// Selecting top node stops timer, then reselect node for optimization
+//				// This action is too fast to be visible to user
+//				DynamicTreePanel.getTreePanel().setNodeSelected(0);
+//				DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
+//			}
+//		}
+//	}
 	
 	/*******************************************************************************/
 	//end progressBar methods
