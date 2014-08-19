@@ -15,8 +15,8 @@ public class GraphicalInterfaceConstants {
 	public static final String REACTION_ID_COLUMN_NAME = "ID";
 	public static final String KNOCKOUT_COLUMN_NAME = "KO";
 	public static final String FLUX_VALUE_COLUMN_NAME = "Flux Value";
-	public static final String MINIMUM_FLUX_COLUMN_NAME = "Min Flux";
-	public static final String MAXIMUM_FLUX_COLUMN_NAME = "Max Flux";
+	public static final String MINIMUM_FLUX_COLUMN_NAME = "Min. Flux";
+	public static final String MAXIMUM_FLUX_COLUMN_NAME = "Max. Flux";
 	public static final String REACTION_ABBREVIATION_COLUMN_NAME = "Reaction Abbreviation";
 	public static final String REACTION_NAME_COLUMN_NAME = "Reaction Name";
 	public static final String REACTION_EQUATION_ABBR_COLUMN_NAME = "Reaction Equation (Metabolite Abbreviation)";
