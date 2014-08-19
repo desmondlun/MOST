@@ -459,7 +459,6 @@ public class GraphicalInterfaceConstants {
     public static final Color FORMULA_BAR_NONEDITABLE_COLOR = Color.LIGHT_GRAY;
     // this shade of gray matches color when labeled components are grayed out
     public static final Color GRAYED_LABEL_COLOR = new Color(150,150,150);
-    public static final Color CONSTANT_BOUNDS_COLOR = Color.RED;
     
     // directories used for writing log files
     // The suffix must be used as there are bugs in getting the application data folder
@@ -534,9 +533,6 @@ public class GraphicalInterfaceConstants {
     public static final String DEFAULT_FILE_TYPE = "csv";
 
     public static final String GDBB_PREFIX = "GDBB_";
-    
-    // Note: name must contain an "N" since keyboard shortcut is "N"
-    public static final String SET_ALL_BOUNDS_NOT_CONSTANT = "Reset Bounds to Mutable";
     
 }
 

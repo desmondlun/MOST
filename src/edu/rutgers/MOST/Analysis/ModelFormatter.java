@@ -117,11 +117,12 @@ public class ModelFormatter
 				
 				if( originalSPOT )
 				{
-					if( !LocalConfig.getInstance().getConstantBoundsIdList().contains( reaction.getId() ) )
-					{
-						reaction.setLowerBound( reaction.getLowerBound() < 0.0 ? Double.NEGATIVE_INFINITY : 0.0 );
-						reaction.setUpperBound( reaction.getUpperBound() > 0.0 ? Double.POSITIVE_INFINITY : 0.0 );
-					}
+                    //Removed constant bounds code. Therefore this code will not work.
+//					if( !LocalConfig.getInstance().getConstantBoundsIdList().contains( reaction.getId() ) )
+//					{
+//						reaction.setLowerBound( reaction.getLowerBound() < 0.0 ? Double.NEGATIVE_INFINITY : 0.0 );
+//						reaction.setUpperBound( reaction.getUpperBound() > 0.0 ? Double.POSITIVE_INFINITY : 0.0 );
+//					}
 					
 					if( parse_expr.isInfinite() || reaction.getReversible().toLowerCase().equals( "true" ) )
 						gene_expr.add( 0.0 );

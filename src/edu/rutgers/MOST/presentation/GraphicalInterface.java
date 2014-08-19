@@ -277,7 +277,6 @@ public class GraphicalInterface extends JFrame {
 	public static boolean addMetabolite;
 	public boolean enterPressed;
 	public boolean reactionsUndo;
-	public boolean boundsItemlicked;
 	// save
 	public boolean saveFile;
 	public boolean saveSBML;
@@ -616,9 +615,7 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem addMetabColumnItem = new JMenuItem("Add Column to Metabolites Table"); 
 	public final JMenuItem deleteReactionRowMenuItem = new JMenuItem("Delete Row(s)");
 	public final JMenuItem deleteMetaboliteRowMenuItem = new JMenuItem("Delete Row(s)");
-	public final JMenuItem setBoundsNotConstantMenu = new JMenuItem(GraphicalInterfaceConstants.SET_ALL_BOUNDS_NOT_CONSTANT);
 	public final JMenuItem editorMenu = new JMenuItem("Launch Reaction Editor");
-	public final JCheckBoxMenuItem boundsConstantMenuItem = new JCheckBoxMenuItem("Set Bounds Constant");
 	public final JMenuItem unsortReacMenuItem = new JMenuItem("Unsort Reactions Table");
 	public final JMenuItem unsortMetabMenuItem = new JMenuItem("Unsort Metabolites Table");
 	public final JMenuItem setUpSolver = new JMenuItem("Select Solvers");
@@ -1273,8 +1270,6 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().setMetabDisplayCollectionMap(metabDisplayCollectionMap);
 		ArrayList<String> invalidReactions = new ArrayList<String>();
 		LocalConfig.getInstance().setInvalidReactions(invalidReactions);
-		ArrayList<Integer> constantBoundsIdList = new ArrayList<Integer>();
-		LocalConfig.getInstance().setConstantBoundsIdList(constantBoundsIdList);
 		ArrayList<String> showFVAColumnsList = new ArrayList<String>();
 		LocalConfig.getInstance().setShowFVAColumnsList(showFVAColumnsList);
 
@@ -2111,18 +2106,6 @@ public class GraphicalInterface extends JFrame {
 			}    	     
 		});
 
-		editMenu.addSeparator(); 
-		
-		editMenu.add(setBoundsNotConstantMenu);
-		setBoundsNotConstantMenu.setMnemonic(KeyEvent.VK_N);
-		
-		setBoundsNotConstantMenu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent a) {
-				LocalConfig.getInstance().getConstantBoundsIdList().clear();
-				reactionsTable.repaint();
-			}    	     
-		});
-		
 		editMenu.addSeparator(); 
 
 		editMenu.add(undoItem);
@@ -5387,7 +5370,6 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().includesReactions = true;		
 		enterPressed = false;
 		reactionsUndo = false;
-		boundsItemlicked = false;
 		// save
 		if (!saveSBML) {
 			saveFile = false;
@@ -5405,7 +5387,6 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().getReactionAbbreviationIdMap().clear();
 		LocalConfig.getInstance().getSuspiciousMetabolites().clear();
 		LocalConfig.getInstance().getUnusedList().clear();
-		LocalConfig.getInstance().getConstantBoundsIdList().clear();
 		if (!saveSBML) {
 			LocalConfig.getInstance().getOptimizationFilesList().clear();
 			LocalConfig.getInstance().getMetabolitesTableModelMap().clear();
@@ -5831,21 +5812,6 @@ public class GraphicalInterface extends JFrame {
 	};
 
 	ColorHighlighter nonEditable = new ColorHighlighter(nonEditablePredicate, null, GraphicalInterfaceConstants.NONEDITABLE_COLOR);
-	
-	HighlightPredicate constantBoundsPredicate = new HighlightPredicate() {
-		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
-			int viewRow = reactionsTable.convertRowIndexToModel(adapter.row);
-			int id = Integer.valueOf(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN).toString());					
-			if (LocalConfig.getInstance().getConstantBoundsIdList().contains(id) &&
-					(adapter.column == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN ||
-					adapter.column == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)) {
-				return true;
-			}
-			return false;
-		}
-	};
-
-	ColorHighlighter constantBounds = new ColorHighlighter(constantBoundsPredicate, null, GraphicalInterfaceConstants.CONSTANT_BOUNDS_COLOR);
 
 	public void setReactionsTableLayout() {
 		reactionsTable.getSelectionModel().addListSelectionListener(new ReactionsRowListener());
@@ -5871,7 +5837,6 @@ public class GraphicalInterface extends JFrame {
 		reactionsTable.addHighlighter(reactionFindAll);
 		reactionsTable.addHighlighter(invalidReaction);
 		reactionsTable.addHighlighter(nonEditable);
-		reactionsTable.addHighlighter(constantBounds);
 
 		// these columns have names that are too long to fit in cell and need tooltips
 		// also KO has Knockout as tooltip
@@ -6676,13 +6641,6 @@ public class GraphicalInterface extends JFrame {
 								&& reactionsContextMenu.getComponentCount() > 0) {
 							reactionsContextMenu.show(reactionsTable, p.x, p.y);
 						}
-					} else if (col == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN ||
-							col == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN) {
-						JPopupMenu boundsContextMenu = createBoundsContextMenu(row, col);
-						if (boundsContextMenu != null
-								&& boundsContextMenu.getComponentCount() > 0) {
-							boundsContextMenu.show(reactionsTable, p.x, p.y);
-						}
 					} else {
 						// create popup for remaining columns
 						JPopupMenu contextMenu = createReactionsContextMenu(row, col);
@@ -6716,44 +6674,6 @@ public class GraphicalInterface extends JFrame {
 	//begin reaction equation context menu
 	/*******************************************************************************/	
 
-	private JPopupMenu createBoundsContextMenu(final int rowIndex,
-			final int columnIndex) {
-		JPopupMenu contextMenu = createReactionsContextMenu(rowIndex, columnIndex);
-		contextMenu.addSeparator();
-		boundsItemlicked = false;
-		int viewRow = reactionsTable.convertRowIndexToModel(rowIndex);
-		int id = (Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
-		if (LocalConfig.getInstance().getConstantBoundsIdList().contains(id)) {
-			boundsConstantMenuItem.setSelected(true);
-		} else {
-			boundsConstantMenuItem.setSelected(false);
-		}
-		boundsConstantMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!boundsItemlicked) {
-					int viewRow = reactionsTable.convertRowIndexToModel(rowIndex);
-					int id = (Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN)));
-					if (boundsConstantMenuItem.isSelected()) {
-						if (!LocalConfig.getInstance().getConstantBoundsIdList().contains(id)) {
-							LocalConfig.getInstance().getConstantBoundsIdList().add(id);
-						}
-					} else {
-						if (LocalConfig.getInstance().getConstantBoundsIdList().contains(id)) {
-							LocalConfig.getInstance().getConstantBoundsIdList().remove(LocalConfig.getInstance().getConstantBoundsIdList().indexOf(id));
-						}
-					}
-				}
-//				System.out.println(LocalConfig.getInstance().getConstantBoundsIdList());
-				boundsItemlicked = true;
-				reactionsTable.repaint();
-			}
-		});
-		
-		contextMenu.add(boundsConstantMenuItem);
-
-		return contextMenu;
-	}
-	
 	private JPopupMenu createReactionEquationContextMenu(final int rowIndex,
 			final int columnIndex) {
 		JPopupMenu contextMenu = createReactionsContextMenu(rowIndex, columnIndex);
@@ -11066,8 +10986,6 @@ public class GraphicalInterface extends JFrame {
 			formulaBar.setEditable(true);		
 			editorMenu.setEnabled(true);
 			pastebutton.setEnabled(true);
-			boundsConstantMenuItem.setEnabled(true);
-			setBoundsNotConstantMenu.setEnabled(true);
 			if (undoCount > 1) {
 				enableOptionComponent(undoSplitButton, undoLabel, undoGrayedLabel);
 				undoItem.setEnabled(true);
@@ -11096,8 +11014,6 @@ public class GraphicalInterface extends JFrame {
 		formulaBar.setEditable(false);
 		formulaBar.setBackground(Color.WHITE);
 		editorMenu.setEnabled(false);
-		boundsConstantMenuItem.setEnabled(false);
-		setBoundsNotConstantMenu.setEnabled(false);
 		
 		FindReplaceDialog.replaceButton.setEnabled(false);
 		

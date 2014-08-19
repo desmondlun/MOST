@@ -802,16 +802,6 @@ public class LocalConfig {
 		this.gdbbKnockoutsMap = gdbbKnockoutsMap;
 	}
 	
-	private ArrayList<Integer> constantBoundsIdList;
-
-	public ArrayList<Integer> getConstantBoundsIdList() {
-		return constantBoundsIdList;
-	}
-
-	public void setConstantBoundsIdList(ArrayList<Integer> constantBoundsIdList) {
-		this.constantBoundsIdList = constantBoundsIdList;
-	}
-	
 	private ArrayList<String> showFVAColumnsList;
 
 	public ArrayList<String> getShowFVAColumnsList() {
