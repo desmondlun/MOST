@@ -999,13 +999,9 @@ public class GraphicalInterface extends JFrame {
 				String solutionName = nodeInfo.getSolutionName();
 				Utilities u = new Utilities();
 				maybeShowFVAColumns(solutionName);
-				//fvaTimer.stop();
 				if (node.isLeaf()) {
 					if (solutionName != null) {
 						if (solutionName.equals(LocalConfig.getInstance().getModelName())) {
-//							if (fluxesSet) {
-//								fvaTimer.stop();
-//							}
 							isRoot = true;
 							saveOptFile = false;
 							setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
@@ -1491,6 +1487,7 @@ public class GraphicalInterface extends JFrame {
 			@Override
 			public void actionPerformed( ActionEvent a )
 			{
+				LocalConfig.getInstance().noBiolObjWarningShown = false;
 				this.giSolution = new GISolution();
 				final Model model = new Model();
 				Thread t = new Thread()
@@ -1527,7 +1524,6 @@ public class GraphicalInterface extends JFrame {
 				};
 				t.start();
 				fluxesSet = false;
-				//fvaTimer.start();
 			}
 			
 			/**
@@ -11717,21 +11713,6 @@ public class GraphicalInterface extends JFrame {
 		dotCount = 0;
 		getGdbbDialog().getCounterLabel().setText(GDBBConstants.PROCESSING);
 	}
-	
-//	class FVATimeListener implements ActionListener {
-//		public void actionPerformed(ActionEvent ae) {
-//			if (LocalConfig.getInstance().fvaDone && fluxesSet) {
-//				maybeShowFVAColumns(getOptimizeName());
-//				// reload current table model to show fva columns
-//				DefaultTableModel reactionsOptModel = (DefaultTableModel) reactionsTable.getModel();	
-//				setUpReactionsTable(reactionsOptModel);
-//				// Selecting top node stops timer, then reselect node for optimization
-//				// This action is too fast to be visible to user
-//				DynamicTreePanel.getTreePanel().setNodeSelected(0);
-//				DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
-//			}
-//		}
-//	}
 	
 	/*******************************************************************************/
 	//end progressBar methods
