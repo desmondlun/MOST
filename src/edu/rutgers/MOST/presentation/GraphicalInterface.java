@@ -3209,7 +3209,9 @@ public class GraphicalInterface extends JFrame {
 
 			public void check(MouseEvent e) {
 				if (e.isPopupTrigger()) { //if the event shows the menu
-					formulaBarPopupMenu.show(formulaBar, e.getX(), e.getY()); 
+					if (!analysisRunning) {
+						formulaBarPopupMenu.show(formulaBar, e.getX(), e.getY()); 
+					}
 				}
 			}
 		}); 	  
@@ -5697,13 +5699,14 @@ public class GraphicalInterface extends JFrame {
 			formulaBarPasteItem.setEnabled(false);
 			pastebutton.setEnabled(false);
 		} else {
-			if (isRoot) {
+			if (isRoot && !analysisRunning) {
 				formulaBar.setForeground(Color.BLACK);
 				formulaBar.setEditable(true);
 				formulaBarPasteItem.setEnabled(true);
 				pastebutton.setEnabled(true);
 			} else {
 				formulaBar.setForeground(GraphicalInterfaceConstants.FORMULA_BAR_NONEDITABLE_COLOR);
+				formulaBar.setEditable(false);
 			}
 		}
 	}
@@ -5808,7 +5811,7 @@ public class GraphicalInterface extends JFrame {
 	HighlightPredicate nonEditablePredicate = new HighlightPredicate() {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
 			if (adapter.column == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN ||
-					!isRoot) {									
+					!isRoot || analysisRunning) {									
 				return true;
 			} 
 			return false;
@@ -6137,7 +6140,7 @@ public class GraphicalInterface extends JFrame {
 	// disables items if table is non-editable
 	public void enableOrDisableMetabolitesItems() {
 		if (metabolitesTable.getSelectedRow() > -1 && metabolitesTable.getSelectedColumn() > 0) {
-			if (isRoot) {
+			if (isRoot && !analysisRunning) {
 				formulaBar.setForeground(Color.BLACK);
 				formulaBar.setEditable(true);
 				formulaBarPasteItem.setEnabled(true);
@@ -6251,7 +6254,7 @@ public class GraphicalInterface extends JFrame {
 
 	HighlightPredicate nonEditableMetabPredicate = new HighlightPredicate() {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
-			if (!isRoot) {									
+			if (!isRoot || analysisRunning) {									
 				return true;
 			}						
 			return false;
