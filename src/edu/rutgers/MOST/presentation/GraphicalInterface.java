@@ -135,7 +135,7 @@ public class GraphicalInterface extends JFrame {
 		private static final long serialVersionUID = 1L;
 
 		public boolean isCellEditable(int row, int column){	    	   
-			if (!isRoot) {	
+			if (!isRoot || analysisRunning) {	
 				return false;					
 			}
 			if (column == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
@@ -165,7 +165,7 @@ public class GraphicalInterface extends JFrame {
 		private static final long serialVersionUID = 1L;
 
 		public boolean isCellEditable(int row, int column){	    	   
-			if (!isRoot) {	
+			if (!isRoot || analysisRunning) {	
 				return false;					
 			}
 			return true;  
@@ -292,6 +292,7 @@ public class GraphicalInterface extends JFrame {
 	
 	public boolean runFVA;
 	public boolean fluxesSet;
+	public static boolean analysisRunning;
 
 	/*****************************************************************************/
 	// end boolean values
@@ -978,6 +979,7 @@ public class GraphicalInterface extends JFrame {
 		
 		LocalConfig.getInstance().fvaColumnsVisible = false;
 		LocalConfig.getInstance().fvaDone = true;
+		analysisRunning = false;
 		
 		enableSaveItems(false);
 		// setEnableAnalysisMenuItems( false );
@@ -1483,6 +1485,7 @@ public class GraphicalInterface extends JFrame {
 			public void actionPerformed( ActionEvent a )
 			{
 				LocalConfig.getInstance().noBiolObjWarningShown = false;
+				analysisRunning = true;
 				this.giSolution = new GISolution();
 				final Model model = new Model();
 				Thread t = new Thread()
@@ -5239,6 +5242,7 @@ public class GraphicalInterface extends JFrame {
 	public void setUpReactionsTable(DefaultTableModel model) {
 		reactionsTable.setModel(model);
 		setReactionsTableLayout();
+		analysisRunning = false;
 
 		if (getReactionsSortColumnIndex() >= 0) {
 			reactionsTable.setSortOrder(getReactionsSortColumnIndex(), getReactionsSortOrder());
@@ -6623,31 +6627,33 @@ public class GraphicalInterface extends JFrame {
 
 		public void maybeShowPopup(MouseEvent e) {
 			if (e.isPopupTrigger() && reactionsTable.isEnabled()) {
-				Point p = new Point(e.getX(), e.getY());
-				int col = reactionsTable.columnAtPoint(p);
-				int row = reactionsTable.rowAtPoint(p);
-				setCurrentReactionsRow(row);
+				if (!analysisRunning) {
+					Point p = new Point(e.getX(), e.getY());
+					int col = reactionsTable.columnAtPoint(p);
+					int row = reactionsTable.rowAtPoint(p);
+					setCurrentReactionsRow(row);
 
-				// translate table index to model index
-				//int mcol = reactionsTable.getColumn(reactionsTable.getColumnName(col)).getModelIndex();
+					// translate table index to model index
+					//int mcol = reactionsTable.getColumn(reactionsTable.getColumnName(col)).getModelIndex();
 
-				if (row >= 0 && row < reactionsTable.getRowCount()) {
-					cancelCellEditing();  
-					setTableCellFocused(row, col, reactionsTable);
-					// create reaction equation column popup menu
-					if (col == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-						JPopupMenu reactionsContextMenu = createReactionEquationContextMenu(row, col);
-						if (reactionsContextMenu != null
-								&& reactionsContextMenu.getComponentCount() > 0) {
-							reactionsContextMenu.show(reactionsTable, p.x, p.y);
-						}
-					} else {
-						// create popup for remaining columns
-						JPopupMenu contextMenu = createReactionsContextMenu(row, col);
-						// ... and show it
-						if (contextMenu != null
-								&& contextMenu.getComponentCount() > 0) {
-							contextMenu.show(reactionsTable, p.x, p.y);
+					if (row >= 0 && row < reactionsTable.getRowCount()) {
+						cancelCellEditing();  
+						setTableCellFocused(row, col, reactionsTable);
+						// create reaction equation column popup menu
+						if (col == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+							JPopupMenu reactionsContextMenu = createReactionEquationContextMenu(row, col);
+							if (reactionsContextMenu != null
+									&& reactionsContextMenu.getComponentCount() > 0) {
+								reactionsContextMenu.show(reactionsTable, p.x, p.y);
+							}
+						} else {
+							// create popup for remaining columns
+							JPopupMenu contextMenu = createReactionsContextMenu(row, col);
+							// ... and show it
+							if (contextMenu != null
+									&& contextMenu.getComponentCount() > 0) {
+								contextMenu.show(reactionsTable, p.x, p.y);
+							}
 						}
 					}
 				}
@@ -7587,33 +7593,35 @@ public class GraphicalInterface extends JFrame {
 
 		public void maybeShowPopup(MouseEvent e) {
 			if (e.isPopupTrigger() && metabolitesTable.isEnabled()) {
-				Point p = new Point(e.getX(), e.getY());
-				int col = metabolitesTable.columnAtPoint(p);
-				int row = metabolitesTable.rowAtPoint(p);
+				if (!analysisRunning) {
+					Point p = new Point(e.getX(), e.getY());
+					int col = metabolitesTable.columnAtPoint(p);
+					int row = metabolitesTable.rowAtPoint(p);
 
-				// translate table index to model index
-				//int mcol = metabolitesTable.getColumn(metabolitesTable.getColumnName(col)).getModelIndex();
+					// translate table index to model index
+					//int mcol = metabolitesTable.getColumn(metabolitesTable.getColumnName(col)).getModelIndex();
 
-				if (row >= 0 && row < metabolitesTable.getRowCount()) {
-					cancelCellEditing(); 
-					setTableCellFocused(row, col, metabolitesTable);
-					// create popup menu for abbreviation column
-					if (col == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN ||
-							col == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
-						JPopupMenu abbrevContextMenu = createMetaboliteAbbreviationContextMenu(row, col);
-						// ... and show it
-						if (abbrevContextMenu != null
-								&& abbrevContextMenu.getComponentCount() > 0) {
-							abbrevContextMenu.show(metabolitesTable, p.x, p.y);
+					if (row >= 0 && row < metabolitesTable.getRowCount()) {
+						cancelCellEditing(); 
+						setTableCellFocused(row, col, metabolitesTable);
+						// create popup menu for abbreviation column
+						if (col == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN ||
+								col == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
+							JPopupMenu abbrevContextMenu = createMetaboliteAbbreviationContextMenu(row, col);
+							// ... and show it
+							if (abbrevContextMenu != null
+									&& abbrevContextMenu.getComponentCount() > 0) {
+								abbrevContextMenu.show(metabolitesTable, p.x, p.y);
+							}
+							// create popup menu for remaining columns	
+						} else {
+							JPopupMenu contextMenu = createMetabolitesContextMenu(row, col);
+							// ... and show it
+							if (contextMenu != null
+									&& contextMenu.getComponentCount() > 0) {
+								contextMenu.show(metabolitesTable, p.x, p.y);
+							}	            	
 						}
-						// create popup menu for remaining columns	
-					} else {
-						JPopupMenu contextMenu = createMetabolitesContextMenu(row, col);
-						// ... and show it
-						if (contextMenu != null
-								&& contextMenu.getComponentCount() > 0) {
-							contextMenu.show(metabolitesTable, p.x, p.y);
-						}	            	
 					}
 				}
 			}
