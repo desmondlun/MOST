@@ -9,6 +9,7 @@ import edu.rutgers.MOST.optimization.solvers.LinearSolver;
 import edu.rutgers.MOST.optimization.solvers.QuadraticSolver;
 import edu.rutgers.MOST.optimization.solvers.Solver;
 import edu.rutgers.MOST.optimization.solvers.SolverFactory;
+import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.SimpleProgressBar;
 
 public class FBA extends Analysis
@@ -33,8 +34,10 @@ public class FBA extends Analysis
 	 				"Do you want to perform Flux Variability Analysis?", "FVA analysis", 
 	 				JOptionPane.YES_NO_OPTION );
 	 		
-	 		if( JOptionPane.CLOSED_OPTION == selectedOption )
+	 		if( JOptionPane.CLOSED_OPTION == selectedOption ) {
+	 			GraphicalInterface.analysisRunning = false;
 	 			throw new Exception( "FVA dialog closed" );
+	 		}	
 	 		
 			pb = new SimpleProgressBar( "Calculating FBA", "progressing..." );
 			pb.setAlwaysOnTop( true );

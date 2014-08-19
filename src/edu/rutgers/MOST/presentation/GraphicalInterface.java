@@ -207,8 +207,6 @@ public class GraphicalInterface extends JFrame {
 	protected GDBBTask gdbbTask;
 	public javax.swing.Timer gdbbTimer = null;
 
-	//public javax.swing.Timer fvaTimer = new javax.swing.Timer(100, new FVATimeListener());
-	
 	protected javax.swing.Timer solutionTimeListener = null;
 	
 	private Task task;	
@@ -290,7 +288,6 @@ public class GraphicalInterface extends JFrame {
 	public boolean gdbbRunning;
 	public boolean gdbbProcessed;
 	
-	public boolean runFVA;
 	public boolean fluxesSet;
 	public static boolean analysisRunning;
 
@@ -352,16 +349,6 @@ public class GraphicalInterface extends JFrame {
 
 	private static void setCSVSaveInterface(CSVSaveInterface csvSaveInterface) {
 		GraphicalInterface.csvSaveInterface = csvSaveInterface;
-	}
-
-	private static FBADialog fbaDialog;
-	
-	public static FBADialog getFbaDialog() {
-		return fbaDialog;
-	}
-
-	public static void setFbaDialog(FBADialog fbaDialog) {
-		GraphicalInterface.fbaDialog = fbaDialog;
 	}
 
 	private static FindReplaceDialog findReplaceDialog;
@@ -1115,22 +1102,6 @@ public class GraphicalInterface extends JFrame {
 		});			
 		getCSVSaveInterface().okButton.addActionListener(okButtonCSVSaveActionListener);
 		getCSVSaveInterface().cancelButton.addActionListener(cancelButtonCSVSaveActionListener);
-		
-		FBADialog fbaDialog = new FBADialog();
-		// fbaDialog.setSize(300, 160);
-		fbaDialog.pack(); // automatic-size
-		fbaDialog.setResizable(false);
-		fbaDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		fbaDialog.setLocationRelativeTo(null);		
-		fbaDialog.setVisible(false);	
-		fbaDialog.setModal(true);
-		setFbaDialog(fbaDialog);
-		fbaDialog.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent evt) {
-				getFbaDialog().setVisible(false);	        	
-			}
-		});	
-		getFbaDialog().okButton.addActionListener(okButtonFBAActionListener);
 		
 		AboutDialog aboutDialog = new AboutDialog();
 		aboutDialog.setIconImages(icons);					
@@ -3623,6 +3594,7 @@ public class GraphicalInterface extends JFrame {
 					//System.out.println(file.getAbsolutePath());
 					return true;
 				}
+				analysisRunning = false;
 				return false;
 			}
 
@@ -11827,18 +11799,6 @@ public class GraphicalInterface extends JFrame {
 			}
 		}
 	}
-	
-	ActionListener okButtonFBAActionListener = new ActionListener() {
-		public void actionPerformed(ActionEvent ae) {	
-			if (getFbaDialog().fvaBox.isSelected()) {
-				runFVA = true;
-			} else {
-				runFVA = false;
-			}
-			getFbaDialog().setVisible(false);
-//			System.out.println(runFVA);
-		}
-	};
 	
 	public void maybeShowFVAColumns(String solutionName) {
 		if (LocalConfig.getInstance().getShowFVAColumnsList().contains(solutionName)) {
