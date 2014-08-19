@@ -1964,10 +1964,10 @@ public class GraphicalInterface extends JFrame {
 			{
 				Eflux2 eflux2 = new Eflux2();
 				eflux2.setModel(model);
-	                // uncomment next three lines for proof of concept of adding a new tab at runtime
-//        					JScrollPane scrollPaneGene = new JScrollPane();
-//        					tabbedPane.addTab("Genes", scrollPaneGene);
-//        					tabbedPane.repaint();
+	            // uncomment next three lines for proof of concept of adding a new tab at runtime
+//        		JScrollPane scrollPaneGene = new JScrollPane();
+//        		tabbedPane.addTab("Genes", scrollPaneGene);
+//        		tabbedPane.repaint();
 				ArrayList<Double> soln = eflux2.run();
 				maxObj = eflux2.getMaxObj();
 				return soln;
@@ -6669,7 +6669,8 @@ public class GraphicalInterface extends JFrame {
 				//int mcol = reactionsTable.getColumn(reactionsTable.getColumnName(col)).getModelIndex();
 
 				if (row >= 0 && row < reactionsTable.getRowCount()) {
-					cancelCellEditing();            
+					cancelCellEditing();  
+					setTableCellFocused(row, col, reactionsTable);
 					// create reaction equation column popup menu
 					if (col == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
 						JPopupMenu reactionsContextMenu = createReactionEquationContextMenu(row, col);
@@ -7676,7 +7677,8 @@ public class GraphicalInterface extends JFrame {
 				//int mcol = metabolitesTable.getColumn(metabolitesTable.getColumnName(col)).getModelIndex();
 
 				if (row >= 0 && row < metabolitesTable.getRowCount()) {
-					cancelCellEditing();            
+					cancelCellEditing(); 
+					setTableCellFocused(row, col, metabolitesTable);
 					// create popup menu for abbreviation column
 					if (col == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN ||
 							col == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
