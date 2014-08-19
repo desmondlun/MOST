@@ -137,10 +137,21 @@ public class ReactionFactory {
 		Vector<Double> objective = new Vector<Double>(reactions.size());
 
 		if("SBML".equals(sourceType)){
+			double max = 0;
 			for (int i = 0; i < reactions.size(); i++) {
 				int id = reactions.get(i).getId();
 				Double obj = reactions.get(i).getBiologicalObjective();
+				if (obj > max) {
+					max = obj;
+				}
 				objective.add((Integer) reactionsIdPositionMap.get(id), obj);
+			}
+			if (max == 0 && !LocalConfig.getInstance().noBiolObjWarningShown) {
+				JOptionPane.showMessageDialog(null,                
+						"No Biological Objective Set.",                
+						"Warning",                                
+						JOptionPane.WARNING_MESSAGE);
+				LocalConfig.getInstance().noBiolObjWarningShown = true;
 			}
 		}
 

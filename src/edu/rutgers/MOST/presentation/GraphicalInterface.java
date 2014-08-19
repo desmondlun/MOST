@@ -1621,6 +1621,7 @@ public class GraphicalInterface extends JFrame {
         gdbbItem.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent a) {
 
+        		LocalConfig.getInstance().noBiolObjWarningShown = false;
         		LocalConfig.getInstance().noSynObjWarningShown = false;
         		Thread t = new Thread()
         		{
@@ -4226,7 +4227,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().getMetabolitesTableModelMap().put(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME, blankMetabModel);
 		LocalConfig.getInstance().setModelName(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME);
 		setUpTables();
-		setEnableAnalysisMenuItems( false );
+		setEnableAnalysisMenuItems( true );
 	}
 
 	class SBMLFileFilter extends javax.swing.filechooser.FileFilter {

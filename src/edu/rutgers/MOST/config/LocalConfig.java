@@ -562,6 +562,7 @@ public class LocalConfig {
 	public boolean fvaDone;
 	public boolean fvaColumnsVisible;
 	
+	public boolean noBiolObjWarningShown;
 	public boolean noSynObjWarningShown;
 	
 	private Integer reactionsLocationsListCount;
