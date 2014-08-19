@@ -1621,6 +1621,7 @@ public class GraphicalInterface extends JFrame {
         gdbbItem.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent a) {
 
+        		LocalConfig.getInstance().noSynObjWarningShown = false;
         		Thread t = new Thread()
         		{
         			final GDBB gdbb = new GDBB();

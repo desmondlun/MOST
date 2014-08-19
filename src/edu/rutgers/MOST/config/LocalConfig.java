@@ -562,6 +562,8 @@ public class LocalConfig {
 	public boolean fvaDone;
 	public boolean fvaColumnsVisible;
 	
+	public boolean noSynObjWarningShown;
+	
 	private Integer reactionsLocationsListCount;
 	
 	public void setReactionsLocationsListCount(Integer reactionsLocationsListCount) {

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
@@ -307,10 +308,21 @@ public class ReactionFactory {
 		Vector<Double> syntheticObjectiveVector = new Vector<Double>();
 
 		if("SBML".equals(sourceType)){
+			double max = 0;
 			for (int i = 0; i < reactions.size(); i++) {
 				int id = ((SBMLReaction) reactions.get(i)).getId();
 				Double obj = ((SBMLReaction) reactions.get(i)).getSyntheticObjective();
+				if (obj > max) {
+					max = obj;
+				}
 				syntheticObjectiveVector.add((Integer) reactionsIdPositionMap.get(id), obj);
+			}
+			if (max == 0 && !LocalConfig.getInstance().noSynObjWarningShown) {
+				JOptionPane.showMessageDialog(null,                
+						"No Synthetic Objective Set.",                
+						"Warning",                                
+						JOptionPane.WARNING_MESSAGE);
+				LocalConfig.getInstance().noSynObjWarningShown = true;
 			}
 		}
 		//System.out.println("syn" + syntheticObjectiveVector);
