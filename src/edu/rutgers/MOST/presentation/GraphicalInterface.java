@@ -6589,6 +6589,30 @@ public class GraphicalInterface extends JFrame {
 		}				
 	}
 	
+	/**
+	 * Changes cell selection if selected cell not in selected area.
+	 * Used to change selection on right click if cell not selected.
+	 * @param row
+	 * @param col
+	 * @param table
+	 */
+	public void maybeChangeSelection(int row, int col, JXTable table) {
+		ArrayList<Integer> rowlist = new ArrayList<Integer>();
+		ArrayList<Integer> collist = new ArrayList<Integer>();
+		for (int i = 0; i < table.getSelectedRows().length; i++) {
+			rowlist.add(table.getSelectedRows()[i]);
+		}
+		for (int i = 0; i < table.getSelectedColumns().length; i++) {
+			collist.add(table.getSelectedColumns()[i]);
+		}
+		if (rowlist.contains(row) &&
+				collist.contains(col)) {
+			
+		} else {
+			setTableCellFocused(row, col, table);
+		}
+	}
+	
 	/************************************************************************************/
 	//end context menu methods
 	/************************************************************************************/
@@ -6612,7 +6636,8 @@ public class GraphicalInterface extends JFrame {
 					//int mcol = reactionsTable.getColumn(reactionsTable.getColumnName(col)).getModelIndex();
 
 					if (row >= 0 && row < reactionsTable.getRowCount()) {
-						cancelCellEditing();  
+						cancelCellEditing();
+						maybeChangeSelection(row, col, reactionsTable);
 						// create reaction equation column popup menu
 						if (col == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
 							JPopupMenu reactionsContextMenu = createReactionEquationContextMenu(row, col);
@@ -7577,6 +7602,7 @@ public class GraphicalInterface extends JFrame {
 
 					if (row >= 0 && row < metabolitesTable.getRowCount()) {
 						cancelCellEditing(); 
+						maybeChangeSelection(row, col, metabolitesTable);
 						// create popup menu for abbreviation column
 						if (col == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN ||
 								col == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
