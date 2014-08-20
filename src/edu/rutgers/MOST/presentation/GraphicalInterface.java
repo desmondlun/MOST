@@ -6613,7 +6613,6 @@ public class GraphicalInterface extends JFrame {
 
 					if (row >= 0 && row < reactionsTable.getRowCount()) {
 						cancelCellEditing();  
-						setTableCellFocused(row, col, reactionsTable);
 						// create reaction equation column popup menu
 						if (col == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
 							JPopupMenu reactionsContextMenu = createReactionEquationContextMenu(row, col);
@@ -7578,7 +7577,6 @@ public class GraphicalInterface extends JFrame {
 
 					if (row >= 0 && row < metabolitesTable.getRowCount()) {
 						cancelCellEditing(); 
-						setTableCellFocused(row, col, metabolitesTable);
 						// create popup menu for abbreviation column
 						if (col == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN ||
 								col == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
