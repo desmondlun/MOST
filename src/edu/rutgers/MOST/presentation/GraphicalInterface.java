@@ -207,7 +207,9 @@ public class GraphicalInterface extends JFrame {
 	protected GDBBTask gdbbTask;
 	public javax.swing.Timer gdbbTimer = null;
 
-	protected javax.swing.Timer solutionTimeListener = null;
+	//public javax.swing.Timer fvaTimer = new javax.swing.Timer(100, new FVATimeListener());
+	
+	static protected Runnable solutionListener = null;
 	
 	private Task task;	
 	public final static ProgressBar progressBar = new ProgressBar();	
@@ -1489,6 +1491,7 @@ public class GraphicalInterface extends JFrame {
 						giSolution.soln = soln;
 						giSolution.stringBuffer = outputText;
 						vecGISolution.add( giSolution );
+						java.awt.EventQueue.invokeLater( solutionListener );
 					}
 				};
 				t.start();
@@ -3276,108 +3279,105 @@ public class GraphicalInterface extends JFrame {
 		tabbedPane.setSelectedIndex(0);
 		scrollToLocation(reactionsTable, 0, 1);
 		
-		formulaBar.setText((String) reactionsTable.getModel().getValueAt(0, 1));  
+		formulaBar.setText((String) reactionsTable.getModel().getValueAt(0, 1));   
 		
-		this.solutionTimeListener = new javax.swing.Timer( 100, new ActionListener()
+		solutionListener = new Runnable()
 		{
 			@Override
-			public void actionPerformed( ActionEvent ae )
+			public void run()
 			{
-				if( vecGISolution.size() > 0 )
+				GISolution current_giSolution = vecGISolution.get( 0 );
+				vecGISolution.remove( 0 );
+				
+				final Utilities u = new Utilities();
+				
+				highlightUnusedMetabolites = false;
+				highlightUnusedMetabolitesItem.setState(false);
+
+				String dateTimeStamp = u.createDateTimeStamp();
+				final String optimizeName = GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
+						+ LocalConfig.getInstance().getModelName() + dateTimeStamp;
+				setOptimizeName(optimizeName);
+
+				// copy models, run optimization on these models
+				DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
+				DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
+				LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
+				LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
+				//setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
+				//setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
+				LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
+				setTitle(GraphicalInterfaceConstants.TITLE + " - " + optimizeName);	
+				listModel.addElement(optimizeName);		
+				
+				ReactionFactory rFactory = new ReactionFactory("SBML");
+				rFactory.setFluxes( current_giSolution.soln, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN,
+						LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
+				if( current_giSolution.vaMin != null && current_giSolution.vaMax != null )
 				{
-					GISolution current_giSolution = vecGISolution.get( 0 );
-					vecGISolution.remove( 0 );
-					
-					final Utilities u = new Utilities();
-					
-					highlightUnusedMetabolites = false;
-					highlightUnusedMetabolitesItem.setState(false);
-
-					String dateTimeStamp = u.createDateTimeStamp();
-					final String optimizeName = GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
-							+ LocalConfig.getInstance().getModelName() + dateTimeStamp;
-					setOptimizeName(optimizeName);
-
-					// copy models, run optimization on these models
-					DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
-					DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
-					LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
-					LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
-					//setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
-					//setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
-					LocalConfig.getInstance().getOptimizationFilesList().add(optimizeName);
-					setTitle(GraphicalInterfaceConstants.TITLE + " - " + optimizeName);	
-					listModel.addElement(optimizeName);		
-					
-					ReactionFactory rFactory = new ReactionFactory("SBML");
-					rFactory.setFluxes( current_giSolution.soln, GraphicalInterfaceConstants.FLUX_VALUE_COLUMN,
+					LocalConfig.getInstance().fvaColumnsVisible = true;
+					rFactory.setFluxes(current_giSolution.vaMin, GraphicalInterfaceConstants.MIN_FLUX_COLUMN,
 							LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
-					if( current_giSolution.vaMin != null && current_giSolution.vaMax != null )
-					{
-						LocalConfig.getInstance().fvaColumnsVisible = true;
-						rFactory.setFluxes(current_giSolution.vaMin, GraphicalInterfaceConstants.MIN_FLUX_COLUMN,
-								LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
-						rFactory.setFluxes(current_giSolution.vaMax, GraphicalInterfaceConstants.MAX_FLUX_COLUMN,
-								LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
-						LocalConfig.getInstance().getShowFVAColumnsList().add(getOptimizeName());
-					}
-					else
-					{
-						LocalConfig.getInstance().fvaColumnsVisible = false;
-					}
-						
-					DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName, optimizeName));
-					DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
+					rFactory.setFluxes(current_giSolution.vaMax, GraphicalInterfaceConstants.MAX_FLUX_COLUMN,
+							LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
+					LocalConfig.getInstance().getShowFVAColumnsList().add(getOptimizeName());
+				}
+				else
+				{
+					LocalConfig.getInstance().fvaColumnsVisible = false;
+				}
+					
+				DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName, optimizeName));
+				//DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
+				DynamicTreePanel.getTreePanel().selectLastNode();
 //					DefaultTableModel reactionsOptModel2 = (DefaultTableModel) reactionsTable.getModel();	
 //					setUpReactionsTable(reactionsOptModel2);
-					// Selecting top node stops timer, then reselect node for optimization
-					// This action is too fast to be visible to user
+				// Selecting top node stops timer, then reselect node for optimization
+				// This action is too fast to be visible to user
 //					DynamicTreePanel.getTreePanel().setNodeSelected(0);
 //					DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
-					
-					if (LocalConfig.getInstance().hasValidGurobiKey) {
-						Writer writer = null;
+				
+				if (LocalConfig.getInstance().hasValidGurobiKey) {
+					Writer writer = null;
+					try {
+						StringBuffer outputText = current_giSolution.stringBuffer;
+						
+						File file = new File(u.createLogFileName(optimizeName + ".log"));
+						writer = new BufferedWriter(new FileWriter(file));
+						writer.write(outputText.toString());
+
+					} catch (FileNotFoundException e) {
+						JOptionPane.showMessageDialog(null,                
+								"File Not Found.",                
+								"Error",                                
+								JOptionPane.ERROR_MESSAGE);
+						//e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} finally {
 						try {
-							StringBuffer outputText = current_giSolution.stringBuffer;
-							
-							File file = new File(u.createLogFileName(optimizeName + ".log"));
-							writer = new BufferedWriter(new FileWriter(file));
-							writer.write(outputText.toString());
-	
-						} catch (FileNotFoundException e) {
+							if (writer != null) {
+								writer.close();
+							}
+						} catch (IOException e) {
 							JOptionPane.showMessageDialog(null,                
 									"File Not Found.",                
 									"Error",                                
 									JOptionPane.ERROR_MESSAGE);
 							//e.printStackTrace();
-						} catch (IOException e) {
-							e.printStackTrace();
-						} finally {
-							try {
-								if (writer != null) {
-									writer.close();
-								}
-							} catch (IOException e) {
-								JOptionPane.showMessageDialog(null,                
-										"File Not Found.",                
-										"Error",                                
-										JOptionPane.ERROR_MESSAGE);
-								//e.printStackTrace();
-							}
 						}
-						loadOutputPane(u.createLogFileName(optimizeName + ".log"));
-						if (getPopout() != null) {
-							getPopout().load(u.createLogFileName(optimizeName + ".log"), gi.getTitle());
-						}
-							
-					} else {
-						DynamicTreePanel.getTreePanel().setNodeSelected(0);
 					}
-					LocalConfig.getInstance().hasValidGurobiKey = true;
+					loadOutputPane(u.createLogFileName(optimizeName + ".log"));
+					if (getPopout() != null) {
+						getPopout().load(u.createLogFileName(optimizeName + ".log"), gi.getTitle());
+					}
+						
+				} else {
+					DynamicTreePanel.getTreePanel().setNodeSelected(0);
 				}
+				LocalConfig.getInstance().hasValidGurobiKey = true;
 			}
-		} );
-		solutionTimeListener.start();
+		};
 	}
 	/********************************************************************************/
 	//end constructor and layout
@@ -11158,50 +11158,57 @@ public class GraphicalInterface extends JFrame {
 		public GDBBModel model;
 	}
 	
-	public static void addGDBBSolution( GDBBParam param )
+	public static void addGDBBSolution( final GDBBParam param )
 	{
-		GDBBModel model = param.model;
-		Solution solution = param.solution;
-		ReactionFactory rFactory = new ReactionFactory( "SBML" );
-		double[] x = solution.getKnockoutVector();
-		String synObjString = "";
-		Vector< String > uniqueGeneAssociations = rFactory.getUniqueGeneAssociations();
-		int knockoutOffset = 4*model.getNumReactions() + model.getNumMetabolites();
-		for (int i = 0; i < rFactory.getSyntheticObjectiveVector().size(); i ++) {
-			if (rFactory.getSyntheticObjectiveVector().get(i) > 0) {
-				synObjString += "Reaction '" + rFactory.getReactionAbbreviations().get(i) + "' Synthetic Objective = " + rFactory.getSyntheticObjectiveVector().get(i) + "\n";
-
-			}
-		}
-		
-		StringBuffer text = new StringBuffer();
-		text.append("GDBB" + "\n");
-		text.append(synObjString);
-		text.append("Number of Knockouts = " + model.getC() + "\n");
-		text.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions, " + model.getNumGeneAssociations() + " unique gene associations\n");
-		text.append("Synthetic objective: "        + Double.toString(solution.getObjectiveValue()) + "\n");				
-		text.append("Knockouts:");
-		String kString = "";
-		ArrayList< Double > soln = new ArrayList< Double >();
-		for (int j = 0; j < x.length; j++)
+		java.awt.EventQueue.invokeLater( new Runnable()
 		{
-			soln.add(x[j]);
-			if ((j >= knockoutOffset) && (x[j] >= 0.5)) 
-			{        // compiler optimizes: boolean short circuiting
-				kString += "\n\t" + uniqueGeneAssociations.elementAt(j - knockoutOffset);
-			}
-		}
-		if (kString != null) {
-			text.append(kString);
-		}
-		text.append("\n");
-		text.append( "MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() );
-		
-		GISolution current = new GISolution();
-		current.soln = new ArrayList< Double >( soln.subList( 0, model.getNumReactions() ) );
-		current.stringBuffer = text;
-		vecGISolution.add( current );
+			@Override
+			public void run()
+			{
+				GDBBModel model = param.model;
+				Solution solution = param.solution;
+				ReactionFactory rFactory = new ReactionFactory( "SBML" );
+				double[] x = solution.getKnockoutVector();
+				String synObjString = "";
+				Vector< String > uniqueGeneAssociations = rFactory.getUniqueGeneAssociations();
+				int knockoutOffset = 4*model.getNumReactions() + model.getNumMetabolites();
+				for (int i = 0; i < rFactory.getSyntheticObjectiveVector().size(); i ++) {
+					if (rFactory.getSyntheticObjectiveVector().get(i) > 0) {
+						synObjString += "Reaction '" + rFactory.getReactionAbbreviations().get(i) + "' Synthetic Objective = " + rFactory.getSyntheticObjectiveVector().get(i) + "\n";
 
+					}
+				}
+				
+				StringBuffer text = new StringBuffer();
+				text.append("GDBB" + "\n");
+				text.append(synObjString);
+				text.append("Number of Knockouts = " + model.getC() + "\n");
+				text.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions, " + model.getNumGeneAssociations() + " unique gene associations\n");
+				text.append("Synthetic objective: "        + Double.toString(solution.getObjectiveValue()) + "\n");				
+				text.append("Knockouts:");
+				String kString = "";
+				ArrayList< Double > soln = new ArrayList< Double >();
+				for (int j = 0; j < x.length; j++)
+				{
+					soln.add(x[j]);
+					if ((j >= knockoutOffset) && (x[j] >= 0.5)) 
+					{        // compiler optimizes: boolean short circuiting
+						kString += "\n\t" + uniqueGeneAssociations.elementAt(j - knockoutOffset);
+					}
+				}
+				if (kString != null) {
+					text.append(kString);
+				}
+				text.append("\n");
+				text.append( "MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() );
+				
+				GISolution current = new GISolution();
+				current.soln = new ArrayList< Double >( soln.subList( 0, model.getNumReactions() ) );
+				current.stringBuffer = text;
+				vecGISolution.add( current );
+				java.awt.EventQueue.invokeLater( solutionListener );
+			}
+		} );
 	}
 	
 	class Task extends SwingWorker<Void, Void> {

@@ -307,6 +307,10 @@ public class DynamicTree extends JPanel implements TreeSelectionListener {
 		tree.setSelectionPath(path);  
 		tree.scrollPathToVisible(path);
 	}
+	public void selectLastNode()
+	{
+		setNodeSelected( this.tree.getRowCount() - 1 );
+	}
 	
 	public void print(DefaultTreeModel treeModel) {
 		tree.setModel(treeModel);

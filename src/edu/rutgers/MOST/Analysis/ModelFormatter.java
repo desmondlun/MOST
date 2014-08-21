@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Vector;
 
 import au.com.bytecode.opencsv.CSVReader;
-import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.Model;
 import edu.rutgers.MOST.data.ModelParser;
 import edu.rutgers.MOST.data.SBMLReaction;
