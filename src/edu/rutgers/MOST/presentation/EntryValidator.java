@@ -2,6 +2,11 @@ package edu.rutgers.MOST.presentation;
 
 public class EntryValidator {
 
+	/**
+	 * Determine if value is numeric
+	 * @param value
+	 * @return
+	 */
 	public boolean isNumber(String value) {
 		try
 		{
@@ -14,6 +19,11 @@ public class EntryValidator {
 		
 	}
 	
+	/**
+	 * Determinr if value is integer
+	 * @param value
+	 * @return
+	 */
 	public boolean isInteger(String value) {
 		try
 		{
@@ -26,7 +36,13 @@ public class EntryValidator {
 		
 	}
 	
-	// check if lower bound is >= 0 if reversible = false, and upper bound > lower bound
+	/**
+	 * check if lower bound is >= 0 if reversible = false, and upper bound > lower bound
+	 * @param lowerBound
+	 * @param upperBound
+	 * @param reversible
+	 * @return
+	 */
 	public boolean lowerBoundReversibleValid(Double lowerBound, Double upperBound, String reversible) {
 		if (reversible.compareTo("false") == 0 && lowerBound < 0) {
 			return false;
@@ -77,6 +93,11 @@ public class EntryValidator {
 		return false;
 	}
 	
+	/**
+	 * If "inf" or "infinity" entered, returns true
+	 * @param value
+	 * @return
+	 */
 	public boolean isInvalidInfinityEntry(String value) {
 		if (value.toLowerCase().equals(GraphicalInterfaceConstants.VALID_INFINITY_VALUES[0]) ||
 				value.toLowerCase().equals(GraphicalInterfaceConstants.VALID_INFINITY_VALUES[1])) {
@@ -85,6 +106,11 @@ public class EntryValidator {
 		return false;
 	}
 	
+	/**
+	 * If "-inf" or "-infinity" entered, returns true
+	 * @param value
+	 * @return
+	 */
 	public boolean isInvalidNegativeInfinityEntry(String value) {
 		if (value.toLowerCase().equals("-" + GraphicalInterfaceConstants.VALID_INFINITY_VALUES[0]) ||
 				value.toLowerCase().equals("-" + GraphicalInterfaceConstants.VALID_INFINITY_VALUES[1])) {

@@ -4422,7 +4422,13 @@ public class GraphicalInterface extends JFrame {
 		}
 	};
 
-	// updates reactions table with new value is valid, else reverts to old value
+	/**
+	 * updates reactions table with new value is valid, else reverts to old value
+	 * @param oldValue
+	 * @param newValue
+	 * @param rowIndex
+	 * @param colIndex
+	 */
 	public void updateReactionsCellIfValid(String oldValue, String newValue, int rowIndex, int colIndex) {		
 		reactionUpdateValid = true;
 		EntryValidator validator = new EntryValidator();
@@ -4915,7 +4921,13 @@ public class GraphicalInterface extends JFrame {
 		setUpMetabolitesTable(model);
 	}
 
-	// updates metabolites table with new value if valid, else reverts to old value
+	/**
+	 * updates metabolites table with new value if valid, else reverts to old value
+	 * @param oldValue
+	 * @param newValue
+	 * @param rowIndex
+	 * @param colIndex
+	 */
 	public void updateMetabolitesCellIfValid(String oldValue, String newValue, int rowIndex, int colIndex) {
 		metaboliteUpdateValid = true;
 		EntryValidator validator = new EntryValidator();
