@@ -43,14 +43,41 @@ public class GurobiParametersDialog  extends JDialog {
 	public JButton okButton = new JButton("OK");
 	public JButton cancelButton = new JButton("Cancel");
 	
-	private String numThreads;
+	private String feasibility;
+	private String intFeasibility;
+	private String optimality;
+	private String heuristics;
 
-	public String getNumThreads() {
-		return numThreads;
+	public String getFeasibility() {
+		return feasibility;
 	}
 
-	public void setNumThreads(String numThreads) {
-		this.numThreads = numThreads;
+	public void setFeasibility(String feasibility) {
+		this.feasibility = feasibility;
+	}
+
+	public String getIntFeasibility() {
+		return intFeasibility;
+	}
+
+	public void setIntFeasibility(String intFeasibility) {
+		this.intFeasibility = intFeasibility;
+	}
+
+	public String getOptimality() {
+		return optimality;
+	}
+
+	public void setOptimality(String optimality) {
+		this.optimality = optimality;
+	}
+
+	public String getHeuristics() {
+		return heuristics;
+	}
+
+	public void setHeuristics(String heuristics) {
+		this.heuristics = heuristics;
 	}
 
 	public GurobiParametersDialog() {
@@ -116,6 +143,8 @@ public class GurobiParametersDialog  extends JDialog {
 		intFeasibilityField.setPreferredSize(new Dimension(GurobiParameters.COMPONENT_WIDTH, GurobiParameters.COMPONENT_HEIGHT));
 		intFeasibilityField.setMaximumSize(new Dimension(GurobiParameters.COMPONENT_WIDTH, GurobiParameters.COMPONENT_HEIGHT));
 		intFeasibilityField.setMinimumSize(new Dimension(GurobiParameters.COMPONENT_WIDTH, GurobiParameters.COMPONENT_HEIGHT));
+		
+		setFeasibilityDefaultValue();
 		
 		intFeasibilityField.addFocusListener(new FocusListener() {
 
@@ -468,6 +497,15 @@ public class GurobiParametersDialog  extends JDialog {
 
 		add(vb);
 	
+	}
+	
+	public void setFeasibilityDefaultValue() {
+		feasibilityField.setText(Double.toString(GurobiParameters.FEASIBILITYTOL_DEFAULT_VALUE));
+		setFeasibility(Double.toString(GurobiParameters.FEASIBILITYTOL_DEFAULT_VALUE));
+	}
+	
+	public Integer selectedMIPFocus() {
+		return (Integer) cbMIPFocus.getSelectedItem();
 	}
 	
 	public Integer selectedNumberOfThreads() {
