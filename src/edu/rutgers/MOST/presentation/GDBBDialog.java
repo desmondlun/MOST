@@ -237,7 +237,7 @@ public class GDBBDialog  extends JDialog {
 		Box hbNumKnockoutsLabel = Box.createHorizontalBox();	    
 		Box hbNumKnockouts = Box.createHorizontalBox();
 		Box hbNumThreadsLabel = Box.createHorizontalBox();	    
-		Box hbMetabolite = Box.createHorizontalBox();
+		Box hbNumThreads = Box.createHorizontalBox();
 		Box hbIndefiniteTime = Box.createHorizontalBox();	    
 		Box hbBlankLabel = Box.createHorizontalBox();
 		Box hbFiniteTime = Box.createHorizontalBox();	    
@@ -300,7 +300,7 @@ public class GDBBDialog  extends JDialog {
 		numThreadsLabel.setPreferredSize(new Dimension(GDBBConstants.LABEL_WIDTH, GDBBConstants.LABEL_HEIGHT));
 		numThreadsLabel.setMaximumSize(new Dimension(GDBBConstants.LABEL_WIDTH, GDBBConstants.LABEL_HEIGHT));
 		numThreadsLabel.setMinimumSize(new Dimension(GDBBConstants.LABEL_WIDTH, GDBBConstants.LABEL_HEIGHT));
-		numThreadsLabel.setBorder(BorderFactory.createEmptyBorder(ColumnInterfaceConstants.LABEL_TOP_BORDER_SIZE,0,ColumnInterfaceConstants.LABEL_BOTTOM_BORDER_SIZE,10));
+		numThreadsLabel.setBorder(BorderFactory.createEmptyBorder(GDBBConstants.LABEL_TOP_BORDER_SIZE,0,GDBBConstants.LABEL_BOTTOM_BORDER_SIZE,10));
 		numThreadsLabel.setAlignmentX(LEFT_ALIGNMENT);
 		numThreadsLabel.setDisplayedMnemonic('T');
 		numThreadsLabel.setLabelFor(cbNumThreads);
@@ -319,13 +319,13 @@ public class GDBBDialog  extends JDialog {
 		panelNumThreads.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
 		panelNumThreads.setAlignmentX(RIGHT_ALIGNMENT);
 
-		hbMetabolite.add(panelNumThreads);
-		hbMetabolite.setAlignmentX(RIGHT_ALIGNMENT);
+		hbNumThreads.add(panelNumThreads);
+		hbNumThreads.setAlignmentX(RIGHT_ALIGNMENT);
 
 		vbLabels.add(hbNumThreadsLabel);
 		JLabel blankLabel2 = new JLabel("");
 		vbLabels.add(blankLabel2);
-		vbCombos.add(hbMetabolite);
+		vbCombos.add(hbNumThreads);
 
 		JLabel blankLabel3 = new JLabel("");
 		vbLabels.add(blankLabel3);

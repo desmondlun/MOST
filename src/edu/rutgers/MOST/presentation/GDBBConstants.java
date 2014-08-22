@@ -30,6 +30,9 @@ public class GDBBConstants {
 	public static final int LABELED_BUTTON_TOP_GAP = 20;
 	public static final int LABELED_BUTTON_BOTTOM_GAP = 30;
 	
+	public static final int LABEL_TOP_BORDER_SIZE = 10;
+	public static final int LABEL_BOTTOM_BORDER_SIZE = 10;
+	
 	public static final String PROCESSING = "Processing";
 	public static final String PROCESSING_OOT = " .";
 	public static final int MAX_NUM_DOTS = 6;
