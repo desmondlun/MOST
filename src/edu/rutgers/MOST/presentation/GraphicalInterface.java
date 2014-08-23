@@ -869,66 +869,66 @@ public class GraphicalInterface extends JFrame {
 	// solver properties
 	/*****************************************************************************/
 	
-	private double gurobiFeasibility;
+	private static double gurobiFeasibility;
 	
-	public double getGurobiFeasibility() {
+	public static double getGurobiFeasibility() {
 		return gurobiFeasibility;
 	}
 
-	public void setGurobiFeasibility(double gurobiFeasibility) {
-		this.gurobiFeasibility = gurobiFeasibility;
+	public static void setGurobiFeasibility(double gurobiFeasibility) {
+		GraphicalInterface.gurobiFeasibility = gurobiFeasibility;
 	}
-
-	private double gurobiIntFeasibility;
+    
+	private static double gurobiIntFeasibility;
 	
-	public double getGurobiIntFeasibility() {
+	public static double getGurobiIntFeasibility() {
 		return gurobiIntFeasibility;
 	}
 
-	public void setGurobiIntFeasibility(double gurobiIntFeasibility) {
-		this.gurobiIntFeasibility = gurobiIntFeasibility;
+	public static void setGurobiIntFeasibility(double gurobiIntFeasibility) {
+		GraphicalInterface.gurobiIntFeasibility = gurobiIntFeasibility;
 	}
 	
-	private double gurobiOptimality;
+	private static double gurobiOptimality;
 	
-	public double getGurobiOptimality() {
+	public static double getGurobiOptimality() {
 		return gurobiOptimality;
 	}
 
-	public void setGurobiOptimality(double gurobiOptimality) {
-		this.gurobiOptimality = gurobiOptimality;
+	public static void setGurobiOptimality(double gurobiOptimality) {
+		GraphicalInterface.gurobiOptimality = gurobiOptimality;
 	}
 
-	private double gurobiHeuristics;
+	private static double gurobiHeuristics;
 	
-	public double getGurobiHeuristics() {
+	public static double getGurobiHeuristics() {
 		return gurobiHeuristics;
 	}
 
-	public void setGurobiHeuristics(double gurobiHeuristics) {
-		this.gurobiHeuristics = gurobiHeuristics;
+	public static void setGurobiHeuristics(double gurobiHeuristics) {
+		GraphicalInterface.gurobiHeuristics = gurobiHeuristics;
 	}
 
-	private int gurobiMIPFocus;
+	private static int gurobiMIPFocus;
 	
-	public int getGurobiMIPFocus() {
+	public static int getGurobiMIPFocus() {
 		return gurobiMIPFocus;
 	}
 
-	public void setGurobiMIPFocus(int gurobiMIPFocus) {
-		this.gurobiMIPFocus = gurobiMIPFocus;
+	public static void setGurobiMIPFocus(int gurobiMIPFocus) {
+		GraphicalInterface.gurobiMIPFocus = gurobiMIPFocus;
 	}
 
-	private int gurobiNumThreads;
+	private static int gurobiNumThreads;
 
-	public int getGurobiNumThreads() {
+	public static int getGurobiNumThreads() {
 		return gurobiNumThreads;
 	}
 
-	public void setGurobiNumThreads(int gurobiNumThreads) {
-		this.gurobiNumThreads = gurobiNumThreads;
+	public static void setGurobiNumThreads(int gurobiNumThreads) {
+		GraphicalInterface.gurobiNumThreads = gurobiNumThreads;
 	}
-	
+
 	/*****************************************************************************/
 	// end solver properties
 	/*****************************************************************************/
