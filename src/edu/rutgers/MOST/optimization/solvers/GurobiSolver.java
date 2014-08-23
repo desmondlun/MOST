@@ -21,14 +21,12 @@ import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.Model;
 import gurobi.GRB;
-import gurobi.GRB.DoubleParam;
 import gurobi.GRBCallback;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
 import gurobi.GRBLinExpr;
-import gurobi.GRB.IntParam;
 
 public abstract class GurobiSolver implements MILSolver
 {
@@ -289,12 +287,12 @@ public abstract class GurobiSolver implements MILSolver
 	{
 		try
 		{
-			env.set( GRB.IntParam.Threads, GraphicalInterface.getGurobiNumThreads() );
-			env.set( GRB.IntParam.MIPFocus, GraphicalInterface.getGurobiMIPFocus() );
-			env.set( GRB.DoubleParam.FeasibilityTol, GraphicalInterface.getGurobiFeasibility() );
-			env.set( GRB.DoubleParam.IntFeasTol, GraphicalInterface.getGurobiIntFeasibility() );
-			env.set( GRB.DoubleParam.Heuristics, GraphicalInterface.getGurobiHeuristics() );
-			env.set( GRB.DoubleParam.OptimalityTol, GraphicalInterface.getGurobiOptimality() );
+		//	env.set( GRB.IntParam.Threads, GraphicalInterface.getGurobiNumThreads() );
+		//	env.set( GRB.IntParam.MIPFocus, GraphicalInterface.getGurobiMIPFocus() );
+		//	env.set( GRB.DoubleParam.FeasibilityTol, GraphicalInterface.getGurobiFeasibility() );
+		//	env.set( GRB.DoubleParam.IntFeasTol, GraphicalInterface.getGurobiIntFeasibility() );
+		//	env.set( GRB.DoubleParam.Heuristics, GraphicalInterface.getGurobiHeuristics() );
+		//	env.set( GRB.DoubleParam.OptimalityTol, GraphicalInterface.getGurobiOptimality() );
 
 			model = new GRBModel( env );
 			ArrayList< GRBVar > vars = new ArrayList< GRBVar >();
