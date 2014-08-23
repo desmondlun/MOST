@@ -860,6 +860,78 @@ public class GraphicalInterface extends JFrame {
 	public static void setQuadraticSolverName(String quadraticSolverName) {
 		GraphicalInterface.quadraticSolverName = quadraticSolverName;
 	}
+	
+	/*****************************************************************************/
+	// end solvers
+	/*****************************************************************************/
+	
+	/*****************************************************************************/
+	// solver properties
+	/*****************************************************************************/
+	
+	private double gurobiFeasibility;
+	
+	public double getGurobiFeasibility() {
+		return gurobiFeasibility;
+	}
+
+	public void setGurobiFeasibility(double gurobiFeasibility) {
+		this.gurobiFeasibility = gurobiFeasibility;
+	}
+
+	private double gurobiIntFeasibility;
+	
+	public double getGurobiIntFeasibility() {
+		return gurobiIntFeasibility;
+	}
+
+	public void setGurobiIntFeasibility(double gurobiIntFeasibility) {
+		this.gurobiIntFeasibility = gurobiIntFeasibility;
+	}
+	
+	private double gurobiOptimality;
+	
+	public double getGurobiOptimality() {
+		return gurobiOptimality;
+	}
+
+	public void setGurobiOptimality(double gurobiOptimality) {
+		this.gurobiOptimality = gurobiOptimality;
+	}
+
+	private double gurobiHeuristics;
+	
+	public double getGurobiHeuristics() {
+		return gurobiHeuristics;
+	}
+
+	public void setGurobiHeuristics(double gurobiHeuristics) {
+		this.gurobiHeuristics = gurobiHeuristics;
+	}
+
+	private int gurobiMIPFocus;
+	
+	public int getGurobiMIPFocus() {
+		return gurobiMIPFocus;
+	}
+
+	public void setGurobiMIPFocus(int gurobiMIPFocus) {
+		this.gurobiMIPFocus = gurobiMIPFocus;
+	}
+
+	private int gurobiNumThreads;
+
+	public int getGurobiNumThreads() {
+		return gurobiNumThreads;
+	}
+
+	public void setGurobiNumThreads(int gurobiNumThreads) {
+		this.gurobiNumThreads = gurobiNumThreads;
+	}
+	
+	/*****************************************************************************/
+	// end solver properties
+	/*****************************************************************************/
 
 	/*****************************************************************************/
 	// sorting
@@ -11772,12 +11844,14 @@ public class GraphicalInterface extends JFrame {
 		getSolverSetUpDialog().cbLinear.setSelectedItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
 		getSolverSetUpDialog().cbQuadratic.setSelectedItem(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME);
 		getSolverSetUpDialog().gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_INSTALLED_MESSAGE + "</HTML>");
+		gurobiParametersItem.setEnabled(true);
 	}
 	
 	public void disableGurobiItems() {
 		getSolverSetUpDialog().cbLinear.setSelectedItem(0);
 		getSolverSetUpDialog().cbQuadratic.setSelectedItem(0);
 		getSolverSetUpDialog().gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_PREFIX + GraphicalInterfaceConstants.GUROBI_MINIMUM_VERSION + System.getProperty("sun.arch.data.model") + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_SUFFIX + "</HTML>");
+		gurobiParametersItem.setEnabled(false);
 	}
 	
 	/**
