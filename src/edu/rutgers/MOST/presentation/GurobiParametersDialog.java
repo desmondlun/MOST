@@ -31,20 +31,22 @@ public class GurobiParametersDialog  extends JDialog {
 	private static final long serialVersionUID = 1L;
 	
 	private JLabel feasibilityLabel = new JLabel();
-	private JTextField feasibilityField = new JTextField();
+	public JTextField feasibilityField = new JTextField();
 	private JLabel intFeasibilityLabel = new JLabel();
-	private JTextField intFeasibilityField = new JTextField();
+	public JTextField intFeasibilityField = new JTextField();
 	private JLabel optimalityLabel = new JLabel();
-	private JTextField optimalityField = new JTextField();
+	public JTextField optimalityField = new JTextField();
 	private JLabel heuristicsLabel = new JLabel();
-	private JTextField heuristicsField = new JTextField();
+	public JTextField heuristicsField = new JTextField();
 	private JLabel mipFocusLabel = new JLabel();
 	private JComboBox<Integer> cbMIPFocus = new JComboBox<Integer>();
 	private JLabel numThreadsLabel = new JLabel();
-	private JComboBox<Integer> cbNumThreads = new JComboBox<Integer>();
+	public JComboBox<Integer> cbNumThreads = new JComboBox<Integer>();
 	public JButton okButton = new JButton("   OK   ");
 	public JButton cancelButton = new JButton("Cancel");
 	public JButton resetButton = new JButton("Reset to Defaults");
+	
+	private boolean threadsPopulated;
 	
 	private double feasibility;
 	private double intFeasibility;
@@ -96,6 +98,8 @@ public class GurobiParametersDialog  extends JDialog {
 		cbMIPFocus.setEditable(false);
 		cbNumThreads.setEditable(false);
 		
+		threadsPopulated = false;
+		
 		for (int i = 0; i <= GurobiParameters.MIPFOCUS_MAXIMUM_VALUE; i++) {
 			cbMIPFocus.addItem(i);
 		}
@@ -109,6 +113,7 @@ public class GurobiParametersDialog  extends JDialog {
 			for (int i = 1; i <= GurobiParameters.MAX_NUM_THREADS; i++) {
 				cbNumThreads.addItem(i);
 			}
+			threadsPopulated = true;
 			cbNumThreads.setSelectedItem(GurobiParameters.MAX_NUM_THREADS);
 		}
 		
@@ -531,8 +536,10 @@ public class GurobiParametersDialog  extends JDialog {
 				if (GraphicalInterface.getMixedIntegerLinearSolverName() == GraphicalInterfaceConstants.GLPK_SOLVER_NAME) {
 					cbNumThreads.addItem(1);
 				} else {
-					for (int i = 1; i <= GurobiParameters.MAX_NUM_THREADS; i++) {
-						cbNumThreads.addItem(i);
+					if (!threadsPopulated) {
+						for (int i = 1; i <= GurobiParameters.MAX_NUM_THREADS; i++) {
+							cbNumThreads.addItem(i);
+						}
 					}
 					cbNumThreads.setSelectedItem(GurobiParameters.MAX_NUM_THREADS);
 				}
@@ -563,16 +570,20 @@ public class GurobiParametersDialog  extends JDialog {
 		setHeuristics(GurobiParameters.HEURISTICS_DEFAULT_VALUE);
 	}
 	
-	public double selectedFeasibility() {
-		return Double.parseDouble((feasibilityField.getText()));
-	}
-	
 	public Integer selectedMIPFocus() {
 		return (Integer) cbMIPFocus.getSelectedItem();
 	}
 	
 	public Integer selectedNumberOfThreads() {
 		return (Integer) cbNumThreads.getSelectedItem();
+	}
+	
+	public void selectMIPFocus(String item) {
+		cbMIPFocus.setSelectedItem(Integer.parseInt(item));
+	}
+	
+	public void selectNumberOfThreads(String item) {
+		cbNumThreads.setSelectedItem(Integer.parseInt(item));
 	}
 
 	public static void main(String[] args) throws Exception {

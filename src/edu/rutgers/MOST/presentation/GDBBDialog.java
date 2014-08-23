@@ -17,7 +17,6 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -35,8 +34,6 @@ public class GDBBDialog  extends JDialog {
 	
 	private JLabel numKnockoutsLabel = new JLabel();
 	private JTextField numKnockoutsField = new JTextField();
-	private JLabel numThreadsLabel = new JLabel();
-	private JComboBox<Integer> cbNumThreads = new JComboBox<Integer>();
 	public JButton startButton = new JButton("Start");
 	public JButton stopButton = new JButton("Stop");
 	private JRadioButton indefiniteTimeButton = new JRadioButton(GDBBConstants.INDEFINITE_TIME_LABEL);
@@ -46,7 +43,6 @@ public class GDBBDialog  extends JDialog {
 	private JLabel counterLabel = new JLabel(GDBBConstants.COUNTER_LABEL_PREFIX + "0" + GDBBConstants.COUNTER_LABEL_SUFFIX);
 	
 	private String numKnockouts;
-	private String numThreads;
 	private String finiteTimeString;
 	
 	public boolean finiteTimeSelected = false;
@@ -57,14 +53,6 @@ public class GDBBDialog  extends JDialog {
 
 	public void setNumKnockouts(String numKnockouts) {
 		this.numKnockouts = numKnockouts;
-	}
-
-	public String getNumThreads() {
-		return numThreads;
-	}
-
-	public void setNumThreads(String numThreads) {
-		this.numThreads = numThreads;
 	}
 	
 	private int count;
@@ -123,19 +111,6 @@ public class GDBBDialog  extends JDialog {
 
 		setTitle(GDBBConstants.GDBB_DIALOG_TITLE);
 		
-		cbNumThreads.setEditable(false);
-		
-		// If solver is GLPK, add 1, else add 1 to number of processors and set max selected
-		// For GLPK, combo is also grayed out by enableThreadsCombo() method after layout
-		if (GraphicalInterface.getMixedIntegerLinearSolverName() == GraphicalInterfaceConstants.GLPK_SOLVER_NAME) {
-			cbNumThreads.addItem(1);
-		} else {
-			for (int i = 1; i <= GDBBConstants.MAX_NUM_THREADS; i++) {
-				cbNumThreads.addItem(i);
-			}
-			cbNumThreads.setSelectedItem(GDBBConstants.MAX_NUM_THREADS);
-		}
-		
 		numKnockoutsField.setPreferredSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
 		numKnockoutsField.setMaximumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
 		numKnockoutsField.setMinimumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
@@ -168,11 +143,7 @@ public class GDBBDialog  extends JDialog {
 				setNumKnockouts(numKnockoutsField.getText());
 			}
 		});
-
-		cbNumThreads.setPreferredSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
-		cbNumThreads.setMaximumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
-		cbNumThreads.setMinimumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
-
+		
 		blankLabel.setPreferredSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
 		blankLabel.setMaximumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
 		blankLabel.setMinimumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
@@ -236,8 +207,6 @@ public class GDBBDialog  extends JDialog {
 		Box hbTop = Box.createHorizontalBox();
 		Box hbNumKnockoutsLabel = Box.createHorizontalBox();	    
 		Box hbNumKnockouts = Box.createHorizontalBox();
-		Box hbNumThreadsLabel = Box.createHorizontalBox();	    
-		Box hbNumThreads = Box.createHorizontalBox();
 		Box hbIndefiniteTime = Box.createHorizontalBox();	    
 		Box hbBlankLabel = Box.createHorizontalBox();
 		Box hbFiniteTime = Box.createHorizontalBox();	    
@@ -294,38 +263,6 @@ public class GDBBDialog  extends JDialog {
 		JLabel blankLabel1 = new JLabel("");
 		vbLabels.add(blankLabel1);
 		vbCombos.add(hbNumKnockouts);
-
-		//Number of Threads Label and combo
-		numThreadsLabel.setText(GDBBConstants.NUM_THREADS_LABEL);
-		numThreadsLabel.setPreferredSize(new Dimension(GDBBConstants.LABEL_WIDTH, GDBBConstants.LABEL_HEIGHT));
-		numThreadsLabel.setMaximumSize(new Dimension(GDBBConstants.LABEL_WIDTH, GDBBConstants.LABEL_HEIGHT));
-		numThreadsLabel.setMinimumSize(new Dimension(GDBBConstants.LABEL_WIDTH, GDBBConstants.LABEL_HEIGHT));
-		numThreadsLabel.setBorder(BorderFactory.createEmptyBorder(GDBBConstants.LABEL_TOP_BORDER_SIZE,0,GDBBConstants.LABEL_BOTTOM_BORDER_SIZE,10));
-		numThreadsLabel.setAlignmentX(LEFT_ALIGNMENT);
-		numThreadsLabel.setDisplayedMnemonic('T');
-		numThreadsLabel.setLabelFor(cbNumThreads);
-
-		JPanel panelNumThreadsLabel = new JPanel();
-		panelNumThreadsLabel.setLayout(new BoxLayout(panelNumThreadsLabel, BoxLayout.X_AXIS));
-		panelNumThreadsLabel.add(numThreadsLabel);
-		panelNumThreadsLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
-
-		hbNumThreadsLabel.add(panelNumThreadsLabel);
-		hbNumThreadsLabel.setAlignmentX(LEFT_ALIGNMENT);
-
-		JPanel panelNumThreads = new JPanel();
-		panelNumThreads.setLayout(new BoxLayout(panelNumThreads, BoxLayout.X_AXIS));
-		panelNumThreads.add(cbNumThreads);
-		panelNumThreads.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
-		panelNumThreads.setAlignmentX(RIGHT_ALIGNMENT);
-
-		hbNumThreads.add(panelNumThreads);
-		hbNumThreads.setAlignmentX(RIGHT_ALIGNMENT);
-
-		vbLabels.add(hbNumThreadsLabel);
-		JLabel blankLabel2 = new JLabel("");
-		vbLabels.add(blankLabel2);
-		vbCombos.add(hbNumThreads);
 
 		JLabel blankLabel3 = new JLabel("");
 		vbLabels.add(blankLabel3);
@@ -445,7 +382,6 @@ public class GDBBDialog  extends JDialog {
 		numKnockoutsLabel.setForeground(GraphicalInterfaceConstants.GRAYED_LABEL_COLOR);
 		numKnockoutsField.setEditable(false);
 		numKnockoutsField.setEnabled(false);
-		disableThreadsCombo();
 		indefiniteTimeButton.setEnabled(false);
 		finiteTimeButton.setEnabled(false);
 		finiteTimeField.setEnabled(false);
@@ -453,33 +389,13 @@ public class GDBBDialog  extends JDialog {
 	}
 	
 	/**
-	 * Enables components if GDBB is not running. If solver is GLPK, threads set to
-	 * 1 and threads combo is disabled.
+	 * Enables components if GDBB is not running. 
 	 */
 	public void enableComponents() {
 		numKnockoutsLabel.setForeground(Color.BLACK);
 		numKnockoutsField.setEditable(true);
-		if (GraphicalInterface.getMixedIntegerLinearSolverName() == GraphicalInterfaceConstants.GLPK_SOLVER_NAME) {
-			disableThreadsCombo();
-		} else if (GraphicalInterface.getMixedIntegerLinearSolverName() == GraphicalInterfaceConstants.GUROBI_SOLVER_NAME) {
-			enableThreadsCombo();
-		}
 		indefiniteTimeButton.setEnabled(true);
 		finiteTimeButton.setEnabled(true);
-	}
-	
-	public void enableThreadsCombo() {
-    	numThreadsLabel.setForeground(Color.BLACK);
-    	cbNumThreads.setEnabled(true);
-    	numThreadsLabel.setToolTipText("");
-		cbNumThreads.setToolTipText("");
-	}
-	
-	public void disableThreadsCombo() {
-		numThreadsLabel.setForeground(GraphicalInterfaceConstants.GRAYED_LABEL_COLOR);
-		cbNumThreads.setEnabled(false);
-		numThreadsLabel.setToolTipText(GraphicalInterfaceConstants.GLPK_NO_MULTIPLE_THREADS_TOOLTIP);
-		cbNumThreads.setToolTipText(GraphicalInterfaceConstants.GLPK_NO_MULTIPLE_THREADS_TOOLTIP);
 	}
 	
 	public void enableStart() {
@@ -502,10 +418,6 @@ public class GDBBDialog  extends JDialog {
 		finiteTimeField.setText(GDBBConstants.FINITE_TIME_DEFAULT);	
 		setFiniteTimeString(GDBBConstants.FINITE_TIME_DEFAULT);
 	}	
-	
-	public Integer selectedNumberOfThreads() {
-		return (Integer) cbNumThreads.getSelectedItem();
-	}
 
 	public static void main(String[] args) throws Exception {
 //		//based on code from http:stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar

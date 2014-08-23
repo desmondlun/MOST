@@ -1850,7 +1850,7 @@ public class GraphicalInterface extends JFrame {
             							model.setTimeLimit((new Double(gdbbDialog.getFiniteTimeString())).doubleValue());
 
             						//gdbbTask.getModel().setThreadNum((Integer)gdbbDialog.cbNumThreads.getSelectedItem());
-            						model.setThreadNum(gdbbDialog.selectedNumberOfThreads());
+            						//model.setThreadNum(gdbbDialog.selectedNumberOfThreads());
             						gdbb.setGDBBModel( model );
             						gdbb.setFinalizingCallback( new GDBB.Callback()
 									{
@@ -2778,11 +2778,34 @@ public class GraphicalInterface extends JFrame {
 		}
 		gurobiParametersItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
-				// sets selected items in combo boxes based on items in config file if not null
+				// sets items in fields based on items in config file if not null
 				ConfigProperties configProp = new ConfigProperties();
 				if (configProp.fileExists()) {
 					ConfigProperties.readFile();
-					
+					if (ConfigProperties.getGurobiFeasibility() != null) {
+						getGurobiParametersDialog().feasibilityField.setText(ConfigProperties.getGurobiFeasibility());
+					} 
+					if (ConfigProperties.getGurobiIntFeasibility() != null) {
+						getGurobiParametersDialog().intFeasibilityField.setText(ConfigProperties.getGurobiIntFeasibility());
+					} 
+					if (ConfigProperties.getGurobiOptimality() != null) {
+						getGurobiParametersDialog().optimalityField.setText(ConfigProperties.getGurobiOptimality());
+					} 
+					if (ConfigProperties.getGurobiHeuristics() != null) {
+						getGurobiParametersDialog().heuristicsField.setText(ConfigProperties.getGurobiHeuristics());
+					} 
+					if (ConfigProperties.getGurobiMipFocus() != null) {
+						getGurobiParametersDialog().selectMIPFocus(ConfigProperties.getGurobiMipFocus());
+					} 
+					if (ConfigProperties.getGurobiNumThreads() != null) {
+						if (getMixedIntegerLinearSolverName().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
+							getGurobiParametersDialog().selectNumberOfThreads("1");
+							getGurobiParametersDialog().cbNumThreads.setEnabled(false);
+						} else {
+							getGurobiParametersDialog().selectNumberOfThreads(ConfigProperties.getGurobiNumThreads());
+							getGurobiParametersDialog().cbNumThreads.setEnabled(true);
+						}
+					} 
 				}
 				getGurobiParametersDialog().setVisible(true);
 			}    	     
@@ -11810,10 +11833,37 @@ public class GraphicalInterface extends JFrame {
 	 */
 	ActionListener solvOKActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
-			new ConfigProperties();
+			ConfigProperties configProp = new ConfigProperties();
 			String linear = "";
 			String quadratic = "";
 			String nonlinear = "";
+			String feasibility = Double.toString(GurobiParameters.FEASIBILITYTOL_DEFAULT_VALUE);
+			String intFeasibility = Double.toString(GurobiParameters.INTFEASIBILITYTOL_DEFAULT_VALUE);
+			String optimality = Double.toString(GurobiParameters.OPTIMALITYTOL_DEFAULT_VALUE);
+			String heuristics = Double.toString(GurobiParameters.HEURISTICS_DEFAULT_VALUE);
+			String mipFocus = Integer.toString(GurobiParameters.MIPFOCUS_DEFAULT_VALUE);
+			String numThreads = Integer.toString(GurobiParameters.MAX_NUM_THREADS);
+			if (configProp.fileExists()) {
+				ConfigProperties.readFile();
+				if (ConfigProperties.getGurobiFeasibility() != null) {
+					feasibility = ConfigProperties.getGurobiFeasibility();
+				}
+				if (ConfigProperties.getGurobiIntFeasibility() != null) {
+					intFeasibility = ConfigProperties.getGurobiIntFeasibility();
+				}
+				if (ConfigProperties.getGurobiOptimality() != null) {
+					optimality = ConfigProperties.getGurobiOptimality();
+				}
+				if (ConfigProperties.getGurobiHeuristics() != null) {
+					heuristics = ConfigProperties.getGurobiHeuristics();
+				}
+				if (ConfigProperties.getGurobiMipFocus() != null) {
+					mipFocus = ConfigProperties.getGurobiMipFocus();
+				}
+				if (ConfigProperties.getGurobiNumThreads() != null) {
+					numThreads = ConfigProperties.getGurobiNumThreads();
+				}
+			}
 			if ( getSolverSetUpDialog().cbLinear.getSelectedItem().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
 				linear = GraphicalInterfaceConstants.GLPK_SOLVER_NAME;
 			} else if ( getSolverSetUpDialog().cbLinear.getSelectedItem().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
@@ -11827,10 +11877,11 @@ public class GraphicalInterface extends JFrame {
 			if ( getSolverSetUpDialog().cbNonlinear.getSelectedItem().equals(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME)) {
 				nonlinear = GraphicalInterfaceConstants.IPOPT_SOLVER_NAME;
 			}
+			
 			setMixedIntegerLinearSolverName(linear);
 			setQuadraticSolverName(quadratic);
 			setNonlinearSolverName(nonlinear);
-			ConfigProperties.writeToFile(linear, quadratic, nonlinear);
+			ConfigProperties.writeToFile(linear, quadratic, nonlinear, feasibility, intFeasibility, optimality, heuristics, mipFocus, numThreads);
 
 			getSolverSetUpDialog().setVisible(false);
 		}
@@ -11861,9 +11912,37 @@ public class GraphicalInterface extends JFrame {
 	 */
 	ActionListener gurOKActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
-			new ConfigProperties();
-			//ConfigProperties.writeToFile(linear, quadratic, nonlinear);
-
+			ConfigProperties configProp = new ConfigProperties();
+			String linear = "";
+			String quadratic = "";
+			if(GurobiSolver.isGurobiLinked()){
+				linear = GraphicalInterfaceConstants.GUROBI_SOLVER_NAME;
+				quadratic = GraphicalInterfaceConstants.GUROBI_SOLVER_NAME;
+			}
+			else {
+				linear = GraphicalInterfaceConstants.GLPK_SOLVER_NAME;
+				quadratic = GraphicalInterfaceConstants.IPOPT_SOLVER_NAME;
+			}
+			String nonlinear = GraphicalInterfaceConstants.IPOPT_SOLVER_NAME;
+			if (configProp.fileExists()) {
+				ConfigProperties.readFile();
+				if (ConfigProperties.getMixedIntegerLinearSolverName() != null) {
+					linear = ConfigProperties.getMixedIntegerLinearSolverName();
+				}
+				if (ConfigProperties.getQuadraticSolverName() != null) {
+					quadratic = ConfigProperties.getQuadraticSolverName();
+				}
+				if (ConfigProperties.getNonlinearSolverName() != null) {
+					nonlinear = ConfigProperties.getNonlinearSolverName();
+				}
+			}
+			String feasibility = getGurobiParametersDialog().feasibilityField.getText();
+			String intFeasibility = getGurobiParametersDialog().intFeasibilityField.getText();
+			String optimality = getGurobiParametersDialog().optimalityField.getText();
+			String heuristics = getGurobiParametersDialog().heuristicsField.getText();
+			String mipFocus = getGurobiParametersDialog().selectedMIPFocus().toString();
+			String numThreads = getGurobiParametersDialog().selectedNumberOfThreads().toString();
+			ConfigProperties.writeToFile(linear, quadratic, nonlinear, feasibility, intFeasibility, optimality, heuristics, mipFocus, numThreads);
 			getGurobiParametersDialog().setVisible(false);
 		}
 	};
@@ -11973,6 +12052,37 @@ public class GraphicalInterface extends JFrame {
 				if (ConfigProperties.getNonlinearSolverName().equals(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME)) {
 					setNonlinearSolverName(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME);
 				} 
+			}
+			
+			if (ConfigProperties.getGurobiFeasibility() != null) {
+				setGurobiFeasibility(Double.parseDouble(ConfigProperties.getGurobiFeasibility()));
+			} else {
+				setGurobiFeasibility(GurobiParameters.FEASIBILITYTOL_DEFAULT_VALUE);
+			}
+			if (ConfigProperties.getGurobiIntFeasibility() != null) {
+				setGurobiIntFeasibility(Double.parseDouble(ConfigProperties.getGurobiIntFeasibility()));
+			} else {
+				setGurobiIntFeasibility(GurobiParameters.INTFEASIBILITYTOL_DEFAULT_VALUE);
+			}
+			if (ConfigProperties.getGurobiOptimality() != null) {
+				setGurobiOptimality(Double.parseDouble(ConfigProperties.getGurobiOptimality()));
+			} else {
+				setGurobiOptimality(GurobiParameters.OPTIMALITYTOL_DEFAULT_VALUE);
+			}
+			if (ConfigProperties.getGurobiHeuristics() != null) {
+				setGurobiHeuristics(Double.parseDouble(ConfigProperties.getGurobiHeuristics()));
+			} else {
+				setGurobiHeuristics(GurobiParameters.HEURISTICS_DEFAULT_VALUE);
+			}
+			if (ConfigProperties.getGurobiMipFocus() != null) {
+				setGurobiMIPFocus(Integer.parseInt(ConfigProperties.getGurobiMipFocus()));
+			} else {
+				setGurobiMIPFocus(GurobiParameters.MIPFOCUS_DEFAULT_VALUE);
+			}
+			if (ConfigProperties.getGurobiNumThreads() != null) {
+				setGurobiNumThreads(Integer.parseInt(ConfigProperties.getGurobiNumThreads()));
+			} else {
+				setGurobiNumThreads(GurobiParameters.MAX_NUM_THREADS);
 			}
 		}
 	}

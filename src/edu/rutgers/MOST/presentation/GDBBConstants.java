@@ -13,11 +13,10 @@ public class GDBBConstants {
 	public static final String COUNTER_LABEL_SUFFIX = " s";
 	
 	public static final String NUM_KNOCKOUTS_DEFAULT = "1";
-	public static final int MAX_NUM_THREADS = Runtime.getRuntime().availableProcessors();
 	public static final String FINITE_TIME_DEFAULT = "300";
 	
 	public static final int GDBB_DIALOG_WIDTH = 400;
-	public static final int GDBB_DIALOG_HEIGHT = 320;
+	public static final int GDBB_DIALOG_HEIGHT = 280;
 	
 	// layout constants
 	public static final int COMPONENT_WIDTH = 150;
