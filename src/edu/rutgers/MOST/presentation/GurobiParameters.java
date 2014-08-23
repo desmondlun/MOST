@@ -5,6 +5,8 @@ public class GurobiParameters {
 	public static final String TITLE = "Gurobi Parameters";
 	// names of parameters from http://www.gurobi.com/documentation/5.6/reference-manual/parameters
 	
+	public static final String GUROBI_PARAMETERS_MENU_ITEM = "Set Gurobi Properties";
+	
 	public static final String FEASIBILITYTOL_NAME = "Feasibility Tolerance";
 	public static final double FEASIBILITYTOL_DEFAULT_VALUE = 1.0E-6;
 	public static final double FEASIBILITYTOL_MINIMUM_VALUE = 1.0E-9;

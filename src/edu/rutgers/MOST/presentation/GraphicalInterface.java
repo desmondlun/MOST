@@ -373,6 +373,17 @@ public class GraphicalInterface extends JFrame {
 		GraphicalInterface.gdbbDialog = gdbbDialog;
 	}
 
+	private static GurobiParametersDialog gurobiParametersDialog;
+	
+	public static GurobiParametersDialog getGurobiParametersDialog() {
+		return gurobiParametersDialog;
+	}
+
+	public static void setGurobiParametersDialog(
+			GurobiParametersDialog gurobiParametersDialog) {
+		GraphicalInterface.gurobiParametersDialog = gurobiParametersDialog;
+	}
+
 	private static MetaboliteColAddRenameInterface metaboliteColAddRenameInterface;   
 
 	public void setMetaboliteColAddRenameInterface(MetaboliteColAddRenameInterface metaboliteColAddRenameInterface) {
@@ -609,6 +620,7 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem unsortReacMenuItem = new JMenuItem("Unsort Reactions Table");
 	public final JMenuItem unsortMetabMenuItem = new JMenuItem("Unsort Metabolites Table");
 	public final JMenuItem setUpSolver = new JMenuItem("Select Solvers");
+	public final JMenuItem gurobiParametersItem = new JMenuItem(GurobiParameters.GUROBI_PARAMETERS_MENU_ITEM);
 
 	public final JMenuItem formulaBarCutItem = new JMenuItem("Cut");
 	public final JMenuItem formulaBarCopyItem = new JMenuItem("Copy");
@@ -1156,6 +1168,21 @@ public class GraphicalInterface extends JFrame {
 			public void windowClosing(WindowEvent evt) {
 				getSolverSetUpDialog().setVisible(false);
 				getSolverSetUpDialog().dispose();
+			}
+		});	
+		
+		setGurobiParametersDialog( new GurobiParametersDialog() );
+		getGurobiParametersDialog().setIconImages(icons);					
+		getGurobiParametersDialog().setSize(GurobiParameters.DIALOG_WIDTH, GurobiParameters.DIALOG_HEIGHT);
+		getGurobiParametersDialog().setResizable(false);
+		getGurobiParametersDialog().setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		getGurobiParametersDialog().setLocationRelativeTo(null);		
+		getGurobiParametersDialog().setModal(true);
+		getGurobiParametersDialog().okButton.addActionListener(gurOKActionListener);
+		getGurobiParametersDialog().addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent evt) {
+				getGurobiParametersDialog().setVisible(false);
+				getGurobiParametersDialog().dispose();
 			}
 		});	
 		
@@ -2667,6 +2694,25 @@ public class GraphicalInterface extends JFrame {
 					}
 				}
 				getSolverSetUpDialog().setVisible(true);
+			}    	     
+		});
+		
+		optionsMenu.add(gurobiParametersItem);
+		gurobiParametersItem.setMnemonic(KeyEvent.VK_G);
+		if (GurobiSolver.isGurobiLinked()){
+			gurobiParametersItem.setEnabled(true);
+		} else {
+			gurobiParametersItem.setEnabled(false);
+		}
+		gurobiParametersItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) {
+				// sets selected items in combo boxes based on items in config file if not null
+				ConfigProperties configProp = new ConfigProperties();
+				if (configProp.fileExists()) {
+					ConfigProperties.readFile();
+					
+				}
+				getGurobiParametersDialog().setVisible(true);
 			}    	     
 		});
 
@@ -11733,6 +11779,18 @@ public class GraphicalInterface extends JFrame {
 		getSolverSetUpDialog().cbQuadratic.setSelectedItem(0);
 		getSolverSetUpDialog().gurobiLabel.setText("<HTML>" + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_PREFIX + GraphicalInterfaceConstants.GUROBI_MINIMUM_VERSION + System.getProperty("sun.arch.data.model") + GraphicalInterfaceConstants.GUROBI_NOT_INSTALLED_SUFFIX + "</HTML>");
 	}
+	
+	/**
+	 * Writes Gurobi Properties to file
+	 */
+	ActionListener gurOKActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			new ConfigProperties();
+			//ConfigProperties.writeToFile(linear, quadratic, nonlinear);
+
+			getGurobiParametersDialog().setVisible(false);
+		}
+	};
 	
 	/******************************************************************************/
 	// end Solver Set Up methods

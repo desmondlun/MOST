@@ -3,6 +3,8 @@ package edu.rutgers.MOST.presentation;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -40,43 +42,44 @@ public class GurobiParametersDialog  extends JDialog {
 	private JComboBox<Integer> cbMIPFocus = new JComboBox<Integer>();
 	private JLabel numThreadsLabel = new JLabel();
 	private JComboBox<Integer> cbNumThreads = new JComboBox<Integer>();
-	public JButton okButton = new JButton("OK");
+	public JButton okButton = new JButton("   OK   ");
 	public JButton cancelButton = new JButton("Cancel");
+	public JButton resetButton = new JButton("Reset to Defaults");
 	
-	private String feasibility;
-	private String intFeasibility;
-	private String optimality;
-	private String heuristics;
+	private double feasibility;
+	private double intFeasibility;
+	private double optimality;
+	private double heuristics;
 
-	public String getFeasibility() {
+	public double getFeasibility() {
 		return feasibility;
 	}
 
-	public void setFeasibility(String feasibility) {
+	public void setFeasibility(double feasibility) {
 		this.feasibility = feasibility;
 	}
 
-	public String getIntFeasibility() {
+	public double getIntFeasibility() {
 		return intFeasibility;
 	}
 
-	public void setIntFeasibility(String intFeasibility) {
+	public void setIntFeasibility(double intFeasibility) {
 		this.intFeasibility = intFeasibility;
 	}
 
-	public String getOptimality() {
+	public double getOptimality() {
 		return optimality;
 	}
 
-	public void setOptimality(String optimality) {
+	public void setOptimality(double optimality) {
 		this.optimality = optimality;
 	}
 
-	public String getHeuristics() {
+	public double getHeuristics() {
 		return heuristics;
 	}
 
-	public void setHeuristics(String heuristics) {
+	public void setHeuristics(double heuristics) {
 		this.heuristics = heuristics;
 	}
 
@@ -113,6 +116,8 @@ public class GurobiParametersDialog  extends JDialog {
 		feasibilityField.setMaximumSize(new Dimension(GurobiParameters.COMPONENT_WIDTH, GurobiParameters.COMPONENT_HEIGHT));
 		feasibilityField.setMinimumSize(new Dimension(GurobiParameters.COMPONENT_WIDTH, GurobiParameters.COMPONENT_HEIGHT));
 		
+		setFeasibilityDefaultValue();
+		
 		feasibilityField.addFocusListener(new FocusListener() {
 
 			@Override
@@ -144,7 +149,7 @@ public class GurobiParametersDialog  extends JDialog {
 		intFeasibilityField.setMaximumSize(new Dimension(GurobiParameters.COMPONENT_WIDTH, GurobiParameters.COMPONENT_HEIGHT));
 		intFeasibilityField.setMinimumSize(new Dimension(GurobiParameters.COMPONENT_WIDTH, GurobiParameters.COMPONENT_HEIGHT));
 		
-		setFeasibilityDefaultValue();
+		setIntFeasibilityDefaultValue();
 		
 		intFeasibilityField.addFocusListener(new FocusListener() {
 
@@ -177,6 +182,8 @@ public class GurobiParametersDialog  extends JDialog {
 		optimalityField.setMaximumSize(new Dimension(GurobiParameters.COMPONENT_WIDTH, GurobiParameters.COMPONENT_HEIGHT));
 		optimalityField.setMinimumSize(new Dimension(GurobiParameters.COMPONENT_WIDTH, GurobiParameters.COMPONENT_HEIGHT));
 		
+		setOptimalityDefaultValue();
+		
 		optimalityField.addFocusListener(new FocusListener() {
 
 			@Override
@@ -207,6 +214,8 @@ public class GurobiParametersDialog  extends JDialog {
 		heuristicsField.setPreferredSize(new Dimension(GurobiParameters.COMPONENT_WIDTH, GurobiParameters.COMPONENT_HEIGHT));
 		heuristicsField.setMaximumSize(new Dimension(GurobiParameters.COMPONENT_WIDTH, GurobiParameters.COMPONENT_HEIGHT));
 		heuristicsField.setMinimumSize(new Dimension(GurobiParameters.COMPONENT_WIDTH, GurobiParameters.COMPONENT_HEIGHT));
+		
+		setHeuristicsDefaultValue();
 		
 		heuristicsField.addFocusListener(new FocusListener() {
 
@@ -479,12 +488,16 @@ public class GurobiParametersDialog  extends JDialog {
 		JLabel blank = new JLabel("    "); 
 		cancelButton.setMnemonic(KeyEvent.VK_C);
 		cancelButton.setEnabled(false);
+		JLabel blank2 = new JLabel("    "); 
+		resetButton.setMnemonic(KeyEvent.VK_R);
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 		buttonPanel.add(okButton);
 		buttonPanel.add(blank);
 		buttonPanel.add(cancelButton);
+		buttonPanel.add(blank2);
+		buttonPanel.add(resetButton);
 		buttonPanel.setBorder(BorderFactory.createEmptyBorder(10,20,20,20));
 
 		hbButton.add(buttonPanel);
@@ -496,12 +509,62 @@ public class GurobiParametersDialog  extends JDialog {
 		vb.add(hbButton);
 
 		add(vb);
+		
+		ActionListener cancelButtonActionListener = new ActionListener() {
+			public void actionPerformed(ActionEvent prodActionEvent) {
+				setVisible(false);
+				dispose();
+			}
+		};
+
+		cancelButton.addActionListener(cancelButtonActionListener);
+		
+		ActionListener resetButtonActionListener = new ActionListener() {
+			public void actionPerformed(ActionEvent prodActionEvent) {
+				setFeasibilityDefaultValue();
+				setIntFeasibilityDefaultValue();
+				setOptimalityDefaultValue();
+				setHeuristicsDefaultValue();
+				cbMIPFocus.setSelectedItem(GurobiParameters.MIPFOCUS_DEFAULT_VALUE);
+				// If solver is GLPK, add 1, else add 1 to number of processors and set max selected
+				// For GLPK, combo is also grayed out by enableThreadsCombo() method after layout
+				if (GraphicalInterface.getMixedIntegerLinearSolverName() == GraphicalInterfaceConstants.GLPK_SOLVER_NAME) {
+					cbNumThreads.addItem(1);
+				} else {
+					for (int i = 1; i <= GurobiParameters.MAX_NUM_THREADS; i++) {
+						cbNumThreads.addItem(i);
+					}
+					cbNumThreads.setSelectedItem(GurobiParameters.MAX_NUM_THREADS);
+				}
+			}
+		};
+
+		resetButton.addActionListener(resetButtonActionListener);
 	
 	}
 	
 	public void setFeasibilityDefaultValue() {
 		feasibilityField.setText(Double.toString(GurobiParameters.FEASIBILITYTOL_DEFAULT_VALUE));
-		setFeasibility(Double.toString(GurobiParameters.FEASIBILITYTOL_DEFAULT_VALUE));
+		setFeasibility(GurobiParameters.FEASIBILITYTOL_DEFAULT_VALUE);
+	}
+	
+	public void setIntFeasibilityDefaultValue() {
+		intFeasibilityField.setText(Double.toString(GurobiParameters.INTFEASIBILITYTOL_DEFAULT_VALUE));
+		setIntFeasibility(GurobiParameters.INTFEASIBILITYTOL_DEFAULT_VALUE);
+	}
+	
+	public void setOptimalityDefaultValue() {
+		optimalityField.setText(Double.toString(GurobiParameters.OPTIMALITYTOL_DEFAULT_VALUE));
+		setOptimality(GurobiParameters.OPTIMALITYTOL_DEFAULT_VALUE);
+	}
+	
+	public void setHeuristicsDefaultValue() {
+		heuristicsField.setText(Double.toString(GurobiParameters.HEURISTICS_DEFAULT_VALUE));
+		setHeuristics(GurobiParameters.HEURISTICS_DEFAULT_VALUE);
+	}
+	
+	public double selectedFeasibility() {
+		return Double.parseDouble((feasibilityField.getText()));
 	}
 	
 	public Integer selectedMIPFocus() {
