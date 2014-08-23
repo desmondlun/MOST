@@ -1,5 +1,6 @@
 package edu.rutgers.MOST.presentation;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
@@ -52,6 +53,8 @@ public class GurobiParametersDialog  extends JDialog {
 	private double intFeasibility;
 	private double optimality;
 	private double heuristics;
+	
+	private String errorMessage;
 
 	public double getFeasibility() {
 		return feasibility;
@@ -85,6 +88,14 @@ public class GurobiParametersDialog  extends JDialog {
 		this.heuristics = heuristics;
 	}
 
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+
 	public GurobiParametersDialog() {
 		
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
@@ -95,6 +106,14 @@ public class GurobiParametersDialog  extends JDialog {
 
 		setTitle(GurobiParameters.TITLE);
 		
+		feasibilityField.setToolTipText("Valid range: " + GurobiParameters.FEASIBILITYTOL_MINIMUM_VALUE +
+				" to " + GurobiParameters.FEASIBILITYTOL_MAXIMUM_VALUE);
+		intFeasibilityField.setToolTipText("Valid range: " + GurobiParameters.INTFEASIBILITYTOL_MINIMUM_VALUE +
+				" to " + GurobiParameters.INTFEASIBILITYTOL_MAXIMUM_VALUE);
+		optimalityField.setToolTipText("Valid range: " + GurobiParameters.OPTIMALITYTOL_MINIMUM_VALUE +
+				" to " + GurobiParameters.OPTIMALITYTOL_MAXIMUM_VALUE);
+		heuristicsField.setToolTipText("Valid range: " + GurobiParameters.HEURISTICS_MINIMUM_VALUE +
+				" to " + GurobiParameters.HEURISTICS_MAXIMUM_VALUE);
 		cbMIPFocus.setEditable(false);
 		cbNumThreads.setEditable(false);
 		
@@ -140,13 +159,13 @@ public class GurobiParametersDialog  extends JDialog {
 		
 		feasibilityField.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
-				
+				feasibilityField.setForeground(Color.BLACK);
 			}
 			public void removeUpdate(DocumentEvent e) {
-				
+				feasibilityField.setForeground(Color.BLACK);
 			}
 			public void insertUpdate(DocumentEvent e) {
-				
+				feasibilityField.setForeground(Color.BLACK);
 			}
 		});
 		
@@ -173,13 +192,13 @@ public class GurobiParametersDialog  extends JDialog {
 		
 		intFeasibilityField.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
-				
+				intFeasibilityField.setForeground(Color.BLACK);
 			}
 			public void removeUpdate(DocumentEvent e) {
-				
+				intFeasibilityField.setForeground(Color.BLACK);
 			}
 			public void insertUpdate(DocumentEvent e) {
-				
+				intFeasibilityField.setForeground(Color.BLACK);
 			}
 		});
 		
@@ -206,13 +225,13 @@ public class GurobiParametersDialog  extends JDialog {
 		
 		optimalityField.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
-				
+				optimalityField.setForeground(Color.BLACK);
 			}
 			public void removeUpdate(DocumentEvent e) {
-				
+				optimalityField.setForeground(Color.BLACK);
 			}
 			public void insertUpdate(DocumentEvent e) {
-				
+				optimalityField.setForeground(Color.BLACK);
 			}
 		});
 		
@@ -239,13 +258,13 @@ public class GurobiParametersDialog  extends JDialog {
 		
 		heuristicsField.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
-				
+				heuristicsField.setForeground(Color.BLACK);
 			}
 			public void removeUpdate(DocumentEvent e) {
-				
+				heuristicsField.setForeground(Color.BLACK);
 			}
 			public void insertUpdate(DocumentEvent e) {
-				
+				heuristicsField.setForeground(Color.BLACK);
 			}
 		});
 		
@@ -530,6 +549,10 @@ public class GurobiParametersDialog  extends JDialog {
 				setIntFeasibilityDefaultValue();
 				setOptimalityDefaultValue();
 				setHeuristicsDefaultValue();
+				feasibilityField.setForeground(Color.BLACK);
+				intFeasibilityField.setForeground(Color.BLACK);
+				optimalityField.setForeground(Color.BLACK);
+				heuristicsField.setForeground(Color.BLACK);
 				cbMIPFocus.setSelectedItem(GurobiParameters.MIPFOCUS_DEFAULT_VALUE);
 				// If solver is GLPK, add 1, else add 1 to number of processors and set max selected
 				// For GLPK, combo is also grayed out by enableThreadsCombo() method after layout
@@ -584,6 +607,77 @@ public class GurobiParametersDialog  extends JDialog {
 	
 	public void selectNumberOfThreads(String item) {
 		cbNumThreads.setSelectedItem(Integer.parseInt(item));
+	}
+	
+	public boolean validEntries() {
+		EntryValidator validator = new EntryValidator(); 
+		boolean numberError = false;
+		boolean outOfRangeError = false;
+		if (!validator.isNumber(feasibilityField.getText())) {
+			feasibilityField.setForeground(Color.RED);
+			numberError = true;
+		} else {
+			if (Double.parseDouble(feasibilityField.getText()) < GurobiParameters.FEASIBILITYTOL_MINIMUM_VALUE ||
+					Double.parseDouble(feasibilityField.getText()) > GurobiParameters.FEASIBILITYTOL_MAXIMUM_VALUE) {
+				feasibilityField.setForeground(Color.RED);
+				outOfRangeError = true;
+			} else {
+				feasibilityField.setForeground(Color.BLACK);
+			}
+		}
+		if (!validator.isNumber(intFeasibilityField.getText())) {
+			intFeasibilityField.setForeground(Color.RED);
+			numberError = true;
+		} else {
+			if (Double.parseDouble(intFeasibilityField.getText()) < GurobiParameters.INTFEASIBILITYTOL_MINIMUM_VALUE ||
+					Double.parseDouble(intFeasibilityField.getText()) > GurobiParameters.INTFEASIBILITYTOL_MAXIMUM_VALUE) {
+				intFeasibilityField.setForeground(Color.RED);
+				outOfRangeError = true;
+			} else {
+				intFeasibilityField.setForeground(Color.BLACK);
+			}
+		}
+		if (!validator.isNumber(optimalityField.getText())) {
+			optimalityField.setForeground(Color.RED);
+			numberError = true;
+		} else {
+			if (Double.parseDouble(optimalityField.getText()) < GurobiParameters.OPTIMALITYTOL_MINIMUM_VALUE ||
+					Double.parseDouble(optimalityField.getText()) > GurobiParameters.OPTIMALITYTOL_MAXIMUM_VALUE) {
+				optimalityField.setForeground(Color.RED);
+				outOfRangeError = true;
+			} else {
+				optimalityField.setForeground(Color.BLACK);
+			}
+		}
+		if (!validator.isNumber(heuristicsField.getText())) {
+			heuristicsField.setForeground(Color.RED);
+			numberError = true;
+		} else {
+			if (Double.parseDouble(heuristicsField.getText()) < GurobiParameters.HEURISTICS_MINIMUM_VALUE ||
+					Double.parseDouble(heuristicsField.getText()) > GurobiParameters.HEURISTICS_MAXIMUM_VALUE) {
+				heuristicsField.setForeground(Color.RED);
+				outOfRangeError = true;
+			} else {
+				heuristicsField.setForeground(Color.BLACK);
+			}
+		}
+		if (numberError || outOfRangeError) {
+			String error = "";
+			if (numberError) {
+				error = GraphicalInterfaceConstants.NUMERIC_VALUE_ERROR_MESSAGE;
+			} 
+			if (outOfRangeError) {
+				error = "Value(s) out of range.";
+			}
+			if (numberError && outOfRangeError) {
+				error = GraphicalInterfaceConstants.NUMERIC_VALUE_ERROR_MESSAGE + " "
+						+ "Value(s) out of range.";
+			}
+			setErrorMessage(error);
+			return false;
+		}
+		return true;
+		
 	}
 
 	public static void main(String[] args) throws Exception {

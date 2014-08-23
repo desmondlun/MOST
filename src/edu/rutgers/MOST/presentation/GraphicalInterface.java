@@ -648,6 +648,8 @@ public class GraphicalInterface extends JFrame {
 		protected ArrayList< Double > soln = new ArrayList< Double >();
 		protected ArrayList< Double > vaMin = null;
 		protected ArrayList< Double > vaMax = null;
+		protected boolean isFoldered = false;
+		protected String folderName = "";
 	}
 	private static Vector< GISolution > vecGISolution = new Vector< GISolution >();
 
@@ -1832,6 +1834,9 @@ public class GraphicalInterface extends JFrame {
             							gdbbDialog.setKnockoutDefaultValue();
             						if (!finiteTimeIsInteger)
             							gdbbDialog.setFiniteTimeDefaultValue();
+            						gdbbDialog.startButton.setEnabled( true );
+                					gdbbDialog.stopButton.setEnabled( false );
+                					gdbbStopped = true;  
             					}
             					else 
             					{
@@ -3436,8 +3441,10 @@ public class GraphicalInterface extends JFrame {
 				highlightUnusedMetabolitesItem.setState(false);
 
 				String dateTimeStamp = u.createDateTimeStamp();
-				final String optimizeName = GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
-						+ LocalConfig.getInstance().getModelName() + dateTimeStamp;
+				final String optimizeName = 
+						current_giSolution.isFoldered ? current_giSolution.folderName  :
+							GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
+							+ LocalConfig.getInstance().getModelName() + dateTimeStamp;
 				setOptimizeName(optimizeName);
 
 				// copy models, run optimization on these models
@@ -3468,7 +3475,13 @@ public class GraphicalInterface extends JFrame {
 					LocalConfig.getInstance().fvaColumnsVisible = false;
 				}
 					
-				DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName, optimizeName));
+				if( current_giSolution.isFoldered  )
+					DynamicTreePanel.getTreePanel().addObject(
+						(DefaultMutableTreeNode)DynamicTreePanel.getTreePanel()
+						.getRootNode().getChildAt(DynamicTreePanel.getTreePanel()
+						.getRootNode().getChildCount() - 1), new Solution( optimizeName, optimizeName ), true);
+				else
+					DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName, optimizeName));
 				//DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 				DynamicTreePanel.getTreePanel().selectLastNode();
 //					DefaultTableModel reactionsOptModel2 = (DefaultTableModel) reactionsTable.getModel();	
@@ -11360,7 +11373,9 @@ public class GraphicalInterface extends JFrame {
 				GISolution current = new GISolution();
 				current.soln = new ArrayList< Double >( soln.subList( 0, model.getNumReactions() ) );
 				current.stringBuffer = text;
-				vecGISolution.add( current );
+				current.isFoldered = true;
+				current.folderName = "" + solution.getObjectiveValue();
+				vecGISolution.add( current );		
 				java.awt.EventQueue.invokeLater( solutionListener );
 			}
 		} );
@@ -11912,38 +11927,45 @@ public class GraphicalInterface extends JFrame {
 	 */
 	ActionListener gurOKActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
-			ConfigProperties configProp = new ConfigProperties();
-			String linear = "";
-			String quadratic = "";
-			if(GurobiSolver.isGurobiLinked()){
-				linear = GraphicalInterfaceConstants.GUROBI_SOLVER_NAME;
-				quadratic = GraphicalInterfaceConstants.GUROBI_SOLVER_NAME;
-			}
-			else {
-				linear = GraphicalInterfaceConstants.GLPK_SOLVER_NAME;
-				quadratic = GraphicalInterfaceConstants.IPOPT_SOLVER_NAME;
-			}
-			String nonlinear = GraphicalInterfaceConstants.IPOPT_SOLVER_NAME;
-			if (configProp.fileExists()) {
-				ConfigProperties.readFile();
-				if (ConfigProperties.getMixedIntegerLinearSolverName() != null) {
-					linear = ConfigProperties.getMixedIntegerLinearSolverName();
+			if (!getGurobiParametersDialog().validEntries()) {
+				JOptionPane.showMessageDialog(null, 
+						getGurobiParametersDialog().getErrorMessage(),
+						"Invalid entries",                                            
+						JOptionPane.ERROR_MESSAGE);
+			} else {
+				String feasibility = getGurobiParametersDialog().feasibilityField.getText();
+				String intFeasibility = getGurobiParametersDialog().intFeasibilityField.getText();
+				String optimality = getGurobiParametersDialog().optimalityField.getText();
+				String heuristics = getGurobiParametersDialog().heuristicsField.getText();
+				String mipFocus = getGurobiParametersDialog().selectedMIPFocus().toString();
+				String numThreads = getGurobiParametersDialog().selectedNumberOfThreads().toString();
+				ConfigProperties configProp = new ConfigProperties();
+				String linear = "";
+				String quadratic = "";
+				if(GurobiSolver.isGurobiLinked()){
+					linear = GraphicalInterfaceConstants.GUROBI_SOLVER_NAME;
+					quadratic = GraphicalInterfaceConstants.GUROBI_SOLVER_NAME;
 				}
-				if (ConfigProperties.getQuadraticSolverName() != null) {
-					quadratic = ConfigProperties.getQuadraticSolverName();
+				else {
+					linear = GraphicalInterfaceConstants.GLPK_SOLVER_NAME;
+					quadratic = GraphicalInterfaceConstants.IPOPT_SOLVER_NAME;
 				}
-				if (ConfigProperties.getNonlinearSolverName() != null) {
-					nonlinear = ConfigProperties.getNonlinearSolverName();
+				String nonlinear = GraphicalInterfaceConstants.IPOPT_SOLVER_NAME;
+				if (configProp.fileExists()) {
+					ConfigProperties.readFile();
+					if (ConfigProperties.getMixedIntegerLinearSolverName() != null) {
+						linear = ConfigProperties.getMixedIntegerLinearSolverName();
+					}
+					if (ConfigProperties.getQuadraticSolverName() != null) {
+						quadratic = ConfigProperties.getQuadraticSolverName();
+					}
+					if (ConfigProperties.getNonlinearSolverName() != null) {
+						nonlinear = ConfigProperties.getNonlinearSolverName();
+					}
 				}
+				ConfigProperties.writeToFile(linear, quadratic, nonlinear, feasibility, intFeasibility, optimality, heuristics, mipFocus, numThreads);
+				getGurobiParametersDialog().setVisible(false);
 			}
-			String feasibility = getGurobiParametersDialog().feasibilityField.getText();
-			String intFeasibility = getGurobiParametersDialog().intFeasibilityField.getText();
-			String optimality = getGurobiParametersDialog().optimalityField.getText();
-			String heuristics = getGurobiParametersDialog().heuristicsField.getText();
-			String mipFocus = getGurobiParametersDialog().selectedMIPFocus().toString();
-			String numThreads = getGurobiParametersDialog().selectedNumberOfThreads().toString();
-			ConfigProperties.writeToFile(linear, quadratic, nonlinear, feasibility, intFeasibility, optimality, heuristics, mipFocus, numThreads);
-			getGurobiParametersDialog().setVisible(false);
 		}
 	};
 	

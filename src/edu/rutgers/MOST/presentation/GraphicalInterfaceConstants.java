@@ -275,9 +275,9 @@ public class GraphicalInterfaceConstants {
     // messages box titles and messages
     // general 
     public static final String NUMERIC_VALUE_ERROR_TITLE = "Invalid numeric entry.";
-    public static final String NUMERIC_VALUE_ERROR_MESSAGE = "Number Format Error";
+    public static final String NUMERIC_VALUE_ERROR_MESSAGE = "Number Format Error.";
     public static final String INTEGER_VALUE_ERROR_TITLE = "Value not an Integer.";
-    public static final String INTEGER_VALUE_ERROR_MESSAGE = "Number Format Error";
+    public static final String INTEGER_VALUE_ERROR_MESSAGE = "Number Format Error.";
     
     public static final String[] BOOLEAN_VALUES = {"false", "true"};
     public static final String[] VALID_FALSE_VALUES = {"f"};
