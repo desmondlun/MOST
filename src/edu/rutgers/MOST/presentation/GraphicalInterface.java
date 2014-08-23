@@ -11302,9 +11302,11 @@ public class GraphicalInterface extends JFrame {
 				String synObjString = "";
 				Vector< String > uniqueGeneAssociations = rFactory.getUniqueGeneAssociations();
 				int knockoutOffset = 4*model.getNumReactions() + model.getNumMetabolites();
-				for (int i = 0; i < rFactory.getSyntheticObjectiveVector().size(); i ++) {
-					if (rFactory.getSyntheticObjectiveVector().get(i) > 0) {
-						synObjString += "Reaction '" + rFactory.getReactionAbbreviations().get(i) + "' Synthetic Objective = " + rFactory.getSyntheticObjectiveVector().get(i) + "\n";
+				Vector< Double > synthObjVector = rFactory.getSyntheticObjectiveVector();
+				Vector< String > reactionAbbreviations = rFactory.getReactionAbbreviations();
+				for (int i = 0; i < synthObjVector.size(); i ++) {
+					if (synthObjVector.get(i) > 0) {
+						synObjString += "Reaction '" + reactionAbbreviations.get(i) + "' Synthetic Objective = " + synthObjVector.get(i) + "\n";
 
 					}
 				}
