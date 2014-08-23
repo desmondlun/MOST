@@ -3474,7 +3474,7 @@ public class GraphicalInterface extends JFrame {
 				{
 					LocalConfig.getInstance().fvaColumnsVisible = false;
 				}
-					
+				
 				if( current_giSolution.isFoldered  )
 					DynamicTreePanel.getTreePanel().addObject(
 						(DefaultMutableTreeNode)DynamicTreePanel.getTreePanel()
