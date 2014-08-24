@@ -1700,8 +1700,8 @@ public class GraphicalInterface extends JFrame {
         			{
         				//set up the table model
                 		Utilities u = new Utilities();
-                		String dateTimeStamp = u.createDateTimeStamp();
-                		String optimizeName = GraphicalInterfaceConstants.GDBB_PREFIX + LocalConfig.getInstance().getModelName() + dateTimeStamp;
+                		final String dateTimeStamp = u.createDateTimeStamp();
+                		final String optimizeName = GraphicalInterfaceConstants.GDBB_PREFIX + LocalConfig.getInstance().getModelName() + dateTimeStamp;
                 		DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
                 		DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
                 		LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
@@ -1711,6 +1711,21 @@ public class GraphicalInterface extends JFrame {
                 		listModel.addElement(optimizeName);
                 		setOptimizeName(optimizeName);
                 		//DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName));
+                		java.awt.EventQueue.invokeLater( new Runnable()
+                		{
+                			@Override
+                			public void run()
+                			{
+                				Solution solution = new Solution(optimizeName);
+                				GISolution parentNode = new GISolution();
+                				parentNode.folderName = optimizeName;
+                				parentNode.isFoldered = false;
+                				parentNode.soln = new ArrayList< Double >();
+                				parentNode.stringBuffer = new StringBuffer();
+                				vecGISolution.add( parentNode );
+                				java.awt.EventQueue.invokeLater( solutionListener );
+                			}
+                		});
         				
         				//GDBB dialog
         				final GDBBDialog gdbbDialog = new GDBBDialog();
