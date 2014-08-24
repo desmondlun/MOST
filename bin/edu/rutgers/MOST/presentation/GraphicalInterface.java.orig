@@ -1700,8 +1700,8 @@ public class GraphicalInterface extends JFrame {
         			{
         				//set up the table model
                 		Utilities u = new Utilities();
-                		final String dateTimeStamp = u.createDateTimeStamp();
-                		final String optimizeName = GraphicalInterfaceConstants.GDBB_PREFIX + LocalConfig.getInstance().getModelName() + dateTimeStamp;
+                		String dateTimeStamp = u.createDateTimeStamp();
+                		String optimizeName = GraphicalInterfaceConstants.GDBB_PREFIX + LocalConfig.getInstance().getModelName() + dateTimeStamp;
                 		DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
                 		DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
                 		LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
@@ -1711,20 +1711,6 @@ public class GraphicalInterface extends JFrame {
                 		listModel.addElement(optimizeName);
                 		setOptimizeName(optimizeName);
                 		//DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName));
-                		java.awt.EventQueue.invokeLater( new Runnable()
-                		{
-                			@Override
-                			public void run()
-                			{
-                				GISolution parentNode = new GISolution();
-                				parentNode.folderName = optimizeName;
-                				parentNode.isFoldered = false;
-                				parentNode.soln = new ArrayList< Double >();
-                				parentNode.stringBuffer = new StringBuffer();
-                				vecGISolution.add( parentNode );
-                				java.awt.EventQueue.invokeLater( solutionListener );
-                			}
-                		});
         				
         				//GDBB dialog
         				final GDBBDialog gdbbDialog = new GDBBDialog();
@@ -3488,7 +3474,11 @@ public class GraphicalInterface extends JFrame {
 				{
 					LocalConfig.getInstance().fvaColumnsVisible = false;
 				}
+<<<<<<< HEAD
+					
+=======
 				
+>>>>>>> 2d069a94cc6003a6a3c52b00134aebb4c64a5e6e
 				if( current_giSolution.isFoldered  )
 					DynamicTreePanel.getTreePanel().addObject(
 						(DefaultMutableTreeNode)DynamicTreePanel.getTreePanel()

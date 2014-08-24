@@ -16,6 +16,10 @@ public class SPOTv2IPoptSolver extends NonlinearIPoptSolver
 		for( int i = 0; i < geneExpr.size(); ++i )
 			dotProduct += geneExpr.get( i ) * x[ i ];
 		
+		if( !pb.isVisible() )
+			return false;
+		pb.progressBar.setString( Double.toString( dotProduct ) );
+		
 		obj_value[ 0 ] = dotProduct;
 		
 		return true;

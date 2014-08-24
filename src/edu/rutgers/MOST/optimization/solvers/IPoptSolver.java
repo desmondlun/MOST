@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import org.coinor.Ipopt;
 
 import edu.rutgers.MOST.data.Model;
+import edu.rutgers.MOST.presentation.SimpleProgressBar;
 
 public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, LinearSolver
 {
@@ -19,6 +20,7 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 	private ArrayList< Double > soln = new ArrayList< Double >();
 	protected Vector< Double > geneExpr = new Vector< Double >();
 	protected ArrayList< Double > startingPoint = new ArrayList< Double >();
+	protected SimpleProgressBar pb = null;
 	
 	public IPoptSolver()
 	{
@@ -71,69 +73,89 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 	@Override
 	public double optimize()
 	{
-		if( startingPoint.size() == 0 )
+		try
+		{
+			pb = new SimpleProgressBar( "IPopt Progress", "Calculating objective" );
+			pb.setLocationRelativeTo( null );
+			pb.progressBar.setString( "" );
+			pb.progressBar.setIndeterminate( true );
+			pb.setVisible( true );
+			if( startingPoint.size() == 0 )
+				for( int j = 0; j < component.variableCount(); ++j )
+					startingPoint.add( 0.0 );
+			
+			int constraintCount = component.constraintCount() + (usingNormalConstraint? 1 : 0 );
+			double[] x_L = new double[ component.variableCount() ];
+			double[] x_U = new double[ component.variableCount() ];
+			double[] g_L = new double[ constraintCount ];
+			double[] g_U = new double[ constraintCount ];
+			
 			for( int j = 0; j < component.variableCount(); ++j )
-				startingPoint.add( 0.0 );
-		
-		int constraintCount = component.constraintCount() + (usingNormalConstraint? 1 : 0 );
-		double[] x_L = new double[ component.variableCount() ];
-		double[] x_U = new double[ component.variableCount() ];
-		double[] g_L = new double[ constraintCount ];
-		double[] g_U = new double[ constraintCount ];
-		
-		for( int j = 0; j < component.variableCount(); ++j )
-		{
-			x_L[ j ] = component.getVariable( j ).lb;
-			x_U[ j ] = component.getVariable( j ).ub;
-		}
-		
-		for( int i = 0; i < component.constraintCount(); ++i )
-		{
-			switch( component.getConstraint( i ).type )
 			{
-			case LESS_EQUAL:
-				g_L[ i ] = Double.NEGATIVE_INFINITY;
-				g_U[ i ] = component.getConstraint( i ).value;
-				break;
-			case EQUAL:
-				g_L[ i ] = component.getConstraint( i ).value;
-				g_U[ i ] = component.getConstraint( i ).value;
-				break;
-			case GREATER_EQUAL:
-				g_L[ i ] = component.getConstraint( i ).value;
-				g_U[ i ] = Double.POSITIVE_INFINITY;
-				break;
+				x_L[ j ] = component.getVariable( j ).lb;
+				x_U[ j ] = component.getVariable( j ).ub;
+			}
+			
+			for( int i = 0; i < component.constraintCount(); ++i )
+			{
+				switch( component.getConstraint( i ).type )
+				{
+				case LESS_EQUAL:
+					g_L[ i ] = Double.NEGATIVE_INFINITY;
+					g_U[ i ] = component.getConstraint( i ).value;
+					break;
+				case EQUAL:
+					g_L[ i ] = component.getConstraint( i ).value;
+					g_U[ i ] = component.getConstraint( i ).value;
+					break;
+				case GREATER_EQUAL:
+					g_L[ i ] = component.getConstraint( i ).value;
+					g_U[ i ] = Double.POSITIVE_INFINITY;
+					break;
+				}
+			}
+			
+			if( this.usingNormalConstraint )
+			{
+				g_L[ component.constraintCount() ] = 0.0;
+				g_U[ component.constraintCount() ] = 1.0;
+			}
+			
+			this.create( component.variableCount(), x_L, x_U, constraintCount, g_L, g_U,
+					constraintCount * component.variableCount(), component.variableCount() * component.variableCount(), Ipopt.C_STYLE );
+			
+			double[] vars = new double[ component.variableCount() ];
+			for( int j = 0; j < vars.length; ++j )
+				vars[ j ] = (this.usingNormalConstraint? 0.0: startingPoint.get( j ) );
+			
+			this.addNumOption( KEY_OBJ_SCALING_FACTOR, -1.0 );
+			this.addIntOption( "mumps_mem_percent", 500 );
+			this.addIntOption( KEY_MAX_ITER, 30000 );
+			this.addStrOption( KEY_HESSIAN_APPROXIMATION, "limited-memory" );
+			//this.addNumOption( KEY_ACCEPTABLE_TOL, 1e-9 );
+			this.solve( vars );
+			
+			double value = 0.0;
+			if( objCoefs.size() != 0 )
+			for( int j = 0; j < component.variableCount(); ++j )
+				value += objCoefs.get( j ) * vars[ j ];
+			
+			for( double d : vars )
+				soln.add( d );
+			return value;
+		}
+		catch( Exception e )
+		{
+			throw e;
+		}
+		finally
+		{
+			if( pb != null )
+			{
+				pb.setVisible( false );
+				pb.dispose();
 			}
 		}
-		
-		if( this.usingNormalConstraint )
-		{
-			g_L[ component.constraintCount() ] = 0.0;
-			g_U[ component.constraintCount() ] = 1.0;
-		}
-		
-		this.create( component.variableCount(), x_L, x_U, constraintCount, g_L, g_U,
-				constraintCount * component.variableCount(), component.variableCount() * component.variableCount(), Ipopt.C_STYLE );
-		
-		double[] vars = new double[ component.variableCount() ];
-		for( int j = 0; j < vars.length; ++j )
-			vars[ j ] = (this.usingNormalConstraint? 0.0: startingPoint.get( j ) );
-		
-		this.addNumOption( KEY_OBJ_SCALING_FACTOR, -1.0 );
-		this.addIntOption( "mumps_mem_percent", 500 );
-		this.addIntOption( KEY_MAX_ITER, 30000 );
-		this.addStrOption( KEY_HESSIAN_APPROXIMATION, "limited-memory" );
-		//this.addNumOption( KEY_ACCEPTABLE_TOL, 1e-9 );
-		this.solve( vars );
-		
-		double value = 0.0;
-		if( objCoefs.size() != 0 )
-		for( int j = 0; j < component.variableCount(); ++j )
-			value += objCoefs.get( j ) * vars[ j ];
-		
-		for( double d : vars )
-			soln.add( d );
-		return value;
 	}
 
 	@Override

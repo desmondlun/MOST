@@ -23,7 +23,11 @@ public class SPOTv1IPoptSolver extends NonlinearIPoptSolver
 		length_flux_v = Math.sqrt( length_flux_v );
 	
 		// -1 <= ( flux_v dot gene_v ) / ( ||flux_v|| ) <= 1
-		obj_value[ 0 ] = dotProduct / ( length_flux_v );
+		double obj = dotProduct / ( length_flux_v );
+		if( !pb.isVisible() )
+			return false;
+		pb.progressBar.setString( Double.toString( obj ) );
+		obj_value[ 0 ] = obj;
 		
 		return true;
 	}
