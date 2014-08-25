@@ -2817,13 +2817,8 @@ public class GraphicalInterface extends JFrame {
 						getGurobiParametersDialog().selectMIPFocus(ConfigProperties.getGurobiMipFocus());
 					} 
 					if (ConfigProperties.getGurobiNumThreads() != null) {
-						if (getMixedIntegerLinearSolverName().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
-							getGurobiParametersDialog().selectNumberOfThreads("1");
-							getGurobiParametersDialog().cbNumThreads.setEnabled(false);
-						} else {
 							getGurobiParametersDialog().selectNumberOfThreads(ConfigProperties.getGurobiNumThreads());
 							getGurobiParametersDialog().cbNumThreads.setEnabled(true);
-						}
 					} 
 				}
 				getGurobiParametersDialog().setVisible(true);

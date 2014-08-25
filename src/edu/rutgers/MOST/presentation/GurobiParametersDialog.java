@@ -124,17 +124,11 @@ public class GurobiParametersDialog  extends JDialog {
 		}
 		cbMIPFocus.setSelectedItem(GurobiParameters.MIPFOCUS_DEFAULT_VALUE);
 		
-		// If solver is GLPK, add 1, else add 1 to number of processors and set max selected
-		// For GLPK, combo is also grayed out by enableThreadsCombo() method after layout
-		if (GraphicalInterface.getMixedIntegerLinearSolverName() == GraphicalInterfaceConstants.GLPK_SOLVER_NAME) {
-			cbNumThreads.addItem(1);
-		} else {
-			for (int i = 1; i <= GurobiParameters.MAX_NUM_THREADS; i++) {
-				cbNumThreads.addItem(i);
-			}
-			threadsPopulated = true;
-			cbNumThreads.setSelectedItem(GurobiParameters.MAX_NUM_THREADS);
+		for (int i = 1; i <= GurobiParameters.MAX_NUM_THREADS; i++) {
+			cbNumThreads.addItem(i);
 		}
+		threadsPopulated = true;
+		cbNumThreads.setSelectedItem(GurobiParameters.MAX_NUM_THREADS);
 		
 		feasibilityField.setPreferredSize(new Dimension(GurobiParameters.COMPONENT_WIDTH, GurobiParameters.COMPONENT_HEIGHT));
 		feasibilityField.setMaximumSize(new Dimension(GurobiParameters.COMPONENT_WIDTH, GurobiParameters.COMPONENT_HEIGHT));
@@ -554,18 +548,14 @@ public class GurobiParametersDialog  extends JDialog {
 				optimalityField.setForeground(Color.BLACK);
 				heuristicsField.setForeground(Color.BLACK);
 				cbMIPFocus.setSelectedItem(GurobiParameters.MIPFOCUS_DEFAULT_VALUE);
-				// If solver is GLPK, add 1, else add 1 to number of processors and set max selected
-				// For GLPK, combo is also grayed out by enableThreadsCombo() method after layout
-				if (GraphicalInterface.getMixedIntegerLinearSolverName() == GraphicalInterfaceConstants.GLPK_SOLVER_NAME) {
-					cbNumThreads.addItem(1);
-				} else {
-					if (!threadsPopulated) {
-						for (int i = 1; i <= GurobiParameters.MAX_NUM_THREADS; i++) {
-							cbNumThreads.addItem(i);
-						}
+				
+				// Gurobi Parameters Dialog sends information to only Gurobi
+				if (!threadsPopulated) {
+					for (int i = 1; i <= GurobiParameters.MAX_NUM_THREADS; i++) {
+						cbNumThreads.addItem(i);
 					}
-					cbNumThreads.setSelectedItem(GurobiParameters.MAX_NUM_THREADS);
 				}
+				cbNumThreads.setSelectedItem(GurobiParameters.MAX_NUM_THREADS);
 			}
 		};
 
