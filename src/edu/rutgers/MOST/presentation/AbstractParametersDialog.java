@@ -26,14 +26,14 @@ public class AbstractParametersDialog extends JDialog
 	public void setUp( final ArrayList< AbstractSegmentedParameter > params,
 		AbstractDialogMetaData meta )
 	{
-		final ArrayList<Image> icons = new ArrayList<Image>(); 
-		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
-		icons.add(new ImageIcon("etc/most32.jpg").getImage());
-		setIconImages(icons);
-    	setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-    	setSize(GurobiParameters.DIALOG_WIDTH, GurobiParameters.DIALOG_HEIGHT);
-    	setLocationRelativeTo(null);
-    	setVisible(true);
+		final ArrayList< Image > icons = new ArrayList< Image >();
+		icons.add( new ImageIcon( "etc/most16.jpg" ).getImage() );
+		icons.add( new ImageIcon( "etc/most32.jpg" ).getImage() );
+		setIconImages( icons );
+		setDefaultCloseOperation( DISPOSE_ON_CLOSE );
+		setSize( meta.dialogWidth, meta.dialogheight );
+		setLocationRelativeTo( null );
+		setVisible( true );
     	
     	Box vBox = Box.createVerticalBox();
 		
@@ -119,18 +119,19 @@ public class AbstractParametersDialog extends JDialog
 
 	public static void main( String[] args )
 	{
-		final ArrayList<Image> icons = new ArrayList<Image>(); 
-		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
-		icons.add(new ImageIcon("etc/most32.jpg").getImage());
-		
-		AbstractParametersDialog d = new AbstractParametersDialog();
-		d.setUp( GurobiParameters.getSegmentedParameterList(),
-				GurobiParameters.getAbstractDialogMetaData() );
+		final ArrayList< Image > icons = new ArrayList< Image >();
+		icons.add( new ImageIcon( "etc/most16.jpg" ).getImage() );
+		icons.add( new ImageIcon( "etc/most32.jpg" ).getImage() );
 
-		d.setIconImages(icons);
-    	d.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-    	d.setSize(GurobiParameters.DIALOG_WIDTH, GurobiParameters.DIALOG_HEIGHT);
-    	d.setLocationRelativeTo(null);
-    	d.setVisible(true);
+		AbstractParametersDialog d = new AbstractParametersDialog();
+		d.setUp( GLPKParameters.getSegmentedParameterList(),
+				GLPKParameters.getAbstractDialogMetaData() );
+
+		d.setIconImages( icons );
+		d.setDefaultCloseOperation( DISPOSE_ON_CLOSE );
+		d.setSize( GurobiParameters.DIALOG_WIDTH,
+				GurobiParameters.DIALOG_HEIGHT );
+		d.setLocationRelativeTo( null );
+		d.setVisible( true );
 	}
 }
