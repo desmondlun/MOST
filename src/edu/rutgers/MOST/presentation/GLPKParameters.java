@@ -2,8 +2,6 @@ package edu.rutgers.MOST.presentation;
 
 import java.util.ArrayList;
 
-import edu.rutgers.MOST.presentation.AbstractParameter.Type;
-
 public class GLPKParameters
 {
 	public static final String TITLE = "GLPK Parameters";
@@ -50,14 +48,15 @@ public class GLPKParameters
 	public static final int LABEL_TOP_BORDER_SIZE = 10;
 	public static final int LABEL_BOTTOM_BORDER_SIZE = 10;
 	
-	public static ArrayList< AbstractSegmentedParameter > getSegmentedParameterList()
+	public static ArrayList< AbstractTextSegmentedParameter > getSegmentedParameterList()
 	{
-		class RealSegmentParameter extends AbstractSegmentedParameter
+		class RealSegmentParameter extends AbstractTextSegmentedParameter
 		{
-			public RealSegmentParameter( String name, Type type, Double minVal,
+			private static final long serialVersionUID = 1L;
+			public RealSegmentParameter( String name, Double minVal,
 					Double maxVal, Double defaultVal )
 			{
-				super( name, type, minVal, maxVal, defaultVal );
+				super( name, minVal, maxVal, defaultVal );
 			}
 			@Override
 			public boolean checkVal( Object value )
@@ -73,21 +72,21 @@ public class GLPKParameters
 				return false;
 			}
 		}
-		ArrayList< AbstractSegmentedParameter > result = new ArrayList< AbstractSegmentedParameter >();
+		ArrayList< AbstractTextSegmentedParameter > result = new ArrayList< AbstractTextSegmentedParameter >();
 		
-		result.add( new RealSegmentParameter( FEASIBILITYTOL_NAME, Type.TextField, FEASIBILITYTOL_MIN_VALUE,
+		result.add( new RealSegmentParameter( FEASIBILITYTOL_NAME, FEASIBILITYTOL_MIN_VALUE,
 				FEASIBILITYTOL_MAX_VALUE, FEASIBILITYTOL_DEFAULT_VALUE) );
 		
-		result.add( new RealSegmentParameter( INTFEASIBILITYTOL_NAME, Type.TextField, INTFEASIBILITYTOL_MIN_VALUE,
+		result.add( new RealSegmentParameter( INTFEASIBILITYTOL_NAME, INTFEASIBILITYTOL_MIN_VALUE,
 				INTFEASIBILITYTOL_MAX_VALUE, INTFEASIBILITYTOL_DEFAULT_VALUE) );
 		
-		result.add( new RealSegmentParameter( DUALFEASIBILITYTOL_NAME, Type.TextField, DUALFEASIBILITYTOL_MIN_VALUE,
+		result.add( new RealSegmentParameter( DUALFEASIBILITYTOL_NAME, DUALFEASIBILITYTOL_MIN_VALUE,
 				DUALFEASIBILITYTOL_MAX_VALUE, DUALFEASIBILITYTOL_DEFAULT_VALUE) );
 		
-		result.add( new RealSegmentParameter( RELAXATION_NAME, Type.TextField, RELAXATION_MIN_VALUE,
+		result.add( new RealSegmentParameter( RELAXATION_NAME, RELAXATION_MIN_VALUE,
 				RELAXATION_MAX_VALUE, RELAXATION_DEFAULT_VALUE ) );
 		
-		result.add( new RealSegmentParameter( RELOBJGAP_NAME, Type.TextField, RELOBJGAP_MIN_VALUE,
+		result.add( new RealSegmentParameter( RELOBJGAP_NAME, RELOBJGAP_MIN_VALUE,
 				RELOBJGAP_MAX_VALUE, RELOBJGAP_DEFAULT_VALUE) );
 		
 		return result;

@@ -1,7 +1,8 @@
 package edu.rutgers.MOST.presentation;
 
-public abstract class AbstractSegmentedParameter extends AbstractParameter
+public abstract class AbstractTextSegmentedParameter extends AbstractTextParameter
 {
+	private static final long serialVersionUID = 1L;
 	public Object minVal;
 	public Object maxVal;
 	public Object defaultVal;
@@ -9,9 +10,9 @@ public abstract class AbstractSegmentedParameter extends AbstractParameter
 	
 	public abstract boolean checkVal( Object value );
 
-	public AbstractSegmentedParameter( String name, Type type, Object minVal, Object maxVal, Object defaultVal )
+	public AbstractTextSegmentedParameter( String name, Object minVal, Object maxVal, Object defaultVal )
 	{
-		super( name, type );
+		super( name );
 		this.minVal = minVal;
 		this.maxVal = maxVal;
 		this.defaultVal = defaultVal;

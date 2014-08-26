@@ -2,8 +2,6 @@ package edu.rutgers.MOST.presentation;
 
 import java.util.ArrayList;
 
-import edu.rutgers.MOST.presentation.AbstractParameter.Type;
-
 public class GurobiParameters {
 
 	public static final String TITLE = "Gurobi Parameters";
@@ -52,14 +50,15 @@ public class GurobiParameters {
 	public static final int LABEL_TOP_BORDER_SIZE = 10;
 	public static final int LABEL_BOTTOM_BORDER_SIZE = 10;
 	
-	public static ArrayList< AbstractSegmentedParameter > getSegmentedParameterList()
+	public static ArrayList< AbstractTextSegmentedParameter > getSegmentedParameterList()
 	{
-		class RealSegmentParameter extends AbstractSegmentedParameter
+		class RealSegmentParameter extends AbstractTextSegmentedParameter
 		{
-			public RealSegmentParameter( String name, Type type, Double minVal,
+			private static final long serialVersionUID = 1L;
+			public RealSegmentParameter( String name, Double minVal,
 					Double maxVal, Double defaultVal )
 			{
-				super( name, type, minVal, maxVal, defaultVal );
+				super( name, minVal, maxVal, defaultVal );
 			}
 			@Override
 			public boolean checkVal( Object value )
@@ -75,12 +74,13 @@ public class GurobiParameters {
 				return false;
 			}
 		}
-		class IntegerSegmentParameter extends AbstractSegmentedParameter
+		class IntegerSegmentParameter extends AbstractTextSegmentedParameter
 		{
-			public IntegerSegmentParameter( String name, Type type, Integer minVal,
+			private static final long serialVersionUID = 1L;
+			public IntegerSegmentParameter( String name, Integer minVal,
 					Integer maxVal, Integer defaultVal )
 			{
-				super( name, type, minVal, maxVal, defaultVal );
+				super( name, minVal, maxVal, defaultVal );
 			}
 			@Override
 			public boolean checkVal( Object value )
@@ -97,12 +97,13 @@ public class GurobiParameters {
 			}
 		}
 		@SuppressWarnings( "unused" )
-		class HalfIntegerSegmentParameter extends AbstractSegmentedParameter
+		class HalfIntegerSegmentParameter extends AbstractTextSegmentedParameter
 		{
-			public HalfIntegerSegmentParameter( String name, Type type, Double minVal,
+			private static final long serialVersionUID = 1L;
+			public HalfIntegerSegmentParameter( String name, Double minVal,
 					Double maxVal, Double defaultVal )
 			{
-				super( name, type, minVal, maxVal, defaultVal );
+				super( name, minVal, maxVal, defaultVal );
 			}
 			@Override
 			public boolean checkVal( Object value )
@@ -119,24 +120,24 @@ public class GurobiParameters {
 				return false;
 			}
 		}
-		ArrayList< AbstractSegmentedParameter > result = new ArrayList< AbstractSegmentedParameter >();
+		ArrayList< AbstractTextSegmentedParameter > result = new ArrayList< AbstractTextSegmentedParameter >();
 		
-		result.add( new RealSegmentParameter( FEASIBILITYTOL_NAME, Type.TextField, FEASIBILITYTOL_MINIMUM_VALUE,
+		result.add( new RealSegmentParameter( FEASIBILITYTOL_NAME, FEASIBILITYTOL_MINIMUM_VALUE,
 				FEASIBILITYTOL_MAXIMUM_VALUE, FEASIBILITYTOL_DEFAULT_VALUE) );
 		
-		result.add( new RealSegmentParameter( INTFEASIBILITYTOL_NAME, Type.TextField, INTFEASIBILITYTOL_MINIMUM_VALUE,
+		result.add( new RealSegmentParameter( INTFEASIBILITYTOL_NAME, INTFEASIBILITYTOL_MINIMUM_VALUE,
 				INTFEASIBILITYTOL_MAXIMUM_VALUE, INTFEASIBILITYTOL_DEFAULT_VALUE) );
 		
-		result.add( new RealSegmentParameter( OPTIMALITYTOL_NAME, Type.TextField, OPTIMALITYTOL_MINIMUM_VALUE,
+		result.add( new RealSegmentParameter( OPTIMALITYTOL_NAME, OPTIMALITYTOL_MINIMUM_VALUE,
 				OPTIMALITYTOL_MAXIMUM_VALUE, OPTIMALITYTOL_DEFAULT_VALUE) );
 		
-		result.add( new RealSegmentParameter( HEURISTICS_NAME, Type.TextField, HEURISTICS_MINIMUM_VALUE,
+		result.add( new RealSegmentParameter( HEURISTICS_NAME, HEURISTICS_MINIMUM_VALUE,
 				HEURISTICS_MAXIMUM_VALUE, HEURISTICS_DEFAULT_VALUE ) );
 		
-		result.add( new IntegerSegmentParameter( MIPFOCUS_NAME, Type.TextField, MIPFOCUS_MINIMUM_VALUE,
+		result.add( new IntegerSegmentParameter( MIPFOCUS_NAME, MIPFOCUS_MINIMUM_VALUE,
 				MIPFOCUS_MAXIMUM_VALUE, MIPFOCUS_DEFAULT_VALUE) );
 		
-		result.add( new IntegerSegmentParameter( NUM_THREADS_NAME, Type.TextField, 1,
+		result.add( new IntegerSegmentParameter( NUM_THREADS_NAME, 1,
 				MAX_NUM_THREADS, MAX_NUM_THREADS ) );
 		
 		return result;

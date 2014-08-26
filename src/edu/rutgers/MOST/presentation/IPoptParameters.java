@@ -2,8 +2,6 @@ package edu.rutgers.MOST.presentation;
 
 import java.util.ArrayList;
 
-import edu.rutgers.MOST.presentation.AbstractParameter.Type;
-
 public class IPoptParameters
 {
 	public static final String TITLE = "IPopt Parameters";
@@ -50,14 +48,15 @@ public class IPoptParameters
 	public static final int LABEL_TOP_BORDER_SIZE = 10;
 	public static final int LABEL_BOTTOM_BORDER_SIZE = 10;
 	
-	public static ArrayList< AbstractSegmentedParameter > getSegmentedParameterList()
+	public static ArrayList< AbstractTextSegmentedParameter > getSegmentedParameterList()
 	{
-		class RealSegmentParameter extends AbstractSegmentedParameter
+		class RealSegmentParameter extends AbstractTextSegmentedParameter
 		{
-			public RealSegmentParameter( String name, Type type, Double minVal,
+			private static final long serialVersionUID = 1L;
+			public RealSegmentParameter( String name, Double minVal,
 					Double maxVal, Double defaultVal )
 			{
-				super( name, type, minVal, maxVal, defaultVal );
+				super( name, minVal, maxVal, defaultVal );
 			}
 			@Override
 			public boolean checkVal( Object value )
@@ -73,12 +72,13 @@ public class IPoptParameters
 				return false;
 			}
 		}
-		class IntegerSegmentParameter extends AbstractSegmentedParameter
+		class IntegerSegmentParameter extends AbstractTextSegmentedParameter
 		{
-			public IntegerSegmentParameter( String name, Type type, Integer minVal,
+			private static final long serialVersionUID = 1L;
+			public IntegerSegmentParameter( String name, Integer minVal,
 					Integer maxVal, Integer defaultVal )
 			{
-				super( name, type, minVal, maxVal, defaultVal );
+				super( name, minVal, maxVal, defaultVal );
 			}
 			@Override
 			public boolean checkVal( Object value )
@@ -95,21 +95,21 @@ public class IPoptParameters
 			}
 		}
 		
-		ArrayList< AbstractSegmentedParameter > result = new ArrayList< AbstractSegmentedParameter >();
+		ArrayList< AbstractTextSegmentedParameter > result = new ArrayList< AbstractTextSegmentedParameter >();
 		
-		result.add( new RealSegmentParameter( FEASIBILITYTOL_NAME, Type.TextField, FEASIBILITYTOL_MIN_VALUE,
+		result.add( new RealSegmentParameter( FEASIBILITYTOL_NAME, FEASIBILITYTOL_MIN_VALUE,
 				FEASIBILITYTOL_MAX_VALUE, FEASIBILITYTOL_DEFAULT_VALUE) );
 		
-		result.add( new IntegerSegmentParameter( MAXITER_NAME, Type.TextField, MAXITER_MIN_VALUE,
+		result.add( new IntegerSegmentParameter( MAXITER_NAME, MAXITER_MIN_VALUE,
 				 MAXITER_MAX_VALUE,  MAXITER_DEFAULT_VALUE) );
 		
-		result.add( new RealSegmentParameter( DUALFEASIBILITYTOL_NAME, Type.TextField, DUALFEASABILITYTOL_MIN_VALUE,
+		result.add( new RealSegmentParameter( DUALFEASIBILITYTOL_NAME, DUALFEASABILITYTOL_MIN_VALUE,
 				DUALFEASABILITYTOL_MAX_VALUE, DUALFEASABILITYTOL_DEFAULT_VALUE) );
 		
-		result.add( new RealSegmentParameter( CONSTRAINTOL_NAME, Type.TextField, CONSTRAINTOL_MIN_VALUE,
+		result.add( new RealSegmentParameter( CONSTRAINTOL_NAME, CONSTRAINTOL_MIN_VALUE,
 				CONSTRAINTOL_MAX_VALUE, CONSTRAINTOL_DEFAULT_VALUE ) );
 		
-		result.add( new IntegerSegmentParameter( DIVITER_TOL_NAME, Type.TextField, DIVITER_TOL_MIN_VALUE,
+		result.add( new IntegerSegmentParameter( DIVITER_TOL_NAME, DIVITER_TOL_MIN_VALUE,
 				DIVITER_TOL_MAX_VALUE, DIVITER_TOL_DEFAULT_VALUE) );
 		
 		return result;
