@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.lang.reflect.InvocationTargetException;
@@ -13,6 +15,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -27,6 +30,9 @@ public class AbstractParametersDialog extends JDialog
 	
 	private ArrayList< AbstractSegmentedParameter > params = null;
 	private ArrayList< JTextField > textFields = null;
+	public JButton okButton = new JButton("   OK   ");
+	public JButton cancelButton = new JButton( "Cancel" );
+	public JButton resetButton = new JButton( "Reset to Defaults" );
 	
 	public void setUp( final ArrayList< AbstractSegmentedParameter > params,
 		AbstractDialogMetaData meta )
@@ -146,10 +152,39 @@ public class AbstractParametersDialog extends JDialog
 			vBox.add( hBox );
 		}
     	
+    	this.okButton.addActionListener( new ActionListener()
+    	{
+			@Override
+			public void actionPerformed( ActionEvent event )
+			{
+			}
+    	});
+    	this.cancelButton.addActionListener( new ActionListener()
+    	{
+			@Override
+			public void actionPerformed( ActionEvent event )
+			{
+			}
+    	});
+    	this.resetButton.addActionListener( new ActionListener()
+    	{
+			@Override
+			public void actionPerformed( ActionEvent event )
+			{
+				resetToDefaults();
+			}
+    	});
+
+    	Box buttonsBox = Box.createHorizontalBox();
+    	buttonsBox.add( okButton );
+    	buttonsBox.add( cancelButton );
+    	buttonsBox.add( resetButton );
+    	
     	JPanel panel = new JPanel();
     	panel.add( vBox );
     	this.getContentPane().add( panel, java.awt.BorderLayout.CENTER );
     	this.resetToDefaults();
+    	panel.add( buttonsBox );
 	}
 
 	public void resetToDefaults()
