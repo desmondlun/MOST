@@ -650,6 +650,8 @@ public class GraphicalInterface extends JFrame {
 		protected ArrayList< Double > vaMax = null;
 		protected boolean isFoldered = false;
 		protected String folderName = "";
+		protected Integer knockoutOffset = null;
+		protected ArrayList< Double > soln_ko = null;
 	}
 	private static Vector< GISolution > vecGISolution = new Vector< GISolution >();
 
@@ -3493,6 +3495,10 @@ public class GraphicalInterface extends JFrame {
 					DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName, optimizeName));
 				//DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 				DynamicTreePanel.getTreePanel().selectLastNode();
+				
+				if( current_giSolution.knockoutOffset != null && current_giSolution.soln_ko != null )
+					rFactory.setKnockouts( current_giSolution.soln_ko.subList( current_giSolution.knockoutOffset, current_giSolution.soln_ko.size()));
+				
 //					DefaultTableModel reactionsOptModel2 = (DefaultTableModel) reactionsTable.getModel();	
 //					setUpReactionsTable(reactionsOptModel2);
 				// Selecting top node stops timer, then reselect node for optimization
@@ -11376,16 +11382,17 @@ public class GraphicalInterface extends JFrame {
 				if (kString != null) {
 					text.append(kString);
 				}
+				
 				text.append("\n");
 				text.append( "MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() );
 				
-				rFactory.setKnockouts( soln.subList( 0, model.getNumReactions() ) );
-				
 				GISolution current = new GISolution();
+				current.soln_ko  = soln;
 				current.soln = new ArrayList< Double >( soln.subList( 0, model.getNumReactions() ) );
 				current.stringBuffer = text;
 				current.isFoldered = true;
 				current.folderName = "" + solution.getObjectiveValue();
+				current.knockoutOffset = new Integer( knockoutOffset );
 				vecGISolution.add( current );		
 				java.awt.EventQueue.invokeLater( solutionListener );
 			}
