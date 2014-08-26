@@ -96,6 +96,7 @@ public class GurobiParameters {
 				return false;
 			}
 		}
+		@SuppressWarnings( "unused" )
 		class HalfIntegerSegmentParameter extends AbstractSegmentedParameter
 		{
 			public HalfIntegerSegmentParameter( String name, Type type, Double minVal,

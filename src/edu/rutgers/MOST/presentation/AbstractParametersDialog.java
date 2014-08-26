@@ -30,11 +30,12 @@ public class AbstractParametersDialog extends JDialog
 	
 	private ArrayList< AbstractSegmentedParameter > paramSegments = null;
 	private ArrayList< JTextField > textFields = new ArrayList< JTextField >();
+	private Box vContentBox = Box.createVerticalBox();
 	public JButton okButton = new JButton("   OK   ");
 	public JButton cancelButton = new JButton( "Cancel" );
 	public JButton resetButton = new JButton( "Reset to Defaults" );
 	
-	public void setUp( final ArrayList< AbstractSegmentedParameter > params,
+	public void setUpSegmentedParameters( final ArrayList< AbstractSegmentedParameter > params,
 		AbstractDialogMetaData meta )
 	{
 		final ArrayList< Image > icons = new ArrayList< Image >();
@@ -46,8 +47,6 @@ public class AbstractParametersDialog extends JDialog
 		setLocationRelativeTo( null );
 		setVisible( true );
 		this.paramSegments = params;
-    	
-    	Box vBox = Box.createVerticalBox();
 		
     	for( final AbstractSegmentedParameter param : params )
 		{
@@ -153,7 +152,7 @@ public class AbstractParametersDialog extends JDialog
 				panelField.setLayout( new BoxLayout( panelField, BoxLayout.X_AXIS ) );
 				hBox.add( panelField );
 			}
-			vBox.add( hBox );
+			vContentBox.add( hBox );
 		}
     	
     	this.okButton.addActionListener( new ActionListener()
@@ -183,10 +182,10 @@ public class AbstractParametersDialog extends JDialog
     	buttonsBox.add( okButton );
     	buttonsBox.add( cancelButton );
     	buttonsBox.add( resetButton );
-    	vBox.add( buttonsBox );
+    	vContentBox.add( buttonsBox );
     	
     	JPanel panel = new JPanel();
-    	panel.add( vBox );
+    	panel.add( vContentBox );
     	this.getContentPane().add( panel, java.awt.BorderLayout.CENTER );
     	this.resetToDefaults();
 	}
@@ -210,7 +209,7 @@ public class AbstractParametersDialog extends JDialog
 		icons.add( new ImageIcon( "etc/most32.jpg" ).getImage() );
 
 		AbstractParametersDialog d = new AbstractParametersDialog();
-		d.setUp( GurobiParameters.getSegmentedParameterList(),
+		d.setUpSegmentedParameters( GurobiParameters.getSegmentedParameterList(),
 				GurobiParameters.getAbstractDialogMetaData() );
 
 		d.setIconImages( icons );
