@@ -380,7 +380,7 @@ public class GurobiParametersDialog  extends JDialog {
 		optimalityLabel.setBorder(BorderFactory.createEmptyBorder(10,0,GurobiParameters.LABEL_BOTTOM_BORDER_SIZE,10));
 		optimalityLabel.setAlignmentX(LEFT_ALIGNMENT);
 		//optimalityLabel.setAlignmentY(TOP_ALIGNMENT);
-		optimalityLabel.setDisplayedMnemonic('O');
+		optimalityLabel.setDisplayedMnemonic('D');
 		optimalityLabel.setLabelFor(optimalityField);
 
 		JPanel panelOptimalityLabel = new JPanel();
