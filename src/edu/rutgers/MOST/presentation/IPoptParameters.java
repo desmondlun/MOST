@@ -2,6 +2,8 @@ package edu.rutgers.MOST.presentation;
 
 import java.util.ArrayList;
 
+import edu.rutgers.MOST.presentation.AbstractParameter.Type;
+
 public class IPoptParameters
 {
 	public static final String TITLE = "IPopt Parameters";
@@ -52,10 +54,10 @@ public class IPoptParameters
 	{
 		class RealSegmentParameter extends AbstractSegmentedParameter
 		{
-			public RealSegmentParameter( String name, Double minVal,
+			public RealSegmentParameter( String name, Type type, Double minVal,
 					Double maxVal, Double defaultVal )
 			{
-				super( name, minVal, maxVal, defaultVal );
+				super( name, type, minVal, maxVal, defaultVal );
 			}
 			@Override
 			public boolean checkVal( Object value )
@@ -73,10 +75,10 @@ public class IPoptParameters
 		}
 		class IntegerSegmentParameter extends AbstractSegmentedParameter
 		{
-			public IntegerSegmentParameter( String name, Integer minVal,
+			public IntegerSegmentParameter( String name, Type type, Integer minVal,
 					Integer maxVal, Integer defaultVal )
 			{
-				super( name, minVal, maxVal, defaultVal );
+				super( name, type, minVal, maxVal, defaultVal );
 			}
 			@Override
 			public boolean checkVal( Object value )
@@ -95,19 +97,19 @@ public class IPoptParameters
 		
 		ArrayList< AbstractSegmentedParameter > result = new ArrayList< AbstractSegmentedParameter >();
 		
-		result.add( new RealSegmentParameter( FEASIBILITYTOL_NAME, FEASIBILITYTOL_MIN_VALUE,
+		result.add( new RealSegmentParameter( FEASIBILITYTOL_NAME, Type.TextField, FEASIBILITYTOL_MIN_VALUE,
 				FEASIBILITYTOL_MAX_VALUE, FEASIBILITYTOL_DEFAULT_VALUE) );
 		
-		result.add( new IntegerSegmentParameter( MAXITER_NAME, MAXITER_MIN_VALUE,
+		result.add( new IntegerSegmentParameter( MAXITER_NAME, Type.TextField, MAXITER_MIN_VALUE,
 				 MAXITER_MAX_VALUE,  MAXITER_DEFAULT_VALUE) );
 		
-		result.add( new RealSegmentParameter( DUALFEASIBILITYTOL_NAME, DUALFEASABILITYTOL_MIN_VALUE,
+		result.add( new RealSegmentParameter( DUALFEASIBILITYTOL_NAME, Type.TextField, DUALFEASABILITYTOL_MIN_VALUE,
 				DUALFEASABILITYTOL_MAX_VALUE, DUALFEASABILITYTOL_DEFAULT_VALUE) );
 		
-		result.add( new RealSegmentParameter( CONSTRAINTOL_NAME, CONSTRAINTOL_MIN_VALUE,
+		result.add( new RealSegmentParameter( CONSTRAINTOL_NAME, Type.TextField, CONSTRAINTOL_MIN_VALUE,
 				CONSTRAINTOL_MAX_VALUE, CONSTRAINTOL_DEFAULT_VALUE ) );
 		
-		result.add( new IntegerSegmentParameter( DIVITER_TOL_NAME, DIVITER_TOL_MIN_VALUE,
+		result.add( new IntegerSegmentParameter( DIVITER_TOL_NAME, Type.TextField, DIVITER_TOL_MIN_VALUE,
 				DIVITER_TOL_MAX_VALUE, DIVITER_TOL_DEFAULT_VALUE) );
 		
 		return result;

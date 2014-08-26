@@ -2,6 +2,8 @@ package edu.rutgers.MOST.presentation;
 
 import java.util.ArrayList;
 
+import edu.rutgers.MOST.presentation.AbstractParameter.Type;
+
 public class GurobiParameters {
 
 	public static final String TITLE = "Gurobi Parameters";
@@ -54,10 +56,10 @@ public class GurobiParameters {
 	{
 		class RealSegmentParameter extends AbstractSegmentedParameter
 		{
-			public RealSegmentParameter( String name, Double minVal,
+			public RealSegmentParameter( String name, Type type, Double minVal,
 					Double maxVal, Double defaultVal )
 			{
-				super( name, minVal, maxVal, defaultVal );
+				super( name, type, minVal, maxVal, defaultVal );
 			}
 			@Override
 			public boolean checkVal( Object value )
@@ -75,10 +77,10 @@ public class GurobiParameters {
 		}
 		class IntegerSegmentParameter extends AbstractSegmentedParameter
 		{
-			public IntegerSegmentParameter( String name, Integer minVal,
+			public IntegerSegmentParameter( String name, Type type, Integer minVal,
 					Integer maxVal, Integer defaultVal )
 			{
-				super( name, minVal, maxVal, defaultVal );
+				super( name, type, minVal, maxVal, defaultVal );
 			}
 			@Override
 			public boolean checkVal( Object value )
@@ -96,10 +98,10 @@ public class GurobiParameters {
 		}
 		class HalfIntegerSegmentParameter extends AbstractSegmentedParameter
 		{
-			public HalfIntegerSegmentParameter( String name, Double minVal,
+			public HalfIntegerSegmentParameter( String name, Type type, Double minVal,
 					Double maxVal, Double defaultVal )
 			{
-				super( name, minVal, maxVal, defaultVal );
+				super( name, type, minVal, maxVal, defaultVal );
 			}
 			@Override
 			public boolean checkVal( Object value )
@@ -118,22 +120,22 @@ public class GurobiParameters {
 		}
 		ArrayList< AbstractSegmentedParameter > result = new ArrayList< AbstractSegmentedParameter >();
 		
-		result.add( new RealSegmentParameter( FEASIBILITYTOL_NAME, FEASIBILITYTOL_MINIMUM_VALUE,
+		result.add( new RealSegmentParameter( FEASIBILITYTOL_NAME, Type.TextField, FEASIBILITYTOL_MINIMUM_VALUE,
 				FEASIBILITYTOL_MAXIMUM_VALUE, FEASIBILITYTOL_DEFAULT_VALUE) );
 		
-		result.add( new RealSegmentParameter( INTFEASIBILITYTOL_NAME, INTFEASIBILITYTOL_MINIMUM_VALUE,
+		result.add( new RealSegmentParameter( INTFEASIBILITYTOL_NAME, Type.TextField, INTFEASIBILITYTOL_MINIMUM_VALUE,
 				INTFEASIBILITYTOL_MAXIMUM_VALUE, INTFEASIBILITYTOL_DEFAULT_VALUE) );
 		
-		result.add( new RealSegmentParameter( OPTIMALITYTOL_NAME, OPTIMALITYTOL_MINIMUM_VALUE,
+		result.add( new RealSegmentParameter( OPTIMALITYTOL_NAME, Type.TextField, OPTIMALITYTOL_MINIMUM_VALUE,
 				OPTIMALITYTOL_MAXIMUM_VALUE, OPTIMALITYTOL_DEFAULT_VALUE) );
 		
-		result.add( new RealSegmentParameter( HEURISTICS_NAME, HEURISTICS_MINIMUM_VALUE,
+		result.add( new RealSegmentParameter( HEURISTICS_NAME, Type.TextField, HEURISTICS_MINIMUM_VALUE,
 				HEURISTICS_MAXIMUM_VALUE, HEURISTICS_DEFAULT_VALUE ) );
 		
-		result.add( new IntegerSegmentParameter( MIPFOCUS_NAME, MIPFOCUS_MINIMUM_VALUE,
+		result.add( new IntegerSegmentParameter( MIPFOCUS_NAME, Type.TextField, MIPFOCUS_MINIMUM_VALUE,
 				MIPFOCUS_MAXIMUM_VALUE, MIPFOCUS_DEFAULT_VALUE) );
 		
-		result.add( new IntegerSegmentParameter( NUM_THREADS_NAME, 1,
+		result.add( new IntegerSegmentParameter( NUM_THREADS_NAME, Type.TextField, 1,
 				MAX_NUM_THREADS, MAX_NUM_THREADS ) );
 		
 		return result;

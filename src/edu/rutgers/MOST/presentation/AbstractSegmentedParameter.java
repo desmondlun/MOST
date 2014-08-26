@@ -9,9 +9,9 @@ public abstract class AbstractSegmentedParameter extends AbstractParameter
 	
 	public abstract boolean checkVal( Object value );
 
-	public AbstractSegmentedParameter( String name, Object minVal, Object maxVal, Object defaultVal )
+	public AbstractSegmentedParameter( String name, Type type, Object minVal, Object maxVal, Object defaultVal )
 	{
-		super( name );
+		super( name, type );
 		this.minVal = minVal;
 		this.maxVal = maxVal;
 		this.defaultVal = defaultVal;

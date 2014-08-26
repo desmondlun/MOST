@@ -28,8 +28,8 @@ public class AbstractParametersDialog extends JDialog
 {
 	private static final long serialVersionUID = 1L;
 	
-	private ArrayList< AbstractSegmentedParameter > params = null;
-	private ArrayList< JTextField > textFields = null;
+	private ArrayList< AbstractSegmentedParameter > paramSegments = null;
+	private ArrayList< JTextField > textFields = new ArrayList< JTextField >();
 	public JButton okButton = new JButton("   OK   ");
 	public JButton cancelButton = new JButton( "Cancel" );
 	public JButton resetButton = new JButton( "Reset to Defaults" );
@@ -45,110 +45,114 @@ public class AbstractParametersDialog extends JDialog
 		setSize( meta.dialogWidth, meta.dialogheight );
 		setLocationRelativeTo( null );
 		setVisible( true );
-		this.params = params;
-		this.textFields = new ArrayList< JTextField >();
+		this.paramSegments = params;
     	
     	Box vBox = Box.createVerticalBox();
 		
     	for( final AbstractSegmentedParameter param : params )
 		{
 			Box hBox = Box.createHorizontalBox();
-			final JLabel label = new JLabel();
-			final JTextField field = new JTextField();
-			this.textFields.add( field );
-			boolean isReal = param.defaultVal.getClass().equals( Double.class );
-			field.setToolTipText( "Valid Range: " + (isReal ? "Real" : "Integer") +
-					" values from " + param.minVal.toString() +" to " + param.maxVal.toString() );
-
-			Dimension labDimension = new Dimension( meta.labelWidth, meta.labelHeight );
-			label.setPreferredSize( labDimension );
-			label.setMinimumSize( labDimension );
-			label.setMaximumSize( labDimension );
+			hBox.setAlignmentX( CENTER_ALIGNMENT );
 			
-			Dimension compDimension =  new Dimension( meta.componentWidth,
-					meta.componentHeight );
-			field.setPreferredSize( compDimension );
-			field.setMaximumSize( compDimension );
-			field.setMinimumSize( compDimension );
-			field.addFocusListener( new FocusListener()
-			{
-				@Override
-				public void focusGained( FocusEvent e )
-				{
-					Component c = e.getComponent();
-					if( c instanceof JTextField )
-						((JTextField)c).selectAll();
-				}
-				@Override
-				public void focusLost( FocusEvent fe )
-				{
-					String text = field.getText();
-					if( text != null )
-					{
-						if( !text.isEmpty() )
-						{
-							try
-							{
-								try
-								{
-									Class< ? extends Object > defClass = param.defaultVal.getClass();
-									Object val = defClass.getMethod( "valueOf", String.class ).invoke( new Integer( 0), text );
-									if( !param.checkVal( val ) )
-									{
-										throw new Exception( "value outside of domain" );
-									}
-									param.val = val;
-								}
-								catch( InvocationTargetException ie )
-								{
-									throw new Exception( param.defaultVal.getClass().toString() + " could not parse \"" + text + "\"" );
-								}
-							}
-							catch( Exception e )
-							{
-								JOptionPane.showMessageDialog( null,
-									"Invalid value: " + e.getMessage() , "Invalid Input",
-									JOptionPane.WARNING_MESSAGE );
-								Component c = fe.getComponent();
-								if( c instanceof JTextField )
-									((JTextField)c).setText( param.defaultVal.toString() );
-								param.val = param.defaultVal;
-							}
-						}
-					}
-				}
-			});
-			field.getDocument().addDocumentListener( new DocumentListener()
-			{
-				public void changedUpdate(DocumentEvent e)
-				{
-					field.setForeground(Color.BLACK);
-				}
-				public void removeUpdate(DocumentEvent e)
-				{
-					field.setForeground(Color.BLACK);
-				}
-				public void insertUpdate(DocumentEvent e)
-				{
-					field.setForeground(Color.BLACK);
-				}
-			});
+			// set the label
+			final JLabel label = new JLabel();
 			label.setText( param.name );
 			JPanel panelLabel = new JPanel();
-
 			panelLabel.setLayout( new BoxLayout( panelLabel, BoxLayout.X_AXIS ) );
 			panelLabel.add( label );
 			panelLabel.setBorder( BorderFactory.createEmptyBorder( 0, 0, 10, 0 ) );
 			panelLabel.setAlignmentX( CENTER_ALIGNMENT );
+			Dimension labDimension = new Dimension( meta.labelWidth, meta.labelHeight );
+			label.setPreferredSize( labDimension );
+			label.setMinimumSize( labDimension );
+			label.setMaximumSize( labDimension );
 			hBox.add( panelLabel );
-
-			JPanel panelField = new JPanel();
-			panelField.add( field );
-			panelField.setBorder( BorderFactory.createEmptyBorder( 0, 0, 10, 0 ) );
-			panelField.setAlignmentX( RIGHT_ALIGNMENT );
-			panelField.setLayout( new BoxLayout( panelField, BoxLayout.X_AXIS ) );
-			hBox.add( panelField );
-			hBox.setAlignmentX( CENTER_ALIGNMENT );
+			
+			if( param.type == AbstractParameter.Type.TextField )
+			{
+				// set the TextField
+				final JTextField field = new JTextField();
+				this.textFields.add( field );
+				boolean isReal = param.defaultVal.getClass().equals( Double.class );
+				field.setToolTipText( "Valid Range: " + (isReal ? "Real" : "Integer") +
+						" values from " + param.minVal.toString() +" to " + param.maxVal.toString() );
+				
+				Dimension compDimension =  new Dimension( meta.componentWidth,
+						meta.componentHeight );
+				field.setPreferredSize( compDimension );
+				field.setMaximumSize( compDimension );
+				field.setMinimumSize( compDimension );
+				field.addFocusListener( new FocusListener()
+				{
+					@Override
+					public void focusGained( FocusEvent e )
+					{
+						Component c = e.getComponent();
+						if( c instanceof JTextField )
+							((JTextField)c).selectAll();
+					}
+					@Override
+					public void focusLost( FocusEvent fe )
+					{
+						String text = field.getText();
+						if( text != null )
+						{
+							if( !text.isEmpty() )
+							{
+								try
+								{
+									try
+									{
+										Class< ? extends Object > defClass = param.defaultVal.getClass();
+										Object val = defClass.getMethod( "valueOf", String.class ).invoke( new Integer( 0), text );
+										if( !param.checkVal( val ) )
+										{
+											throw new Exception( "value outside of domain" );
+										}
+										param.val = val;
+									}
+									catch( InvocationTargetException ie )
+									{
+										throw new Exception( param.defaultVal.getClass().toString() + " could not parse \"" + text + "\"" );
+									}
+								}
+								catch( Exception e )
+								{
+									JOptionPane.showMessageDialog( null,
+										"Invalid value: " + e.getMessage() , "Invalid Input",
+										JOptionPane.WARNING_MESSAGE );
+									Component c = fe.getComponent();
+									if( c instanceof JTextField )
+										((JTextField)c).setText( param.defaultVal.toString() );
+									param.val = param.defaultVal;
+								}
+							}
+						}
+					}
+				});
+				field.getDocument().addDocumentListener( new DocumentListener()
+				{
+					public void changedUpdate(DocumentEvent e)
+					{
+						field.setForeground(Color.BLACK);
+					}
+					public void removeUpdate(DocumentEvent e)
+					{
+						field.setForeground(Color.BLACK);
+					}
+					public void insertUpdate(DocumentEvent e)
+					{
+						field.setForeground(Color.BLACK);
+					}
+				});
+	
+				JPanel panelField = new JPanel();
+				panelField.add( field );
+				panelField.setBorder( BorderFactory.createEmptyBorder( 0, 0, 10, 0 ) );
+				panelField.setAlignmentX( RIGHT_ALIGNMENT );
+				panelField.setLayout( new BoxLayout( panelField, BoxLayout.X_AXIS ) );
+				hBox.add( panelField );
+			}
 			vBox.add( hBox );
 		}
     	
@@ -189,12 +193,12 @@ public class AbstractParametersDialog extends JDialog
 
 	public void resetToDefaults()
 	{
-		if( params != null && textFields != null )
+		if( paramSegments != null && textFields != null )
 		{
-			for( int i = 0; i < params.size(); ++i )
+			for( int i = 0; i < paramSegments.size(); ++i )
 			{
-				params.get( i ).val = params.get( i ).defaultVal;
-				textFields.get( i ).setText( params.get( i ).val.toString() );
+				paramSegments.get( i ).val = paramSegments.get( i ).defaultVal;
+				textFields.get( i ).setText( paramSegments.get( i ).val.toString() );
 			}
 		}
 	}
