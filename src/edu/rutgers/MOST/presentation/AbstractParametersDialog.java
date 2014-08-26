@@ -48,8 +48,9 @@ public class AbstractParametersDialog extends JDialog
 			final JLabel label = new JLabel();
 			final JTextField field = new JTextField();
 			this.textFields.add( field );
-			field.setToolTipText( "Valid Range: " +
-					param.minVal.toString() +" to " + param.maxVal.toString() );
+			boolean isReal = param.defaultVal.getClass().equals( Double.class );
+			field.setToolTipText( "Valid Range: " + (isReal ? "Real" : "Integer") +
+					" values from " + param.minVal.toString() +" to " + param.maxVal.toString() );
 
 			Dimension labDimension = new Dimension( meta.labelWidth, meta.labelHeight );
 			label.setPreferredSize( labDimension );
@@ -121,6 +122,7 @@ public class AbstractParametersDialog extends JDialog
     	JPanel panel = new JPanel();
     	panel.add( vBox );
     	this.getContentPane().add( panel, java.awt.BorderLayout.CENTER );
+    	this.resetToDefaults();
 	}
 
 	public void resetToDefaults()
