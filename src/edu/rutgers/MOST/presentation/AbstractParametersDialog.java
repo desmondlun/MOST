@@ -124,8 +124,8 @@ public class AbstractParametersDialog extends JDialog
 		icons.add( new ImageIcon( "etc/most32.jpg" ).getImage() );
 
 		AbstractParametersDialog d = new AbstractParametersDialog();
-		d.setUp( GLPKParameters.getSegmentedParameterList(),
-				GLPKParameters.getAbstractDialogMetaData() );
+		d.setUp( IPoptParameters.getSegmentedParameterList(),
+				IPoptParameters.getAbstractDialogMetaData() );
 
 		d.setIconImages( icons );
 		d.setDefaultCloseOperation( DISPOSE_ON_CLOSE );
