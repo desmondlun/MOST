@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -14,6 +15,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -72,15 +74,40 @@ public class AbstractParametersDialog extends JDialog
 						((JTextField)c).selectAll();
 				}
 				@Override
-				public void focusLost( FocusEvent e )
+				public void focusLost( FocusEvent fe )
 				{
 					String text = field.getText();
 					if( text != null )
 					{
 						if( !text.isEmpty() )
 						{
-							param.val = param.defaultVal.getClass().equals( Double.class ) ?
-								Double.valueOf( text ) : Integer.valueOf( text );
+							try
+							{
+								try
+								{
+									Class< ? extends Object > defClass = param.defaultVal.getClass();
+									Object val = defClass.getMethod( "valueOf", String.class ).invoke( new Integer( 0), text );
+									if( !param.checkVal( val ) )
+									{
+										throw new Exception( "value outside of domain" );
+									}
+									param.val = val;
+								}
+								catch( InvocationTargetException ie )
+								{
+									throw new Exception( param.defaultVal.getClass().toString() + " could not parse \"" + text + "\"" );
+								}
+							}
+							catch( Exception e )
+							{
+								JOptionPane.showMessageDialog( null,
+									"Invalid value: " + e.getMessage() , "Invalid Input",
+									JOptionPane.WARNING_MESSAGE );
+								Component c = fe.getComponent();
+								if( c instanceof JTextField )
+									((JTextField)c).setText( param.defaultVal.toString() );
+								param.val = param.defaultVal;
+							}
 						}
 					}
 				}
