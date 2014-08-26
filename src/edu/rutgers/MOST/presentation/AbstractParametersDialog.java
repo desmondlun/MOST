@@ -44,11 +44,17 @@ public class AbstractParametersDialog extends JDialog
 			final JTextField field = new JTextField();
 			field.setToolTipText( "Valid Range: " +
 					param.minVal.toString() +" to " + param.maxVal.toString() );
-			Dimension dimension =  new Dimension( meta.componentWidth,
+
+			Dimension labDimension = new Dimension( meta.labelWidth, meta.labelHeight );
+			label.setPreferredSize( labDimension );
+			label.setMinimumSize( labDimension );
+			label.setMaximumSize( labDimension );
+			
+			Dimension compDimension =  new Dimension( meta.componentWidth,
 					meta.componentHeight );
-			field.setPreferredSize( dimension );
-			field.setMaximumSize( dimension );
-			field.setMinimumSize( dimension );
+			field.setPreferredSize( compDimension );
+			field.setMaximumSize( compDimension );
+			field.setMinimumSize( compDimension );
 			field.addFocusListener( new FocusListener()
 			{
 				@Override
@@ -93,7 +99,6 @@ public class AbstractParametersDialog extends JDialog
 			panelLabel.setLayout( new BoxLayout( panelLabel, BoxLayout.X_AXIS ) );
 			panelLabel.add( label );
 			panelLabel.setBorder( BorderFactory.createEmptyBorder( 0, 0, 10, 0 ) );
-			panelLabel.setBorder( BorderFactory.createTitledBorder( "" ) );
 			panelLabel.setAlignmentX( LEFT_ALIGNMENT );
 			hBox.add( panelLabel );
 
@@ -102,10 +107,8 @@ public class AbstractParametersDialog extends JDialog
 			panelField.setBorder( BorderFactory.createEmptyBorder( 0, 0, 10, 0 ) );
 			panelField.setAlignmentX( RIGHT_ALIGNMENT );
 			panelField.setLayout( new BoxLayout( panelField, BoxLayout.X_AXIS ) );
-			panelField.setBorder( BorderFactory.createTitledBorder( "" ) );
 			hBox.add( panelField );
 			hBox.setAlignmentX( LEFT_ALIGNMENT );
-			
 			vBox.add( hBox );
 		}
     	
