@@ -3495,7 +3495,7 @@ public class GraphicalInterface extends JFrame {
 					DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName, optimizeName));
 				//DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
 				DynamicTreePanel.getTreePanel().selectLastNode();
-				
+				rFactory.resetKnockOuts();
 				if( current_giSolution.knockoutOffset != null && current_giSolution.soln_ko != null )
 					rFactory.setKnockouts( current_giSolution.soln_ko.subList( current_giSolution.knockoutOffset, current_giSolution.soln_ko.size()));
 				

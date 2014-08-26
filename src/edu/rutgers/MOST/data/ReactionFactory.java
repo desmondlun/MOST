@@ -157,6 +157,15 @@ public class ReactionFactory {
 
 		return objective;
 	}
+	
+	/**
+	 * resets all elements in the Knockout column to false
+		 */
+	public void resetKnockOuts()
+	{
+		for (int i = 0; i < GraphicalInterface.reactionsTable.getRowCount(); i++)
+			GraphicalInterface.reactionsTable.getModel().setValueAt( "false", i, GraphicalInterfaceConstants.KO_COLUMN );
+	}
 
 	public void setFluxes(ArrayList<Double> fluxes, int columnIndex, DefaultTableModel reactionsOptModel) {
 		//DefaultTableModel reactionsOptModel = (DefaultTableModel) GraphicalInterface.reactionsTable.getModel();
