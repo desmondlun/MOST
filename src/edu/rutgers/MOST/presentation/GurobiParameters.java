@@ -127,7 +127,7 @@ public class GurobiParameters {
 		result.add( new RealSegmentParameter( OPTIMALITYTOL_NAME, OPTIMALITYTOL_MINIMUM_VALUE,
 				OPTIMALITYTOL_MAXIMUM_VALUE, OPTIMALITYTOL_DEFAULT_VALUE) );
 		
-		result.add( new HalfIntegerSegmentParameter( HEURISTICS_NAME, HEURISTICS_MINIMUM_VALUE,
+		result.add( new RealSegmentParameter( HEURISTICS_NAME, HEURISTICS_MINIMUM_VALUE,
 				HEURISTICS_MAXIMUM_VALUE, HEURISTICS_DEFAULT_VALUE ) );
 		
 		result.add( new IntegerSegmentParameter( MIPFOCUS_NAME, MIPFOCUS_MINIMUM_VALUE,
