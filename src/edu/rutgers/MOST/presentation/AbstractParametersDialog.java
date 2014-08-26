@@ -23,6 +23,9 @@ public class AbstractParametersDialog extends JDialog
 {
 	private static final long serialVersionUID = 1L;
 	
+	private ArrayList< AbstractSegmentedParameter > params = null;
+	private ArrayList< JTextField > textFields = null;
+	
 	public void setUp( final ArrayList< AbstractSegmentedParameter > params,
 		AbstractDialogMetaData meta )
 	{
@@ -34,6 +37,8 @@ public class AbstractParametersDialog extends JDialog
 		setSize( meta.dialogWidth, meta.dialogheight );
 		setLocationRelativeTo( null );
 		setVisible( true );
+		this.params = params;
+		this.textFields = new ArrayList< JTextField >();
     	
     	Box vBox = Box.createVerticalBox();
 		
@@ -42,6 +47,7 @@ public class AbstractParametersDialog extends JDialog
 			Box hBox = Box.createHorizontalBox();
 			final JLabel label = new JLabel();
 			final JTextField field = new JTextField();
+			this.textFields.add( field );
 			field.setToolTipText( "Valid Range: " +
 					param.minVal.toString() +" to " + param.maxVal.toString() );
 
@@ -117,6 +123,18 @@ public class AbstractParametersDialog extends JDialog
     	this.getContentPane().add( panel, java.awt.BorderLayout.CENTER );
 	}
 
+	public void resetToDefaults()
+	{
+		if( params != null && textFields != null )
+		{
+			for( int i = 0; i < params.size(); ++i )
+			{
+				params.get( i ).val = params.get( i ).defaultVal;
+				textFields.get( i ).setText( params.get( i ).val.toString() );
+			}
+		}
+	}
+	
 	public static void main( String[] args )
 	{
 		final ArrayList< Image > icons = new ArrayList< Image >();
