@@ -139,7 +139,7 @@ public class AbstractParametersDialog extends JDialog
 			panelLabel.setLayout( new BoxLayout( panelLabel, BoxLayout.X_AXIS ) );
 			panelLabel.add( label );
 			panelLabel.setBorder( BorderFactory.createEmptyBorder( 0, 0, 10, 0 ) );
-			panelLabel.setAlignmentX( LEFT_ALIGNMENT );
+			panelLabel.setAlignmentX( CENTER_ALIGNMENT );
 			hBox.add( panelLabel );
 
 			JPanel panelField = new JPanel();
@@ -148,7 +148,7 @@ public class AbstractParametersDialog extends JDialog
 			panelField.setAlignmentX( RIGHT_ALIGNMENT );
 			panelField.setLayout( new BoxLayout( panelField, BoxLayout.X_AXIS ) );
 			hBox.add( panelField );
-			hBox.setAlignmentX( LEFT_ALIGNMENT );
+			hBox.setAlignmentX( CENTER_ALIGNMENT );
 			vBox.add( hBox );
 		}
     	
@@ -179,12 +179,12 @@ public class AbstractParametersDialog extends JDialog
     	buttonsBox.add( okButton );
     	buttonsBox.add( cancelButton );
     	buttonsBox.add( resetButton );
+    	vBox.add( buttonsBox );
     	
     	JPanel panel = new JPanel();
     	panel.add( vBox );
     	this.getContentPane().add( panel, java.awt.BorderLayout.CENTER );
     	this.resetToDefaults();
-    	panel.add( buttonsBox );
 	}
 
 	public void resetToDefaults()
