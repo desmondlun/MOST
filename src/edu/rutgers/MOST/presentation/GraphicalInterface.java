@@ -598,7 +598,7 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem exitItem = new JMenuItem("Exit");
 	public final JMenuItem fbaItem = new JMenuItem("FBA");
 	public final JMenuItem gdbbItem = new JMenuItem("GDBB");
-	public final JMenuItem eflux2Item = new JMenuItem( "Eflux2" );
+	public final JMenuItem eflux2Item = new JMenuItem( "E-Flux2" );
 	public final JMenuItem spotItem = new JMenuItem( "SPOT" );	
 	public final JMenuItem aboutBox = new JMenuItem("About MOST");
 	public final JCheckBoxMenuItem highlightUnusedMetabolitesItem = new JCheckBoxMenuItem("Highlight Unused Metabolites");

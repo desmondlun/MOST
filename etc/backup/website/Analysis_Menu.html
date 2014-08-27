@@ -19,6 +19,7 @@ A{text-decoration:none}
 		<td align=center width=120><p><a href="Publications.html">Publications</a></p></td>
 		<td align=center width=120><p><a href="People.html">People</a></p></td>
 		<td align=center width=120><p><a href="help.html">Help</a></p></td>
+		<td align=center width=120><p><a href="Tutorials.html">Tutorials</a></p></td>
 	</table>
 
 			<!-- Title -->
@@ -68,8 +69,7 @@ A{text-decoration:none}
 
 	<ul><li><font size=2><a href="Model_Menu.html#save">Save</a></font></li>
 	<li><font size=2><a href="Model_Menu.html#savesbml">Save As SBML</a></font></li>
-	<li><font size=2><a href="Model_Menu.html#savecsvm">Save As CSV Metabolites</a></font></li>
-	<li><font size=2><a href="Model_Menu.html#savecsvr">Save As CSV Reactions</a></font></li></ul>
+	<li><font size=2><a href="Model_Menu.html#savecsv">Save As CSV</a></font></li></ul>
 
 	<li><font size=2><a href="Model_Menu.html#clear">Clear Tables</a></font></li>
 	<li><font size=2><a href="Model_Menu.html#exit">Exit</a></font></li></ul>
@@ -78,7 +78,7 @@ A{text-decoration:none}
 
 	<ul><li><font size=2><a href="#fba">FBA</a></font></li>
 	<li><font size=2><a href="#gdbb">GDBB</a></font></li>
-	<li><font size=2><a href="#eflux2">Eflux2</a></font></li>
+	<li><font size=2><a href="#eflux2">E-Flux2</a></font></li>
 	<li><font size=2><a href="#spot">SPOT</a></font></li></ul>
 
 	<p><font size=2><a href="Edit_Menu.html">Edit Menu</a></font></p>
@@ -127,7 +127,6 @@ A{text-decoration:none}
 	</td>
 
 	<td width=600 valign=top>
-	<p align=center><font size=5></font></p>
 	<p align=center><font size=5>Analysis Menu</font></p>
 
 	<p>Note: Results of Analyses are not editable. After running an Analysis, the result will be selected in the tree (panel on right side of MOST).
@@ -136,7 +135,7 @@ A{text-decoration:none}
 
 	<p><a name="fba">  FBA:</a></p>
 
-	<blockquote>Before running FBA, a Biological Objective should be set to 1.0. Usually the biomass reaction is chosen
+	<blockquote>Before running FBA, the Biological Objective for a reaction should be set to 1.0. Usually the biomass reaction is chosen
 	as the Biological Objective to be maximized.
 	All of the models in the <a href="Model_Menu.html#collection">Model Collection Database</a>, and SBML models
 	from <a href="http://blog.theseed.org/model_seed/">Model Seed</a> have the Biological Objective of biomass 
@@ -165,12 +164,11 @@ A{text-decoration:none}
 
 	<br>
 
-	<blockquote>If your Gurobi license is not valid, the following error will appear:</blockquote>
+	<blockquote>If you are using Gurobi as a solver and your Gurobi license is not valid, the following error will appear:</blockquote>
 	
 	<p align="center"><img src ="images/no_license.jpg" alt="Image - No License" border="0"></p>
 
-	<blockquote>Your Gurobi license needs to be updated or refreshed. Some system cleaners may cause the Gurobi 
-	license to be invalidated.</blockquote>
+	<blockquote>Your Gurobi license needs to be updated or refreshed.</blockquote>
 
 	<br>
 
@@ -215,33 +213,32 @@ A{text-decoration:none}
 
 	<br>
 
-	<blockquote>If your Gurobi license is not valid, the following error will appear:</blockquote>
+	<blockquote>If you are using Gurobi as a solver and your Gurobi license is not valid, the following error will appear:</blockquote>
 	
 	<p align="center"><img src ="images/no_license.jpg" alt="Image - No License" border="0"></p>
 
-	<blockquote>Your Gurobi license needs to be updated or refreshed. Some system cleaners may cause the Gurobi 
-	license to be invalidated.</blockquote>
+	<blockquote>Your Gurobi license needs to be updated or refreshed.</blockquote>
 
 	<br>
-	<p><a name="eflux2">  Eflux2:</a></p> 
+	<p><a name="eflux2">  E-Flux2:</a></p> 
 
-	<blockquote>Before running Eflux2, the Biological Objective for a reaction should be set to 1.0. Usually the biomass reaction is chosen
+	<blockquote>Before running E-Flux2, the Biological Objective for a reaction should be set to 1.0. Usually the biomass reaction is chosen
 	as the Biological Objective to be maximized.
 	All of the models in the <a href="Model_Menu.html#collection">Model Collection Database</a>, and SBML models
 	from <a href="http://blog.theseed.org/model_seed/">Model Seed</a> have the Biological Objective of biomass 
 	reaction set to 1.0.</blockquote>
 
-	<blockquote>Eflux2 requires a CSV file with two columns where the first column in the Gene Association name and the
-	second column is the Gene Expression value.</blockquote>
+	<blockquote>E-Flux2 requires a CSV file with two columns where the first column in the gene name and the
+	second column is the gene expression.</blockquote>
 
-	<blockquote>Gene Expression data for Escherichia coli K-12 MG1655 is available and can be downloaded <a href="gene_expr.csv" target="_blank">here</a>. 
-	This file can be used for running Eflux2 on all Escherichia coli K-12 MG1655 models in the <a href="Model_Menu.html#collection">Model Collection</a>.</blockquote>
+	<blockquote>Sample gene expression data for Escherichia coli K-12 MG1655 is available and can be downloaded <a href="gene_expr.csv" target="_blank">here</a>. 
+	This file can be used for running E-Flux2 on all Escherichia coli K-12 MG1655 models in the <a href="Model_Menu.html#collection">Model Collection</a>.</blockquote>
 
-	<blockquote>Select Analysis –> Eflux2 (Alt+A then Alt+E).</blockquote>
+	<blockquote>Select Analysis –> E-Flux2 (Alt+A then Alt+E).</blockquote>
 
-	<blockquote>A file browser will appear. The gene expression csv file for the model can be loaded to run Eflux2.</blockquote>
+	<blockquote>A file browser will appear. The gene expression csv file for the model can be loaded to run E-Flux2.</blockquote>
 
-	<blockquote>After Eflux2 is finished, a link will be added to the tree, and results will be displayed in the console.</blockquote>
+	<blockquote>After E-Flux2 is finished, a link will be added to the tree, and results will be displayed in the console.</blockquote>
 
 	<blockquote>If your Gurobi license is not valid, the following error will appear:</blockquote>
 	
@@ -253,15 +250,15 @@ A{text-decoration:none}
 	<br>
 	<p><a name="spot"> SPOT (Simplified Pearson cOrrelation with Transcriptomic data):</a></p> 
 
-	<blockquote>SPOT requires a CSV file with two columns where the first column in the Gene Association name and the
-	second column is the Gene Expression value.</blockquote>
+	<blockquote>SPOT requires a CSV file with two columns where the first column in the gene name and the
+	second column is the gene expression.</blockquote>
 
-	<blockquote>Gene Expression data for Escherichia coli K-12 MG1655 is available and can be downloaded <a href="gene_expr.csv" target="_blank">here</a>. 
-	This file can be used for running Eflux2 on all Escherichia coli K-12 MG1655 models in the <a href="Model_Menu.html#collection">Model Collection</a>.</blockquote>
+	<blockquote>Sample gene expression data for Escherichia coli K-12 MG1655 is available and can be downloaded <a href="gene_expr.csv" target="_blank">here</a>. 
+	This file can be used for running SPOT on all Escherichia coli K-12 MG1655 models in the <a href="Model_Menu.html#collection">Model Collection</a>.</blockquote>
 
 	<blockquote>Select Analysis –> SPOT (Alt+A then Alt+S).</blockquote>
 
-	<blockquote>A file browser will appear. The gene expression csv file for the model can be loaded to run Eflux2.</blockquote>
+	<blockquote>A file browser will appear. The gene expression csv file for the model can be loaded to run SPOT.</blockquote>
 
 	<blockquote>After SPOT is finished, a link will be added to the tree, and results will be displayed in the console.</blockquote>
 

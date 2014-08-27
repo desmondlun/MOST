@@ -52,7 +52,7 @@ A{text-decoration:none}
 	<li><font size=2><a href="Installing_MOST.html#linux">Linux</a></font></li>
 	<li><font size=2><a href="Installing_MOST.html#mac">Macintosh</a></font></li></ul>
 
-	<p><font size=2>Select Solvers</font></p>
+	<p><font size=2><a href="Select_Solvers.html">Select Solvers</a></font></p>
 
 	<p><font size=2><a href="Model_Menu.html">Model Menu</a></font></p>
 
@@ -74,12 +74,12 @@ A{text-decoration:none}
 	<li><font size=2><a href="Model_Menu.html#clear">Clear Tables</a></font></li>
 	<li><font size=2><a href="Model_Menu.html#exit">Exit</a></font></li></ul>
 
-	<p><font size=2><a href="Analysis_Menu.html">Analysis Menu</a></font></p>
+	<p><font size=2>Analysis Menu</font></p>
 
-	<ul><li><font size=2><a href="Analysis_Menu.html#fba">FBA</a></font></li>
-	<li><font size=2><a href="Analysis_Menu.html#gdbb">GDBB</a></font></li>
-	<li><font size=2><a href="Analysis_Menu.html#eflux2">E-Flux2</a></font></li>
-	<li><font size=2><a href="Analysis_Menu.html#spot">SPOT</a></font></li></ul>
+	<ul><li><font size=2><a href="#fba">FBA</a></font></li>
+	<li><font size=2><a href="#gdbb">GDBB</a></font></li>
+	<li><font size=2><a href="#eflux2">Eflux2</a></font></li>
+	<li><font size=2><a href="#spot">SPOT</a></font></li></ul>
 
 	<p><font size=2><a href="Edit_Menu.html">Edit Menu</a></font></p>
 
@@ -127,39 +127,75 @@ A{text-decoration:none}
 	</td>
 
 	<td width=600 valign=top>
-	<p align=center><font size=5>Select Solvers</font></p>
+	<p align=center><font size=5>FBA Tutorial - No FVA Results</font></p>
 
-	<blockquote>Click Options -> Select Solvers (Alt+O then Alt+S) to select solvers for running Analyses.
-	The Select Solvers dialog will appear.</blockquote>
+	<p><strong>Step 1</strong></p>
+	
+	<blockquote><strong>Load Model. </strong>
+	Select Model –> Load from Model Collection Database (Alt+M then Alt+D). Select <strong>ecoli_core_model</strong>, 
+	then click the OK button on the Model Collection dialog. This model will be used for this tutorial
+	since it is a small model and therefore analysis will be completed rapidly on any computer.</blockquote> 
 
-	<p align="center"><img src ="images/select_solver.jpg" alt="Image - Select Solver" border="0"></p>
+	<p align="center"><a href="images/load_ecoli_core.jpg" target="_blank">
+	<img src ="images/load_ecoli_core.jpg" alt="Image - Load E coli core" border="0" height="90%" width="90%"></a></p>
 
-	<blockquote>The combo boxes boxes and buttons on the Select Solvers dialog can all be accessed 
-	using keyboard shortcuts by using Alt+ and underlined letter.</blockquote> 
+	<blockquote>The progress
+                bar will appear while the model is loading, then close when the load is finished.
+	</blockquote>
 
-    	<blockquote>Example: Quadratic (Alt+ Q)</blockquote>
+	<p align="center"><a href="images/loadsbml.jpg" target="_blank">
+	<img src ="images/loadsbml.jpg" alt="Image - Load SBML" border="0" height="90%" width="90%"></a></p>
 
-	<blockquote>If Gurobi is installed and the version is 5.6.2 or better, Gurobi will be selected in the
-	Select Solver dialog for Mixed Integer Linear and Quadratic Solvers. Otherwise, a solver that is included in
-	MOST will be selected.</blockquote>
+	<p><strong>Step 2</strong></p>
+	
+	<blockquote><strong>Set Biological Objective. </strong>Usually the biomass reaction is chosen
+	as the Biological Objective to be maximized. An easy way to find the biomass reaction in most
+	models is to use the Find/Replace dialog using Control-F keystroke on the keyboard. Type in
+	biomass, and click the Find button.</blockquote> 
 
-	<p><a name="gurobi">  Install Gurobi:</a></p>
-	<blockquote>Gurobi jar file and
-	license can be downloaded at the Gurobi site <a href="http://www.gurobi.com">www.gurobi.com</a>.
-	It is important that the installation instructions given on the Gurobi site for your operating system are 
-	followed, so that the Gurobi native-code library and Gurobi JNI library can be found by MOST.
-	See <a href="#issues">Known Issues</a>.</blockquote>
+	<p align="center"><a href="images/ecoli_core_biomass1.jpg" target="_blank">
+	<img src ="images/ecoli_core_biomass1.jpg" alt="Image - E coli core biomass 1" border="0" height="90%" width="90%"></a></p>
 
-	<br>
-	<p><a name="issues"> Known Issues:</a></p>
+	<blockquote>Once this reaction is located, scroll right to the Biological Objective column.
+	All models in the Model Collection table already have the biomass reaction objective set to 1.0, so 
+	this will not need to be changed.If a model from a different source is used, the Biological
+	Objective may need to be set.
+	</blockquote>
 
-	<blockquote>If 32 bit Java is being run, the Gurobi jar file must also be 32 bit.</blockquote>
+	<p align="center"><a href="images/ecoli_core_biomass2.jpg" target="_blank">
+	<img src ="images/ecoli_core_biomass2.jpg" alt="Image - E coli core biomass 2" border="0" height="90%" width="90%"></a></p>
 
-	<blockquote><a name="no_license">If your Gurobi license is not valid, the following error will appear:</a></blockquote>
+	<p><strong>Step 3</strong></p>
+
+	<blockquote><strong>Run Analysis. </strong>Select Analysis –> FBA (Alt+A then Alt+F).</blockquote>
+
+	<blockquote>If you are using Gurobi as a solver and your Gurobi license is not valid, the following error will appear:</blockquote>
 	
 	<p align="center"><img src ="images/no_license.jpg" alt="Image - No License" border="0"></p>
 
 	<blockquote>Your Gurobi license needs to be updated or refreshed.</blockquote>
+
+	<blockquote>Otherwise, the FVA Dialog will appear:</blockquote>
+
+	<p align="center"><img src ="images/fvadialog.jpg" alt="Image - FVA Dialog" border="0"></p>
+
+	<blockquote>Click the "No" button.</blockquote>
+
+	<blockquote>After FBA is finished, a link to the results table will be added to the tree, and results will be displayed in the console.</blockquote>
+
+	<p align="center"><a href="images/fba_done.jpg" target="_blank">
+	<img src ="images/fba_done.jpg" alt="Image - FBA Results" border="0" height="90%" width="90%"></a></p>
+
+	<p align=center><font size=5>FBA Tutorial - Include FVA Results</font></p>
+
+	<blockquote>Repeat Steps 1 to 3, but click the "Yes" button on the FVA dialog. Running FBA with FVA
+	results takes significantly more time than running FBA without FVA.</blockquote>
+
+	<blockquote>After FVA is done, two new columns, Min. Flux. and Max. Flux, will be added to the Reactions Table
+	to display the minimum and maximum fluxes for each reaction.</blockquote>
+
+	<p align="center"><a href="images/fva_done.jpg" target="_blank">
+	<img src ="images/fva_done.jpg" alt="Image - FVA Results" border="0" height="90%" width="90%"></a></p>
 
 	</td>
 	</tr>
