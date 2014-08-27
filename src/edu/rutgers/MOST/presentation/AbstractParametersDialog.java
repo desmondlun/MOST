@@ -27,26 +27,31 @@ import javax.swing.event.DocumentListener;
 public class AbstractParametersDialog extends JDialog
 {
 	private static final long serialVersionUID = 1L;
-	
-	private ArrayList< AbstractTextSegmentedParameter > paramSegments = null;
-	private ArrayList< JTextField > segmentedTextFields = new ArrayList< JTextField >();
+	private ArrayList< AbstractTextSegmentedParameter > segmentedTextFields = new ArrayList< AbstractTextSegmentedParameter >();
 	private Box vContentBox = Box.createVerticalBox();
 	public JButton okButton = new JButton("   OK   ");
 	public JButton cancelButton = new JButton( "Cancel" );
 	public JButton resetButton = new JButton( "Reset to Defaults" );
 	
-	public void addSegmentedTextParameters( final ArrayList< AbstractTextSegmentedParameter > params,
-		AbstractDialogMetaData meta )
+	public AbstractParametersDialog()
 	{
 		final ArrayList< Image > icons = new ArrayList< Image >();
+		
 		icons.add( new ImageIcon( "etc/most16.jpg" ).getImage() );
 		icons.add( new ImageIcon( "etc/most32.jpg" ).getImage() );
 		setIconImages( icons );
 		setDefaultCloseOperation( DISPOSE_ON_CLOSE );
-		setSize( meta.dialogWidth, meta.dialogheight );
+		setSize( 100, 100 );
 		setLocationRelativeTo( null );
 		setVisible( true );
-		this.paramSegments = params;
+	}
+	
+	public void addSegmentedTextParameters( final ArrayList< AbstractTextSegmentedParameter > params,
+		AbstractDialogMetaData meta )
+	{
+		setDefaultCloseOperation( DISPOSE_ON_CLOSE );
+		setSize( meta.dialogWidth, meta.dialogheight );
+		this.segmentedTextFields = params;
 		
     	for( final AbstractTextSegmentedParameter param : params )
 		{
@@ -69,8 +74,7 @@ public class AbstractParametersDialog extends JDialog
 			
 			
 			// set the TextField
-			final JTextField field = new JTextField();
-			this.segmentedTextFields.add( field );
+			final JTextField field = param;
 			boolean isReal = param.defaultVal.getClass().equals( Double.class );
 			field.setToolTipText( "Valid Range: " + (isReal ? "Real" : "Integer") +
 					" values from " + param.minVal.toString() +" to " + param.maxVal.toString() );
@@ -150,8 +154,9 @@ public class AbstractParametersDialog extends JDialog
 			panelField.setAlignmentX( RIGHT_ALIGNMENT );
 			panelField.setLayout( new BoxLayout( panelField, BoxLayout.X_AXIS ) );
 			hBox.add( panelField );
-			
+			field.setText( "hello, WOrld!" );
 			vContentBox.add( hBox );
+			this.setLocationRelativeTo( null );
 		}
     	
     	this.okButton.addActionListener( new ActionListener()
@@ -187,35 +192,26 @@ public class AbstractParametersDialog extends JDialog
     	panel.add( vContentBox );
     	this.getContentPane().add( panel, java.awt.BorderLayout.CENTER );
     	this.resetToDefaults();
+    	this.setVisible( true );
 	}
 
 	public void resetToDefaults()
 	{
-		if( paramSegments != null && segmentedTextFields != null )
+		if( segmentedTextFields != null && segmentedTextFields != null )
 		{
-			for( int i = 0; i < paramSegments.size(); ++i )
+			for( int i = 0; i < segmentedTextFields.size(); ++i )
 			{
-				paramSegments.get( i ).val = paramSegments.get( i ).defaultVal;
-				segmentedTextFields.get( i ).setText( paramSegments.get( i ).val.toString() );
+				Object val = segmentedTextFields.get( i ).defaultVal;
+				segmentedTextFields.get( i ).val = segmentedTextFields.get( i ).defaultVal;
+				segmentedTextFields.get( i ).setText( segmentedTextFields.get( i ).val.toString() );
 			}
 		}
 	}
 	
 	public static void main( String[] args )
 	{
-		final ArrayList< Image > icons = new ArrayList< Image >();
-		icons.add( new ImageIcon( "etc/most16.jpg" ).getImage() );
-		icons.add( new ImageIcon( "etc/most32.jpg" ).getImage() );
-
 		AbstractParametersDialog d = new AbstractParametersDialog();
 		d.addSegmentedTextParameters( GurobiParameters.getSegmentedParameterList(),
 				GurobiParameters.getAbstractDialogMetaData() );
-
-		d.setIconImages( icons );
-		d.setDefaultCloseOperation( DISPOSE_ON_CLOSE );
-		d.setSize( GurobiParameters.DIALOG_WIDTH,
-				GurobiParameters.DIALOG_HEIGHT );
-		d.setLocationRelativeTo( null );
-		d.setVisible( true );
 	}
 }
