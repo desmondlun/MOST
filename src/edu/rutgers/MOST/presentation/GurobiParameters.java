@@ -1,6 +1,12 @@
 package edu.rutgers.MOST.presentation;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
+
+import javax.swing.Box;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 public class GurobiParameters {
 
@@ -50,109 +56,94 @@ public class GurobiParameters {
 	public static final int LABEL_TOP_BORDER_SIZE = 10;
 	public static final int LABEL_BOTTOM_BORDER_SIZE = 10;
 	
-	public static ArrayList< AbstractTextSegmentedParameter > getSegmentedParameterList()
+	protected ArrayList< AbstractSavableObjectInterface > components = new ArrayList< AbstractSavableObjectInterface >();
+	
+	public ArrayList< AbstractSavableObjectInterface > getSavableParameters()
 	{
-		class RealSegmentParameter extends AbstractTextSegmentedParameter
-		{
-			private static final long serialVersionUID = 1L;
-			public RealSegmentParameter( String name, Double minVal,
-					Double maxVal, Double defaultVal )
-			{
-				super( name, minVal, maxVal, defaultVal );
-			}
-			@Override
-			public boolean checkVal( Object value )
-			{
-				if( value.getClass() == Double.class )
-				{
-					Double min = (Double)minVal;
-					Double max = (Double)maxVal;
-					Double val = (Double)value;
-					if( min <= val && val <= max )
-						return true;
-				}
-				return false;
-			}
-		}
-		class IntegerSegmentParameter extends AbstractTextSegmentedParameter
-		{
-			private static final long serialVersionUID = 1L;
-			public IntegerSegmentParameter( String name, Integer minVal,
-					Integer maxVal, Integer defaultVal )
-			{
-				super( name, minVal, maxVal, defaultVal );
-			}
-			@Override
-			public boolean checkVal( Object value )
-			{
-				if( value.getClass() == Integer.class )
-				{
-					Integer min = (Integer)minVal;
-					Integer max = (Integer)maxVal;
-					Integer val = (Integer)value;
-					if( min <= val && val <= max )
-						return true;
-				}
-				return false;
-			}
-		}
-		@SuppressWarnings( "unused" )
-		class HalfIntegerSegmentParameter extends AbstractTextSegmentedParameter
-		{
-			private static final long serialVersionUID = 1L;
-			public HalfIntegerSegmentParameter( String name, Double minVal,
-					Double maxVal, Double defaultVal )
-			{
-				super( name, minVal, maxVal, defaultVal );
-			}
-			@Override
-			public boolean checkVal( Object value )
-			{
-				if( value.getClass() == Double.class )
-					if( (Double)value % 0.5 == 0.0 )
-					{
-						Double min = (Double)minVal;
-						Double max = (Double)maxVal;
-						Double val = (Double)value;
-						if( min <= val && val <= max )
-						return true;
-					}
-				return false;
-			}
-		}
-		ArrayList< AbstractTextSegmentedParameter > result = new ArrayList< AbstractTextSegmentedParameter >();
+		return components;
+	}
+	
+	public JPanel getDialogFrame()
+	{		
+		JPanel result = new JPanel();
+		Box vBox = Box.createVerticalBox();
 		
-		result.add( new RealSegmentParameter( FEASIBILITYTOL_NAME, FEASIBILITYTOL_MINIMUM_VALUE,
+		// segmented parameters
+		ArrayList< JComponent > textParams = new ArrayList< JComponent >();
+
+		textParams.add( new ADRealSegmentJTextFieldParameter( FEASIBILITYTOL_NAME, FEASIBILITYTOL_MINIMUM_VALUE,
 				FEASIBILITYTOL_MAXIMUM_VALUE, FEASIBILITYTOL_DEFAULT_VALUE) );
 		
-		result.add( new RealSegmentParameter( INTFEASIBILITYTOL_NAME, INTFEASIBILITYTOL_MINIMUM_VALUE,
+		textParams.add( new ADRealSegmentJTextFieldParameter( INTFEASIBILITYTOL_NAME, INTFEASIBILITYTOL_MINIMUM_VALUE,
 				INTFEASIBILITYTOL_MAXIMUM_VALUE, INTFEASIBILITYTOL_DEFAULT_VALUE) );
 		
-		result.add( new RealSegmentParameter( OPTIMALITYTOL_NAME, OPTIMALITYTOL_MINIMUM_VALUE,
+		textParams.add( new ADRealSegmentJTextFieldParameter( OPTIMALITYTOL_NAME, OPTIMALITYTOL_MINIMUM_VALUE,
 				OPTIMALITYTOL_MAXIMUM_VALUE, OPTIMALITYTOL_DEFAULT_VALUE) );
 		
-		result.add( new RealSegmentParameter( HEURISTICS_NAME, HEURISTICS_MINIMUM_VALUE,
+		textParams.add( new ADRealSegmentJTextFieldParameter( HEURISTICS_NAME, HEURISTICS_MINIMUM_VALUE,
 				HEURISTICS_MAXIMUM_VALUE, HEURISTICS_DEFAULT_VALUE ) );
 		
-		result.add( new IntegerSegmentParameter( MIPFOCUS_NAME, MIPFOCUS_MINIMUM_VALUE,
+		for( JComponent textparam : textParams )
+		{
+			textparam.setPreferredSize( new Dimension( COMPONENT_WIDTH, COMPONENT_HEIGHT ) );
+			JLabel label = new JLabel();
+			label.setText( textparam.getName() );
+			label.setPreferredSize( new Dimension( LABEL_WIDTH, LABEL_HEIGHT ) );
+			
+			if( textparam instanceof ADRealSegmentJTextFieldParameter )
+			{
+				ADRealSegmentJTextFieldParameter param = (ADRealSegmentJTextFieldParameter)textparam;
+				param.setToolTipText( "real values from " + param.minVal + " to " + param.maxVal );
+			}
+			else if ( textparam instanceof ADIntegerSegmentJTextFieldParameter )
+			{
+				ADIntegerSegmentJTextFieldParameter param = (ADIntegerSegmentJTextFieldParameter)textparam;
+				param.setToolTipText( "real values from " + param.minVal + " to " + param.maxVal );
+			
+			}
+			
+			JPanel content = new JPanel();
+			Box hBox = Box.createHorizontalBox();
+			hBox.add( label );
+			hBox.add( textparam );
+			content.add( hBox );
+			vBox.add( content );
+			
+			components.add( (AbstractSavableObjectInterface)textparam );
+		}
+		
+		// combo boxes
+		
+		ArrayList< JComponent > cbParams = new ArrayList< JComponent >();
+		
+		cbParams.add( new ADIntegerSegmentJComboBoxParameter( MIPFOCUS_NAME, MIPFOCUS_MINIMUM_VALUE,
 				MIPFOCUS_MAXIMUM_VALUE, MIPFOCUS_DEFAULT_VALUE) );
 		
-		result.add( new IntegerSegmentParameter( NUM_THREADS_NAME, 1,
-				MAX_NUM_THREADS, MAX_NUM_THREADS ) );
+		cbParams.add( new ADIntegerSegmentJComboBoxParameter( NUM_THREADS_NAME,
+				1, MAX_NUM_THREADS, MAX_NUM_THREADS ) );
+		
+		for( JComponent cbParam : cbParams )
+		{
+			cbParam.setPreferredSize( new Dimension( COMPONENT_WIDTH, COMPONENT_HEIGHT ) );
+			JLabel label = new JLabel();
+			label.setText( cbParam.getName() );
+			label.setPreferredSize( new Dimension( LABEL_WIDTH, LABEL_HEIGHT ) );
+			
+			JPanel content = new JPanel();
+			Box hBox = Box.createHorizontalBox();
+			hBox.add( label );
+			hBox.add( cbParam );
+			content.add( hBox );
+			vBox.add( content );
+			
+			components.add( (AbstractSavableObjectInterface)cbParam );
+		}
+		
+		
+		JPanel panel = new JPanel();
+		panel.add( vBox );
+		result.add( panel );
 		
 		return result;
-	}
-	public static AbstractDialogMetaData getAbstractDialogMetaData()
-	{
-		AbstractDialogMetaData metaData = new AbstractDialogMetaData();
-		metaData.componentHeight = COMPONENT_HEIGHT;
-		metaData.componentWidth = COMPONENT_WIDTH;
-		metaData.dialogheight = DIALOG_HEIGHT;
-		metaData.dialogWidth = DIALOG_WIDTH;
-		metaData.labelHeight = LABEL_HEIGHT;
-		metaData.labelWidth = LABEL_WIDTH;
-		metaData.labelTopBorderSize = LABEL_TOP_BORDER_SIZE;
-		metaData.labelBottomBorderSize = LABEL_BOTTOM_BORDER_SIZE;
-		return metaData;
 	}
 }

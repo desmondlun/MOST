@@ -1,217 +1,126 @@
 package edu.rutgers.MOST.presentation;
 
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.lang.reflect.InvocationTargetException;
+import java.io.File;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 public class AbstractParametersDialog extends JDialog
 {
 	private static final long serialVersionUID = 1L;
-	private ArrayList< AbstractTextSegmentedParameter > segmentedTextFields = new ArrayList< AbstractTextSegmentedParameter >();
 	private Box vContentBox = Box.createVerticalBox();
-	public JButton okButton = new JButton("   OK   ");
-	public JButton cancelButton = new JButton( "Cancel" );
-	public JButton resetButton = new JButton( "Reset to Defaults" );
+	protected ArrayList< AbstractSavableObjectInterface > parameters = new ArrayList< AbstractSavableObjectInterface >();
+	JButton okButton = new JButton("   OK   ");
+	JButton cancelButton = new JButton( "Cancel" );
+	JButton resetButton = new JButton( "Reset to Defaults" );
+	File saveFile = null;
 	
-	public AbstractParametersDialog()
+	public AbstractParametersDialog( final String title, final File saveFile )
 	{
+		this.saveFile = saveFile;
 		final ArrayList< Image > icons = new ArrayList< Image >();
-		
 		icons.add( new ImageIcon( "etc/most16.jpg" ).getImage() );
 		icons.add( new ImageIcon( "etc/most32.jpg" ).getImage() );
 		setIconImages( icons );
 		setDefaultCloseOperation( DISPOSE_ON_CLOSE );
 		setSize( 100, 100 );
 		setLocationRelativeTo( null );
+		setTitle( title );
+		add( vContentBox );
 		setVisible( true );
-	}
-	
-	public void addSegmentedTextParameters( final ArrayList< AbstractTextSegmentedParameter > params,
-		AbstractDialogMetaData meta )
-	{
-		setDefaultCloseOperation( DISPOSE_ON_CLOSE );
-		setSize( meta.dialogWidth, meta.dialogheight );
-		this.segmentedTextFields = params;
-		
-    	for( final AbstractTextSegmentedParameter param : params )
-		{
-			Box hBox = Box.createHorizontalBox();
-			hBox.setAlignmentX( CENTER_ALIGNMENT );
-			
-			// set the label
-			final JLabel label = new JLabel();
-			label.setText( param.name );
-			JPanel panelLabel = new JPanel();
-			panelLabel.setLayout( new BoxLayout( panelLabel, BoxLayout.X_AXIS ) );
-			panelLabel.add( label );
-			panelLabel.setBorder( BorderFactory.createEmptyBorder( 0, 0, 10, 0 ) );
-			panelLabel.setAlignmentX( CENTER_ALIGNMENT );
-			Dimension labDimension = new Dimension( meta.labelWidth, meta.labelHeight );
-			label.setPreferredSize( labDimension );
-			label.setMinimumSize( labDimension );
-			label.setMaximumSize( labDimension );
-			hBox.add( panelLabel );
-			
-			
-			// set the TextField
-			final JTextField field = param;
-			boolean isReal = param.defaultVal.getClass().equals( Double.class );
-			field.setToolTipText( "Valid Range: " + (isReal ? "Real" : "Integer") +
-					" values from " + param.minVal.toString() +" to " + param.maxVal.toString() );
-			
-			Dimension compDimension =  new Dimension( meta.componentWidth,
-					meta.componentHeight );
-			field.setPreferredSize( compDimension );
-			field.setMaximumSize( compDimension );
-			field.setMinimumSize( compDimension );
-			field.addFocusListener( new FocusListener()
-			{
-				@Override
-				public void focusGained( FocusEvent e )
-				{
-					Component c = e.getComponent();
-					if( c instanceof JTextField )
-						((JTextField)c).selectAll();
-				}
-				@Override
-				public void focusLost( FocusEvent fe )
-				{
-					String text = field.getText();
-					if( text != null )
-					{
-						if( !text.isEmpty() )
-						{
-							try
-							{
-								try
-								{
-									Class< ? extends Object > defClass = param.defaultVal.getClass();
-									Object val = defClass.getMethod( "valueOf", String.class ).invoke( new Integer( 0), text );
-									if( !param.checkVal( val ) )
-									{
-										throw new Exception( "value outside of domain" );
-									}
-									param.val = val;
-								}
-								catch( InvocationTargetException ie )
-								{
-									throw new Exception( param.defaultVal.getClass().toString() + " could not parse \"" + text + "\"" );
-								}
-							}
-							catch( Exception e )
-							{
-								JOptionPane.showMessageDialog( null,
-									"Invalid value: " + e.getMessage() , "Invalid Input",
-									JOptionPane.WARNING_MESSAGE );
-								Component c = fe.getComponent();
-								if( c instanceof JTextField )
-									((JTextField)c).setText( param.defaultVal.toString() );
-								param.val = param.defaultVal;
-							}
-						}
-					}
-				}
-			});
-			field.getDocument().addDocumentListener( new DocumentListener()
-			{
-				public void changedUpdate(DocumentEvent e)
-				{
-					field.setForeground(Color.BLACK);
-				}
-				public void removeUpdate(DocumentEvent e)
-				{
-					field.setForeground(Color.BLACK);
-				}
-				public void insertUpdate(DocumentEvent e)
-				{
-					field.setForeground(Color.BLACK);
-				}
-			});
 
-			JPanel panelField = new JPanel();
-			panelField.add( field );
-			panelField.setBorder( BorderFactory.createEmptyBorder( 0, 0, 10, 0 ) );
-			panelField.setAlignmentX( RIGHT_ALIGNMENT );
-			panelField.setLayout( new BoxLayout( panelField, BoxLayout.X_AXIS ) );
-			hBox.add( panelField );
-			field.setText( "hello, WOrld!" );
-			vContentBox.add( hBox );
-			this.setLocationRelativeTo( null );
-		}
-    	
-    	this.okButton.addActionListener( new ActionListener()
-    	{
+		okButton.addActionListener( new ActionListener()
+		{
 			@Override
 			public void actionPerformed( ActionEvent event )
 			{
+				saveParametersToFile( saveFile );
+				dispose();
 			}
-    	});
-    	this.cancelButton.addActionListener( new ActionListener()
-    	{
+		} );
+		cancelButton.addActionListener( new ActionListener()
+		{
 			@Override
 			public void actionPerformed( ActionEvent event )
 			{
+				dispose();
 			}
-    	});
-    	this.resetButton.addActionListener( new ActionListener()
-    	{
-			@Override
+		} );
+		resetButton.addActionListener( new ActionListener()
+		{
 			public void actionPerformed( ActionEvent event )
 			{
 				resetToDefaults();
 			}
-    	});
+		} );
 
-    	Box buttonsBox = Box.createHorizontalBox();
-    	buttonsBox.add( okButton );
-    	buttonsBox.add( cancelButton );
-    	buttonsBox.add( resetButton );
-    	vContentBox.add( buttonsBox );
-    	
-    	JPanel panel = new JPanel();
-    	panel.add( vContentBox );
-    	this.getContentPane().add( panel, java.awt.BorderLayout.CENTER );
-    	this.resetToDefaults();
-    	this.setVisible( true );
 	}
-
+	
+	public void saveParametersToFile( File saveFile )
+	{
+		if( saveFile == null )
+			return;
+		
+		// TODO implement the save
+	}
+	
+	public void add( JPanel panel, ArrayList< AbstractSavableObjectInterface > params )
+	{
+		vContentBox.add( panel );
+		parameters.addAll( params );
+		loadParameters();
+		setVisible( true );
+	}
+	
+	public void loadParameters()
+	{
+		if( saveFile == null )
+		{
+			resetToDefaults();
+			return;
+		}
+		
+		// TODO implement the load
+	}
+	
+	public void finishSetup()
+	{
+		int spacingX = 15;
+		Box hBox = Box.createHorizontalBox();
+		hBox.add( okButton );
+		hBox.add( Box.createRigidArea( new Dimension( spacingX, 0 ) ) );
+		hBox.add( cancelButton );
+		hBox.add( Box.createRigidArea( new Dimension( spacingX, 0 ) ) );
+		hBox.add( resetButton );
+		vContentBox.add( hBox );
+		vContentBox.add( Box.createRigidArea( new Dimension( 0, 25 ) ) );
+		pack();
+		setLocationRelativeTo( null );
+		setVisible( true );
+	}
+	
 	public void resetToDefaults()
 	{
-		if( segmentedTextFields != null && segmentedTextFields != null )
+		for( AbstractSavableObjectInterface param : parameters )
 		{
-			for( int i = 0; i < segmentedTextFields.size(); ++i )
-			{
-				Object val = segmentedTextFields.get( i ).defaultVal;
-				segmentedTextFields.get( i ).val = segmentedTextFields.get( i ).defaultVal;
-				segmentedTextFields.get( i ).setText( segmentedTextFields.get( i ).val.toString() );
-			}
+			param.resetToDefault();
 		}
 	}
 	
 	public static void main( String[] args )
 	{
-		AbstractParametersDialog d = new AbstractParametersDialog();
-		d.addSegmentedTextParameters( GurobiParameters.getSegmentedParameterList(),
-				GurobiParameters.getAbstractDialogMetaData() );
+		AbstractParametersDialog dialog = new AbstractParametersDialog( "Gurobi Parameters Test Dialog", null );
+		GurobiParameters params = new GurobiParameters();
+		dialog.add( params.getDialogFrame(), params.getSavableParameters() );
+		dialog.finishSetup();
+		dialog.setVisible( true );
 	}
 }
