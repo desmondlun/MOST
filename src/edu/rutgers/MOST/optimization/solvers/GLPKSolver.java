@@ -21,6 +21,9 @@ import org.gnu.glpk.glp_prob;
 import org.gnu.glpk.glp_tree;
 
 import edu.rutgers.MOST.data.Model;
+import edu.rutgers.MOST.presentation.AbstractParametersDialog;
+import edu.rutgers.MOST.presentation.GLPKParameters;
+import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.ResizableDialog;
 
 public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, GlpkCallbackListener
@@ -258,15 +261,22 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 				GLPK.glp_set_obj_coef( problem, 1 + coef.idx, coef.value );
 		
 			GlpkCallback.addListener( this );
-			glp_iocp parm = new glp_iocp();
-			GLPK.glp_init_iocp( parm );
-			parm.setPresolve( GLPK.GLP_ON );
-			parm.setTol_int( 1E-9 );
-			parm.setTol_obj( 1E-9 );
+			glp_iocp glpk_params = new glp_iocp();
+			GLPK.glp_init_iocp( glpk_params );
+			glpk_params.setPresolve( GLPK.GLP_ON );
+			
+			// set the parameters
+			AbstractParametersDialog params = GraphicalInterface.getGLPKParameters();
+			glpk_params.setTol_obj( Double.valueOf( 
+				params.getParameter( GLPKParameters.FEASIBILITYTOL_NAME ) ) );
+			glpk_params.setTol_int( Double.valueOf( 
+				params.getParameter( GLPKParameters.INTFEASIBILITYTOL_NAME ) ) );
+			glpk_params.setMip_gap( Double.valueOf( 
+				params.getParameter( GLPKParameters.MIPGAP_NAME ) ) );
 		
 		
 			/* int optres = */// GLPK.glp_simplex( problem, null );
-			int optres = GLPK.glp_intopt( problem, parm );
+			int optres = GLPK.glp_intopt( problem, glpk_params );
 				
 			if( optres != 0 )
 			{

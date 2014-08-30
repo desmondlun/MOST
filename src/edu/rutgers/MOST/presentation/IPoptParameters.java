@@ -36,11 +36,6 @@ public class IPoptParameters
 	public static final double CONSTRAINTOL_MIN_VALUE = 0.0;
 	public static final double CONSTRAINTOL_MAX_VALUE = Double.POSITIVE_INFINITY;
 	
-	public static final String DIVITER_TOL_NAME = "Diverging Iterates Tolerance";
-	public static final int DIVITER_TOL_DEFAULT_VALUE = (int)1E20;
-	public static final int DIVITER_TOL_MIN_VALUE = 0;
-	public static final int DIVITER_TOL_MAX_VALUE = Integer.MAX_VALUE;
-	
 	// layout
 	public static final int DIALOG_WIDTH = 400;
 	public static final int DIALOG_HEIGHT = 320;
@@ -78,8 +73,6 @@ public class IPoptParameters
 		segmentedParameterlist.add( new ADRealSegmentJTextFieldParameter( CONSTRAINTOL_NAME, DUALFEASIBILITYTOL_MIN_VALUE,
 				CONSTRAINTOL_MAX_VALUE, CONSTRAINTOL_DEFAULT_VALUE ) );
 		
-		segmentedParameterlist.add( new ADIntegerSegmentJTextFieldParameter( DIVITER_TOL_NAME, DIVITER_TOL_MIN_VALUE,
-				DIVITER_TOL_MAX_VALUE, DIVITER_TOL_DEFAULT_VALUE) );
 		
 		Box vBox = Box.createVerticalBox();
 		for( JComponent segmentedParameter : segmentedParameterlist )

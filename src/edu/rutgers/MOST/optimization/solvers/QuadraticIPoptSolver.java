@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import org.coinor.Ipopt;
 
 import edu.rutgers.MOST.config.LocalConfig;
+import edu.rutgers.MOST.presentation.AbstractParametersDialog;
+import edu.rutgers.MOST.presentation.GraphicalInterface;
+import edu.rutgers.MOST.presentation.IPoptParameters;
 import edu.rutgers.MOST.presentation.ResizableDialog;
 import edu.rutgers.MOST.presentation.SimpleProgressBar;
 
@@ -96,6 +99,16 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 				vars[ j ] = 0;
 			
 			// this.addNumOption( KEY_OBJ_SCALING_FACTOR, -1.0 );
+			// set IPopt settings
+			AbstractParametersDialog params = GraphicalInterface.getIPOptParameters();
+			this.addNumOption( KEY_MAX_ITER, 
+				Integer.valueOf( params.getParameter( IPoptParameters.MAXITER_NAME ) ) );
+			this.addNumOption( KEY_TOL,
+				Double.valueOf( params.getParameter( IPoptParameters.FEASIBILITYTOL_NAME ) ) );
+			this.addNumOption( KEY_DUAL_INF_TOL,
+				Double.valueOf( params.getParameter( IPoptParameters.DUALFEASIBILITYTOL_NAME ) ) );
+			this.addNumOption( KEY_CONSTR_VIOL_TOL,
+				Double.valueOf( params.getParameter( IPoptParameters.CONSTRAINTOL_NAME ) ) );
 			this.addIntOption( "mumps_mem_percent", 500 );
 			this.solve( vars );
 			

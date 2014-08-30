@@ -26,20 +26,10 @@ public class GLPKParameters
 	public static final double INTFEASIBILITYTOL_MIN_VALUE = 0.0;
 	public static final double INTFEASIBILITYTOL_MAX_VALUE = Double.MAX_VALUE;
 	
-	public static final String DUALFEASIBILITYTOL_NAME = "Dual Feasability Tolerance";
-	public static final double DUALFEASIBILITYTOL_DEFAULT_VALUE = 1E-8;
-	public static final double DUALFEASIBILITYTOL_MIN_VALUE = 0.0;
-	public static final double DUALFEASIBILITYTOL_MAX_VALUE = Double.MAX_VALUE;
-	
-	public static final String RELAXATION_NAME = "Relaxation";
-	public static final double RELAXATION_DEFAULT_VALUE = 0.7;
-	public static final double RELAXATION_MIN_VALUE = 0.0;
-	public static final double RELAXATION_MAX_VALUE = Double.MAX_VALUE;
-	
-	public static final String RELOBJGAP_NAME = "Relative Objective Gap";
-	public static final double RELOBJGAP_DEFAULT_VALUE = 1E-8;
-	public static final double RELOBJGAP_MIN_VALUE = 0.0;
-	public static final double RELOBJGAP_MAX_VALUE = Double.MAX_VALUE;
+	public static final String MIPGAP_NAME = "MIP Gap";
+	public static final double MIPGAP_DEFAULT_VALUE = 0.0;
+	public static final double MIPGAP_MIN_VALUE = 0.0;
+	public static final double MIPGAP_MAX_VALUE = Double.MAX_VALUE;
 	
 	// layout
 	public static final int DIALOG_WIDTH = 400;
@@ -72,14 +62,8 @@ public class GLPKParameters
 		segmentedParameterlist.add( new ADRealSegmentJTextFieldParameter( INTFEASIBILITYTOL_NAME, INTFEASIBILITYTOL_MIN_VALUE,
 				INTFEASIBILITYTOL_MAX_VALUE, INTFEASIBILITYTOL_DEFAULT_VALUE) );
 		
-		segmentedParameterlist.add( new ADRealSegmentJTextFieldParameter( DUALFEASIBILITYTOL_NAME, DUALFEASIBILITYTOL_MIN_VALUE,
-				DUALFEASIBILITYTOL_MAX_VALUE, DUALFEASIBILITYTOL_DEFAULT_VALUE ) );
-		
-		segmentedParameterlist.add( new ADRealSegmentJTextFieldParameter( RELAXATION_NAME, RELAXATION_MIN_VALUE,
-				RELAXATION_MAX_VALUE, RELAXATION_DEFAULT_VALUE ) );
-		
-		segmentedParameterlist.add( new ADRealSegmentJTextFieldParameter( RELOBJGAP_NAME, RELOBJGAP_MIN_VALUE,
-				RELOBJGAP_MAX_VALUE, RELOBJGAP_DEFAULT_VALUE ) );
+		segmentedParameterlist.add( new ADRealSegmentJTextFieldParameter( MIPGAP_NAME, MIPGAP_MIN_VALUE,
+				MIPGAP_MAX_VALUE, MIPGAP_DEFAULT_VALUE ) );
 		
 		Box vBox = Box.createVerticalBox();
 		for( JComponent segmentedParameter : segmentedParameterlist )
