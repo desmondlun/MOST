@@ -1643,34 +1643,6 @@ public class GraphicalInterface extends JFrame {
         			@Override
         			public void run()
         			{
-        				//set up the table model
-                		Utilities u = new Utilities();
-                		final String dateTimeStamp = u.createDateTimeStamp();
-                		final String optimizeName = GraphicalInterfaceConstants.GDBB_PREFIX + LocalConfig.getInstance().getModelName() + dateTimeStamp;
-                		DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
-                		DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
-                		LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
-                		LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
-                		//setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
-                		//setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
-                		listModel.addElement(optimizeName);
-                		setOptimizeName(optimizeName);
-                		//DynamicTreePanel.getTreePanel().addObject(new Solution(optimizeName));
-                		java.awt.EventQueue.invokeLater( new Runnable()
-                		{
-                			@Override
-                			public void run()
-                			{
-                				GISolution parentNode = new GISolution();
-                				parentNode.folderName = optimizeName;
-                				parentNode.isFoldered = false;
-                				parentNode.soln = new ArrayList< Double >();
-                				parentNode.stringBuffer = new StringBuffer();
-                				vecGISolution.add( parentNode );
-                				java.awt.EventQueue.invokeLater( solutionListener );
-                			}
-                		});
-        				
         				//GDBB dialog
         				final GDBBDialog gdbbDialog = new GDBBDialog();
         				gdbbTimer = new javax.swing.Timer(1000, new ActionListener()
@@ -1757,7 +1729,35 @@ public class GraphicalInterface extends JFrame {
             				{
             					gdbbDialog.startButton.setEnabled( false );
             					gdbbDialog.stopButton.setEnabled( true );
-            					gdbbStopped = false;       				
+            					gdbbStopped = false;       			
+            					
+            					//set up the table model
+                        		java.awt.EventQueue.invokeLater( new Runnable()
+                        		{
+                        			@Override
+                        			public void run()
+                        			{
+                        				Utilities u = new Utilities();
+                                		final String dateTimeStamp = u.createDateTimeStamp();
+                                		final String optimizeName = GraphicalInterfaceConstants.GDBB_PREFIX + LocalConfig.getInstance().getModelName() + dateTimeStamp;
+                                		
+                        				DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
+                                		DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
+                                		LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
+                                		LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
+                                		listModel.addElement(optimizeName);
+                                		setOptimizeName(optimizeName);
+                                		
+                        				GISolution parentNode = new GISolution();
+                        				parentNode.folderName = optimizeName;
+                        				parentNode.isFoldered = false;
+                        				parentNode.soln = new ArrayList< Double >();
+                        				parentNode.stringBuffer = new StringBuffer();
+                        				vecGISolution.add( parentNode );
+                        				java.awt.EventQueue.invokeLater( solutionListener );
+                        			}
+                        		});
+            					
             					// check if all entries are valid
             					boolean isValid = true;
             					boolean koIsInteger = true;
@@ -1847,141 +1847,6 @@ public class GraphicalInterface extends JFrame {
         			
         		};
         		t.start();
-        		/*
-        		Utilities u = new Utilities();
-
-        		String dateTimeStamp = u.createDateTimeStamp();
-
-        		String optimizeName = GraphicalInterfaceConstants.GDBB_PREFIX
-        				+ LocalConfig.getInstance().getModelName() + dateTimeStamp;
-        		
-        		// copy models, run optimization on these model
-        		DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
-        		DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
-        		LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
-        		LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
-        		setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
-        		setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
-        		listModel.addElement(optimizeName);
-        		setOptimizeName(optimizeName);
-
-        		// in case timer is running due to no license error
-        		gdbbTimer.stop();
-
-        		timeCount = 0;
-        		dotCount = 0;
-        		gdbbStopped = false;
-
-        		try {
-        			GDBBDialog gdbbDialog = new GDBBDialog();
-        			gdbbDialog.setModal(true);
-        			gdbbDialog.setIconImages(icons);
-        			gdbbDialog.setTitle(GDBBConstants.GDBB_DIALOG_TITLE);
-        			gdbbDialog.setSize(400, 350);
-        			gdbbDialog.setResizable(false);
-        			gdbbDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        			gdbbDialog.setLocationRelativeTo(null);
-        			setGdbbDialog(gdbbDialog);
-//        			if (getSolverName() == GraphicalInterfaceConstants.GLPK_SOLVER_NAME) {
-//        				getGdbbDialog().disableThreadsCombo();
-//        			} else if (getSolverName() == GraphicalInterfaceConstants.GUROBI_SOLVER_NAME) {
-//        				getGdbbDialog().enableThreadsCombo();
-//        			}
-        			gdbbDialog.addWindowListener(new WindowAdapter() {
-        				public void windowClosing(WindowEvent evt) {
-        					if (gdbbTimer.isRunning()) {
-        						Object[] options = {"    Yes    ", "    No    ",};
-        						int choice = JOptionPane.showOptionDialog(null, 
-        								GDBBConstants.FRAME_CLOSE_MESSAGE, 
-        								GDBBConstants.FRAME_CLOSE_TITLE, 
-        								JOptionPane.YES_NO_OPTION, 
-        								JOptionPane.QUESTION_MESSAGE, 
-        								null, options, options[0]);
-        						if (choice == JOptionPane.YES_OPTION) {
-        							stopGDBBAction();
-        						}
-        						if (choice == JOptionPane.NO_OPTION) {
-
-        						}
-        					} else {
-        						getGdbbDialog().setVisible(false);
-        						getGdbbDialog().dispose();
-        					}
-        				}
-        			});	
-
-        			gdbbDialog.startButton.addActionListener(new ActionListener() {
-        				public void actionPerformed(ActionEvent prodActionEvent) {
-        					gdbbStopped = false;       				
-        					// check if all entries are valid
-        					boolean isValid = true;
-        					boolean koIsInteger = true;
-        					boolean finiteTimeIsInteger = true;
-        					try {
-        						Integer.parseInt(getGdbbDialog().getNumKnockouts());
-        					}
-        					catch(NumberFormatException nfe2) {
-        						isValid = false;
-        						koIsInteger = false;
-        					}
-        					if (getGdbbDialog().finiteTimeSelected) {
-        						try {
-        							Integer.parseInt(getGdbbDialog().getFiniteTimeString());
-        						}
-        						catch(NumberFormatException nfe2) {
-        							isValid = false;
-        							finiteTimeIsInteger = false;
-        						}
-        					}        				
-        					if (!isValid) {
-        						JOptionPane.showMessageDialog(null,                
-        								GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_TITLE,                
-        								GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_MESSAGE,                               
-        								JOptionPane.ERROR_MESSAGE);
-        						if (!koIsInteger) {
-        							getGdbbDialog().setKnockoutDefaultValue();
-        						}
-        						if (!finiteTimeIsInteger) {
-        							getGdbbDialog().setFiniteTimeDefaultValue();
-        						}
-        					} else {
-        						// run gdbb
-        						getGdbbDialog().disableComponents();
-        						getGdbbDialog().stopButton.setEnabled(true);
-        						gdbbTimer.start();
-        						String solutionName = GraphicalInterface.listModel.get(GraphicalInterface.listModel.getSize() - 1);
-        						DynamicTreePanel.getTreePanel().addObject(new Solution(solutionName, solutionName));
-
-        						gdbbTask = new GDBBTask();
-
-        						gdbbTask.getModel().setC((new Double(getGdbbDialog().getNumKnockouts())).doubleValue());
-        						gdbbTask.getModel().setTimeLimit((new Double(getGdbbDialog().getFiniteTimeString())).doubleValue());
-
-        						if (!getGdbbDialog().finiteTimeSelected) {
-        							gdbbTask.getModel().setTimeLimit(Double.POSITIVE_INFINITY);
-        						}
-        						else {
-        							gdbbTask.getModel().setTimeLimit((new Double(getGdbbDialog().getFiniteTimeString())).doubleValue());
-        						}
-
-        						//gdbbTask.getModel().setThreadNum((Integer)getGdbbDialog().cbNumThreads.getSelectedItem());
-        						gdbbTask.getModel().setThreadNum(getGdbbDialog().selectedNumberOfThreads());
-        						gdbbTask.execute();
-        						gdbbRunning = true;
-        						gdbbProcessed = false;
-        					}       				
-        				}
-        			});
-
-        			gdbbDialog.stopButton.addActionListener(new ActionListener() {
-        				public void actionPerformed(ActionEvent prodActionEvent) {
-        					stopGDBBAction();
-        				}
-        			});
-        			gdbbDialog.setVisible(true);
-        		} catch (Exception e) {
-        			
-        		}*/
         	}
         });
 
