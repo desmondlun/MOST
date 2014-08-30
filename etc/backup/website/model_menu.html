@@ -1,0 +1,317 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>MOST - Metabolic Optimization and Simulation Tool</title>
+<LINK href="main.css" rel="stylesheet" type="text/css">
+<meta name="description" content="" />
+<STYLE>
+<!--
+A{text-decoration:none}
+-->
+</STYLE>
+</head>
+<body bgcolor=ffffff text=000000 link=a0a0a0 vlink=a0a0ff alink=a0a000>
+
+	<table align=center cellspacing="0" cellpadding="0"><tr height=15>
+		<td align=center width=120><p><a href="index.html" name="top">Home</a></p></td>
+		<td align=center width=120><p><a href="download.html">Software</a></p></td>
+		<td align=center width=120><p><a href="publications.html">Publications</a></p></td>
+		<td align=center width=120><p><a href="people.html">People</a></p></td>
+		<td align=center width=120><p><a href="help.html">Help</a></p></td>
+		<td align=center width=120><p><a href="tutorials.html">Tutorials</a></p></td>
+	</table>
+
+			<!-- Title -->
+	
+	<!-- Title -->
+	
+	<p align=center><font size=7><a href="index.html">MOST</a></font></p>
+	<p align=center><font size=5>Metabolic Optimization and Simulation Tool</font></p>
+	<hr>
+	
+	<table width=1000 cellspacing="1" cellpadding="1">
+	<tr>
+	<td width=140 valign=top bgcolor=a0a0a0 align=top>
+	<p><font size=3>Help Topics</font></p>
+
+	<p><font size=2><a href="help.html#contact">Contact</a></font></p>
+
+	<p><font size=2><a href="help.html#about">About MOST</a></font></p>
+
+	<p><font size=2><a href="help.html#overview">Overview </a></font></p>
+	<ul><li><font size=2><a href="help.html#sort">Sorting Tables</a></font></li>
+	<li><font size=2><a href="help.html#sort">Formula Bar</a></font></li></ul>
+
+	<p><font size=2><a href="installing_most.html">Installing MOST</a></font></p>
+	<ul><li><font size=2><a href="installing_most.html#req">Requirements</a></font></li>
+
+	<li><font size=2><a href="installing_most.html#win">Windows</a></font></li>
+	<ul><li><font size=2><a href="installing_most.html#issues">Known Issues</a></font></li></ul>
+
+	<li><font size=2><a href="installing_most.html#linux">Linux</a></font></li>
+	<li><font size=2><a href="installing_most.html#mac">Macintosh</a></font></li></ul>
+
+	<p><font size=2>Model Menu</font></p>
+
+	<ul><li><font size=2><a href="#loadsbml">Load SBML</a></font></li>
+	<li><font size=2><a href="#loadcsv">Load CSV</a></font></li>
+
+	<ul><li><font size=2><a href="#mcol">Metabolites Column Selector</a></font></li>
+	<li><font size=2><a href="#rcol">Reactions Column Selector</a></font></li>
+	<li><font size=2><a href="#addmetab">Add Metabolite Prompt</a></font></li></ul>
+
+	<li><font size=2><a href="#excel">Load Excel Spreadsheets</a></font></li>
+	<li><font size=2><a href="#collection">Load from Model Collection</a></font></li>
+	<li><font size=2><a href="#saving">Saving Files</a></font></li>
+
+	<ul><li><font size=2><a href="#save">Save</a></font></li>
+	<li><font size=2><a href="#savesbml">Save As SBML</a></font></li>
+	<li><font size=2><a href="#savecsv">Save As CSV</a></font></li></ul>
+
+	<li><font size=2><a href="#clear">Clear Tables</a></font></li>
+	<li><font size=2><a href="#exit">Exit</a></font></li></ul>
+
+	<p><font size=2><a href="analysis_menu.html">Analysis Menu</a></font></p>
+
+	<ul><li><font size=2><a href="analysis_menu.html#fba">FBA</a></font></li>
+	<li><font size=2><a href="analysis_menu.html#gdbb">GDBB</a></font></li>
+	<li><font size=2><a href="analysis_menu.html#eflux2">E-Flux2</a></font></li>
+	<li><font size=2><a href="analysis_menu.html#spot">SPOT</a></font></li></ul>
+
+	<p><font size=2><a href="edit_menu.html">Edit Menu</a></font></p>
+
+	<ul><li><font size=2><a href="edit_menu.html#unused">Unused Metabolites</a></font></li>
+	<li><font size=2><a href="edit_menu.html#suspicious">Suspicious Metabolites</a></font></li>
+	<li><font size=2><a href="edit_menu.html#undo">Undo/Redo</a></font></li>
+	<li><font size=2><a href="edit_menu.html#find">Find/Replace</a></font></li>
+	<li><font size=2><a href="edit_menu.html#select">Select All</a></font></li>
+	<li><font size=2><a href="edit_menu.html#add">Add Row/Column</a></font></li>
+	<li><font size=2><a href="edit_menu.html#unsort">Unsort</a></font></li></ul>
+
+	<p><font size=2><a href="options_menu.html">Options Menu</a></font></p>
+
+	<ul><li><font size=2><a href="select_solvers.html">Select Solvers</a></font></li>
+	<li><font size=2><a href="solver_parameters.html">Set Solver Parameters</a></font></li></ul>
+
+	<p><font size=2><a href="toolbar.html">Toolbar</a></font></p>
+
+	<ul><li><font size=2><a href="toolbar.html#save">Save</a></font></li>
+	<li><font size=2><a href="toolbar.html#copy">Copy/Paste</a></font></li>
+	<li><font size=2><a href="toolbar.html#undo">Undo/Redo</a></font></li>
+	<li><font size=2><a href="toolbar.html#find">Find/Replace</a></font></li></ul>
+
+	<p><font size=2><a href="context_menu.html">Context Menus</a></font></p>
+
+	<ul><li><font size=2><a href="context_menu.html#table">Table Menus</a></font></li>
+	<ul><li><font size=2><a href="context_menu.html#select">Select Row(s)/Column(s)/Cell(s)</a></font></li>
+	<li><font size=2><a href="context_menu.html#selectall">Select All</a></font></li>
+	<li><font size=2><a href="context_menu.html#copy">Copy/Paste</a></font></li>
+	<li><font size=2><a href="context_menu.html#clear">Clear Contents</a></font></li>
+	<li><font size=2><a href="context_menu.html#delrow">Delete Row(s)</a></font></li>
+	<li><font size=2><a href="context_menu.html#rename">Rename</a></font></li>
+	<li><font size=2><a href="context_menu.html#highpar">Highlight Participating Reactions</a></font></li>
+	<li><font size=2><a href="context_menu.html#unhighpar">Un-Highlight Participating Reactions</a></font></li>
+	<li><font size=2><a href="context_menu.html#reac">Reaction Editor</a></font></li></ul>
+	<li><font size=2><a href="context_menu.html#header">Table Header Menus</a></font></li>
+	<ul><li><font size=2><a href="context_menu.html#delcol">Delete Column</a></font></li></ul>
+	<li><font size=2><a href="context_menu.html#formula">Formula Bar Menu</a></font></li>
+	<li><font size=2><a href="context_menu.html#console">Console Menu</a></font></li>
+	<ul><li><font size=2><a href="context_menu.html#popout">Console Popout</a></font></li></ul>
+	<li><font size=2><a href="context_menu.html#tree">Tree Menu</a></font></li></ul>
+
+	<p><font size=2><a href="keyboard_shortcuts.html">Keyboard Shortcuts</a></font></p>
+	<ul><li><font size=2><a href="keyboard_shortcuts.html#shortcuts">List of Keyboard Shortcuts</a></font></li></ul>
+
+	</td>
+
+	<td width=600 valign=top>
+	<p align=center><font size=5>Model Menu</font></p>
+
+	<blockquote>The MOST Model Menu is used for loading and saving of files, as well as clearing the tables and exiting the application.
+	</blockquote>
+
+	<blockquote>Note that if any changes have been made or Optimizations have been run previously to performing any load or Clear 
+	Tables actions, the “Save Changes” prompt will appear.</blockquote>
+
+	<br>
+	<p><a name="loadsbml">  Load SBML:</a></p>
+	<blockquote>Select Model –> Load SBML (Alt+M then Alt+L) then select a file with an “.xml” or “.sbml” extension that is a 
+	valid SBML file. If the file is not valid, a message will appear.</blockquote>
+
+	<blockquote>The Progress Bar will appear.</blockquote>  
+
+	<p align="center"><a href="images/loadsbml.jpg" target="_blank">
+	<img src ="images/loadsbml.jpg" alt="Image - Load SBML" border="0" height="90%" width="90%"></a></p>
+
+	<blockquote>When the file has completed loading, the Progress Bar will close.</blockquote>  
+
+	<p align="center"><img src ="images/loadsbml2.jpg" alt="Image - Load SBML2" border="0" height="90%" width="90%"></p>
+
+	<br>
+	<p><a name="loadcsv">  Load CSV:</a></p>
+	<blockquote>MOST can load CSV files of reactions and CSV files of metabolites. If a reactions file 
+	is loaded and a reactant is encountered that is not present in the Metabolites table, MOST will prompt the user to add it. 
+	If a reaction file is loaded by itself, the file will generate the metabolites for the Metabolites table. One note: if a reactions 
+	CSV file is loaded by itself, all the boundary conditions will be set to “false” by default for the generated Metabolites table.
+	</blockquote>
+
+	<blockquote>Select Model –> Load CSV (Alt+M then Alt+V)</blockquote>
+
+	<blockquote>The CSV File Load Interface will appear.</blockquote>
+
+	<p align="center"><a href="images/load_csv1.jpg" target="_blank">
+	<img src ="images/load_csv1.jpg" alt="Image - Load CSV 1" border="0" height="90%" width="90%"></a></p>
+
+	<blockquote>Click the Load Metabolites File button to select a metabolites CSV file and the Load Reactions File button 
+	to select a reactions CSV file.</blockquote>
+
+	<p align="center"><a href="images/load_csv2.jpg" target="_blank">
+	<img src ="images/load_csv2.jpg" alt="Image - Load CSV 2" border="0" height="90%" width="90%"></a></p>
+
+	<p><a name="mcol">  Metabolites Column Selector:</a></p>
+	<blockquote>If a metabolites file is selected, the Metabolite Column Selector Interface will appear above the main interface. 
+	If the columns selected for core columns are not correct, use the drop boxes to choose the correct column from the file for 
+	that column.</blockquote>
+
+	<blockquote>If a metabolites file was not selected, skip ahead to reactions CSV.</blockquote>
+
+	<blockquote>If a column is not present in the file, leave the field blank.</blockquote>
+
+	<blockquote>If the CSV file has a row before the row with the column names as the example below has “Required”, 
+	“Recommended” and “Optional” in the first row, click the “Next Row” button to get to the next row.</blockquote>	
+
+	<p align="center"><a href="images/load_csv3.jpg" target="_blank">
+	<img src ="images/load_csv3.jpg" alt="Image - Load CSV 3" border="0" height="90%" width="90%"></a></p>
+
+	<blockquote>The Metabolite Column Selector should look similar to this after columns have been selected. 
+	Metabolites Abbreviation is a required field and hence cannot be blank.</blockquote>
+
+	<p align="center"><a href="images/load_csv4.jpg" target="_blank">
+	<img src ="images/load_csv4.jpg" alt="Image - Load CSV 4" border="0" height="90%" width="90%"></a></p>
+
+	<blockquote>Click “OK”</blockquote>
+
+	<p><a name="rcol">  Reactions Column Selector:</a></p>
+	<blockquote>If a reactions file is selected, the Reaction Column Selector Interface will appear above the 
+	main interface. If the columns selected for core columns are not correct, use the drop boxes to choose the 
+	correct column from the file for that column. If a column is not present in the file, leave the field blank.
+	</blockquote>	
+
+	<blockquote>If the CSV file has a row before the row with the column names as the example below has 
+	“Required” , “Recommended” and “Optional” in the first row, click the “Next Row” button to get to the next row.
+	</blockquote>
+
+	<blockquote>Reaction Abbreviation and Reaction Equation are required fields and hence cannot be blank.
+	</blockquote>
+
+	<p align="center"><a href="images/load_csv5.jpg" target="_blank">
+	<img src ="images/load_csv5.jpg" alt="Image - Load CSV 5" border="0" height="60%" width="60%"></a></p>
+
+	<blockquote>Click “OK”</blockquote>
+
+	<p><a name="addmetab">  Add Metabolite Prompt:</a></p>
+	<blockquote>The file will now load. If there are any reactions that have metabolites/compounds that are not present in the 
+	Metabolites table, the Add Metabolite prompt will appear:</blockquote>
+
+	<p align="center"><a href="images/load_csv6.jpg" target="_blank">
+	<img src ="images/load_csv6.jpg" alt="Image - Load CSV 6" border="0" height="90%" width="90%"></a></p>
+
+	<blockquote>Click “Yes” to add the metabolite, “Yes to All” to suppress the prompt for the rest of the load, or “No” to not add 
+	the metabolite. If “No” is pressed, the metabolite will also be removed from the reaction.</blockquote>
+
+	<br>
+	<p><a name="excel"> Load Excel Spreadsheets:</a></p>
+	<blockquote>In order to load Microsoft Excel spreadsheets, save each table as CSV (Comma delimited).</blockquote>
+
+	<br>
+	<p><a name="collection"> Load from Model Collection:</a></p>
+	<blockquote>MOST has a Model Collection Database - a collection of published models that can be loaded using this menu item.</blockquote>
+
+	<blockquote>Select Model –> Load from Model Collection Database (Alt+M then Alt+D)</blockquote>
+
+	<blockquote>The Model Collection table will appear.</blockquote>
+
+	<blockquote>Select a row on this table that corresponds to the desired model, then click “OK”.</blockquote>
+
+	<p align="center"><a href="images/modelcollection.jpg" target="_blank">
+	<img src ="images/modelcollection.jpg" alt="Image - Model Collection" border="0" height="90%" width="90%"></p>
+
+	<blockquote><a href="http://blog.theseed.org/model_seed/">Model Seed</a> has a large collection of models in SBML format that have
+	been tested to load on MOST.</blockquote>
+	
+
+	<br>
+	<p><a name="saving"> Saving Files:</a></p>
+
+	<blockquote>MOST can save files in SBML and CSV file formats.  SBML requires that Reaction Abbreviation and 
+	Metabolite Abbreviation (Reaction Id and Metabolite Id in SBML files) only contain alphanumeric characters 
+	(A-Z, a-z, 0-9) and underscores (_), so when any other character is found in these columns, the character will be replaced 
+	with an underscore. Also to conform with the format of many SBML files, if a Reaction Abbreviation does not start 
+	with “R_” (or “r_”) or a Metabolite Abbreviation does not start with “M_”, “S_” (or “m_”, “s_”), the appropriate prefix will 
+	be added to the abbreviation. The remaining fields cannot contain an ampersand (&amp;). Also, non- ASCII characters 
+	are not permitted, and will be replaced with an underscore (_).</blockquote>
+
+	<blockquote>Save as CSV does not have these requirements and it will save the file as it appears.</blockquote>
+
+	<blockquote>Since save will overwrite the loaded file, it is advisable to make a copy of the file using Save As, 
+	and then use the copy for editing.If a model is loaded from the <a href="#collection">Model Collection</a>, Save will be grayed out to
+	prevent corrupting the model.</blockquote>
+
+	<p><a name="save"> Save:</a></p>
+
+	<blockquote>Select Model –> Save (Alt+M then Alt+S or Ctrl+S). Save will automatically save as SBML if the loaded file is an SBML file or 
+	save as CSV if the loaded files are CSV files.</blockquote> 
+
+	<blockquote>If no files have been loaded or only a CSV Reactions file or CSV Metabolites file has been loaded, the "Save As CSV" dialog will be
+	displayed since no path exists for saving the other file. The default save file format is CSV since saving SBML may require modifying the 
+	Reaction Abbreviation cells or Metabolite Abbreviation cells if they are blank or not valid SBML format.</blockquote>
+
+	<p align="center"><img src ="images/save_as_csv.jpg" alt="Image - Save As CSV" border="0"></p>
+
+	<p><a name="savesbml"> Save As SBML:</a></p>
+
+	<blockquote>Select Model –> Save As SBML (Alt+M then Alt+B), and enter the name to use to save the file. The file will be saved 
+	with an “.xml” extension. There is also a Save button in the toolbar. If the loaded file is from the Model Collection, 
+	the Save menu item and Save button will be grayed out. In order enable the Save menu item and Save button, use 
+	Save As SBML to save a copy to another directory such as My Documents.</blockquote>
+
+	<blockquote>If an extension is not typed into the file chooser, it will automatically be added.</blockquote>
+
+	<p><a name="savecsv"> Save As CSV:</a></p>
+
+	<blockquote>Select Model –> Save As CSV (Alt+M then Alt+A).
+	</blockquote>
+
+	<blockquote>The Save As CSV dialog will appear.</blockquote>
+
+	<p align="center"><img src ="images/save_as_csv.jpg" alt="Image - Save As CSV" border="0"></p>
+
+	<blockquote>Click "Save Metabolites File" or "Save Reactions File" buttons, to save the files. 
+	Each button will launch a file browser. The files will be saved with a “.csv” extension.</blockquote>
+
+	<blockquote>It is recommended that the file names for CSV files consist of the model name followed by a suffix such as 
+	“_reactions” or “_rxn” and “_metabolites” or “_mtb”.</blockquote>
+
+	<blockquote>If an extension is not typed into the file chooser, it will automatically be added.</blockquote>
+
+	<br>
+	<p><a name="clear"> Clear Tables:</a></p>
+
+	<blockquote>Select Model –> Clear Tables (Alt+M then Alt+C).</blockquote>
+
+	<blockquote>This function will clear both tables. Each blank table has 2000 rows.
+	</blockquote>
+
+	<br>
+	<p><a name="exit"> Exit:</a></p>
+
+	<blockquote>Select Model –> Exit (Alt+M then Alt+X) or click the “X” (frame close button) on top right corner. 
+	A prompt will be displayed if there are any changes or optimizations to save.</blockquote>
+
+	</td>
+	</tr>
+	</table>
+
+</body>
+</html>
