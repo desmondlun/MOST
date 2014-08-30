@@ -31,6 +31,14 @@ public class AbstractParametersDialog extends JDialog
 	private JButton resetButton = new JButton( "Reset to Defaults" );
 	private File saveFile = null;
 	
+	public String getParameter( String name )
+	{
+		for( AbstractSavableObjectInterface param : parameters )
+			if( param.getName().equals( name ) )
+				return param.getValue();
+		return null;
+	}
+	
 	public AbstractParametersDialog( final String name, final File saveFile )
 	{
 		this.saveFile = saveFile;
