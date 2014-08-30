@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 public class IPoptParameters
 {
 	public static final String TITLE = "IPopt Parameters";
-	public static final String GLPK_PARAMETERS_MENU_ITEM = "Set IPopt Properties";
+	public static final String IPOPT_PARAMETERS_MENU_ITEM = "Set IPopt Properties";
 	
 	// source of names of parameters
 	// http://www.coin-or.org/Ipopt/documentation/node41.html

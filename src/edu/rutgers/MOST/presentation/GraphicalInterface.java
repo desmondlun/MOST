@@ -379,11 +379,6 @@ public class GraphicalInterface extends JFrame {
 		return gurobiParametersDialog;
 	}
 
-	public static void setGurobiParametersDialog(
-			GurobiParametersDialog gurobiParametersDialog) {
-		GraphicalInterface.gurobiParametersDialog = gurobiParametersDialog;
-	}
-
 	private static MetaboliteColAddRenameInterface metaboliteColAddRenameInterface;   
 
 	public void setMetaboliteColAddRenameInterface(MetaboliteColAddRenameInterface metaboliteColAddRenameInterface) {
@@ -621,7 +616,9 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem unsortMetabMenuItem = new JMenuItem("Unsort Metabolites Table");
 	public final JMenuItem setUpSolver = new JMenuItem("Select Solvers");
 	public final JMenuItem gurobiParametersItem = new JMenuItem(GurobiParameters.GUROBI_PARAMETERS_MENU_ITEM);
-
+	public final JMenuItem glpkParametersItem = new JMenuItem( GLPKParameters.GLPK_PARAMETERS_MENU_ITEM );
+	public final JMenuItem ipOptParametersItem = new JMenuItem( IPoptParameters.IPOPT_PARAMETERS_MENU_ITEM );
+	
 	public final JMenuItem formulaBarCutItem = new JMenuItem("Cut");
 	public final JMenuItem formulaBarCopyItem = new JMenuItem("Copy");
 	public final JMenuItem formulaBarPasteItem = new JMenuItem("Paste");
@@ -873,66 +870,22 @@ public class GraphicalInterface extends JFrame {
 	// solver properties
 	/*****************************************************************************/
 	
-	private static double gurobiFeasibility;
-	
-	public static double getGurobiFeasibility() {
-		return gurobiFeasibility;
+	private static AbstractParametersDialog gurobiParameters = null;
+	public static AbstractParametersDialog getGurobiParameters()
+	{
+		return gurobiParameters;
 	}
-
-	public static void setGurobiFeasibility(double gurobiFeasibility) {
-		GraphicalInterface.gurobiFeasibility = gurobiFeasibility;
+	private static AbstractParametersDialog glpkParameters = null;
+	public static AbstractParametersDialog getGLPKParameters()
+	{
+		return glpkParameters;
 	}
-    
-	private static double gurobiIntFeasibility;
-	
-	public static double getGurobiIntFeasibility() {
-		return gurobiIntFeasibility;
-	}
-
-	public static void setGurobiIntFeasibility(double gurobiIntFeasibility) {
-		GraphicalInterface.gurobiIntFeasibility = gurobiIntFeasibility;
+	private static AbstractParametersDialog ipOptParameters = null;
+	public static AbstractParametersDialog getIPOptParameters()
+	{
+		return ipOptParameters;
 	}
 	
-	private static double gurobiOptimality;
-	
-	public static double getGurobiOptimality() {
-		return gurobiOptimality;
-	}
-
-	public static void setGurobiOptimality(double gurobiOptimality) {
-		GraphicalInterface.gurobiOptimality = gurobiOptimality;
-	}
-
-	private static double gurobiHeuristics;
-	
-	public static double getGurobiHeuristics() {
-		return gurobiHeuristics;
-	}
-
-	public static void setGurobiHeuristics(double gurobiHeuristics) {
-		GraphicalInterface.gurobiHeuristics = gurobiHeuristics;
-	}
-
-	private static int gurobiMIPFocus;
-	
-	public static int getGurobiMIPFocus() {
-		return gurobiMIPFocus;
-	}
-
-	public static void setGurobiMIPFocus(int gurobiMIPFocus) {
-		GraphicalInterface.gurobiMIPFocus = gurobiMIPFocus;
-	}
-
-	private static int gurobiNumThreads;
-
-	public static int getGurobiNumThreads() {
-		return gurobiNumThreads;
-	}
-
-	public static void setGurobiNumThreads(int gurobiNumThreads) {
-		GraphicalInterface.gurobiNumThreads = gurobiNumThreads;
-	}
-
 	/*****************************************************************************/
 	// end solver properties
 	/*****************************************************************************/
@@ -1247,20 +1200,10 @@ public class GraphicalInterface extends JFrame {
 			}
 		});	
 		
-		setGurobiParametersDialog( new GurobiParametersDialog() );
-		getGurobiParametersDialog().setIconImages(icons);					
-		getGurobiParametersDialog().setSize(GurobiParameters.DIALOG_WIDTH, GurobiParameters.DIALOG_HEIGHT);
-		getGurobiParametersDialog().setResizable(false);
-		getGurobiParametersDialog().setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		getGurobiParametersDialog().setLocationRelativeTo(null);		
-		getGurobiParametersDialog().setModal(true);
-		getGurobiParametersDialog().okButton.addActionListener(gurOKActionListener);
-		getGurobiParametersDialog().addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent evt) {
-				getGurobiParametersDialog().setVisible(false);
-				getGurobiParametersDialog().dispose();
-			}
-		});	
+		gurobiParameters = new GurobiParametersDialog( new File( "Gurobi.properties" ) );
+		glpkParameters = new GLPKParametersDialog( new File( "GLPK.properties" ) );
+		ipOptParameters = new IPoptParametersDialog( new File( "IPopt.properties" ) );
+		
 		
 		setTitle(GraphicalInterfaceConstants.TITLE);
 		LocalConfig.getInstance().setModelName(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME);
@@ -2797,36 +2740,37 @@ public class GraphicalInterface extends JFrame {
 		} else {
 			gurobiParametersItem.setEnabled(false);
 		}
-		gurobiParametersItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent a) {
-				// sets items in fields based on items in config file if not null
-				ConfigProperties configProp = new ConfigProperties();
-				if (configProp.fileExists()) {
-					ConfigProperties.readFile();
-					if (ConfigProperties.getGurobiFeasibility() != null) {
-						getGurobiParametersDialog().feasibilityField.setText(ConfigProperties.getGurobiFeasibility());
-					} 
-					if (ConfigProperties.getGurobiIntFeasibility() != null) {
-						getGurobiParametersDialog().intFeasibilityField.setText(ConfigProperties.getGurobiIntFeasibility());
-					} 
-					if (ConfigProperties.getGurobiOptimality() != null) {
-						getGurobiParametersDialog().optimalityField.setText(ConfigProperties.getGurobiOptimality());
-					} 
-					if (ConfigProperties.getGurobiHeuristics() != null) {
-						getGurobiParametersDialog().heuristicsField.setText(ConfigProperties.getGurobiHeuristics());
-					} 
-					if (ConfigProperties.getGurobiMipFocus() != null) {
-						getGurobiParametersDialog().selectMIPFocus(ConfigProperties.getGurobiMipFocus());
-					} 
-					if (ConfigProperties.getGurobiNumThreads() != null) {
-							getGurobiParametersDialog().selectNumberOfThreads(ConfigProperties.getGurobiNumThreads());
-							getGurobiParametersDialog().cbNumThreads.setEnabled(true);
-					} 
-				}
-				getGurobiParametersDialog().setVisible(true);
+		gurobiParametersItem.addActionListener( new ActionListener()
+		{
+			public void actionPerformed(ActionEvent a)
+			{
+				gurobiParameters.setVisible( true );
 			}    	     
-		});
+		} );
 
+		optionsMenu.add( glpkParametersItem );
+		glpkParametersItem.setMnemonic( KeyEvent.VK_G );
+		glpkParametersItem.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( ActionEvent evt )
+			{
+				glpkParameters.setVisible( true );
+			}
+		} );
+		
+		optionsMenu.add( ipOptParametersItem );
+		ipOptParametersItem.setMnemonic( KeyEvent.VK_I );
+		ipOptParametersItem.addActionListener( new ActionListener()
+		{
+			@Override
+			public void actionPerformed( ActionEvent evt )
+			{
+				ipOptParameters.setVisible( true );
+			}
+		} );
+		
+		
 		menuBar.add(optionsMenu);
 
 		JMenu helpMenu = new JMenu("Help");
@@ -11940,53 +11884,6 @@ public class GraphicalInterface extends JFrame {
 		gurobiParametersItem.setEnabled(false);
 	}
 	
-	/**
-	 * Writes Gurobi Properties to file
-	 */
-	ActionListener gurOKActionListener = new ActionListener() {
-		public void actionPerformed(ActionEvent ae) {
-			if (!getGurobiParametersDialog().validEntries()) {
-				JOptionPane.showMessageDialog(null, 
-						getGurobiParametersDialog().getErrorMessage(),
-						"Invalid entries",                                            
-						JOptionPane.ERROR_MESSAGE);
-			} else {
-				String feasibility = getGurobiParametersDialog().feasibilityField.getText();
-				String intFeasibility = getGurobiParametersDialog().intFeasibilityField.getText();
-				String optimality = getGurobiParametersDialog().optimalityField.getText();
-				String heuristics = getGurobiParametersDialog().heuristicsField.getText();
-				String mipFocus = getGurobiParametersDialog().selectedMIPFocus().toString();
-				String numThreads = getGurobiParametersDialog().selectedNumberOfThreads().toString();
-				ConfigProperties configProp = new ConfigProperties();
-				String linear = "";
-				String quadratic = "";
-				if(GurobiSolver.isGurobiLinked()){
-					linear = GraphicalInterfaceConstants.GUROBI_SOLVER_NAME;
-					quadratic = GraphicalInterfaceConstants.GUROBI_SOLVER_NAME;
-				}
-				else {
-					linear = GraphicalInterfaceConstants.GLPK_SOLVER_NAME;
-					quadratic = GraphicalInterfaceConstants.IPOPT_SOLVER_NAME;
-				}
-				String nonlinear = GraphicalInterfaceConstants.IPOPT_SOLVER_NAME;
-				if (configProp.fileExists()) {
-					ConfigProperties.readFile();
-					if (ConfigProperties.getMixedIntegerLinearSolverName() != null) {
-						linear = ConfigProperties.getMixedIntegerLinearSolverName();
-					}
-					if (ConfigProperties.getQuadraticSolverName() != null) {
-						quadratic = ConfigProperties.getQuadraticSolverName();
-					}
-					if (ConfigProperties.getNonlinearSolverName() != null) {
-						nonlinear = ConfigProperties.getNonlinearSolverName();
-					}
-				}
-				ConfigProperties.writeToFile(linear, quadratic, nonlinear, feasibility, intFeasibility, optimality, heuristics, mipFocus, numThreads);
-				getGurobiParametersDialog().setVisible(false);
-			}
-		}
-	};
-	
 	/******************************************************************************/
 	// end Solver Set Up methods
 	/******************************************************************************/
@@ -12092,37 +11989,6 @@ public class GraphicalInterface extends JFrame {
 				if (ConfigProperties.getNonlinearSolverName().equals(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME)) {
 					setNonlinearSolverName(GraphicalInterfaceConstants.IPOPT_SOLVER_NAME);
 				} 
-			}
-			
-			if (ConfigProperties.getGurobiFeasibility() != null) {
-				setGurobiFeasibility(Double.parseDouble(ConfigProperties.getGurobiFeasibility()));
-			} else {
-				setGurobiFeasibility(GurobiParameters.FEASIBILITYTOL_DEFAULT_VALUE);
-			}
-			if (ConfigProperties.getGurobiIntFeasibility() != null) {
-				setGurobiIntFeasibility(Double.parseDouble(ConfigProperties.getGurobiIntFeasibility()));
-			} else {
-				setGurobiIntFeasibility(GurobiParameters.INTFEASIBILITYTOL_DEFAULT_VALUE);
-			}
-			if (ConfigProperties.getGurobiOptimality() != null) {
-				setGurobiOptimality(Double.parseDouble(ConfigProperties.getGurobiOptimality()));
-			} else {
-				setGurobiOptimality(GurobiParameters.OPTIMALITYTOL_DEFAULT_VALUE);
-			}
-			if (ConfigProperties.getGurobiHeuristics() != null) {
-				setGurobiHeuristics(Double.parseDouble(ConfigProperties.getGurobiHeuristics()));
-			} else {
-				setGurobiHeuristics(GurobiParameters.HEURISTICS_DEFAULT_VALUE);
-			}
-			if (ConfigProperties.getGurobiMipFocus() != null) {
-				setGurobiMIPFocus(Integer.parseInt(ConfigProperties.getGurobiMipFocus()));
-			} else {
-				setGurobiMIPFocus(GurobiParameters.MIPFOCUS_DEFAULT_VALUE);
-			}
-			if (ConfigProperties.getGurobiNumThreads() != null) {
-				setGurobiNumThreads(Integer.parseInt(ConfigProperties.getGurobiNumThreads()));
-			} else {
-				setGurobiNumThreads(GurobiParameters.MAX_NUM_THREADS);
 			}
 		}
 	}

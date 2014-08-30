@@ -15,7 +15,9 @@ import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
+import edu.rutgers.MOST.presentation.AbstractParametersDialog;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
+import edu.rutgers.MOST.presentation.GurobiParameters;
 import edu.rutgers.MOST.presentation.ResizableDialog;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.config.LocalConfig;
@@ -287,12 +289,19 @@ public abstract class GurobiSolver implements MILSolver
 	{
 		try
 		{
-			env.set( GRB.IntParam.Threads, GraphicalInterface.getGurobiNumThreads() );
-			env.set( GRB.IntParam.MIPFocus, GraphicalInterface.getGurobiMIPFocus() );
-			env.set( GRB.DoubleParam.FeasibilityTol, GraphicalInterface.getGurobiFeasibility() );
-			env.set( GRB.DoubleParam.IntFeasTol, GraphicalInterface.getGurobiIntFeasibility() );
-			env.set( GRB.DoubleParam.Heuristics, GraphicalInterface.getGurobiHeuristics() );
-			env.set( GRB.DoubleParam.OptimalityTol, GraphicalInterface.getGurobiOptimality() );
+			AbstractParametersDialog params = GraphicalInterface.getGurobiParameters();
+			env.set( GRB.IntParam.Threads, 
+				Integer.valueOf( params.getParameter( GurobiParameters.NUM_THREADS_NAME ) ) );
+			env.set( GRB.IntParam.MIPFocus,
+				Integer.valueOf( params.getParameter( GurobiParameters.MIPFOCUS_NAME ) ) );
+			env.set( GRB.DoubleParam.FeasibilityTol,
+				Double.valueOf( params.getParameter( GurobiParameters.FEASIBILITYTOL_NAME ) ) );
+			env.set( GRB.DoubleParam.IntFeasTol,
+				Double.valueOf( params.getParameter( GurobiParameters.INTFEASIBILITYTOL_NAME ) ) );
+			env.set( GRB.DoubleParam.Heuristics, 
+				Double.valueOf( params.getParameter( GurobiParameters.HEURISTICS_NAME ) ) );
+			env.set( GRB.DoubleParam.OptimalityTol,
+				Double.valueOf( params.getParameter( GurobiParameters.OPTIMALITYTOL_NAME ) ) );
 
 			model = new GRBModel( env );
 			ArrayList< GRBVar > vars = new ArrayList< GRBVar >();

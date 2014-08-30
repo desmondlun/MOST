@@ -2,23 +2,16 @@ package edu.rutgers.MOST.presentation;
 
 import java.io.File;
 
-public class GurobiParametersDialog extends AbstractParametersDialog
+public class GLPKParametersDialog extends AbstractParametersDialog
 {
 	private static final long serialVersionUID = 1L;
 
-	public GurobiParametersDialog( File saveFile )
+	public GLPKParametersDialog( File saveFile )
 	{
-		super( "Gurobi", saveFile );
-		GurobiParameters params = new GurobiParameters();
+		super( "GLPK", saveFile );
+		GLPKParameters params = new GLPKParameters();
 		add( params.getDialogPanel(), params.getSavableParameters() );
 		finishSetup();
 		setModal( true );
 	}
 }
-
-
-
-
-
-
-

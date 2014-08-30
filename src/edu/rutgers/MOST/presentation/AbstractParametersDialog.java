@@ -46,13 +46,12 @@ public class AbstractParametersDialog extends JDialog
 		icons.add( new ImageIcon( "etc/most16.jpg" ).getImage() );
 		icons.add( new ImageIcon( "etc/most32.jpg" ).getImage() );
 		setIconImages( icons );
-		setDefaultCloseOperation( DISPOSE_ON_CLOSE );
+		setDefaultCloseOperation( JDialog.HIDE_ON_CLOSE );
 		setSize( 100, 100 );
 		setLocationRelativeTo( null );
 		setTitle( name + " Parameters" );
 		setName( name );
 		add( vContentBox );
-		setVisible( true );
 
 		okButton.addActionListener( new ActionListener()
 		{
@@ -60,7 +59,7 @@ public class AbstractParametersDialog extends JDialog
 			public void actionPerformed( ActionEvent event )
 			{
 				saveParametersToFile( saveFile );
-				dispose();
+				setVisible( false );
 			}
 		} );
 		cancelButton.addActionListener( new ActionListener()
@@ -68,7 +67,7 @@ public class AbstractParametersDialog extends JDialog
 			@Override
 			public void actionPerformed( ActionEvent event )
 			{
-				dispose();
+				setVisible( false );
 			}
 		} );
 		resetButton.addActionListener( new ActionListener()
@@ -85,7 +84,6 @@ public class AbstractParametersDialog extends JDialog
 	{
 		if( saveFile == null )
 			return;
-		
 		
 		CSVWriter csvWriter = null;
 		try
@@ -120,12 +118,11 @@ public class AbstractParametersDialog extends JDialog
 		vContentBox.add( panel );
 		parameters.addAll( params );
 		loadParameters( saveFile );
-		setVisible( true );
 	}
 	
 	public void loadParameters( File loadFile )
 	{
-		if( saveFile == null )
+		if( loadFile == null )
 		{
 			resetToDefaults();
 			return;
@@ -157,6 +154,7 @@ public class AbstractParametersDialog extends JDialog
 			JOptionPane.showMessageDialog( null, "MOST could not find the " + getName()
 				+ " settings file. A new settings file will be created.",
 				getName() + " Settings", JOptionPane.OK_OPTION, null );
+			saveParametersToFile( loadFile );
 		}
 		catch ( Exception e )
 		{
@@ -189,7 +187,7 @@ public class AbstractParametersDialog extends JDialog
 		vContentBox.add( Box.createRigidArea( new Dimension( 0, 25 ) ) );
 		pack();
 		setLocationRelativeTo( null );
-		setVisible( true );
+		setResizable( false );
 	}
 	
 	public void resetToDefaults()
