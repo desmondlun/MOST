@@ -314,7 +314,7 @@ public class FindReplaceDialog extends JDialog {
 		});
 		
         caseCheckBox.setSelected(false);
-    	wrapCheckBox.setSelected(false);
+    	wrapCheckBox.setSelected(true);
     	selectedAreaCheckBox.setSelected(false);
         backwardsCheckBox.setSelected(false);
         
