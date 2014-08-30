@@ -19,8 +19,7 @@ public class ADIntegerSegmentJComboBoxParameter extends JComboBox< Integer > imp
 	@Override
 	public String getValue()
 	{
-		this.getSelectedItem().toString();
-		return null;
+		return getSelectedItem().toString();
 	}
 
 	@Override

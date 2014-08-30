@@ -5,25 +5,33 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVWriter;
 
 public class AbstractParametersDialog extends JDialog
 {
 	private static final long serialVersionUID = 1L;
 	private Box vContentBox = Box.createVerticalBox();
 	protected ArrayList< AbstractSavableObjectInterface > parameters = new ArrayList< AbstractSavableObjectInterface >();
-	JButton okButton = new JButton("   OK   ");
-	JButton cancelButton = new JButton( "Cancel" );
-	JButton resetButton = new JButton( "Reset to Defaults" );
-	File saveFile = null;
+	private JButton okButton = new JButton("   OK   ");
+	private JButton cancelButton = new JButton( "Cancel" );
+	private JButton resetButton = new JButton( "Reset to Defaults" );
+	private File saveFile = null;
 	
-	public AbstractParametersDialog( final String title, final File saveFile )
+	public AbstractParametersDialog( final String name, final File saveFile )
 	{
 		this.saveFile = saveFile;
 		final ArrayList< Image > icons = new ArrayList< Image >();
@@ -33,7 +41,8 @@ public class AbstractParametersDialog extends JDialog
 		setDefaultCloseOperation( DISPOSE_ON_CLOSE );
 		setSize( 100, 100 );
 		setLocationRelativeTo( null );
-		setTitle( title );
+		setTitle( name + " Parameters" );
+		setName( name );
 		add( vContentBox );
 		setVisible( true );
 
@@ -69,18 +78,44 @@ public class AbstractParametersDialog extends JDialog
 		if( saveFile == null )
 			return;
 		
-		// TODO implement the save
+		
+		CSVWriter csvWriter = null;
+		try
+		{
+			csvWriter = new CSVWriter( new FileWriter( saveFile ) );
+			ArrayList< String[] > all = new ArrayList< String[] >();
+			for( AbstractSavableObjectInterface param : parameters )
+			{
+				String[] keyVal = new String[]{ param.getName(), param.getValue() };
+				all.add( keyVal );
+			}
+			csvWriter.writeAll( all );
+		}
+		catch ( Exception e )
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				csvWriter.close();
+			}
+			catch ( Exception e )
+			{
+			}
+		}
 	}
 	
 	public void add( JPanel panel, ArrayList< AbstractSavableObjectInterface > params )
 	{
 		vContentBox.add( panel );
 		parameters.addAll( params );
-		loadParameters();
+		loadParameters( saveFile );
 		setVisible( true );
 	}
 	
-	public void loadParameters()
+	public void loadParameters( File loadFile )
 	{
 		if( saveFile == null )
 		{
@@ -88,7 +123,49 @@ public class AbstractParametersDialog extends JDialog
 			return;
 		}
 		
-		// TODO implement the load
+		CSVReader csvReader = null;
+		ArrayList< AbstractSavableObjectInterface > paramsCopy
+			= new ArrayList< AbstractSavableObjectInterface >( parameters );
+		try
+		{
+			csvReader = new CSVReader( new FileReader( loadFile ) );
+			List< String[] > all = csvReader.readAll();
+			for( AbstractSavableObjectInterface param : parameters )
+			{
+				for( String[] keyVal : all )
+				{
+					if( param.getName().equals( keyVal[ 0 ] ) )
+					{
+						param.setValue( keyVal[ 1 ] );
+						paramsCopy.remove( param );
+						break;
+					}
+				}
+			}
+			csvReader.close();
+		}
+		catch( FileNotFoundException e )
+		{
+			JOptionPane.showMessageDialog( null, "MOST could not find the " + getName()
+				+ " settings file. A new settings file will be created.",
+				getName() + " Settings", JOptionPane.OK_OPTION, null );
+		}
+		catch ( Exception e )
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				csvReader.close();
+			}
+			catch ( Exception e )
+			{
+			}
+			for( AbstractSavableObjectInterface param : paramsCopy )
+				param.resetToDefault();
+		}
 	}
 	
 	public void finishSetup()
@@ -117,8 +194,8 @@ public class AbstractParametersDialog extends JDialog
 	
 	public static void main( String[] args )
 	{
-		AbstractParametersDialog dialog = new AbstractParametersDialog( "Gurobi Parameters Test Dialog", null );
-		IPoptParameters params = new IPoptParameters();
+		AbstractParametersDialog dialog = new AbstractParametersDialog( "Gurobi", new File( "Gurobi.properties" ) );
+		GurobiParameters params = new GurobiParameters();
 		dialog.add( params.getDialogPanel(), params.getSavableParameters() );
 		dialog.finishSetup();
 		dialog.setVisible( true );

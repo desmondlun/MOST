@@ -18,7 +18,10 @@ public class ADIntegerSegmentJTextFieldParameter extends AbstractJTextFieldParam
 	{
 
 		if( minVal <= attempt && attempt <= maxVal )
+		{
 			value = attempt;
+			setText( attempt.toString() );
+		}
 		else
 		{
 			JOptionPane.showMessageDialog( null,
