@@ -118,8 +118,8 @@ public class AbstractParametersDialog extends JDialog
 	public static void main( String[] args )
 	{
 		AbstractParametersDialog dialog = new AbstractParametersDialog( "Gurobi Parameters Test Dialog", null );
-		GurobiParameters params = new GurobiParameters();
-		dialog.add( params.getDialogFrame(), params.getSavableParameters() );
+		IPoptParameters params = new IPoptParameters();
+		dialog.add( params.getDialogPanel(), params.getSavableParameters() );
 		dialog.finishSetup();
 		dialog.setVisible( true );
 	}

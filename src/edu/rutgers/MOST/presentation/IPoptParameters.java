@@ -61,7 +61,7 @@ public class IPoptParameters
 		return components;
 	}
 	
-	public JPanel getDialogFrame()
+	public JPanel getDialogPanel()
 	{		
 		JPanel result = new JPanel();
 		ArrayList< JComponent > segmentedParameterlist = new ArrayList< JComponent >();

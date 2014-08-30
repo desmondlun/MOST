@@ -110,19 +110,5 @@ public class GLPKParameters
 		result.add( panel );
 		
 		return result;
-	}
-	public static AbstractDialogMetaData getAbstractDialogMetaData()
-	{
-		AbstractDialogMetaData metaData = new AbstractDialogMetaData();
-		metaData.componentHeight = COMPONENT_HEIGHT;
-		metaData.componentWidth = COMPONENT_WIDTH;
-		metaData.dialogheight = DIALOG_HEIGHT;
-		metaData.dialogWidth = DIALOG_WIDTH;
-		metaData.labelHeight = LABEL_HEIGHT;
-		metaData.labelWidth = LABEL_WIDTH;
-		metaData.labelTopBorderSize = LABEL_TOP_BORDER_SIZE;
-		metaData.labelBottomBorderSize = LABEL_BOTTOM_BORDER_SIZE;
-		return metaData;
-	}
-	
+	}	
 }

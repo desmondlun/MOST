@@ -63,7 +63,7 @@ public class GurobiParameters {
 		return components;
 	}
 	
-	public JPanel getDialogFrame()
+	public JPanel getDialogPanel()
 	{		
 		JPanel result = new JPanel();
 		Box vBox = Box.createVerticalBox();
