@@ -15,6 +15,7 @@ import edu.rutgers.MOST.presentation.GraphicalInterface.GDBBParam;
 public class MILGLPKSolver extends GLPKSolver implements MILSolver, GlpkCallbackListener
 {
 	int idx = 1;
+	private boolean firstSolution = true;
 	public MILGLPKSolver()
 	{
 		super();
@@ -46,6 +47,8 @@ public class MILGLPKSolver extends GLPKSolver implements MILSolver, GlpkCallback
 			param.solution = sn;
 			param.model = (GDBBModel)this.dataModel;
 			param.string = "success!";
+			param.addFolder = firstSolution;
+			firstSolution = false;
 			GraphicalInterface.addGDBBSolution( param );
 			GDBB.getintermediateSolution().add( sn );
 		}

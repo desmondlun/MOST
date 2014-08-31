@@ -11,6 +11,7 @@ import gurobi.GRBException;
 public class MILGurobiSolver extends GurobiSolver
 {
 	private int idx = 1;
+	private boolean firstSolution = true;
 	public MILGurobiSolver()
 	{
 		super();
@@ -37,6 +38,8 @@ public class MILGurobiSolver extends GurobiSolver
 								.getDoubleInfo( GRB.CB_MIPSOL_OBJ ), this
 								.getSolution( model.getVars() ) );
 						param.solution.setIndex( idx++ );
+						param.addFolder = firstSolution;
+						firstSolution = false;
 						GraphicalInterface.addGDBBSolution( param );
 						// GDBB intermediate solutions
 						GDBB.getintermediateSolution().add( new Solution( this

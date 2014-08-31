@@ -1731,33 +1731,6 @@ public class GraphicalInterface extends JFrame {
             					gdbbDialog.stopButton.setEnabled( true );
             					gdbbStopped = false;       			
             					
-            					//set up the table model
-                        		java.awt.EventQueue.invokeLater( new Runnable()
-                        		{
-                        			@Override
-                        			public void run()
-                        			{
-                        				Utilities u = new Utilities();
-                                		final String dateTimeStamp = u.createDateTimeStamp();
-                                		final String optimizeName = GraphicalInterfaceConstants.GDBB_PREFIX + LocalConfig.getInstance().getModelName() + dateTimeStamp;
-                                		
-                        				DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
-                                		DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
-                                		LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
-                                		LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
-                                		listModel.addElement(optimizeName);
-                                		setOptimizeName(optimizeName);
-                                		
-                        				GISolution parentNode = new GISolution();
-                        				parentNode.folderName = optimizeName;
-                        				parentNode.isFoldered = false;
-                        				parentNode.soln = new ArrayList< Double >();
-                        				parentNode.stringBuffer = new StringBuffer();
-                        				vecGISolution.add( parentNode );
-                        				java.awt.EventQueue.invokeLater( solutionListener );
-                        			}
-                        		});
-            					
             					// check if all entries are valid
             					boolean isValid = true;
             					boolean koIsInteger = true;
@@ -11144,17 +11117,46 @@ public class GraphicalInterface extends JFrame {
 	{
 		public String string;
 		public Solution solution;
-		double maxObj;
+		public double maxObj;
 		public GDBBModel model;
+		public boolean addFolder;
 	}
 	
 	public static void addGDBBSolution( final GDBBParam param )
 	{
+		if( param.addFolder )
+		{
+			java.awt.EventQueue.invokeLater( new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					Utilities u = new Utilities();
+	        		final String dateTimeStamp = u.createDateTimeStamp();
+	        		final String optimizeName = GraphicalInterfaceConstants.GDBB_PREFIX + LocalConfig.getInstance().getModelName() + dateTimeStamp;
+	        		
+					DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
+	        		DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
+	        		LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
+	        		LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
+	        		listModel.addElement(optimizeName);
+	        		setOptimizeName(optimizeName);
+	        		
+					GISolution parentNode = new GISolution();
+					parentNode.folderName = optimizeName;
+					parentNode.isFoldered = false;
+					parentNode.soln = new ArrayList< Double >();
+					parentNode.stringBuffer = new StringBuffer();
+					vecGISolution.add( parentNode );
+					java.awt.EventQueue.invokeLater( solutionListener );
+				}
+			} );
+		}
 		java.awt.EventQueue.invokeLater( new Runnable()
 		{
 			@Override
 			public void run()
-			{
+			{				
 				GDBBModel model = param.model;
 				Solution solution = param.solution;
 				ReactionFactory rFactory = new ReactionFactory( "SBML" );
