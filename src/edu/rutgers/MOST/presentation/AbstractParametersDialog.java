@@ -15,7 +15,6 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -151,9 +150,6 @@ public class AbstractParametersDialog extends JDialog
 		}
 		catch( FileNotFoundException e )
 		{
-			JOptionPane.showMessageDialog( null, "MOST could not find the " + getName()
-				+ " settings file. A new settings file will be created.",
-				getName() + " Settings", JOptionPane.OK_OPTION, null );
 			saveParametersToFile( loadFile );
 		}
 		catch ( Exception e )
