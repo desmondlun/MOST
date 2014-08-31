@@ -110,37 +110,42 @@ public class Utilities {
 		}
 	}
 	
-	public String createLogFileName(String name) {
-		String fileName = "";
-		if (System.getProperty("os.name").contains("Windows")) {
-			if (System.getProperty("os.name").equals("Windows XP")) {
-				File destDir = new File(System.getProperty("user.home") + GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_XP + GraphicalInterfaceConstants.FOLDER_NAME);
-				if (!destDir.exists()) {
-					destDir.mkdir();				
-				}
-				fileName = System.getProperty("user.home") + GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_XP + GraphicalInterfaceConstants.FOLDER_NAME + name;
-			} else {
-				File destDir = new File(System.getenv("LOCALAPPDATA") + GraphicalInterfaceConstants.FOLDER_NAME);
-				if (!destDir.exists()) {
-					destDir.mkdir();				
-				}
-				fileName = System.getenv("LOCALAPPDATA") + GraphicalInterfaceConstants.FOLDER_NAME + name;
+	public static String getMOSTSettingsPath()
+	{
+		File destDir = null;
+		if( System.getProperty( "os.name" ).contains( "Windows" ) )
+		{
+			if( System.getProperty( "os.name" ).equals( "Windows XP" ) )
+			{
+				destDir = new File(
+						System.getProperty( "user.home" )
+								+ GraphicalInterfaceConstants.SETTINGS_PATH_SUFFIX_WINDOWS_XP
+								+ GraphicalInterfaceConstants.FOLDER_NAME );
 			}
-		} else if (System.getProperty( "os.name" ).toLowerCase().contains( "mac os x" )) {
-			File destDir = new File(System.getenv("HOME") + "/Library/" + GraphicalInterfaceConstants.FOLDER_NAME);
-			if (!destDir.exists()) {
-				destDir.mkdir();				
+			else
+			{
+				destDir = new File( System.getenv( "LOCALAPPDATA" )
+						+ GraphicalInterfaceConstants.FOLDER_NAME );
 			}
-			fileName = System.getenv("HOME") + "/Library/" + GraphicalInterfaceConstants.FOLDER_NAME + name;
-		} else if (System.getProperty("os.name").equals("Linux")) {	
-			fileName = name;
-		} else {
-			fileName = name;
 		}
+		else if( System.getProperty( "os.name" ).toLowerCase()
+				.contains( "mac os x" ) )
+		{
+			destDir = new File( System.getenv( "HOME" ) + "/Library/"
+					+ GraphicalInterfaceConstants.FOLDER_NAME );
+		}
+		else if( System.getProperty( "os.name" ).equals( "Linux" ) )
+		{
+			destDir = new File( GraphicalInterfaceConstants.FOLDER_NAME );
+		}
+		if( !destDir.exists() )
+			destDir.mkdir();
 		
-		//System.out.println("util " + fileName);
-		return fileName;
-		
+		return destDir.getAbsolutePath() + File.separatorChar;
+	}
+	
+	public String createLogFileName(String name) {
+		return getMOSTSettingsPath() + name;		
 	}
 	
 	public void showResizableDialog(String errorTitle, String errorDescription, String errorMessage) {

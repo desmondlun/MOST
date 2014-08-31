@@ -1200,9 +1200,9 @@ public class GraphicalInterface extends JFrame {
 			}
 		});	
 		
-		gurobiParameters = new GurobiParametersDialog( new File( "Gurobi.properties" ) );
-		glpkParameters = new GLPKParametersDialog( new File( "GLPK.properties" ) );
-		ipOptParameters = new IPoptParametersDialog( new File( "IPopt.properties" ) );
+		gurobiParameters = new GurobiParametersDialog( new File( Utilities.getMOSTSettingsPath() + "Gurobi.properties" ) );
+		glpkParameters = new GLPKParametersDialog( new File( Utilities.getMOSTSettingsPath() + "GLPK.properties" ) );
+		ipOptParameters = new IPoptParametersDialog( new File( Utilities.getMOSTSettingsPath() + "IPopt.properties" ) );
 		
 		
 		setTitle(GraphicalInterfaceConstants.TITLE);
