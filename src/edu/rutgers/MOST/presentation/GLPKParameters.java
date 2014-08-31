@@ -3,10 +3,13 @@ package edu.rutgers.MOST.presentation;
 import java.awt.Dimension;
 import java.util.ArrayList;
 
+import javax.swing.AbstractButton;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 
 public class GLPKParameters
 {
@@ -30,6 +33,9 @@ public class GLPKParameters
 	public static final double MIPGAP_DEFAULT_VALUE = 0.0;
 	public static final double MIPGAP_MIN_VALUE = 0.0;
 	public static final double MIPGAP_MAX_VALUE = Double.MAX_VALUE;
+	
+
+	public static final String SAVE_TO_MPS_NAME = "Save to MPS file";
 	
 	// layout
 	public static final int DIALOG_WIDTH = 400;
@@ -88,6 +94,36 @@ public class GLPKParameters
 			
 			components.add( (AbstractSavableObjectInterface)segmentedParameter );
 		}
+		
+		// RadioButtons
+		{
+			ArrayList< AbstractButton > buttons = new ArrayList< AbstractButton >();
+			buttons.add( new JRadioButton( Boolean.toString( true ), false ) );
+			buttons.add( new JRadioButton( Boolean.toString( false ), true ) );
+			ADButtonGroup bg = new ADButtonGroup( SAVE_TO_MPS_NAME, buttons );
+			components.add( bg );
+			JLabel label = new JLabel();
+			label.setText( bg.getName() );
+			label.setPreferredSize( new Dimension( LABEL_WIDTH, LABEL_HEIGHT ) );
+			
+			Box hBox = Box.createHorizontalBox();
+			JPanel panelLabel = new JPanel();
+			panelLabel.add( label );
+			hBox.add( panelLabel );
+			for( JComponent buttonParam : buttons )
+			{
+				JPanel content = new JPanel();
+				buttonParam.setPreferredSize( new Dimension( COMPONENT_WIDTH / buttons.size(), COMPONENT_HEIGHT ) );
+				hBox.add( buttonParam );
+				content.add( hBox );
+			}
+			JPanel p = new JPanel();
+			p.setLayout( new BoxLayout( p, BoxLayout.X_AXIS ) );
+			p.add( hBox );
+			vBox.add( p );
+		}
+		
+					
 		
 		JPanel panel = new JPanel();
 		panel.add( vBox );

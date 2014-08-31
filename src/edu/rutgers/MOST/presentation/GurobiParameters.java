@@ -3,10 +3,13 @@ package edu.rutgers.MOST.presentation;
 import java.awt.Dimension;
 import java.util.ArrayList;
 
+import javax.swing.AbstractButton;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 
 public class GurobiParameters {
 
@@ -43,13 +46,15 @@ public class GurobiParameters {
 	public static final String NUM_THREADS_NAME = "Number of Threads";
 	public static final int MAX_NUM_THREADS = Runtime.getRuntime().availableProcessors();
 	
+	public static final String SAVE_TO_MPS_NAME = "Save to MPS file";
+	
 	// layout
 	public static final int DIALOG_WIDTH = 400;
 	public static final int DIALOG_HEIGHT = 320;
 	
 	// layout constants
 	public static final int COMPONENT_WIDTH = 150;
-	public static final int COMPONENT_HEIGHT = 25;
+	public static final int COMPONENT_HEIGHT = 15;
 	public static final int LABEL_WIDTH = 200;
 	public static final int LABEL_HEIGHT = 25;
 	
@@ -113,36 +118,59 @@ public class GurobiParameters {
 		}
 		
 		// combo boxes
-		
 		ArrayList< JComponent > cbParams = new ArrayList< JComponent >();
-		
-		cbParams.add( new ADIntegerSegmentJComboBoxParameter( MIPFOCUS_NAME, MIPFOCUS_MINIMUM_VALUE,
-				MIPFOCUS_MAXIMUM_VALUE, MIPFOCUS_DEFAULT_VALUE) );
-		
+		cbParams.add( new ADIntegerSegmentJComboBoxParameter( MIPFOCUS_NAME,
+				MIPFOCUS_MINIMUM_VALUE, MIPFOCUS_MAXIMUM_VALUE,	MIPFOCUS_DEFAULT_VALUE ) );
 		cbParams.add( new ADIntegerSegmentJComboBoxParameter( NUM_THREADS_NAME,
 				1, MAX_NUM_THREADS, MAX_NUM_THREADS ) );
-		
-		for( JComponent cbParam : cbParams )
+		for( JComponent cbParam : cbParams)
 		{
 			cbParam.setPreferredSize( new Dimension( COMPONENT_WIDTH, COMPONENT_HEIGHT ) );
 			JLabel label = new JLabel();
 			label.setText( cbParam.getName() );
 			label.setPreferredSize( new Dimension( LABEL_WIDTH, LABEL_HEIGHT ) );
-			
 			JPanel content = new JPanel();
 			Box hBox = Box.createHorizontalBox();
 			hBox.add( label );
 			hBox.add( cbParam );
 			content.add( hBox );
 			vBox.add( content );
-			
 			components.add( (AbstractSavableObjectInterface)cbParam );
 		}
 		
-		
+		// RadioButtons
+		{
+			ArrayList< AbstractButton > buttons = new ArrayList< AbstractButton >();
+			buttons.add( new JRadioButton( Boolean.toString( true ), false ) );
+			buttons.add( new JRadioButton( Boolean.toString( false ), true ) );
+			ADButtonGroup bg = new ADButtonGroup( SAVE_TO_MPS_NAME, buttons );
+			components.add( bg );
+			JLabel label = new JLabel();
+			label.setText( bg.getName() );
+			label.setPreferredSize( new Dimension( LABEL_WIDTH, LABEL_HEIGHT ) );
+			
+			Box hBox = Box.createHorizontalBox();
+			JPanel panelLabel = new JPanel();
+			panelLabel.add( label );
+			hBox.add( panelLabel );
+			for( JComponent buttonParam : buttons )
+			{
+				JPanel content = new JPanel();
+				buttonParam.setPreferredSize( new Dimension( COMPONENT_WIDTH / buttons.size(), COMPONENT_HEIGHT ) );
+				hBox.add( buttonParam );
+				content.add( hBox );
+			}
+			JPanel p = new JPanel();
+			p.setLayout( new BoxLayout( p, BoxLayout.X_AXIS ) );
+			p.add( hBox );
+			vBox.add( p );
+		}
+			
+			
 		JPanel panel = new JPanel();
 		panel.add( vBox );
 		result.add( panel );
+
 		
 		return result;
 	}

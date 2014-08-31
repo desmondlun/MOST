@@ -25,6 +25,7 @@ import edu.rutgers.MOST.presentation.AbstractParametersDialog;
 import edu.rutgers.MOST.presentation.GLPKParameters;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.ResizableDialog;
+import edu.rutgers.MOST.presentation.Utilities;
 
 public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, GlpkCallbackListener
 {
@@ -277,6 +278,9 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 		
 			/* int optres = */// GLPK.glp_simplex( problem, null );
 			int optres = GLPK.glp_intopt( problem, glpk_params );
+			if( params.getParameter(
+					GLPKParameters.SAVE_TO_MPS_NAME ).equals( Boolean.toString( true ) ) )
+				GLPK.glp_write_mps( problem, GLPK.GLP_MPS_FILE, null, Utilities.getMOSTSettingsPath() + "LastProblem_GLPK.mps" );
 				
 			if( optres != 0 )
 			{

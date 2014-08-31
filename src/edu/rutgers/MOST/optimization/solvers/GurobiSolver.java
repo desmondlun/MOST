@@ -20,6 +20,7 @@ import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 import edu.rutgers.MOST.presentation.GurobiParameters;
 import edu.rutgers.MOST.presentation.ResizableDialog;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
+import edu.rutgers.MOST.presentation.Utilities;
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.Model;
 import gurobi.GRB;
@@ -341,7 +342,12 @@ public abstract class GurobiSolver implements MILSolver
 				model.setObjective( expr, getGRBObjType( objType ) );
 				
 				// perform the optimization and get the objective value
-				model.optimize();				
+				model.optimize();
+				
+				// write to MPS file if specified
+				if( params.getParameter(
+						GurobiParameters.SAVE_TO_MPS_NAME ).equals( Boolean.toString( true ) ) )
+					model.write( Utilities.getMOSTSettingsPath() + "LastProblem_Gurobi.mps" );
 				
 				if( !abort )
 				{
