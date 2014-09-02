@@ -5269,10 +5269,10 @@ public class GraphicalInterface extends JFrame {
 		findMode = false;
 		findButtonReactionsClicked = false;
 		findButtonMetabolitesClicked = false;
-		matchCase = false;
-		wrapAround = false;
-		searchSelectedArea = false;
-		searchBackwards = false;
+		searchBackwards = FindReplaceConstants.SEARCH_BACKWARDS_DEFAULT;
+		matchCase = FindReplaceConstants.MATCH_CASE_DEFAULT;
+		wrapAround = FindReplaceConstants.WRAP_AROUND_DEFAULT;
+		searchSelectedArea = FindReplaceConstants.SELECTED_AREA_DEFAULT;
 		reactionUpdateValid = true;
 		metaboliteUpdateValid = true;
 		replaceAllMode = false;
@@ -9834,10 +9834,10 @@ public class GraphicalInterface extends JFrame {
 		findButtonReactionsClicked = false;
 		findButtonMetabolitesClicked = false;
 		// ensure states of boolean values match states of findReplace frame
-		searchBackwards = false;
-		matchCase = false;
-		wrapAround = false;
-		searchSelectedArea = false;
+		searchBackwards = FindReplaceConstants.SEARCH_BACKWARDS_DEFAULT;
+		matchCase = FindReplaceConstants.MATCH_CASE_DEFAULT;
+		wrapAround = FindReplaceConstants.WRAP_AROUND_DEFAULT;
+		searchSelectedArea = FindReplaceConstants.SELECTED_AREA_DEFAULT;
 		findMode = true;
 	}	
 
@@ -10110,7 +10110,9 @@ public class GraphicalInterface extends JFrame {
 					String findValue = findReplaceDialog.getFindText();
 					if (!matchCase) {
 						cellValue = cellValue.toLowerCase();
-						findValue = findValue.toLowerCase();						
+						if (findValue != null) {
+							findValue = findValue.toLowerCase();
+						}					
 					}
 					if (cellValue.contains(findValue)) {
 						ArrayList<Integer> rowColumnList = new ArrayList<Integer>();
