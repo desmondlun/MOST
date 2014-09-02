@@ -141,7 +141,7 @@ public class ReactionFactory {
 			for (int i = 0; i < reactions.size(); i++) {
 				int id = reactions.get(i).getId();
 				Double obj = reactions.get(i).getBiologicalObjective();
-				if (obj > max) {
+				if (obj != 0) {
 					max = obj;
 				}
 				objective.add((Integer) reactionsIdPositionMap.get(id), obj);
@@ -332,7 +332,7 @@ public class ReactionFactory {
 			for (int i = 0; i < reactions.size(); i++) {
 				int id = ((SBMLReaction) reactions.get(i)).getId();
 				Double obj = ((SBMLReaction) reactions.get(i)).getSyntheticObjective();
-				if (obj > max) {
+				if (obj != 0) {
 					max = obj;
 				}
 				syntheticObjectiveVector.add((Integer) reactionsIdPositionMap.get(id), obj);
