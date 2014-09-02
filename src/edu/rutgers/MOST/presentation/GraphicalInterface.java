@@ -4291,6 +4291,7 @@ public class GraphicalInterface extends JFrame {
 		if (choice == JOptionPane.NO_OPTION)
 		{
 			exit = true;
+			cleanupTemporaryDirectory();
 		}
 	}
 
@@ -11805,8 +11806,9 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 	
-	// Deletes FBA and GDBB log files that are not deleted on close of MOST, when close action is due
-	// to a crash or outage, etc. Normally MOST deletes these files in the Exit action.
+	/**
+	 * Deletes log files in temporary directory.
+	 */
 	public static void cleanupTemporaryDirectory() {
 		String tempFilesDir = "";
 		if (System.getProperty("os.name").equals("Windows 7") || System.getProperty("os.name").equals("Windows 8") || System.getProperty("os.name").equals("Windows Vista")) {
@@ -11820,8 +11822,13 @@ public class GraphicalInterface extends JFrame {
 		if (directoryListing != null) {
 			for (File child : directoryListing) {
 				Utilities u = new Utilities();
-				if (child.getName().startsWith(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX) ||
-						child.getName().startsWith(GraphicalInterfaceConstants.GDBB_PREFIX)) {
+				// if there is ever a reason to not delete any log files not of these type in future
+				// this code will need to be used.
+//				if (child.getName().startsWith(GraphicalInterfaceConstants.OPTIMIZATION_PREFIX) ||
+//						child.getName().startsWith(GraphicalInterfaceConstants.GDBB_PREFIX)) {
+//					u.deleteFileIfExists(child.getAbsolutePath());
+//				}
+				if (child.getName().endsWith("log")) {
 					u.deleteFileIfExists(child.getAbsolutePath());
 				}
 			}
