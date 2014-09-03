@@ -119,6 +119,8 @@ public class FindReplaceDialog extends JDialog {
     	setMaximumSize(new Dimension(250, 300));
     	setResizable(false);
     	
+    	getRootPane().setDefaultButton(findButton);
+    	
         JLabel searchLabel = new JLabel("Search:"); 
         JLabel placeholder = new JLabel(""); 
         
