@@ -7393,7 +7393,7 @@ public class GraphicalInterface extends JFrame {
 		} else {
 			validPaste = false;
 		}	
-		System.out.println(LocalConfig.getInstance().getReactionAbbreviationIdMap());
+		//System.out.println(LocalConfig.getInstance().getReactionAbbreviationIdMap());
 	}
 
 	public boolean isReactionsEntryValid(int row, int columnIndex, String value) {
