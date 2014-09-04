@@ -1499,14 +1499,25 @@ public class GraphicalInterface extends JFrame {
 		 */
 		abstract class AnalysisCommonActionListener implements ActionListener
 		{
+			private boolean bioObjWarn = true;
 			protected GISolution giSolution = null;
+			
+			public AnalysisCommonActionListener()
+			{
+			}
+			
+			public AnalysisCommonActionListener( boolean bioObjWarn )
+			{
+				this.bioObjWarn = bioObjWarn;
+			}
+			
 			@Override
 			public void actionPerformed( ActionEvent a )
 			{
 				LocalConfig.getInstance().noBiolObjWarningShown = false;
 				analysisRunning = true;
 				this.giSolution = new GISolution();
-				final Model model = new Model();
+				final Model model = new Model( bioObjWarn );
 				Thread t = new Thread()
 				{
 					public void run()
@@ -1862,8 +1873,8 @@ public class GraphicalInterface extends JFrame {
         //Analysis --> SPOT
         analysisMenu.add( spotItem );
         spotItem.setMnemonic( KeyEvent.VK_S );
-        
-        spotItem.addActionListener( new AnalysisCommonActionListener(){
+
+        spotItem.addActionListener( new AnalysisCommonActionListener( false ){
         	private Double maxObj = 0.0;
         	
 			@Override

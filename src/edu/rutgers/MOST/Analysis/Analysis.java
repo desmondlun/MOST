@@ -11,7 +11,7 @@ import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 public abstract class Analysis
 {
-	protected Model model = new Model();
+	protected Model model = null;
 	protected Vector< String > varNames = new Vector< String >();
 	protected double maxObj;
 
