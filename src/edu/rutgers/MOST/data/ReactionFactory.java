@@ -21,6 +21,7 @@ public class ReactionFactory {
 	private String sourceType;
 	private Map<Object, Object> reactionsIdPositionMap;
 	private static String columnName;
+	private boolean objVecWarning = true;
 	private ResizableDialog dialog = new ResizableDialog( "Error",
 			"Error", "Error" );
 
@@ -36,6 +37,11 @@ public class ReactionFactory {
 		this.reactionsIdPositionMap = reactionsIdPositionMap;
 	}
 
+	public void disableObjVectorWarning()
+	{
+		this.objVecWarning = false;
+	}
+	
 	public SBMLReaction getReactionById(Integer reactionId){
 		if("SBML".equals(sourceType)){
 			SBMLReaction reaction = new SBMLReaction();
@@ -146,7 +152,7 @@ public class ReactionFactory {
 				}
 				objective.add((Integer) reactionsIdPositionMap.get(id), obj);
 			}
-			if (max == 0 && !LocalConfig.getInstance().noBiolObjWarningShown) {
+			if (max == 0 && !LocalConfig.getInstance().noBiolObjWarningShown && objVecWarning) {
 				JOptionPane.showMessageDialog(null,                
 						"No Biological Objective Set.",                
 						"Warning",                                
