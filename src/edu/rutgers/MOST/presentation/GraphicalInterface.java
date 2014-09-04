@@ -2587,7 +2587,7 @@ public class GraphicalInterface extends JFrame {
 		} );
 
 		optionsMenu.add( glpkParametersItem );
-		glpkParametersItem.setMnemonic( KeyEvent.VK_G );
+		glpkParametersItem.setMnemonic( KeyEvent.VK_L );
 		glpkParametersItem.addActionListener( new ActionListener()
 		{
 			@Override
