@@ -1,6 +1,5 @@
 package edu.rutgers.MOST.optimization.solvers;
 
-import edu.rutgers.MOST.Analysis.GDBB;
 import edu.rutgers.MOST.data.GDBBModel;
 import edu.rutgers.MOST.data.Solution;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
@@ -31,21 +30,21 @@ public class MILGurobiSolver extends GurobiSolver
 						this.abort();
 					else if( this.where == GRB.CB_MIPSOL ) //MIP
 					{
-						GraphicalInterface.GDBBParam  param = new GraphicalInterface.GDBBParam();
+						double[] vals = this.getSolution( model.getVars() );
+						GraphicalInterface.GDBBParam param = new GraphicalInterface.GDBBParam();
 						param.string = "success!";
 						param.model = (GDBBModel)dataModel;
 						param.solution = new Solution( this
-								.getDoubleInfo( GRB.CB_MIPSOL_OBJ ), this
-								.getSolution( model.getVars() ) );
+								.getDoubleInfo( GRB.CB_MIPSOL_OBJ ), vals );
 						param.solution.setIndex( idx++ );
 						param.addFolder = firstSolution;
 						firstSolution = false;
+						
 						GraphicalInterface.addGDBBSolution( param );
 						// GDBB intermediate solutions
-						GDBB.getintermediateSolution().add( new Solution( this
-								.getDoubleInfo( GRB.CB_MIPSOL_OBJ ), this
-								.getSolution( model.getVars() ) ) );
-						objval = getDoubleInfo( GRB.CB_MIPSOL_OBJ ); 
+					/*	GDBB.getintermediateSolution().add( new Solution( this
+								.getDoubleInfo( GRB.CB_MIPSOL_OBJ ), vals ) ); */
+						objval = getDoubleInfo( GRB.CB_MIPSOL_OBJ );
 					}
 				}
 				catch ( GRBException e )

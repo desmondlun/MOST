@@ -13,7 +13,7 @@ public abstract class Analysis
 {
 	protected Model model = null;
 	protected Vector< String > varNames = new Vector< String >();
-	protected double maxObj;
+	protected double maxObj = Double.NaN;
 
 	protected void setVars()
 	{

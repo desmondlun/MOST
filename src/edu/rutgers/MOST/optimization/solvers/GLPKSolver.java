@@ -273,7 +273,7 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 			glpk_params.setTol_int( Double.valueOf( 
 				params.getParameter( GLPKParameters.INTFEASIBILITYTOL_NAME ) ) );
 			glpk_params.setMip_gap( Double.valueOf( 
-				params.getParameter( GLPKParameters.MIPGAP_NAME ) ) );
+				params.getParameter( GLPKParameters.MIPGAP_NAME ) ) ); 
 		
 		
 			/* int optres = */// GLPK.glp_simplex( problem, null );

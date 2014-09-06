@@ -75,6 +75,12 @@ public class FBA extends Analysis
 		}
  	}
 
+	public void solve() throws Exception
+	{
+		this.setSolverParameters();
+		this.maxObj = linearSolver.optimize();
+	}
+	
 	@Override
 	public Solver getSolver()
 	{

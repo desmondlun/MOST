@@ -44,6 +44,7 @@ import edu.rutgers.MOST.data.ReactionUndoItem;
 import edu.rutgers.MOST.data.SBMLModelReader;
 import edu.rutgers.MOST.data.SBMLProduct;
 import edu.rutgers.MOST.data.SBMLReactant;
+import edu.rutgers.MOST.data.SBMLReaction;
 import edu.rutgers.MOST.data.SBMLReactionEquation;
 import edu.rutgers.MOST.data.SettingsConstants;
 import edu.rutgers.MOST.data.SettingsFactory;
@@ -11138,34 +11139,6 @@ public class GraphicalInterface extends JFrame {
 	
 	public static void addGDBBSolution( final GDBBParam param )
 	{
-		if( param.addFolder )
-		{
-			java.awt.EventQueue.invokeLater( new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					Utilities u = new Utilities();
-	        		final String dateTimeStamp = u.createDateTimeStamp();
-	        		final String optimizeName = GraphicalInterfaceConstants.GDBB_PREFIX + LocalConfig.getInstance().getModelName() + dateTimeStamp;
-	        		
-					DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
-	        		DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
-	        		LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
-	        		LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
-	        		listModel.addElement(optimizeName);
-	        		setOptimizeName(optimizeName);
-	        		
-					GISolution parentNode = new GISolution();
-					parentNode.folderName = optimizeName;
-					parentNode.isFoldered = false;
-					parentNode.soln = new ArrayList< Double >();
-					parentNode.stringBuffer = new StringBuffer();
-					vecGISolution.add( parentNode );
-					java.awt.EventQueue.invokeLater( solutionListener );
-				}
-			} );
-		}
 		java.awt.EventQueue.invokeLater( new Runnable()
 		{
 			@Override
@@ -11192,34 +11165,89 @@ public class GraphicalInterface extends JFrame {
 				text.append(synObjString);
 				text.append("Number of Knockouts = " + model.getC() + "\n");
 				text.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions, " + model.getNumGeneAssociations() + " unique gene associations\n");
-				text.append("Synthetic objective: "        + Double.toString(solution.getObjectiveValue()) + "\n");				
+				text.append("Synthetic objective: " + Double.toString(solution.getObjectiveValue()) + "\n");				
 				text.append("Knockouts:");
 				String kString = "";
 				ArrayList< Double > soln = new ArrayList< Double >();
+				ArrayList< String > listKnockOuts = new ArrayList< String >();
 				for (int j = 0; j < x.length; j++)
 				{
 					soln.add(x[j]);
 					if ((j >= knockoutOffset) && (x[j] >= 0.5)) 
 					{        // compiler optimizes: boolean short circuiting
 						kString += "\n\t" + uniqueGeneAssociations.elementAt(j - knockoutOffset);
+						listKnockOuts.add( uniqueGeneAssociations.elementAt(j - knockoutOffset) );
 					}
 				}
 				if (kString != null) {
 					text.append(kString);
 				}
 				
-				text.append("\n");
-				text.append( "MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() );
+				Model fbaModel = new Model();
 				
-				GISolution current = new GISolution();
-				current.soln_ko  = soln;
-				current.soln = new ArrayList< Double >( soln.subList( 0, model.getNumReactions() ) );
-				current.stringBuffer = text;
-				current.isFoldered = true;
-				current.folderName = "" + solution.getObjectiveValue();
-				current.knockoutOffset = new Integer( knockoutOffset );
-				vecGISolution.add( current );		
-				java.awt.EventQueue.invokeLater( solutionListener );
+				Double gdbbBioObj = Double.NaN;
+				for( SBMLReaction reaction : fbaModel.getReactions() )
+				{
+					if( listKnockOuts.contains( reaction.getGeneAssociation() ) )
+						reaction.setKnockout( GraphicalInterfaceConstants.BOOLEAN_VALUES[1] );
+					if( reaction.getBiologicalObjective() != 0.0 )
+						gdbbBioObj = soln.get( reaction.getId() );
+				}
+				
+				FBA fba = new FBA();
+				fba.setModel( fbaModel );
+				try
+				{
+					fba.solve();
+				}
+				catch( Exception e )
+				{
+				}
+				
+				Double fbaObj = fba.getMaxObj();
+				
+				Double diff = fbaObj - gdbbBioObj;
+				
+				
+				Double fbaCheckTol = 1E-1;
+				
+				if( diff * diff <= fbaCheckTol * fbaCheckTol )
+				{
+					if( param.addFolder )
+					{
+						Utilities u = new Utilities();
+		        		final String dateTimeStamp = u.createDateTimeStamp();
+		        		final String optimizeName = GraphicalInterfaceConstants.GDBB_PREFIX + LocalConfig.getInstance().getModelName() + dateTimeStamp;
+		        		
+						DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
+		        		DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
+		        		LocalConfig.getInstance().getReactionsTableModelMap().put(optimizeName, reactionsOptModel);
+		        		LocalConfig.getInstance().getMetabolitesTableModelMap().put(optimizeName, metabolitesOptModel);
+		        		listModel.addElement(optimizeName);
+		        		setOptimizeName(optimizeName);
+		        		
+						GISolution parentNode = new GISolution();
+						parentNode.folderName = optimizeName;
+						parentNode.isFoldered = false;
+						parentNode.soln = new ArrayList< Double >();
+						parentNode.stringBuffer = new StringBuffer();
+						vecGISolution.add( parentNode );
+						java.awt.EventQueue.invokeLater( solutionListener );
+					}
+					
+					text.append("\n");
+					text.append( "MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() );
+					
+					GISolution current = new GISolution();
+					current.soln_ko  = soln;
+					current.soln = new ArrayList< Double >( soln.subList( 0, model.getNumReactions() ) );
+					current.stringBuffer = text;
+					current.isFoldered = true;
+					current.folderName = "" + solution.getObjectiveValue();
+					current.knockoutOffset = new Integer( knockoutOffset );
+					vecGISolution.add( current );		
+					java.awt.EventQueue.invokeLater( solutionListener );
+				}
 			}
 		} );
 	}

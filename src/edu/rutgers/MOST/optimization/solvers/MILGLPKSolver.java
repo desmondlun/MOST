@@ -16,9 +16,15 @@ public class MILGLPKSolver extends GLPKSolver implements MILSolver, GlpkCallback
 {
 	int idx = 1;
 	private boolean firstSolution = true;
+	private Double lastSol = Double.NaN;
 	public MILGLPKSolver()
 	{
 		super();
+	}
+	
+	synchronized void func()
+	{
+		
 	}
 
 	public void callback( glp_tree tree )
@@ -30,6 +36,11 @@ public class MILGLPKSolver extends GLPKSolver implements MILSolver, GlpkCallback
 		}
 		else if( reason == GLPKConstants.GLP_IBINGO )
 		{
+			
+			objval = GLPK.glp_mip_obj_val( problem_tmp );
+			if( lastSol.equals( objval ) )
+				return;
+			lastSol = objval;
 			// get the solution columns
 			soln.clear();
 			int columnCount = GLPK.glp_get_num_cols( problem_tmp );
@@ -37,8 +48,7 @@ public class MILGLPKSolver extends GLPKSolver implements MILSolver, GlpkCallback
 				// soln.add( GLPK.glp_get_col_prim( problem, i ) );
 				soln.add( GLPK.glp_mip_col_val( problem_tmp, i ) );
 	
-			// objval = GLPK.glp_get_obj_val( problem );
-			objval = GLPK.glp_mip_obj_val( problem_tmp );
+
 			double[] darray = ArrayUtils.toPrimitive( soln
 					.toArray( new Double[] {} ) );
 			Solution sn = new Solution( objval, darray );
@@ -50,7 +60,7 @@ public class MILGLPKSolver extends GLPKSolver implements MILSolver, GlpkCallback
 			param.addFolder = firstSolution;
 			firstSolution = false;
 			GraphicalInterface.addGDBBSolution( param );
-			GDBB.getintermediateSolution().add( sn );
+		//	GDBB.getintermediateSolution().add( sn );
 		}
 	}
 }
