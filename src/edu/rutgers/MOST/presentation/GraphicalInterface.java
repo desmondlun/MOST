@@ -7026,12 +7026,12 @@ public class GraphicalInterface extends JFrame {
 		if (includeRxnColumnNames == true) {
 			//add column names to clipboard
 			for (int c = 1; c < GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length; c++) {
-				//if (getVisibleReactionsColumns().contains(c)) {
+				if (getVisibleReactionsColumns().contains(c)) {
 					sbf.append(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[c]);
 					if (c < GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length - 1) {
 						sbf.append("\t"); 
 					}	
-				//}			
+				}			
 			}
 			for (int r = 0; r < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); r++) {
 				sbf.append("\t");
@@ -7044,12 +7044,14 @@ public class GraphicalInterface extends JFrame {
 			//starts at 1 to avoid reading hidden db id column
 			for (int j = 1; j < reactionsTable.getColumnCount(); j++) 
 			{ 
-				if (reactionsTable.getValueAt(rowsselected[i], j) != null) {
-					sbf.append(reactionsTable.getValueAt(rowsselected[i], j));
-				} else {
-					sbf.append(" ");
+				if (getVisibleReactionsColumns().contains(j)) {
+					if (reactionsTable.getValueAt(rowsselected[i], j) != null) {
+						sbf.append(reactionsTable.getValueAt(rowsselected[i], j));
+					} else {
+						sbf.append(" ");
+					}
+					if (j < reactionsTable.getColumnCount()-1) sbf.append("\t");
 				}
-				if (j < reactionsTable.getColumnCount()-1) sbf.append("\t");
 			} 
 			sbf.append("\n"); 
 		} 
@@ -7081,16 +7083,18 @@ public class GraphicalInterface extends JFrame {
 			if (getSelectionMode() == 1) {
 				StringBuffer excelStr=new StringBuffer(); 
 				for (int i = 0; i < reactionsTable.getRowCount(); i++) { 
-					for (int j=0; j<numCols; j++) { 
-						try {
-							excelStr.append(escape(reactionsTable.getValueAt(i, colsSelected[j]))); 
-						} catch (Throwable t) {
+					for (int j=0; j<numCols; j++) {
+						if (getVisibleReactionsColumns().contains(colsSelected[j])) {
+							try {
+								excelStr.append(escape(reactionsTable.getValueAt(i, colsSelected[j]))); 
+							} catch (Throwable t) {
 
+							}
+							if (j<numCols-1) {
+								//System.out.println("t");
+								excelStr.append("\t"); 
+							} 
 						}
-						if (j<numCols-1) {
-							//System.out.println("t");
-							excelStr.append("\t"); 
-						} 
 					}
 					excelStr.append("\n");
 				}
@@ -7105,20 +7109,22 @@ public class GraphicalInterface extends JFrame {
 				ArrayList<ModelReactionEquation> copiedReactionList = new ArrayList<ModelReactionEquation>();
 				for (int i=0; i<numRows; i++) { 
 					for (int j=0; j<numCols; j++) { 
-						if (colsSelected[j] == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-							int viewRow = reactionsTable.convertRowIndexToModel(rowsSelected[i]);
-							int id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
-							copiedReactionList.add(LocalConfig.getInstance().getReactionEquationMap().get(id));					
-						}
-						try {
-							excelStr.append(escape(reactionsTable.getValueAt(rowsSelected[i], colsSelected[j]))); 
-						} catch (Throwable t) {
+						if (getVisibleReactionsColumns().contains(colsSelected[j])) {
+							if (colsSelected[j] == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+								int viewRow = reactionsTable.convertRowIndexToModel(rowsSelected[i]);
+								int id = Integer.valueOf((String) reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
+								copiedReactionList.add(LocalConfig.getInstance().getReactionEquationMap().get(id));					
+							}
+							try {
+								excelStr.append(escape(reactionsTable.getValueAt(rowsSelected[i], colsSelected[j]))); 
+							} catch (Throwable t) {
 
-						}						
-						if (j<numCols-1) {
-							//System.out.println("t");
-							excelStr.append("\t"); 
-						} 
+							}	
+							if (j<numCols-1) {
+								//System.out.println("t");
+								excelStr.append("\t"); 
+							} 
+						}				
 					} 
 					//System.out.println("n");
 					excelStr.append("\n"); 
