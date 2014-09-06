@@ -10133,7 +10133,7 @@ public class GraphicalInterface extends JFrame {
 							findValue = findValue.toLowerCase();
 						}					
 					}
-					if (cellValue.contains(findValue)) {
+					if (cellValue.contains(findValue) && getVisibleReactionsColumns().contains(c)) {
 						ArrayList<Integer> rowColumnList = new ArrayList<Integer>();
 						rowColumnList.add(r);
 						rowColumnList.add(c);
