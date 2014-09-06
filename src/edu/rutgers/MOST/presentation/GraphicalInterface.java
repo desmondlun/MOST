@@ -208,8 +208,6 @@ public class GraphicalInterface extends JFrame {
 	protected GDBBTask gdbbTask;
 	public javax.swing.Timer gdbbTimer = null;
 
-	//public javax.swing.Timer fvaTimer = new javax.swing.Timer(100, new FVATimeListener());
-	
 	static protected Runnable solutionListener = null;
 	
 	private Task task;	
@@ -7134,10 +7132,79 @@ public class GraphicalInterface extends JFrame {
 			}
 		}		
 	}
+	
+	public boolean selectionContainsFVAColumns() {
+		boolean contains = false;
+		for (int i = 0; i < reactionsTable.getSelectedColumns().length; i++) {
+			if (reactionsTable.getSelectedColumns()[i] == GraphicalInterfaceConstants.MIN_FLUX_COLUMN ||
+					reactionsTable.getSelectedColumns()[i] == GraphicalInterfaceConstants.MAX_FLUX_COLUMN) {
+				contains = true;
+			}
+		}
+		return contains;
+	}
+	
+	/**
+	 * Returns list of columns to be pasted. Accounts for FVA columns possibly being hidden.
+	 * @return
+	 */
+	public ArrayList<Integer> pasteColumnList() {
+		ArrayList<Integer> pasteColumnList = new ArrayList<Integer>();
+		if (reactionsTable.getSelectedColumns().length > 1) {
+			for (int i = 0; i < reactionsTable.getSelectedColumns().length; i++) {
+				if (LocalConfig.getInstance().fvaColumnsVisible) {
+					pasteColumnList.add(reactionsTable.getSelectedColumns()[i]);
+				} else {
+					if (selectionContainsFVAColumns()) {
+						if (reactionsTable.getSelectedColumns()[i] > GraphicalInterfaceConstants.FLUX_VALUE_COLUMN) {
+							pasteColumnList.add(reactionsTable.getSelectedColumns()[i] + 2);
+						} else {
+							pasteColumnList.add(reactionsTable.getSelectedColumns()[i]);
+						}
+					} else {
+						pasteColumnList.add(reactionsTable.getSelectedColumns()[i]);
+					}
+				}
+			}
+		} else {
+			int startCol = reactionsTable.getSelectedColumns()[0];
+			int numCols = numberOfClipboardColumns();
+			boolean correctionNecessary = false;
+			if (startCol <= GraphicalInterfaceConstants.FLUX_VALUE_COLUMN) {
+				correctionNecessary = true;
+			}
+			for (int j = 0; j < numCols; j++) {
+				if (LocalConfig.getInstance().fvaColumnsVisible) {
+					pasteColumnList.add(startCol + j);
+				} else {
+					if (correctionNecessary) {
+						if ((startCol + j) > GraphicalInterfaceConstants.FLUX_VALUE_COLUMN) {
+							pasteColumnList.add(startCol + j + 2);
+						} else {
+							pasteColumnList.add(startCol + j);
+						}
+					} else {
+						pasteColumnList.add(startCol + j);
+					}
+				}
+			}
+		}
+		
+		return pasteColumnList;
+		
+	}
 
 	public void reactionsPaste() {
-		// columns can not be repeatedly pasted (at least for now)
-		if (reactionsTable.getSelectedColumns().length > 1 && reactionsTable.getSelectedColumns().length != numberOfClipboardColumns()) {
+		int numCols = reactionsTable.getSelectedColumns().length;
+		if (!LocalConfig.getInstance().fvaColumnsVisible) {
+			if (selectionContainsFVAColumns()) {
+				numCols -= 2;
+			}
+		}
+		// Columns can not be repeatedly pasted (at least for now).
+		// If number of columns = 1, entire length of clipboard is pasted,
+		// else copy and paste selections column length compared
+		if (numCols > 1 && numCols != numberOfClipboardColumns()) {
 			JOptionPane.showMessageDialog(null,                
 					GraphicalInterfaceConstants.PASTE_AREA_ERROR,                
 					"Paste Error",                                
@@ -7153,7 +7220,9 @@ public class GraphicalInterface extends JFrame {
 			if (reactionsTable.getSelectedRows().length > 0 && reactionsTable.getSelectedColumns().length > 0) {
 				int startRow =reactionsTable.getSelectedRows()[0]; 
 				int startCol =reactionsTable.getSelectedColumns()[0];
-				int numSelectedRows = reactionsTable.getSelectedRowCount(); 
+				int numSelectedRows = reactionsTable.getSelectedRowCount();
+				//System.out.println(pasteColumnList());
+				ArrayList<Integer> colList = pasteColumnList();
 				String pasteString = ""; 
 				try { 
 					pasteString = (String)(Toolkit.getDefaultToolkit().getSystemClipboard().getContents(this).getTransferData(DataFlavor.stringFlavor)); 
@@ -7218,14 +7287,15 @@ public class GraphicalInterface extends JFrame {
 								// fixes bug where if last cell in row is blank, will not
 								// paste blank value over cell value if not blank
 								if (q < quotient) {
-									for (int j=0 ; j < numberOfClipboardColumns(); j++) {
+									for (int j = 0; j < colList.size(); j++) {
+//									for (int j=0 ; j < numberOfClipboardColumns(); j++) {
 										if (startCol + cells.length > reactionsTable.getColumnCount()) {
 											showPasteOutOfRangeError();				
 										} else {
 											if (j < cells.length) {
-												updateReactionsCellIfPasteValid(cells[j], pasteRows.get(q*numberOfClipboardRows() + i), startCol+j);
+												updateReactionsCellIfPasteValid(cells[j], pasteRows.get(q*numberOfClipboardRows() + i), colList.get(j));
 											} else {
-												updateReactionsCellIfPasteValid("", pasteRows.get(q*numberOfClipboardRows() + i), startCol+j);
+												updateReactionsCellIfPasteValid("", pasteRows.get(q*numberOfClipboardRows() + i), colList.get(j));
 											} 	
 										}								
 									}
@@ -7236,7 +7306,7 @@ public class GraphicalInterface extends JFrame {
 										if (startCol + j > reactionsTable.getColumnCount()) {
 											showPasteOutOfRangeError();			
 										} else {
-											updateReactionsCellIfPasteValid("", pasteRows.get(q*numberOfClipboardRows() + i), startCol+j);
+											updateReactionsCellIfPasteValid("", pasteRows.get(q*numberOfClipboardRows() + i), colList.get(j));
 										}									
 									}
 								}									
@@ -7246,7 +7316,7 @@ public class GraphicalInterface extends JFrame {
 					}
 					for (int m = 0; m < remainder; m++) {
 						String[] lines = pasteString.split("\n");
-						pasteReactionValues(m, lines, pasteRows, startIndex, startCol);
+						pasteReactionValues(m, lines, pasteRows, startIndex, startCol, colList);
 					}
 					// if selected rows for paste <= number of clipboard rows 	
 				} else {
@@ -7255,7 +7325,7 @@ public class GraphicalInterface extends JFrame {
 						showPasteOutOfRangeError();
 					} else {
 						for (int i=0 ; i<numberOfClipboardRows(); i++) { 
-							pasteReactionValues(i, lines, pasteRows, startIndex, startCol);
+							pasteReactionValues(i, lines, pasteRows, startIndex, startCol, colList);
 						} 
 					}
 				}
@@ -7296,23 +7366,25 @@ public class GraphicalInterface extends JFrame {
 	}
 
 	// i is the loop counter index
-	public void pasteReactionValues(int i, String[] lines, ArrayList<Integer> pasteRows, int startIndex, int startCol) {
+	public void pasteReactionValues(int i, String[] lines, ArrayList<Integer> pasteRows, int startIndex, int startCol, ArrayList<Integer> colList) {
 		if (i < lines.length) {
 			String[] cells = lines[i].split("\t"); 
 			if (startCol + cells.length > reactionsTable.getColumnCount()) {
 				showPasteOutOfRangeError();			
 			} else {
-				for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
+				for (int j = 0; j < colList.size(); j++) {
+//				for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
 					if (j < cells.length) {
-						updateReactionsCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), startCol+j);
+						updateReactionsCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), colList.get(j));
 					} else {
-						updateReactionsCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
+						updateReactionsCellIfPasteValid("", pasteRows.get(startIndex + i), colList.get(j));
 					} 
 				}
 			}
 		} else {
-			for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
-				updateReactionsCellIfPasteValid("", pasteRows.get(startIndex + i), startCol+j);
+			for (int j = 0; j < colList.size(); j++) {
+			//for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
+				updateReactionsCellIfPasteValid("", pasteRows.get(startIndex + i), colList.get(j));
 			}
 		}
 	}
