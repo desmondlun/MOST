@@ -22,6 +22,65 @@ public class SolverComponentLightWeight implements SolverComponent
 	private ArrayList< Variable > variables = new ArrayList< Variable >();
 	private ArrayList< LightWeightConstraint > constraints = new ArrayList< LightWeightConstraint >();
 
+	private int rowSize()
+	{
+		return constraints.size();
+	}
+	private int columnSize()
+	{
+		return variables.size();
+	}
+	private Double getMat( int i, int j )
+	{
+		return constraints.get( i ).getCoefficient( j );
+	}
+	
+	/**
+	 * Zeros the row out
+	 * @param the row
+	 */
+	private void removeRow( int n )
+	{
+		for( Entry< Integer, Double > term : constraints.get( n ).coefs.entrySet() )
+			term.setValue( 0.0 );
+	}
+	
+	/**
+	 * Zeros the column out
+	 * @param the column
+	 */
+	private void removeColumn( int n )
+	{
+		for( LightWeightConstraint con : constraints )
+			for( Entry< Integer, Double > term : con.coefs.entrySet() )
+				if( term.getKey().equals( n ) )
+					term.setValue( 0.0 );
+	}
+	
+	public void compressNet()
+	{
+		for( int j = 0; j < columnSize(); ++j )
+		{
+			boolean isZeroColumn = true;
+			for( int i = 0; i < rowSize(); ++i )
+				if( getMat( i, j ) != 0.0 )
+					isZeroColumn = false;
+			if( isZeroColumn )
+				this.removeColumn( j );
+		}
+		
+		for( int i = 0; i < rowSize(); ++i )
+		{
+			ArrayList< Integer > cols = new ArrayList< Integer >();
+			for( int j = 0; j < columnSize(); ++j )
+				if( getMat( i, j ) != 0.0 )
+					cols.add( j );
+			if( cols.size() == 1 )
+				removeColumn( cols.get( 0 ) );
+			
+		}
+	}
+	
 	@Override
 	public boolean addVariable( VarType type, double lb, double ub )
 	{

@@ -47,6 +47,7 @@ public class FBA extends Analysis
 	 		pb.setVisible( true );
 	 		
 	 		this.setSolverParameters();
+	 		linearSolver.getSolverComponent().compressNet();
 	 		this.maxObj = linearSolver.optimize();
 	 		
 	 		if( JOptionPane.YES_OPTION == selectedOption )
