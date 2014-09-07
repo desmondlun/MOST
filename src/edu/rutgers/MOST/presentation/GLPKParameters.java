@@ -35,7 +35,7 @@ public class GLPKParameters
 	public static final double MIPGAP_MAX_VALUE = Double.MAX_VALUE;
 	
 
-	public static final String SAVE_TO_MPS_NAME = "Save to MPS file";
+	public static final String SAVE_TO_MPS_NAME = "Save to MPS File";
 	
 	// layout
 	public static final int DIALOG_WIDTH = 400;

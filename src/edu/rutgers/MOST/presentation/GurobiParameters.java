@@ -46,7 +46,7 @@ public class GurobiParameters {
 	public static final String NUM_THREADS_NAME = "Number of Threads";
 	public static final int MAX_NUM_THREADS = Runtime.getRuntime().availableProcessors();
 	
-	public static final String SAVE_TO_MPS_NAME = "Save to MPS file";
+	public static final String SAVE_TO_MPS_NAME = "Save to MPS File";
 	
 	// layout
 	public static final int DIALOG_WIDTH = 400;
