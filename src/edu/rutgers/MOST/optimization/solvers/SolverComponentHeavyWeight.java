@@ -128,9 +128,4 @@ public class SolverComponentHeavyWeight implements SolverComponent
 		constraints.remove( i );
 		return true;
 	}
-
-	@Override
-	public void compressNet()
-	{		
-	}
 }

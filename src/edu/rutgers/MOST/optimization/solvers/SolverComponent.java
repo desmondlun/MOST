@@ -13,6 +13,5 @@ public interface SolverComponent
 	public abstract Constraint getConstraint( int i );
 	public abstract int constraintCount();
 	public abstract int variableCount();
-	public abstract void compressNet();
 	public abstract SolverComponent clone();
 }

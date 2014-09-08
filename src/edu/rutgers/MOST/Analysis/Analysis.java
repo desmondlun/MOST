@@ -50,6 +50,23 @@ public abstract class Analysis
 			ConType conType, double bValue )
 	{
 		ArrayList< Map< Integer, Double >> sMatrix = this.model.getSMatrix();
+		ModelCompressor compressor = new ModelCompressor();
+		ArrayList< Double > lowerBounds = new ArrayList< Double >();
+		ArrayList< Double > upperBounds = new ArrayList< Double >();
+		for( SBMLReaction reac : reactions )
+		{
+			boolean ko = reac.getKnockout().equals(
+					GraphicalInterfaceConstants.BOOLEAN_VALUES[1] );
+			lowerBounds.add( ko ? 0.0 : reac.getLowerBound() );
+			upperBounds.add( ko ? 0.0 : reac.getUpperBound() );
+		}
+		compressor.setsMatrix( sMatrix );
+		compressor.setLowerBounds( lowerBounds );
+		compressor.setUpperBounds( upperBounds );
+		compressor.compressNet();
+		sMatrix = compressor.getsMatrix();
+	
+		
 		for( int i = 0; i < sMatrix.size(); i++)
 		{
 			this.getSolver().addConstraint( sMatrix.get( i ), conType, bValue );
