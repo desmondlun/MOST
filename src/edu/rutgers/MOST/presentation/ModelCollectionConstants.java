@@ -29,7 +29,7 @@ public class ModelCollectionConstants {
 	
 	public static final String MODEL_COLLECTION_FILE_NAME = "ModelCollection.csv";
 	
-	public static final int DEFAULT_WIDTH = 70; //columns with no assigned width use default
+	public static final int DEFAULT_WIDTH = 80; //columns with no assigned width use default
 	public static final int MODEL_VERSION_COLUMN = visibleColumnsList.indexOf("Model Version");
 	public static final int MODEL_VERSION_WIDTH = 200; 
 	public static final int ORGANISM_NAME_COLUMN = visibleColumnsList.indexOf("Organism Name");
@@ -43,7 +43,7 @@ public class ModelCollectionConstants {
 	public static final int TYPE_COLUMN = visibleColumnsList.size() + invisibleColumnsList.indexOf("Type");
 	public static final int URL_COLUMN = visibleColumnsList.size() + invisibleColumnsList.indexOf("URL");
 		
-	public static final int WIDTH = 750;
+	public static final int WIDTH = 800;
 	// each model added will increase height by 20 (cell height). Maximum height should
 	// be ~500 for the best appearance. Additional models will add scroll bar.
 	// height = 266 is for 9 models, w/ no scroll bar and no cut off of any cells - exact fit
