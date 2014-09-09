@@ -1,6 +1,7 @@
 package edu.rutgers.MOST.data;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -11,8 +12,10 @@ import java.util.Map.Entry;
  */
 public class ModelCompressor
 {
+	int sMatColumnCount;
 	private ArrayList< Map< Integer, Double > > sMatrix = null;
 	private ArrayList< Map< Integer, Double > > gMatrix = null;
+	private ArrayList< Map< Integer, Double > > recMat = null;
 	private ArrayList< Double > lowerBounds = null;
 	private ArrayList< Double > upperBounds = null;
 	
@@ -23,13 +26,13 @@ public class ModelCompressor
 	
 	private int columnCount()
 	{
-		return lowerBounds.size();
+		return sMatColumnCount;
 	}
 	
 	private double getsMat( int i, int j )
 	{
 		Double res = sMatrix.get( i ).get( j );
-		return res == null ? new Double( 0.0 ) : res;
+		return res == null ? 0.0 : res;
 	}
 	
 	private void setsMat( int i, int j, double val )
@@ -48,6 +51,24 @@ public class ModelCompressor
 		gMatrix.get( i ).put( j, val );
 	}
 	
+	private void createRecMat()
+	{
+		recMat = new ArrayList< Map< Integer, Double > >();
+		int j = 0;
+		for( int i = 0; i < columnCount(); ++i )
+		{
+			HashMap< Integer, Double > map = new HashMap< Integer, Double >();
+			map.put( j++, 1.0 );
+			recMat.add( map );
+		}
+	}
+
+	public double getrMat( int i, int j )
+	{
+		Double res = recMat.get( i ).get( j );
+		return res == null ? 0.0 : res;
+	}
+
 	public ModelCompressor()
 	{
 	}
@@ -76,6 +97,9 @@ public class ModelCompressor
 	{
 		if( sMatrix == null || /*gMatrix == null ||*/ lowerBounds == null || upperBounds == null )
 			return;
+		
+		// create the recmap
+		createRecMat();
 		
 		// keep only the columns that have a nonzero value
 		// (Y-dimension) across the matrix
@@ -148,22 +172,47 @@ public class ModelCompressor
 		
 	}
 
+	public ArrayList< Double > decompress( ArrayList< Double > v )
+	{
+		ArrayList< Double > result = new ArrayList< Double >();
+		for( int i = 0; i < recMat.size(); ++i )
+		{
+			double dot = 0.0;
+			for( int j = 0; j < v.size(); ++j )
+			{
+				dot += recMat.get( i ).get( j ) * v.get( j );
+			}
+			result.add( dot );
+		}
+		
+		return result;
+	}
+	
 	private void removeColumn( int j )
 	{
 		for( Map< Integer, Double > con : sMatrix )
 			for( Entry< Integer, Double > term : con.entrySet() )
 				if( term.getKey().equals( j ) )
 					term.setValue( 0.0 );
+	/*
+	 	for( Map< Integer, Double > row : sMatrix )
+	 		row.remove( j );
+	 	for( Map< Integer, Double > row : recMat )
+	 		row.remove( j );
+	*/
 	}
 	
 	private void removeRow( int i )
 	{
 		sMatrix.get( i ).clear();
+		
+		//sMatrix.remove( i );
 	}
 
 	public void setLowerBounds( ArrayList< Double > lowerBounds )
 	{
 		this.lowerBounds = lowerBounds;
+		this.sMatColumnCount = lowerBounds.size();
 	}
 
 	public void setUpperBounds( ArrayList< Double > upperBounds )
