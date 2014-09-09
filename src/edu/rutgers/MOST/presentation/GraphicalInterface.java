@@ -276,6 +276,7 @@ public class GraphicalInterface extends JFrame {
 	public static boolean addMetabolite;
 	public boolean enterPressed;
 	public boolean reactionsUndo;
+	public boolean saveChangesOKClicked;
 	// save
 	public boolean saveFile;
 	public boolean saveSBML;
@@ -3693,8 +3694,12 @@ public class GraphicalInterface extends JFrame {
 			SaveChangesPrompt();
 			saveFile = false;
 			if (openFileChooser) {
-				getModelCollectionTable().setVisible(true);
-				loadExistingItem.setEnabled(false);
+				if (!saveChangesOKClicked) {
+					getModelCollectionTable().setVisible(true);
+					loadExistingItem.setEnabled(false);
+				} else {
+					loadExistingItem.setEnabled(true);
+				}
 			}			
 		}
 	}
@@ -4297,6 +4302,10 @@ public class GraphicalInterface extends JFrame {
 			// close dialog to give user a chance to save optimizations
 			// do not exit program
 			exit = false;
+			// if yes clicked and action was load Model Collection Table,
+			// do not load Model Collection Table, give user chance to save
+			// optimizations
+			saveChangesOKClicked = true;
 		}
 		if (choice == JOptionPane.NO_OPTION)
 		{
@@ -5322,6 +5331,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().includesReactions = true;		
 		enterPressed = false;
 		reactionsUndo = false;
+		saveChangesOKClicked = false;
 		// save
 		if (!saveSBML) {
 			saveFile = false;
