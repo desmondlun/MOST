@@ -126,6 +126,8 @@ public class ModelCompressor
 		// create the recmap
 		createRecMat();
 
+		if( true )
+			return;
 		// start the compression
 		int orColCount;
 		int orRowCount;
@@ -214,9 +216,29 @@ public class ModelCompressor
 					
 					setrMat( i, mergecols.get( 0 ), val0_rec - ( val1_rec / mergecoefs.get( 1 ) * mergecoefs.get( 0 ) ) );
 				}
-
 				
+				// shift the objective
+				Double obj_v0 = objVec.get( mergecols.get( 0 ) );
+				obj_v0 = obj_v0 == null ? 0.0 : obj_v0;
+				Double obj_v1 = objVec.get( mergecols.get( 1 ) );
+				obj_v1 = obj_v1 == null ? 0.0 : obj_v1;
+				objVec.put( mergecols.get( 0 ), obj_v0 - obj_v1 / mergecoefs.get( 1 ) * mergecoefs.get( 0 ) );
+				
+				// shift the upper/lower bounds
+				if( mergecoefs.get( 0 ) / mergecoefs.get( 1 ) > 0 )
+				{
+					lowerBounds.set( mergecols.get( 0 ), Math.max( lowerBounds.get( mergecols.get( 0 ) ), -upperBounds.get( mergecols.get( 1 ) ) * mergecoefs.get( 1 ) / mergecoefs.get( 0 ) ) );
+					upperBounds.set( mergecols.get( 0 ), Math.min( upperBounds.get( mergecols.get( 0 ) ), -lowerBounds.get( mergecols.get( 1 ) ) * mergecoefs.get( 1 ) / mergecoefs.get( 0 ) ) );
+				}
+				else
+				{
+					lowerBounds.set( mergecols.get( 0 ), Math.max( lowerBounds.get( mergecols.get( 0 ) ), -lowerBounds.get( mergecols.get( 1 ) ) * mergecoefs.get( 1 ) / mergecoefs.get( 0 ) ) );
+					upperBounds.set( mergecols.get( 0 ), Math.min( upperBounds.get( mergecols.get( 0 ) ), -upperBounds.get( mergecols.get( 1 ) ) * mergecoefs.get( 1 ) / mergecoefs.get( 0 ) ) );
+				}
+
 				removeColumn( mergecols.get( 1 ) );
+				if( lowerBounds.get( mergecols.get( 0 ) ) >= upperBounds.get( mergecols.get( 0 ) ) )
+					removeColumn( mergecols.get( 0 ) );
 				removeRow( candmass );
 			}
 			
