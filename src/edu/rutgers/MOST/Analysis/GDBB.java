@@ -11,6 +11,7 @@ import edu.rutgers.MOST.data.*;
 import edu.rutgers.MOST.optimization.solvers.*;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
+
 //http://commons.apache.org/proper/commons-lang/download_lang.cgi
 import org.apache.commons.lang3.time.StopWatch;
 
@@ -21,6 +22,7 @@ public class GDBB extends Thread {
 		public abstract void invoke();
 	}
 
+	private ModelCompressor compressor = new ModelCompressor();
 	private Callback finalizingCallback = null;
 	private GDBBModel model;
 	private MILSolver solver;
@@ -452,7 +454,75 @@ public class GDBB extends Thread {
 	}
 
 	public void setGDBBModel(GDBBModel m) {
+		
 		this.model = m;
+		
+		ArrayList< Double > lowerBounds = new ArrayList< Double >();
+		ArrayList< Double > upperBounds = new ArrayList< Double >();
+		for( SBMLReaction reac : m.getReactions() )
+		{
+			double lb = reac.getLowerBound();
+			double ub = reac.getUpperBound();
+			if( reac.getKnockout().equals( GraphicalInterfaceConstants.BOOLEAN_VALUES[1] ) )
+			{
+				lb = 0.0;
+				ub = 0.0;
+			}
+			lowerBounds.add( lb );
+			upperBounds.add( ub );
+		}
+		
+		Vector< Double > objective = m.getObjective();
+		Map< Integer, Double > mapObjective = new HashMap< Integer, Double >();
+		for( int i = 0; i < objective.size(); i++)
+		{
+			if( objective.elementAt( i ) != 0.0 )
+			{
+				mapObjective.put( i, objective.elementAt( i ) );
+			}
+		}
+		
+		Vector< Double > syntheticObjective = m.getSyntheticObjective();
+		Map< Integer, Double > mapSyntheticObjective = new HashMap< Integer, Double >();
+		for( int i = 0; i < syntheticObjective.size(); i++)
+		{
+			if( syntheticObjective.elementAt( i ) != 0.0 )
+			{
+				mapSyntheticObjective.put( i, syntheticObjective.elementAt( i ) );
+			}
+		}
+		
+		compressor.setReactions( m.getReactions() );
+		compressor.setgMatrix( m.getGprMatrix() );
+		compressor.setsMatrix( m.getSMatrix() );
+		compressor.setObjVec( mapObjective );
+		compressor.setSynthObjVec( mapSyntheticObjective );
+		compressor.setLowerBounds( lowerBounds );
+		compressor.setUpperBounds( upperBounds );
+	//	compressor.compressNet();
+		
+		for( int i = 0; i < m.getReactions().size(); ++i )
+		{
+			m.getReactions().get( i ).setLowerBound( lowerBounds.get( i ) );
+			m.getReactions().get( i ).setUpperBound( upperBounds.get( i ) );
+		}
+		
+		
+		m.getSyntheticObjective().clear();
+		m.getObjective().clear();
+		for( int j = 0; j < m.getReactions().size(); ++j )
+		{
+			if( mapObjective.containsKey( j ) )
+				m.getObjective().add( mapObjective.get( j ) );
+			else
+				m.getObjective().add( 0.0 );
+			
+			if( mapSyntheticObjective.containsKey( j ) )
+				m.getSyntheticObjective().add( mapSyntheticObjective.get( j ) );
+			else
+				m.getSyntheticObjective().add( 0.0 );
+		}
+	
 	}
 
 //  public ArrayList<Double> run() {

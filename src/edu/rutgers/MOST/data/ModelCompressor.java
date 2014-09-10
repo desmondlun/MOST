@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Vector;
 
 /**
  * This is a model reducer class used for
@@ -12,13 +13,25 @@ import java.util.Map.Entry;
  */
 public class ModelCompressor
 {
+	private Vector< SBMLReaction > reactions = null;
 	private ArrayList< Map< Integer, Double > > sMatrix = null;
 	private ArrayList< Map< Integer, Double > > gMatrix = null;
 	private ArrayList< Map< Integer, Double > > recMat = null;
 	private Map< Integer, Double > objVec = null;
+	private Map< Integer, Double > synthObjVec = null;
 	private ArrayList< Double > lowerBounds = null;
 	private ArrayList< Double > upperBounds = null;
 	
+	public Vector< SBMLReaction > getReactions()
+	{
+		return reactions;
+	}
+
+	public void setReactions( Vector< SBMLReaction > reactions )
+	{
+		this.reactions = reactions;
+	}
+
 	private int rowCount()
 	{
 		return sMatrix.size();
@@ -220,9 +233,9 @@ public class ModelCompressor
 				{
 					for( int i = 0; i < gMatrix.size(); ++i )
 					{
-						boolean b0 = !gMatrix.get( i ).get( mergecols.get( 0 ) ).equals( 0.0 );
-						boolean b1 = !gMatrix.get( i ).get( mergecols.get( 1 ) ).equals( 0.0 );
-						if( b0 | b1 ) gMatrix.get( i ).put( mergecols.get( 0 ), 1.0 );
+						boolean b0 = getgMat( i, mergecols.get( 0 ) ) != 0.0;
+						boolean b1 = getgMat( i, mergecols.get( 1 ) ) != 0.0;
+						if( b0 || b1 ) setgMat( i, mergecols.get( 0 ), 1.0 );
 					}
 				}
 				
@@ -232,6 +245,20 @@ public class ModelCompressor
 				Double obj_v1 = objVec.get( mergecols.get( 1 ) );
 				obj_v1 = obj_v1 == null ? 0.0 : obj_v1;
 				objVec.put( mergecols.get( 0 ), obj_v0 - obj_v1 / mergecoefs.get( 1 ) * mergecoefs.get( 0 ) );
+				if( objVec.get( mergecols.get( 0 ) ).equals( 0.0 ) )
+					objVec.remove( mergecols.get( 0 ) );
+				
+				// shift the synthetic objective
+				if( this.synthObjVec != null )
+				{
+					Double synthobj_v0 = synthObjVec.get( mergecols.get( 0 ) );
+					synthobj_v0 = synthobj_v0 == null ? 0.0 : synthobj_v0;
+					Double synthobj_v1 = synthObjVec.get( mergecols.get( 1 ) );
+					synthobj_v1 = synthobj_v1 == null ? 0.0 : synthobj_v1;
+					synthObjVec.put( mergecols.get( 0 ), synthobj_v0 - synthobj_v1 / mergecoefs.get( 1 ) * mergecoefs.get( 0 ) );
+					if( synthObjVec.get( mergecols.get( 0 ) ).equals( 0.0 ) )
+						synthObjVec.remove( mergecols.get( 0 ) );
+				}
 				
 				// shift the upper/lower bounds
 				if( mergecoefs.get( 0 ) / mergecoefs.get( 1 ) > 0 )
@@ -332,9 +359,21 @@ public class ModelCompressor
  			else if( entry.getKey() > j )
  				newObjVec.put( entry.getKey() - 1, entry.getValue() );
  		
+ 		//synthObjVec
+ 		Map< Integer, Double > newSynthObjVec = new HashMap< Integer, Double >();
+ 		if( synthObjVec != null )
+	 		for( Entry< Integer, Double > entry : synthObjVec.entrySet() )
+	 			if( entry.getKey() < j )
+	 				newSynthObjVec.put( entry.getKey(), entry.getValue() );
+	 			else if( entry.getKey() > j )
+	 				newSynthObjVec.put( entry.getKey() - 1, entry.getValue() );
+ 		
 	 	objVec = newObjVec;
+	 	synthObjVec = newSynthObjVec;
 	 	lowerBounds.remove( j );
 	 	upperBounds.remove( j );
+	 	if( reactions != null )
+	 		reactions.remove( j );
 	
 	}
 	
@@ -353,5 +392,10 @@ public class ModelCompressor
 	public void setUpperBounds( ArrayList< Double > upperBounds )
 	{
 		this.upperBounds = upperBounds;
+	}
+
+	public void setSynthObjVec( Map< Integer, Double > mapSyntheticObjective )
+	{
+		this.synthObjVec = mapSyntheticObjective;
 	}
 }
