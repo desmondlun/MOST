@@ -38,6 +38,7 @@ public class MILGurobiSolver extends GurobiSolver
 								.getDoubleInfo( GRB.CB_MIPSOL_OBJ ), vals );
 						param.solution.setIndex( idx++ );
 						param.addFolder = firstSolution;
+						param.maxObj = getDoubleInfo( GRB.CB_MIPSOL_OBJ );
 						firstSolution = false;
 						
 						GraphicalInterface.addGDBBSolution( param );
