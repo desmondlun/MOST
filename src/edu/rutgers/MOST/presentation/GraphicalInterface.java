@@ -4288,6 +4288,7 @@ public class GraphicalInterface extends JFrame {
 	 * Prompt shown on exit or load action to save optimizations if any have been run
 	 */
 	public void saveOptimizationsPrompt() {
+		saveChangesOKClicked = false;
 		Object[] options = {"  Yes  ", "   No   "};
 		int choice = JOptionPane.showOptionDialog(null, 
 				"Optimizations have not been saved. Save Optimizations?", 
@@ -4310,7 +4311,6 @@ public class GraphicalInterface extends JFrame {
 		if (choice == JOptionPane.NO_OPTION)
 		{
 			exit = true;
-			cleanupTemporaryDirectory();
 		}
 	}
 
@@ -5246,6 +5246,7 @@ public class GraphicalInterface extends JFrame {
 			setSortDefault();
 			deleteAllOptimizationFiles();
 			LocalConfig.getInstance().getOptimizationFilesList().clear();
+			cleanupTemporaryDirectory();
 		}
 		DynamicTreePanel.getTreePanel().setNodeSelected(0);
 		// enables or disables menu items depending on if there are unused items present
