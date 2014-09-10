@@ -12,12 +12,12 @@ import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 public abstract class Analysis
 {
 	protected Model model = null;
-	protected Vector< String > varNames = new Vector< String >();
 	protected double maxObj = Double.NaN;
 	protected ModelCompressor compressor = new ModelCompressor();
 
 	protected void setVars()
 	{
+	/*
 		Vector< SBMLReaction > reactions = this.model.getReactions();
 		for( int i = 0; i < reactions.size(); i++)
 		{
@@ -36,11 +36,56 @@ public abstract class Analysis
 			}
 
 			this.getSolver().setVar( varName, VarType.CONTINUOUS, lb, ub );
-
-			this.varNames.add( varName );
 		}
+	*/
+		ArrayList< Double > lowerBounds = this.compressor.getLowerBounds();
+		ArrayList< Double > upperBounds = this.compressor.getUpperBounds();
+		for( int j = 0; j < lowerBounds.size(); ++j )
+			this.getSolver().setVar( null, VarType.CONTINUOUS, lowerBounds.get( j ), upperBounds.get( j ) );
 	}
 
+	protected void compressNet()
+	{
+	
+		// set the compressor vars
+		Vector< SBMLReaction > reactions = this.model.getReactions();
+		ArrayList< Double > lowerBounds = new ArrayList< Double >();
+		ArrayList< Double > upperBounds = new ArrayList< Double >();
+		for( int i = 0; i < reactions.size(); i++)
+		{
+			SBMLReaction reac = (SBMLReaction)( reactions.elementAt( i ) );
+			double lb = reac.getLowerBound();
+			double ub = reac.getUpperBound();
+
+			if( reac.getKnockout().equals(
+					GraphicalInterfaceConstants.BOOLEAN_VALUES[1] ) )
+			{
+				lb = 0;
+				ub = 0;
+			}
+			lowerBounds.add( lb );
+			upperBounds.add( ub );
+		}
+		compressor.setLowerBounds( lowerBounds );
+		compressor.setUpperBounds( upperBounds );
+		
+		// set the compressor constraints
+		compressor.setsMatrix( model.getSMatrix() );
+		
+		// set the compressor objective
+		Vector< Double > objective = this.model.getObjective();
+		Map< Integer, Double > mapObjective = new HashMap< Integer, Double >();
+		for( int i = 0; i < objective.size(); i++)
+		{
+			if( objective.elementAt( i ) != 0.0 )
+			{
+				mapObjective.put( i, objective.elementAt( i ) );
+			}
+		}
+		compressor.setObjVec( mapObjective );
+		compressor.compressNet();
+	}
+	
 	protected void setConstraints()
 	{
 		Vector< SBMLReaction > reactions = this.model.getReactions();
@@ -50,6 +95,7 @@ public abstract class Analysis
 	protected void setConstraints( Vector< SBMLReaction > reactions,
 			ConType conType, double bValue )
 	{
+	/*
 		ArrayList< Map< Integer, Double >> sMatrix = this.model.getSMatrix();
 		ModelCompressor compressor = new ModelCompressor();
 		ArrayList< Double > lowerBounds = new ArrayList< Double >();
@@ -72,10 +118,16 @@ public abstract class Analysis
 		{
 			this.getSolver().addConstraint( sMatrix.get( i ), conType, bValue );
 		}
+	*/
+		ArrayList< Map< Integer, Double > > constraints = compressor.getsMatrix();
+		for( Map< Integer, Double > con : constraints )
+			this.getSolver().addConstraint( con, ConType.EQUAL, 0.0 );
+		
 	}
 
 	protected void setObjective()
 	{
+	/*
 		this.getSolver().setObjType( ObjType.Maximize );
 		Vector< Double > objective = this.model.getObjective();
 		Map< Integer, Double > map = new HashMap< Integer, Double >();
@@ -87,6 +139,9 @@ public abstract class Analysis
 			}
 		}
 		this.getSolver().setObj( map );
+	*/
+		this.getSolver().setObjType( ObjType.Maximize );
+		this.getSolver().setObj( compressor.getObjVec() );
 	}
 
 	public void setModel( Model m )
@@ -96,6 +151,7 @@ public abstract class Analysis
 	
 	public void setSolverParameters()
 	{
+		this.compressNet();
 		this.setVars();
 		this.setConstraints();
 		this.setObjective();
