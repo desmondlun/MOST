@@ -126,8 +126,6 @@ public class ModelCompressor
 		// create the recmap
 		createRecMat();
 
-		if( true )
-			return;
 		// start the compression
 		int orColCount;
 		int orRowCount;
@@ -278,10 +276,11 @@ public class ModelCompressor
 	 		Map< Integer, Double > oldRow = sMatrix.get( i );
 	 		Map< Integer, Double > newRow = new HashMap< Integer, Double >();
 	 		for( Entry< Integer, Double > entry : oldRow.entrySet() )
-	 			if( entry.getKey() < j )
-	 				newRow.put( entry.getKey(), entry.getValue() );
-	 			else if( entry.getKey() > j )
-	 				newRow.put( entry.getKey() - 1, entry.getValue() );
+	 			if( !entry.getValue().equals( 0.0 ) )
+		 			if( entry.getKey() < j )
+		 				newRow.put( entry.getKey(), entry.getValue() );
+		 			else if( entry.getKey() > j )
+		 				newRow.put( entry.getKey() - 1, entry.getValue() );
 	 		sMatrix.set( i, newRow );
 	 	}
 	 	
@@ -291,10 +290,11 @@ public class ModelCompressor
 	 		Map< Integer, Double > oldRow = recMat.get( i );
 	 		Map< Integer, Double > newRow = new HashMap< Integer, Double >();
 	 		for( Entry< Integer, Double > entry : oldRow.entrySet() )
-	 			if( entry.getKey() < j )
-	 				newRow.put( entry.getKey(), entry.getValue() );
-	 			else if( entry.getKey() > j )
-	 				newRow.put( entry.getKey() - 1, entry.getValue() );
+	 			if( !entry.getValue().equals( 0.0 ) )
+		 			if( entry.getKey() < j )
+		 				newRow.put( entry.getKey(), entry.getValue() );
+		 			else if( entry.getKey() > j )
+		 				newRow.put( entry.getKey() - 1, entry.getValue() );
 	 		recMat.set( i, newRow );
 	 	}
 	 	
