@@ -68,6 +68,11 @@ public class ModelCompressor
 		Double res = recMat.get( i ).get( j );
 		return res == null ? 0.0 : res;
 	}
+	
+	public void setrMat( int i, int j, double val )
+	{
+		recMat.get( i ).put( j, val );
+	}
 
 	public Map< Integer, Double > getObjVec()
 	{
@@ -117,9 +122,11 @@ public class ModelCompressor
 		if( sMatrix == null || /*gMatrix == null ||*/
 				objVec == null || lowerBounds == null || upperBounds == null )
 			return;
-		
+
 		// create the recmap
 		createRecMat();
+
+		// start the compression
 		int orColCount;
 		int orRowCount;
 		do
@@ -154,16 +161,18 @@ public class ModelCompressor
 			}
 		
 			
-			/*
+			
 			for( boolean repeat = true; repeat; )
 			{
 				// find the rows that have only 2 nonzero columns (fluxes)
 				// and merge them
 				ArrayList< Integer > mergecols = new ArrayList< Integer >();
 				ArrayList< Double > mergecoefs = new ArrayList< Double >();
+				int candmass = 0;
 	
 				for( int i = 0; i < rowCount(); ++i )
 				{
+					candmass = i;
 					for( int j = 0; j < columnCount(); ++j )
 					{
 						if( getsMat( i, j ) != 0 )
@@ -187,14 +196,32 @@ public class ModelCompressor
 					continue;
 				}
 				
+				// for sMatrix
 				for( int i = 0; i < rowCount(); ++i )
 				{
 					double val0 = getsMat( i, mergecols.get( 0 ) ); // current row
 					double val1 = getsMat( i, mergecols.get( 1 ) ); // current row
+					
+					// for sMatrix
 					setsMat( i, mergecols.get( 0 ), val0 - ( val1 / mergecoefs.get( 1 ) * mergecoefs.get( 0 ) ) );
 				}
+				
+				// for recMat
+				for( int i = 0; i < recMat.size(); ++i )
+				{
+					double val0_rec = getrMat( i, mergecols.get( 0 ) ); // current row reccoef
+					double val1_rec = getrMat( i, mergecols.get( 1 ) ); // current row reccoef
+					
+					setrMat( i, mergecols.get( 0 ), val0_rec - ( val1_rec / mergecoefs.get( 1 ) * mergecoefs.get( 0 ) ) );
+				}
+
+				
+				removeColumn( mergecols.get( 1 ) );
+				removeRow( candmass );
 			}
-			*/
+			
+			
+			
 		} while( rowCount() < orRowCount || columnCount() < orColCount );
 		
 	}
@@ -237,7 +264,7 @@ public class ModelCompressor
 	 	}
 	 	
 	 	// recMat
-	 	for( int i = 0; i < rowCount(); ++i )
+	 	for( int i = 0; i < recMat.size(); ++i )
 	 	{
 	 		Map< Integer, Double > oldRow = recMat.get( i );
 	 		Map< Integer, Double > newRow = new HashMap< Integer, Double >();
