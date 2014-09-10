@@ -58,6 +58,8 @@ public class FBA extends Analysis
 	 	 		
 		 		quadraticSolver.FVA( linearSolver.getObjectiveCoefs(), this.getMaxObj(), linearSolver.getSoln(), minVariability,
 		 				maxVariability, linearSolver.getSolverComponent() );
+		 		minVariability = compressor.decompress( minVariability );
+		 		maxVariability = compressor.decompress( maxVariability );
 	 		}
 	 		return compressor.decompress( linearSolver.getSoln() );
 		}
