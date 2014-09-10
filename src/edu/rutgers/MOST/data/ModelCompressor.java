@@ -215,6 +215,17 @@ public class ModelCompressor
 					setrMat( i, mergecols.get( 0 ), val0_rec - ( val1_rec / mergecoefs.get( 1 ) * mergecoefs.get( 0 ) ) );
 				}
 				
+				// for gMat
+				if( gMatrix != null )
+				{
+					for( int i = 0; i < gMatrix.size(); ++i )
+					{
+						boolean b0 = !gMatrix.get( i ).get( mergecols.get( 0 ) ).equals( 0.0 );
+						boolean b1 = !gMatrix.get( i ).get( mergecols.get( 1 ) ).equals( 0.0 );
+						if( b0 | b1 ) gMatrix.get( i ).put( mergecols.get( 0 ), 1.0 );
+					}
+				}
+				
 				// shift the objective
 				Double obj_v0 = objVec.get( mergecols.get( 0 ) );
 				obj_v0 = obj_v0 == null ? 0.0 : obj_v0;
@@ -297,6 +308,21 @@ public class ModelCompressor
 		 				newRow.put( entry.getKey() - 1, entry.getValue() );
 	 		recMat.set( i, newRow );
 	 	}
+	 	
+	 	// gMat
+	 	if( gMatrix != null )
+		 	for( int i = 0; i < gMatrix.size(); ++i )
+		 	{
+		 		Map< Integer, Double > oldRow = gMatrix.get( i );
+		 		Map< Integer, Double > newRow = new HashMap< Integer, Double >();
+		 		for( Entry< Integer, Double > entry : oldRow.entrySet() )
+		 			if( !entry.getValue().equals( 0.0 ) )
+			 			if( entry.getKey() < j )
+			 				newRow.put( entry.getKey(), entry.getValue() );
+			 			else if( entry.getKey() > j )
+			 				newRow.put( entry.getKey() - 1, entry.getValue() );
+		 		gMatrix.set( i, newRow );
+		 	}
 	 	
 	 	//objVec
  		Map< Integer, Double > newObjVec = new HashMap< Integer, Double >();
