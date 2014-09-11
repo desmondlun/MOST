@@ -1445,49 +1445,49 @@ public class GraphicalInterface extends JFrame {
 
 		setJMenuBar(menuBar);
 
-		JMenu modelMenu = new JMenu("Model");
-		modelMenu.setMnemonic(KeyEvent.VK_M);
+		JMenu fileMenu = new JMenu("File");
+		fileMenu.setMnemonic(KeyEvent.VK_F);
 
-		modelMenu.add(loadSBMLItem);
+		fileMenu.add(loadSBMLItem);
 		loadSBMLItem.setMnemonic(KeyEvent.VK_L);
 		loadSBMLItem.addActionListener(new LoadSBMLAction());
 
-		modelMenu.add(loadCSVItem);
+		fileMenu.add(loadCSVItem);
 		loadCSVItem.setMnemonic(KeyEvent.VK_V);
 		loadCSVItem.addActionListener(new LoadCSVAction());
 
-		modelMenu.add(loadExistingItem);
+		fileMenu.add(loadExistingItem);
 		loadExistingItem.setMnemonic(KeyEvent.VK_D);
 		loadExistingItem.addActionListener(new LoadExistingItemAction());
 
-		modelMenu.addSeparator();
+		fileMenu.addSeparator();
 
-		modelMenu.add(saveItem);
+		fileMenu.add(saveItem);
 		saveItem.setMnemonic(KeyEvent.VK_S);
 		saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 		saveItem.addActionListener(new SaveItemAction());
 		
-		modelMenu.add(saveSBMLItem);
+		fileMenu.add(saveSBMLItem);
 		saveSBMLItem.setMnemonic(KeyEvent.VK_B);
 		saveSBMLItem.addActionListener(new SaveSBMLItemAction());
 
-		modelMenu.add(saveCSVItem);
+		fileMenu.add(saveCSVItem);
 		saveCSVItem.setMnemonic(KeyEvent.VK_A);
 		saveCSVItem.addActionListener(new SaveCSVItemAction());
 
-		modelMenu.addSeparator();
+		fileMenu.addSeparator();
 
-		modelMenu.add(clearItem);
+		fileMenu.add(clearItem);
 		clearItem.setMnemonic(KeyEvent.VK_C);
 		clearItem.addActionListener(new ClearAction());
 
-		modelMenu.addSeparator();
+		fileMenu.addSeparator();
 
-		modelMenu.add(exitItem);
+		fileMenu.add(exitItem);
 		exitItem.setMnemonic(KeyEvent.VK_X);
 		exitItem.addActionListener(new ExitAction());
 
-		menuBar.add(modelMenu);
+		menuBar.add(fileMenu);
 
 		//Analysis menu
 		JMenu analysisMenu = new JMenu("Analysis");
