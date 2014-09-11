@@ -126,7 +126,7 @@ A{text-decoration:none}
 	</td>
 
 	<td width=600 valign=top>
-	<p align=center><font size=5>Select Solvers</font></p>
+	<p align=center><font size=5>Solver Parameters</font></p>
 
 	<p>Gurobi Parameters</p>
 
@@ -138,19 +138,53 @@ A{text-decoration:none}
 
 	<blockquote>Gurobi Parameters Descriptions:</blockquote>
 
+	<blockquote><a href="http://www.gurobi.com/documentation/5.6/reference-manual/feasibilitytol#parameter:FeasibilityTol">Feasibility Tolerance</a>
+	 – Primal feasibility tolerance.</blockquote>
+
+	<blockquote><a href="http://www.gurobi.com/documentation/5.6/reference-manual/intfeastol#parameter:IntFeasTol">Integer Feasibility Tolerance</a>
+	 – Integer feasibility tolerance. Only affects mixed integer programming (MIP) models.</blockquote>
+
+	<blockquote><a href="http://www.gurobi.com/documentation/5.6/reference-manual/optimalitytol#parameter:OptimalityTol">Dual Feasibility Tolerance</a>
+	 – Optimality tolerance.</blockquote>
+
+	<blockquote><a href="http://www.gurobi.com/documentation/5.6/reference-manual/heuristics#parameter:Heuristics">Heuristics</a>
+	 – Turn mixed integer programming (MIP) heuristics up or down. Only affects MIP models</blockquote>
+
+	<blockquote><a href="http://www.gurobi.com/documentation/5.6/reference-manual/heuristics#parameter:Heuristics">MIP Focus</a>
+	 – Set the focus of the mixed integer programming (MIP) solver. Only affects MIP models</blockquote>
+
 	<blockquote><a href="http://www.gurobi.com/documentation/5.6/reference-manual/threads#parameter:Threads">Number of Threads</a>
 	 – Number of parallel threads to use.</blockquote>
 
-	<blockquote>The <a href="http://www.gurobi.com/documentation/5.6/reference-manual/parameters">Gurobi Reference Manual</a> 
-	 contains descriptions of solver parameters.</blockquote>
+	<blockquote><a href="http://www.gurobi.com/documentation/5.6/reference-manual/mps_format">Save to MPS File</a>
+	- MOST can write a mixed integer programming (MIP) problem to an MPS (Mathematical Programming System) file if true is
+	selected.</blockquote>
 
-	<p>GLPK Parameters</p>
+	<blockquote>The <a href="http://www.gurobi.com/documentation/5.6/reference-manual/parameters">Gurobi Reference Manual</a> 
+	 contains descriptions of Gurobi solver parameters.</blockquote>
+
+	<br>
+
+	<p>GNU Linear Programming Kit (GLPK) Parameters</p>
 
 	<blockquote>Select Options –> Set GLPK Parameters (Alt+O then Alt+L).</blockquote>
 
 	<blockquote>The Set GLPK Parameters dialog will appear:</blockquote>
 
 	<p align="center"><img src ="images/glpk_parameters.jpg" alt="Image - GLPK Parameters Dialog" border="0"></p>
+
+	<blockquote>The <a href="glpk.pdf" target="_blank">GNU Linear Programming Kit Reference Manual</a> 
+	 contains descriptions of GLPK solver parameters.</blockquote>
+
+	<blockquote>Feasibility Tolerance, Integer Feasibility Tolerance - see GLPK Reference Manual pg. 67.</blockquote>
+
+	<blockquote>MIP gap - also known as the duality gap (GLPK Reference Manual pg. 126).</blockquote>
+
+	<blockquote>Save to MPS File
+	- MOST can write a mixed integer programming (MIP) problem to an MPS (Mathematical Programming System) file if true is
+	selected - see GLPK Reference Manual, Appendix B.</blockquote>
+
+	<br>
 
 	<p>Ipopt Parameters</p>
 
