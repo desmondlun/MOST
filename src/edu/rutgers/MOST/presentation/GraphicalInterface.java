@@ -576,6 +576,16 @@ public class GraphicalInterface extends JFrame {
 		this.gdbbFluxesMap = gdbbFluxesMap;
 	}
 	
+	private String dateTimeStamp;
+	
+	public String getDateTimeStamp() {
+		return dateTimeStamp;
+	}
+
+	public void setDateTimeStamp(String dateTimeStamp) {
+		this.dateTimeStamp = dateTimeStamp;
+	}
+	
 	/*****************************************************************************/
 	// end gdbb items
 	/*****************************************************************************/	
@@ -1082,18 +1092,19 @@ public class GraphicalInterface extends JFrame {
 						}		
 					}								
 				} else {
-					saveOptFile = true;
-					if (node.getUserObject().toString() != null) {
-						setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
-						setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
-						setTitle(GraphicalInterfaceConstants.TITLE + " - " + solutionName);
-						loadOutputPane(u.createLogFileName(databaseName + ".log"));
-						if (getPopout() != null) {
-							getPopout().load(u.createLogFileName(databaseName + ".log"), gi.getTitle());
-						}										
-						disableMenuItems();						
-						isRoot = false;	
-					}					
+					// do nothing when folder is clicked
+//					saveOptFile = true;
+//					if (node.getUserObject().toString() != null) {
+//						setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
+//						setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
+//						setTitle(GraphicalInterfaceConstants.TITLE + " - " + solutionName);
+//						loadOutputPane(u.createLogFileName(databaseName + ".log"));
+//						if (getPopout() != null) {
+//							getPopout().load(u.createLogFileName(databaseName + ".log"), gi.getTitle());
+//						}										
+//						disableMenuItems();						
+//						isRoot = false;	
+//					}					
 				}
 			}
 		});
@@ -1651,6 +1662,11 @@ public class GraphicalInterface extends JFrame {
         gdbbItem.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent a) {
         		gdbbSelected = true;
+        		Utilities u = new Utilities();
+        		// Date time stamp set at start of GDBB so all solutions
+        		// for a given run have same date time stamp
+        		String dateTimeStamp = u.createDateTimeStamp();
+        		setDateTimeStamp(dateTimeStamp);
         		LocalConfig.getInstance().noBiolObjWarningShown = false;
         		LocalConfig.getInstance().noSynObjWarningShown = false;
         		Thread t = new Thread()
@@ -3250,6 +3266,10 @@ public class GraphicalInterface extends JFrame {
 				highlightUnusedMetabolitesItem.setState(false);
 
 				String dateTimeStamp = u.createDateTimeStamp();
+				// GDBB date time stamp constant for given analysis
+				if (gdbbSelected) {
+					dateTimeStamp = getDateTimeStamp();
+				}
 				String prefix;
 				if (gdbbSelected) {
 					prefix = GraphicalInterfaceConstants.GDBB_PREFIX;
