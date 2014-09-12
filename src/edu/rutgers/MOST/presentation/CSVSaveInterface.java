@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 //import java.util.ArrayList;
 
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -24,6 +25,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import edu.rutgers.MOST.config.LocalConfig;
+import edu.rutgers.MOST.data.SettingsConstants;
 
 public class CSVSaveInterface  extends JDialog {
 
@@ -175,7 +177,7 @@ public class CSVSaveInterface  extends JDialog {
 				fileChooser.setDialogTitle("Save CSV Metabolite File");
 				fileChooser.setFileFilter(new CSVFileFilter1());
 				fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-				String lastCSV_path = GraphicalInterface.curSettings.get("LastCSV");
+				String lastCSV_path = GraphicalInterface.curSettings.get(SettingsConstants.CSV_MODEL_SETTINGS_NAME);
 				Utilities u = new Utilities();
 				// if path is null or does not exist, default used, else last path used		
 				fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));	
@@ -204,7 +206,7 @@ public class CSVSaveInterface  extends JDialog {
 				fileChooser.setDialogTitle("Save CSV Reaction File");
 				fileChooser.setFileFilter(new CSVFileFilter1());
 				fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);				
-				String lastCSV_path = GraphicalInterface.curSettings.get("LastCSV");
+				String lastCSV_path = GraphicalInterface.curSettings.get(SettingsConstants.CSV_MODEL_SETTINGS_NAME);
 				Utilities u = new Utilities();
 				// if path is null or does not exist, default used, else last path used		
 				fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));	

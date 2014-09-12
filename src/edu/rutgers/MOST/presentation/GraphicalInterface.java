@@ -3299,6 +3299,15 @@ public class GraphicalInterface extends JFrame {
 				//setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(optimizeName));
 				//setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(optimizeName));
 				LocalConfig.getInstance().getOptimizationFilesList().add(getOptimizeName());
+				if (gdbbSelected) {
+					// This file is unused for GDBB, but having it present in optimization files list
+					// causes save optimization files prompt to appear even if all opt files have been saved.
+					String timeStampLogName = GraphicalInterfaceConstants.GDBB_PREFIX +
+							LocalConfig.getInstance().getModelName() + getDateTimeStamp();
+					if (LocalConfig.getInstance().getOptimizationFilesList().contains(timeStampLogName)) {
+						LocalConfig.getInstance().getOptimizationFilesList().remove(LocalConfig.getInstance().getOptimizationFilesList().indexOf(timeStampLogName));
+					}
+				}
 				setTitle(GraphicalInterfaceConstants.TITLE + " - " + getOptimizeName());	
 				listModel.addElement(getOptimizeName());	
 				
@@ -3862,11 +3871,15 @@ public class GraphicalInterface extends JFrame {
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 						DynamicTreePanel.getTreePanel().tree.getLastSelectedPathComponent();
 				Solution nodeInfo = (Solution)node.getUserObject();	
-				String suffix = "";
-				if (nodeInfo.getIndex() > 0) {
-					suffix = "_[" + nodeInfo.getIndex() + "]";
+//				String suffix = "";
+//				if (nodeInfo.getIndex() > 0) {
+//					suffix = "_[" + nodeInfo.getIndex() + "]";
+//				}
+//				jWrite.setOptFilePath(nodeInfo.getDatabaseName() + suffix);
+				jWrite.setOptFilePath(nodeInfo.getDatabaseName());
+				if (LocalConfig.getInstance().getOptimizationFilesList().contains(nodeInfo.getDatabaseName())) {
+					LocalConfig.getInstance().getOptimizationFilesList().remove(LocalConfig.getInstance().getOptimizationFilesList().indexOf(nodeInfo.getDatabaseName()));
 				}
-				jWrite.setOptFilePath(nodeInfo.getDatabaseName() + suffix);
 			}
 
 			jWrite.formConnect(LocalConfig.getInstance());
@@ -3924,24 +3937,27 @@ public class GraphicalInterface extends JFrame {
 		// If loaded file is of csv type. last csv reactions and metabolites will be correct
 		// for loaded model. Since default file type is csv, if model is untitled, don't want
 		// user to overwrite last loaded csv from a previous session
-		if (getFileType().equals(GraphicalInterfaceConstants.CSV_FILE_TYPE) && !LocalConfig.getInstance().getModelName().equals(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME)) {
-			if (curSettings.get("LastCSVMetabolites") != null && !curSettings.get("LastCSVMetabolites").equals("none")) {
-				getCSVSaveInterface().updateMetabolitesPath(curSettings.get("LastCSVMetabolites"));
+		if (isRoot) {
+			if (getFileType().equals(GraphicalInterfaceConstants.CSV_FILE_TYPE) && !LocalConfig.getInstance().getModelName().equals(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME)) {
+				if (curSettings.get("LastCSVMetabolites") != null && !curSettings.get("LastCSVMetabolites").equals("none")) {
+					getCSVSaveInterface().updateMetabolitesPath(curSettings.get("LastCSVMetabolites"));
+				} else {
+					getCSVSaveInterface().updateMetabolitesPath("");
+				}
+				if (curSettings.get("LastCSVReactions") != null && !curSettings.get("LastCSVReactions").equals("none")) {
+					getCSVSaveInterface().updateReactionsPath(curSettings.get("LastCSVReactions"));
+				} else {
+					getCSVSaveInterface().updateReactionsPath("");
+				}
 			} else {
 				getCSVSaveInterface().updateMetabolitesPath("");
-			}
-			if (curSettings.get("LastCSVReactions") != null && !curSettings.get("LastCSVReactions").equals("none")) {
-				getCSVSaveInterface().updateReactionsPath(curSettings.get("LastCSVReactions"));
-			} else {
 				getCSVSaveInterface().updateReactionsPath("");
 			}
+			getCSVSaveInterface().disableMetabolitesItems(!LocalConfig.getInstance().metabolitesTableChanged);
+			getCSVSaveInterface().disableReactionsItems(!LocalConfig.getInstance().reactionsTableChanged);
 		} else {
 			getCSVSaveInterface().updateMetabolitesPath("");
 			getCSVSaveInterface().updateReactionsPath("");
-		}
-		if (isRoot) {
-			getCSVSaveInterface().disableMetabolitesItems(!LocalConfig.getInstance().metabolitesTableChanged);
-			getCSVSaveInterface().disableReactionsItems(!LocalConfig.getInstance().reactionsTableChanged);
 		}
 	}
 	
@@ -4074,8 +4090,17 @@ public class GraphicalInterface extends JFrame {
 		if (filename.endsWith(".csv")) {
 			filename = filename.substring(0, filename.length() - 4);
 		}
-		setTitle(GraphicalInterfaceConstants.TITLE + " - " + filename);	
+		if (saveOptFile) {
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+					DynamicTreePanel.getTreePanel().tree.getLastSelectedPathComponent();
+			Solution nodeInfo = (Solution)node.getUserObject();	
+
+			if (LocalConfig.getInstance().getOptimizationFilesList().contains(nodeInfo.getDatabaseName())) {
+				LocalConfig.getInstance().getOptimizationFilesList().remove(LocalConfig.getInstance().getOptimizationFilesList().indexOf(nodeInfo.getDatabaseName()));
+			}
+		}
 		if (!saveOptFile) {
+			setTitle(GraphicalInterfaceConstants.TITLE + " - " + filename);	
 			listModel.setElementAt(filename, 0);
 			LocalConfig.getInstance().setModelName(filename);
 			
@@ -4113,11 +4138,12 @@ public class GraphicalInterface extends JFrame {
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 						DynamicTreePanel.getTreePanel().tree.getLastSelectedPathComponent();
 				Solution nodeInfo = (Solution)node.getUserObject();	
-				String suffix = "";
-				if (nodeInfo.getIndex() > 0) {
-					suffix = "_[" + nodeInfo.getIndex() + "]";
-				}
-				file = new File(nodeInfo.getDatabaseName() + suffix);
+//				String suffix = "";
+//				if (nodeInfo.getIndex() > 0) {
+//					suffix = "_[" + nodeInfo.getIndex() + "]";
+//				}
+//				file = new File(nodeInfo.getDatabaseName() + suffix);
+				file = new File(nodeInfo.getDatabaseName());
 				fileChooser.setSelectedFile(file);
 			}
 			int retval = fileChooser.showSaveDialog(output);
