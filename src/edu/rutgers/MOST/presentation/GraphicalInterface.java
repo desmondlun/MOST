@@ -286,6 +286,7 @@ public class GraphicalInterface extends JFrame {
 	// close
 	public static boolean exit;
 	// GDBB
+	public boolean gdbbSelected;
 	public boolean gdbbStopped;
 	public boolean gdbbRunning;
 	public boolean gdbbProcessed;
@@ -1645,7 +1646,7 @@ public class GraphicalInterface extends JFrame {
 
         gdbbItem.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent a) {
-
+        		gdbbSelected = true;
         		LocalConfig.getInstance().noBiolObjWarningShown = false;
         		LocalConfig.getInstance().noSynObjWarningShown = false;
         		Thread t = new Thread()
@@ -3245,9 +3246,16 @@ public class GraphicalInterface extends JFrame {
 				highlightUnusedMetabolitesItem.setState(false);
 
 				String dateTimeStamp = u.createDateTimeStamp();
+				String prefix;
+				if (gdbbSelected) {
+					prefix = GraphicalInterfaceConstants.GDBB_PREFIX;
+				} else {
+					prefix = GraphicalInterfaceConstants.OPTIMIZATION_PREFIX;
+				}
+				gdbbSelected = false;
 				final String optimizeName = 
 						current_giSolution.isFoldered ? current_giSolution.folderName  :
-							GraphicalInterfaceConstants.OPTIMIZATION_PREFIX
+							prefix
 							+ LocalConfig.getInstance().getModelName() + dateTimeStamp;
 				setOptimizeName(optimizeName);
 
@@ -5341,6 +5349,7 @@ public class GraphicalInterface extends JFrame {
 			saveFile = false;
 		}		
 		showJSBMLFileChooser = true;
+		gdbbSelected = false;
 		gdbbRunning = false;
 		gdbbProcessed = false;
 	}
