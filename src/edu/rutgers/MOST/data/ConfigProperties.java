@@ -15,12 +15,6 @@ public class ConfigProperties {
 	private static String mixedIntegerLinearSolverName;
 	private static String quadraticSolverName;
 	private static String nonlinearSolverName;
-	private static String gurobiFeasibility;
-	private static String gurobiIntFeasibility;
-	private static String gurobiOptimality;
-	private static String gurobiHeuristics;
-	private static String gurobiMipFocus;
-	private static String gurobiNumThreads;
 
 	/**
 	 * Get the mixed-integer-linear problem solver name
@@ -71,54 +65,6 @@ public class ConfigProperties {
 		ConfigProperties.nonlinearSolverName = nonlinearSolverName;
 	}
 
-	public static String getGurobiFeasibility() {
-		return gurobiFeasibility;
-	}
-
-	public static void setGurobiFeasibility(String gurobiFeasibility) {
-		ConfigProperties.gurobiFeasibility = gurobiFeasibility;
-	}
-
-	public static String getGurobiIntFeasibility() {
-		return gurobiIntFeasibility;
-	}
-
-	public static void setGurobiIntFeasibility(String gurobiIntFeasibility) {
-		ConfigProperties.gurobiIntFeasibility = gurobiIntFeasibility;
-	}
-
-	public static String getGurobiOptimality() {
-		return gurobiOptimality;
-	}
-
-	public static void setGurobiOptimality(String gurobiOptimality) {
-		ConfigProperties.gurobiOptimality = gurobiOptimality;
-	}
-
-	public static String getGurobiHeuristics() {
-		return gurobiHeuristics;
-	}
-
-	public static void setGurobiHeuristics(String gurobiHeuristics) {
-		ConfigProperties.gurobiHeuristics = gurobiHeuristics;
-	}
-
-	public static String getGurobiMipFocus() {
-		return gurobiMipFocus;
-	}
-
-	public static void setGurobiMipFocus(String gurobiMipFocus) {
-		ConfigProperties.gurobiMipFocus = gurobiMipFocus;
-	}
-
-	public static String getGurobiNumThreads() {
-		return gurobiNumThreads;
-	}
-
-	public static void setGurobiNumThreads(String gurobiNumThreads) {
-		ConfigProperties.gurobiNumThreads = gurobiNumThreads;
-	}
-
 	/**
 	 * Write the configuration properties to the MOST directory
 	 * @param linearSolverName The string containing the linear solver name
@@ -126,8 +72,7 @@ public class ConfigProperties {
 	 * @param nonLinearSolverName The string containing the nonlinear solver name
 	 */
 	public static void writeToFile(String linearSolverName, String quadraticSolverName,
-			String nonLinearSolverName, String feasibility, String intFeasibility,
-			String optimality, String heuristics, String mipFocus, String numThreads) {
+			String nonLinearSolverName) {
 
 		Properties prop = new Properties();
 		OutputStream output = null;
@@ -139,12 +84,6 @@ public class ConfigProperties {
 			prop.setProperty("mixedIntegerLinear", linearSolverName);
 			prop.setProperty("quadratic", quadraticSolverName);
 			prop.setProperty("nonlinear", nonLinearSolverName);
-			prop.setProperty("gurobiFeasibility", feasibility);
-			prop.setProperty("gurobiIntFeasibility", intFeasibility);
-			prop.setProperty("gurobiOptimality", optimality);
-			prop.setProperty("gurobiHeuristics", heuristics);
-			prop.setProperty("gurobiMIPFocus", mipFocus);
-			prop.setProperty("gurobiNumThreads", numThreads);
 
 			// save properties
 			prop.store(output, null);
@@ -184,25 +123,6 @@ public class ConfigProperties {
 			}
 			if (prop.getProperty("nonlinear") != null) {
 				setNonlinearSolverName(prop.getProperty("nonlinear"));
-			}
-			
-			if (prop.getProperty("gurobiFeasibility") != null) {
-				setGurobiFeasibility(prop.getProperty("gurobiFeasibility"));
-			}
-			if (prop.getProperty("gurobiIntFeasibility") != null) {
-				setGurobiIntFeasibility(prop.getProperty("gurobiIntFeasibility"));
-			}
-			if (prop.getProperty("gurobiOptimality") != null) {
-				setGurobiOptimality(prop.getProperty("gurobiOptimality"));
-			}
-			if (prop.getProperty("gurobiHeuristics") != null) {
-				setGurobiHeuristics(prop.getProperty("gurobiHeuristics"));
-			}
-			if (prop.getProperty("gurobiMIPFocus") != null) {
-				setGurobiMipFocus(prop.getProperty("gurobiMIPFocus"));
-			}
-			if (prop.getProperty("gurobiNumThreads") != null) {
-				setGurobiNumThreads(prop.getProperty("gurobiNumThreads"));
 			}
 		} catch (IOException ex) {
 			ex.printStackTrace();

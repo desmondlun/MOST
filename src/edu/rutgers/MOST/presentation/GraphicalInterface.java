@@ -11879,38 +11879,13 @@ public class GraphicalInterface extends JFrame {
 	 * Writes solver selections to config file.
 	 */
 	ActionListener solvOKActionListener = new ActionListener() {
+		@SuppressWarnings("static-access")
 		public void actionPerformed(ActionEvent ae) {
 			ConfigProperties configProp = new ConfigProperties();
 			String linear = "";
 			String quadratic = "";
 			String nonlinear = "";
-			String feasibility = Double.toString(GurobiParameters.FEASIBILITYTOL_DEFAULT_VALUE);
-			String intFeasibility = Double.toString(GurobiParameters.INTFEASIBILITYTOL_DEFAULT_VALUE);
-			String optimality = Double.toString(GurobiParameters.OPTIMALITYTOL_DEFAULT_VALUE);
-			String heuristics = Double.toString(GurobiParameters.HEURISTICS_DEFAULT_VALUE);
-			String mipFocus = Integer.toString(GurobiParameters.MIPFOCUS_DEFAULT_VALUE);
-			String numThreads = Integer.toString(GurobiParameters.MAX_NUM_THREADS);
-			if (configProp.fileExists()) {
-				ConfigProperties.readFile();
-				if (ConfigProperties.getGurobiFeasibility() != null) {
-					feasibility = ConfigProperties.getGurobiFeasibility();
-				}
-				if (ConfigProperties.getGurobiIntFeasibility() != null) {
-					intFeasibility = ConfigProperties.getGurobiIntFeasibility();
-				}
-				if (ConfigProperties.getGurobiOptimality() != null) {
-					optimality = ConfigProperties.getGurobiOptimality();
-				}
-				if (ConfigProperties.getGurobiHeuristics() != null) {
-					heuristics = ConfigProperties.getGurobiHeuristics();
-				}
-				if (ConfigProperties.getGurobiMipFocus() != null) {
-					mipFocus = ConfigProperties.getGurobiMipFocus();
-				}
-				if (ConfigProperties.getGurobiNumThreads() != null) {
-					numThreads = ConfigProperties.getGurobiNumThreads();
-				}
-			}
+			
 			if ( getSolverSetUpDialog().cbLinear.getSelectedItem().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
 				linear = GraphicalInterfaceConstants.GLPK_SOLVER_NAME;
 			} else if ( getSolverSetUpDialog().cbLinear.getSelectedItem().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
@@ -11928,7 +11903,7 @@ public class GraphicalInterface extends JFrame {
 			setMixedIntegerLinearSolverName(linear);
 			setQuadraticSolverName(quadratic);
 			setNonlinearSolverName(nonlinear);
-			ConfigProperties.writeToFile(linear, quadratic, nonlinear, feasibility, intFeasibility, optimality, heuristics, mipFocus, numThreads);
+			configProp.writeToFile(linear, quadratic, nonlinear);
 
 			getSolverSetUpDialog().setVisible(false);
 		}
