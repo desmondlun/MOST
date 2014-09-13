@@ -102,6 +102,11 @@ public class GDBBModel extends Model {
 	public Vector<Double> getSyntheticObjective() {
 		return syntheticObjective;
 	}
+	
+	public void setSyntheticObjective( Vector< Double > syntheticObjective )
+	{
+		this.syntheticObjective = syntheticObjective;
+	}
 
 	public ArrayList<Map<Integer, Double>> getGprMatrix() {
 		return gprMatrix;

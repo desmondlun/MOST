@@ -476,6 +476,11 @@ public class ModelCompressor
 		this.synthObjVec = mapSyntheticObjective;
 	}
 	
+	public Map< Integer, Double > getSynthObjVec()
+	{
+		return this.synthObjVec;
+	}
+	
 	public void setMetabolites( Vector< ModelMetabolite > metabolites )
 	{
 		this.metabolites = metabolites;

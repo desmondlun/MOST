@@ -142,6 +142,11 @@ public class Model
 	{
 		return this.objective;
 	}
+	
+	public void setObjective( Vector< Double > objective )
+	{
+		this.objective = objective;
+	}
 
 	public ArrayList< Map< Integer, Double >> getSMatrix()
 	{

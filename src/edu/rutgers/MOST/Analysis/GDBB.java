@@ -512,6 +512,9 @@ public class GDBB extends Thread {
 		
 		m.getSyntheticObjective().clear();
 		m.getObjective().clear();
+		mapObjective = compressor.getObjVec();
+		mapSyntheticObjective = compressor.getSynthObjVec();
+		
 		for( int j = 0; j < m.getReactions().size(); ++j )
 		{
 			if( mapObjective.containsKey( j ) )

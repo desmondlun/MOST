@@ -1,5 +1,7 @@
 package edu.rutgers.MOST.optimization.solvers;
 
+import java.util.ArrayList;
+
 import edu.rutgers.MOST.data.GDBBModel;
 import edu.rutgers.MOST.data.ModelCompressor;
 import edu.rutgers.MOST.data.Solution;
@@ -32,7 +34,12 @@ public class MILGurobiSolver extends GurobiSolver
 					else if( this.where == GRB.CB_MIPSOL ) //MIP
 					{
 						double[] vals = this.getSolution( model.getVars() );
+						ArrayList< Double > sn = new ArrayList< Double >();
+						for( double v : vals )
+							sn.add( v );
 						
+						double objval_bio = compressor.getMaxObj( sn );
+						double objval_sol = this.getDoubleInfo( GRB.CB_MIPSOL_OBJ );
 						GraphicalInterface.GDBBParam param = new GraphicalInterface.GDBBParam();
 						objval = compressor.getMaxSynthObj( vals );
 						param.maxObj = objval;
