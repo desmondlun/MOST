@@ -493,6 +493,7 @@ public class GDBB extends Thread {
 		}
 		
 		compressor.setReactions( m.getReactions() );
+		compressor.setMetabolites( m.getMetabolites() );
 		compressor.setgMatrix( m.getGprMatrix() );
 		compressor.setsMatrix( m.getSMatrix() );
 		compressor.setObjVec( mapObjective );

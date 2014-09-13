@@ -14,6 +14,9 @@ import java.util.Vector;
 public class ModelCompressor
 {
 	private Vector< SBMLReaction > reactions = null;
+	Vector< ModelMetabolite > metabolites = null;
+	Vector< ModelMetabolite > metabolitesCopy = null;
+	private Vector< SBMLReaction > reactionsCopy = null;
 	private ArrayList< Map< Integer, Double > > sMatrix = null;
 	private ArrayList< Map< Integer, Double > > gMatrix = null;
 	private ArrayList< Map< Integer, Double > > recMat = null;
@@ -32,6 +35,12 @@ public class ModelCompressor
 	public void setReactions( Vector< SBMLReaction > reactions )
 	{
 		this.reactions = reactions;
+		this.reactionsCopy = new Vector< SBMLReaction >( reactionsCopy );
+	}
+	
+	public Vector< SBMLReaction > getReactionsCopy()
+	{
+		return reactionsCopy;
 	}
 
 	private int rowCount()
@@ -465,6 +474,9 @@ public class ModelCompressor
 		// sMatrix.get( i ).clear();
 		
 		sMatrix.remove( i );
+		
+		if( this.metabolites != null )
+			metabolites.remove( i );
 	}
 
 	public void setLowerBounds( ArrayList< Double > lowerBounds )
@@ -482,6 +494,18 @@ public class ModelCompressor
 	public void setSynthObjVec( Map< Integer, Double > mapSyntheticObjective )
 	{
 		this.synthObjVec = mapSyntheticObjective;
+	}
+
+	
+	public void setMetabolites( Vector< ModelMetabolite > metabolites )
+	{
+		this.metabolites = metabolites;
+		this.metabolitesCopy = new Vector< ModelMetabolite >( metabolites );
+	}
+	
+	public Vector< ModelMetabolite > getMetabolitesCopy()
+	{
+		return metabolitesCopy;
 	}
 
 }
