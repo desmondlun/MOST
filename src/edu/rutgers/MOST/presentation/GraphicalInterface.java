@@ -36,6 +36,7 @@ import edu.rutgers.MOST.data.JSBMLWriter;
 import edu.rutgers.MOST.data.MetaboliteFactory;
 import edu.rutgers.MOST.data.MetaboliteUndoItem;
 import edu.rutgers.MOST.data.Model;
+import edu.rutgers.MOST.data.ModelCompressor;
 import edu.rutgers.MOST.data.ModelReactionEquation;
 import edu.rutgers.MOST.data.ObjectCloner;
 import edu.rutgers.MOST.data.ReactionEquationUpdater;
@@ -11294,6 +11295,7 @@ public class GraphicalInterface extends JFrame {
 		public double maxObj;
 		public GDBBModel model;
 		public boolean addFolder;
+		public ModelCompressor compressor;
 	}
 	
 	public static void addGDBBSolution( final GDBBParam param )
@@ -11344,16 +11346,32 @@ public class GraphicalInterface extends JFrame {
 				
 				Model fbaModel = new Model();
 				
+				ArrayList< Double > lbs = new ArrayList< Double >();
+				ArrayList< Double > ubs = new ArrayList< Double >();
+				lbs.addAll( param.compressor.getLowerBounds() );
+				ubs.addAll( param.compressor.getUpperBounds() );
+				
 				Double gdbbBioObj = Double.NaN;
-				for( SBMLReaction reaction : fbaModel.getReactions() )
+				int idx = 0;
+				for( SBMLReaction reaction : param.compressor.getReactions() )
 				{
 					if( listKnockOuts.contains( reaction.getGeneAssociation() ) )
+					{
 						reaction.setKnockout( GraphicalInterfaceConstants.BOOLEAN_VALUES[1] );
+						lbs.set( idx, 0.0 );
+						ubs.set( idx, 0.0 );
+					}
 					if( reaction.getBiologicalObjective() != 0.0 )
 						gdbbBioObj = soln.get( reaction.getId() );
+					++idx;
 				}
-				
+				ModelCompressor compressor = new ModelCompressor();
+				compressor.setsMatrix( param.compressor.getsMatrix() );
+				compressor.setObjVec( param.compressor.getObjVec() );
+				compressor.setLowerBounds( lbs );
+				compressor.setUpperBounds( ubs );
 				FBA fba = new FBA();
+				fba.setModelCompressor( compressor, true );
 				fba.setModel( fbaModel );
 				try
 				{

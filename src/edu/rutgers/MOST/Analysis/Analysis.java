@@ -14,6 +14,13 @@ public abstract class Analysis
 	protected Model model = null;
 	protected double maxObj = Double.NaN;
 	protected ModelCompressor compressor = new ModelCompressor();
+	protected boolean isCompressorConfigured = false;
+	
+	public void setModelCompressor( ModelCompressor compressor, boolean isConfigured )
+	{
+		this.compressor = compressor;
+		this.isCompressorConfigured = isConfigured;
+	}
 
 	protected void setVars()
 	{
@@ -46,7 +53,6 @@ public abstract class Analysis
 
 	protected void compressNet()
 	{
-	
 		// set the compressor vars
 		Vector< SBMLReaction > reactions = this.model.getReactions();
 		ArrayList< Double > lowerBounds = new ArrayList< Double >();
@@ -151,7 +157,8 @@ public abstract class Analysis
 	
 	public void setSolverParameters()
 	{
-		this.compressNet();
+		if( !this.isCompressorConfigured )
+			this.compressNet();
 		this.setVars();
 		this.setConstraints();
 		this.setObjective();
