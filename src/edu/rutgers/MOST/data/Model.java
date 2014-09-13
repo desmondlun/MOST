@@ -111,7 +111,7 @@ public class Model
 	{
 		return this.reactions;
 	}
-
+	
 	public void setReactions( Vector< SBMLReaction > reactions )
 	{
 		this.reactions = reactions;

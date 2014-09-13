@@ -21,6 +21,8 @@ public class ModelCompressor
 	private Map< Integer, Double > synthObjVec = null;
 	private ArrayList< Double > lowerBounds = null;
 	private ArrayList< Double > upperBounds = null;
+	private int or_column_count = 0;
+	private int or_row_count = 0;
 	
 	public Vector< SBMLReaction > getReactions()
 	{
@@ -97,10 +99,21 @@ public class ModelCompressor
 		this.objVec = objVec;
 	}
 
+	public int getOrRowCount()
+	{
+		return or_row_count;
+	}
+	
+	public int getOrColumnCount()
+	{
+		return or_column_count;
+	}
+	
 	public ArrayList< Double > getLowerBounds()
 	{
 		return this.lowerBounds;
 	}
+	
 	public ArrayList< Double > getUpperBounds()
 	{
 		return this.upperBounds;
@@ -118,6 +131,8 @@ public class ModelCompressor
 	public void setsMatrix( ArrayList< Map< Integer, Double > > sMatrix )
 	{
 		this.sMatrix = sMatrix;
+		if( sMatrix != null )
+			or_row_count = sMatrix.size();
 	}
 
 	public ArrayList< Map< Integer, Double > > getgMatrix()
@@ -284,6 +299,11 @@ public class ModelCompressor
 		
 	}
 
+	/**
+	 * For decompressing FBA model fluxes
+	 * @param v the flux vector
+	 * @return the decompressed flux vector
+	 */
 	public ArrayList< Double > decompress( ArrayList< Double > v )
 	{
 		ArrayList< Double > result = new ArrayList< Double >();
@@ -293,6 +313,69 @@ public class ModelCompressor
 			for( int j = 0; j < v.size(); ++j )
 			{
 				dot += getrMat(i,j) * v.get( j );
+			}
+			result.add( dot );
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * For decompressing GDBB  model fluxes
+	 * @param v the flux vector
+	 * @return the decompressed flux vector
+	 */
+	public double[] decompress( double[] v )
+	{
+	/*
+	 	_
+	 	X
+	 	X } n (fluxes) (compressed)
+	 	X
+	 	_
+	 	X
+	 	X } 3n + m (???) (compressed)
+	 	X
+	 	_
+	 	X
+	 	X } n (knockouts) (compressed)
+	 	X
+	 	_
+	*/
+		 
+		 
+		double[] result = new double[ 5 * or_column_count + or_row_count ];
+		
+		// fill in the fluxes part
+		ArrayList< Double > vecFluxes = new ArrayList< Double >();
+		for( int j = 0; j < or_column_count; ++j )
+			vecFluxes.add( v[ j ] );
+		vecFluxes = decompress( vecFluxes );
+		for( int j = 0; j < or_column_count; ++j )
+			result[ j ] = vecFluxes.get( j );
+		vecFluxes.clear();
+		
+		// fill in the knockouts part
+		ArrayList< Double > knockouts = new ArrayList< Double >();
+		for( int j = 4 * or_column_count + or_row_count; j < 5 * or_column_count + or_row_count; ++j )
+			knockouts.add( v[ j ] );
+		knockouts = decompressKO( knockouts );
+		for( int j = 4 * or_column_count + or_row_count; j < 5 * or_column_count + or_row_count; ++j )
+			result[ j ] = knockouts.get( j );
+		knockouts.clear();
+				
+		return result;
+	}
+	
+	private ArrayList< Double > decompressKO( ArrayList< Double > ko )
+	{
+		ArrayList< Double > result = new ArrayList< Double >();
+		for( int i = 0; i < gMatrix.size(); ++i )
+		{
+			double dot = 0.0;
+			for( int j = 0; j < ko.size(); ++j )
+			{
+				dot += getgMat(i,j) * ko.get( j );
 			}
 			result.add( dot );
 		}
@@ -387,6 +470,8 @@ public class ModelCompressor
 	public void setLowerBounds( ArrayList< Double > lowerBounds )
 	{
 		this.lowerBounds = lowerBounds;
+		if( lowerBounds != null )
+			or_column_count = lowerBounds.size();
 	}
 
 	public void setUpperBounds( ArrayList< Double > upperBounds )
@@ -398,4 +483,5 @@ public class ModelCompressor
 	{
 		this.synthObjVec = mapSyntheticObjective;
 	}
+
 }
