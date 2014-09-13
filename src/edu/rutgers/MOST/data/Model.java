@@ -117,6 +117,11 @@ public class Model
 		return metabolites;
 	}
 	
+	public void setMetabolites( Vector< ModelMetabolite > metabs )
+	{
+		this.metabolites = metabs;
+	}
+	
 	public void setReactions( Vector< SBMLReaction > reactions )
 	{
 		this.reactions = reactions;

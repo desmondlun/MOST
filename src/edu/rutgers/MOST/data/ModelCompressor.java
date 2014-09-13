@@ -17,6 +17,7 @@ public class ModelCompressor
 	Vector< ModelMetabolite > metabolites = null;
 	Vector< ModelMetabolite > metabolitesCopy = null;
 	private Vector< SBMLReaction > reactionsCopy = null;
+	private Vector<String> geneAssociations = null;
 	private ArrayList< Map< Integer, Double > > sMatrix = null;
 	private ArrayList< Map< Integer, Double > > gMatrix = null;
 	private ArrayList< Map< Integer, Double > > recMat = null;
@@ -35,7 +36,7 @@ public class ModelCompressor
 	public void setReactions( Vector< SBMLReaction > reactions )
 	{
 		this.reactions = reactions;
-		this.reactionsCopy = new Vector< SBMLReaction >( reactionsCopy );
+		this.reactionsCopy = new Vector< SBMLReaction >( reactions );
 	}
 	
 	public Vector< SBMLReaction > getReactionsCopy()
@@ -154,6 +155,17 @@ public class ModelCompressor
 		this.gMatrix = gMatrix;
 	}
 	
+	private void shift( int col0, int col1, double coef0, double coef1, Map< Integer, Double > vec )
+	{
+		Double v0 = vec.get( col0 );
+		v0 = v0 == null ? 0.0 : v0;
+		Double v1 = vec.get( col1 );
+		v1 = v1 == null ? 0.0 : v1;
+		vec.put( col0, v0 - v1 / coef1 * coef0 );
+		if( vec.get( col0 ).equals( 0.0 ) )
+			vec.remove( col0 );
+	}
+	
 	public void compressNet()
 	{
 		if( sMatrix == null || /*gMatrix == null ||*/
@@ -162,6 +174,9 @@ public class ModelCompressor
 
 		// create the recmap
 		createRecMat();
+		
+		if( true )
+			return;
 
 		// start the compression
 		int orColCount;
@@ -264,25 +279,11 @@ public class ModelCompressor
 				}
 				
 				// shift the objective
-				Double obj_v0 = objVec.get( mergecols.get( 0 ) );
-				obj_v0 = obj_v0 == null ? 0.0 : obj_v0;
-				Double obj_v1 = objVec.get( mergecols.get( 1 ) );
-				obj_v1 = obj_v1 == null ? 0.0 : obj_v1;
-				objVec.put( mergecols.get( 0 ), obj_v0 - obj_v1 / mergecoefs.get( 1 ) * mergecoefs.get( 0 ) );
-				if( objVec.get( mergecols.get( 0 ) ).equals( 0.0 ) )
-					objVec.remove( mergecols.get( 0 ) );
+				shift( mergecols.get( 0 ), mergecols.get( 1 ), mergecoefs.get( 0 ), mergecoefs.get( 1 ), objVec );
 				
 				// shift the synthetic objective
-				if( this.synthObjVec != null )
-				{
-					Double synthobj_v0 = synthObjVec.get( mergecols.get( 0 ) );
-					synthobj_v0 = synthobj_v0 == null ? 0.0 : synthobj_v0;
-					Double synthobj_v1 = synthObjVec.get( mergecols.get( 1 ) );
-					synthobj_v1 = synthobj_v1 == null ? 0.0 : synthobj_v1;
-					synthObjVec.put( mergecols.get( 0 ), synthobj_v0 - synthobj_v1 / mergecoefs.get( 1 ) * mergecoefs.get( 0 ) );
-					if( synthObjVec.get( mergecols.get( 0 ) ).equals( 0.0 ) )
-						synthObjVec.remove( mergecols.get( 0 ) );
-				}
+				if( synthObjVec != null )
+					shift( mergecols.get( 0 ), mergecols.get( 1 ), mergecoefs.get( 0 ), mergecoefs.get( 1 ), synthObjVec );
 				
 				// shift the upper/lower bounds
 				if( mergecoefs.get( 0 ) / mergecoefs.get( 1 ) > 0 )
@@ -307,7 +308,7 @@ public class ModelCompressor
 		} while( rowCount() < orRowCount || columnCount() < orColCount );
 		
 	}
-
+	
 	/**
 	 * For decompressing FBA model fluxes
 	 * @param v the flux vector
@@ -347,17 +348,15 @@ public class ModelCompressor
 	 	X
 	 	_
 	 	X
-	 	X } n (knockouts) (compressed)
+	 	X } u (knockouts:unique gene associations) (compressed)
 	 	X
 	 	_
 	*/
-		 
-		 
-		double[] result = new double[ 5 * or_column_count + or_row_count ];
+		double[] result = new double[ 4 * or_column_count + or_row_count + geneAssociations.size() ];
 		
 		// fill in the fluxes part
 		ArrayList< Double > vecFluxes = new ArrayList< Double >();
-		for( int j = 0; j < or_column_count; ++j )
+		for( int j = 0; j < lowerBounds.size(); ++j )
 			vecFluxes.add( v[ j ] );
 		vecFluxes = decompress( vecFluxes );
 		for( int j = 0; j < or_column_count; ++j )
@@ -366,13 +365,29 @@ public class ModelCompressor
 		
 		// fill in the knockouts part
 		ArrayList< Double > knockouts = new ArrayList< Double >();
-		for( int j = 4 * or_column_count + or_row_count; j < 5 * or_column_count + or_row_count; ++j )
+		for( int j = 4 * lowerBounds.size() + sMatrix.size(); j < 4 * lowerBounds.size() + sMatrix.size() + geneAssociations.size(); ++j )
 			knockouts.add( v[ j ] );
-		knockouts = decompressKO( knockouts );
-		for( int j = 4 * or_column_count + or_row_count; j < 5 * or_column_count + or_row_count; ++j )
-			result[ j ] = knockouts.get( j );
+		//knockouts = decompressKO( knockouts );
+		for( int j = 4 * or_column_count + or_row_count; j < 4 * or_column_count + or_row_count + geneAssociations.size(); ++j )
+			result[ j ] = knockouts.get( j - (4 * or_column_count + or_row_count) );
 		knockouts.clear();
 				
+		return result;
+	}
+		
+	public double getMaxObj( ArrayList< Double > v )
+	{
+		double result = 0.0;
+		for( Entry< Integer, Double > entry : objVec.entrySet() )
+			result += v.get( entry.getKey() ) * entry.getValue();
+		return result;
+	}
+	
+	public double getMaxSynthObj( double[] v )
+	{
+		double result = 0.0;
+		for( Entry< Integer, Double > entry : synthObjVec.entrySet() )
+			result += v[ entry.getKey() ] * entry.getValue();
 		return result;
 	}
 	
@@ -392,76 +407,44 @@ public class ModelCompressor
 		return result;
 	}
 	
+	private Map< Integer, Double > removeColumn( int j, Map< Integer, Double > oldRow )
+	{
+		Map< Integer, Double > newRow = new HashMap< Integer, Double >();
+ 		for( Entry< Integer, Double > entry : oldRow.entrySet() )
+ 			if( !entry.getValue().equals( 0.0 ) )
+	 			if( entry.getKey() < j )
+	 				newRow.put( entry.getKey(), entry.getValue() );
+	 			else if( entry.getKey() > j )
+	 				newRow.put( entry.getKey() - 1, entry.getValue() );
+ 		return newRow;
+	}
+	
+	private void removeColumn( int j, ArrayList< Map< Integer, Double > > vvec )
+	{
+		for( int i = 0; i < vvec.size(); ++i )
+			vvec.set( i, removeColumn( j, vvec.get( i ) ) );
+	}
+	
 	private void removeColumn( int j )
 	{
-	/*	for( Map< Integer, Double > con : sMatrix )
-			for( Entry< Integer, Double > term : con.entrySet() )
-				if( term.getKey().equals( j ) )
-					term.setValue( 0.0 );
-	*/
 	
 		// sMat
-	 	for( int i = 0; i < rowCount(); ++i )
-	 	{
-	 		Map< Integer, Double > oldRow = sMatrix.get( i );
-	 		Map< Integer, Double > newRow = new HashMap< Integer, Double >();
-	 		for( Entry< Integer, Double > entry : oldRow.entrySet() )
-	 			if( !entry.getValue().equals( 0.0 ) )
-		 			if( entry.getKey() < j )
-		 				newRow.put( entry.getKey(), entry.getValue() );
-		 			else if( entry.getKey() > j )
-		 				newRow.put( entry.getKey() - 1, entry.getValue() );
-	 		sMatrix.set( i, newRow );
-	 	}
+	 	removeColumn( j, sMatrix );
 	 	
 	 	// recMat
-	 	for( int i = 0; i < recMat.size(); ++i )
-	 	{
-	 		Map< Integer, Double > oldRow = recMat.get( i );
-	 		Map< Integer, Double > newRow = new HashMap< Integer, Double >();
-	 		for( Entry< Integer, Double > entry : oldRow.entrySet() )
-	 			if( !entry.getValue().equals( 0.0 ) )
-		 			if( entry.getKey() < j )
-		 				newRow.put( entry.getKey(), entry.getValue() );
-		 			else if( entry.getKey() > j )
-		 				newRow.put( entry.getKey() - 1, entry.getValue() );
-	 		recMat.set( i, newRow );
-	 	}
+	 	removeColumn( j, recMat );
 	 	
 	 	// gMat
 	 	if( gMatrix != null )
-		 	for( int i = 0; i < gMatrix.size(); ++i )
-		 	{
-		 		Map< Integer, Double > oldRow = gMatrix.get( i );
-		 		Map< Integer, Double > newRow = new HashMap< Integer, Double >();
-		 		for( Entry< Integer, Double > entry : oldRow.entrySet() )
-		 			if( !entry.getValue().equals( 0.0 ) )
-			 			if( entry.getKey() < j )
-			 				newRow.put( entry.getKey(), entry.getValue() );
-			 			else if( entry.getKey() > j )
-			 				newRow.put( entry.getKey() - 1, entry.getValue() );
-		 		gMatrix.set( i, newRow );
-		 	}
+		 	removeColumn( j, gMatrix );
 	 	
 	 	//objVec
- 		Map< Integer, Double > newObjVec = new HashMap< Integer, Double >();
- 		for( Entry< Integer, Double > entry : objVec.entrySet() )
- 			if( entry.getKey() < j )
- 				newObjVec.put( entry.getKey(), entry.getValue() );
- 			else if( entry.getKey() > j )
- 				newObjVec.put( entry.getKey() - 1, entry.getValue() );
+ 		objVec = removeColumn( j, objVec );
  		
  		//synthObjVec
- 		Map< Integer, Double > newSynthObjVec = new HashMap< Integer, Double >();
  		if( synthObjVec != null )
-	 		for( Entry< Integer, Double > entry : synthObjVec.entrySet() )
-	 			if( entry.getKey() < j )
-	 				newSynthObjVec.put( entry.getKey(), entry.getValue() );
-	 			else if( entry.getKey() > j )
-	 				newSynthObjVec.put( entry.getKey() - 1, entry.getValue() );
+	 		synthObjVec = removeColumn( j, synthObjVec );
  		
-	 	objVec = newObjVec;
-	 	synthObjVec = newSynthObjVec;
 	 	lowerBounds.remove( j );
 	 	upperBounds.remove( j );
 	 	if( reactions != null )
@@ -495,7 +478,6 @@ public class ModelCompressor
 	{
 		this.synthObjVec = mapSyntheticObjective;
 	}
-
 	
 	public void setMetabolites( Vector< ModelMetabolite > metabolites )
 	{
@@ -508,4 +490,13 @@ public class ModelCompressor
 		return metabolitesCopy;
 	}
 
+	public Vector<String> getGeneAssociations()
+	{
+		return geneAssociations;
+	}
+
+	public void setGeneAssociations( Vector<String> geneAssociations )
+	{
+		this.geneAssociations = geneAssociations;
+	}
 }

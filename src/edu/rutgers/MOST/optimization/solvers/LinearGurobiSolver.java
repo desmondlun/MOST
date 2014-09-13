@@ -1,5 +1,6 @@
 package edu.rutgers.MOST.optimization.solvers;
 
+import edu.rutgers.MOST.data.ModelCompressor;
 import gurobi.GRB;
 import gurobi.GRBCallback;
 import gurobi.GRBException;
@@ -33,5 +34,12 @@ public class LinearGurobiSolver extends GurobiSolver implements LinearSolver
 				}
 			}
 		};
+	}
+
+	@Override
+	public void setModelCompressor( ModelCompressor compressor )
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

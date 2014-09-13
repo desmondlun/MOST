@@ -5,6 +5,8 @@ import org.gnu.glpk.GLPKConstants;
 import org.gnu.glpk.GlpkCallbackListener;
 import org.gnu.glpk.glp_tree;
 
+import edu.rutgers.MOST.data.ModelCompressor;
+
 public class LinearGLPKSolver extends GLPKSolver implements  GlpkCallbackListener
 {
 
@@ -34,6 +36,14 @@ public class LinearGLPKSolver extends GLPKSolver implements  GlpkCallbackListene
 			// objval = GLPK.glp_get_obj_val( problem );
 			objval = GLPK.glp_mip_obj_val( problem_tmp );
 		}
+	}
+
+
+	@Override
+	public void setModelCompressor( ModelCompressor compressor )
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 }

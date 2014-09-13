@@ -126,4 +126,9 @@ public class GDBBModel extends Model {
 	public void setThreadNum(int threadNum) {
 		this.threadNum = threadNum;
 	}
+
+	public Vector< String > getGeneAssociations()
+	{
+		return distinctGeneAssociations;
+	}
 }

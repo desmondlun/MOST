@@ -7,12 +7,14 @@ import org.gnu.glpk.GlpkCallbackListener;
 import org.gnu.glpk.glp_tree;
 
 import edu.rutgers.MOST.data.GDBBModel;
+import edu.rutgers.MOST.data.ModelCompressor;
 import edu.rutgers.MOST.data.Solution;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterface.GDBBParam;
 
 public class MILGLPKSolver extends GLPKSolver implements MILSolver, GlpkCallbackListener
 {
+	ModelCompressor compressor = null;
 	int idx = 1;
 	private boolean firstSolution = true;
 	private Double lastSol = Double.NaN;
@@ -36,20 +38,27 @@ public class MILGLPKSolver extends GLPKSolver implements MILSolver, GlpkCallback
 		else if( reason == GLPKConstants.GLP_IBINGO )
 		{
 			
-			objval = GLPK.glp_mip_obj_val( problem_tmp );
+			int columnCount = GLPK.glp_get_num_cols( problem_tmp );
+			for( int i = 1; i <= columnCount; ++i)
+				// soln.add( GLPK.glp_get_col_prim( problem, i ) );
+				soln.add( GLPK.glp_mip_col_val( problem_tmp, i ) );
+			
+			double[] darray = ArrayUtils.toPrimitive( soln
+					.toArray( new Double[] {} ) );
+			
+			objval = compressor.getMaxSynthObj( darray );
+			
 			if( lastSol.equals( objval ) )
 				return;
 			lastSol = objval;
 			// get the solution columns
 			soln.clear();
-			int columnCount = GLPK.glp_get_num_cols( problem_tmp );
-			for( int i = 1; i <= columnCount; ++i)
-				// soln.add( GLPK.glp_get_col_prim( problem, i ) );
-				soln.add( GLPK.glp_mip_col_val( problem_tmp, i ) );
-	
 
-			double[] darray = ArrayUtils.toPrimitive( soln
-					.toArray( new Double[] {} ) );
+			darray = compressor.decompress( darray );
+			soln.clear();
+			for( double d : darray )
+				soln.add( d );
+			
 			Solution sn = new Solution( objval, darray );
 			sn.setIndex( idx++ );
 			GDBBParam param = new GDBBParam();
@@ -57,9 +66,16 @@ public class MILGLPKSolver extends GLPKSolver implements MILSolver, GlpkCallback
 			param.model = (GDBBModel)this.dataModel;
 			param.string = "success!";
 			param.addFolder = firstSolution;
+			param.maxObj = objval;
 			firstSolution = false;
 			GraphicalInterface.addGDBBSolution( param );
 		//	GDBB.getintermediateSolution().add( sn );
 		}
+	}
+
+	@Override
+	public void setModelCompressor( ModelCompressor compressor )
+	{
+		this.compressor = compressor;
 	}
 }

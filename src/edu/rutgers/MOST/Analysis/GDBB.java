@@ -494,13 +494,14 @@ public class GDBB extends Thread {
 		
 		compressor.setReactions( m.getReactions() );
 		compressor.setMetabolites( m.getMetabolites() );
+		compressor.setGeneAssociations( m.getGeneAssociations() );
 		compressor.setgMatrix( m.getGprMatrix() );
 		compressor.setsMatrix( m.getSMatrix() );
 		compressor.setObjVec( mapObjective );
 		compressor.setSynthObjVec( mapSyntheticObjective );
 		compressor.setLowerBounds( lowerBounds );
 		compressor.setUpperBounds( upperBounds );
-	//	compressor.compressNet();
+		compressor.compressNet();
 		
 		for( int i = 0; i < m.getReactions().size(); ++i )
 		{
@@ -533,6 +534,9 @@ public class GDBB extends Thread {
 		this.setConstraints();
 		this.setSyntheticObjective();
 		this.getSolver().setDataModel( this.model );
+		this.model.setReactions( compressor.getReactionsCopy() );
+		this.model.setMetabolites( compressor.getMetabolitesCopy() );
+		this.solver.setModelCompressor( this.compressor );
 		try
 		{
 			this.maxObj = this.getSolver().optimize();
@@ -540,6 +544,7 @@ public class GDBB extends Thread {
 		}
 		catch( Exception e )
 		{
+			e.printStackTrace();
 		}
 		finally
 		{

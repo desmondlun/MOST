@@ -1,5 +1,7 @@
 package edu.rutgers.MOST.optimization.solvers;
 
+import edu.rutgers.MOST.data.ModelCompressor;
+
 public interface MILSolver extends LinearSolver
 {
 	/**
@@ -8,4 +10,6 @@ public interface MILSolver extends LinearSolver
 	 * @see SolverComponent
 	 */
 	public abstract SolverComponent getSolverComponent();
+	
+	public abstract void setModelCompressor( ModelCompressor compressor );
 }
