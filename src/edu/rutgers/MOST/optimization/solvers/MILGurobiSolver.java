@@ -10,7 +10,6 @@ import gurobi.GRBException;
 
 public class MILGurobiSolver extends GurobiSolver
 {
-	private ModelCompressor compressor = null;
 	private int idx = 1;
 	private boolean firstSolution = true;
 	public MILGurobiSolver()
@@ -57,11 +56,4 @@ public class MILGurobiSolver extends GurobiSolver
 			}
 		};
 	}
-
-	@Override
-	public void setModelCompressor( ModelCompressor compressor )
-	{
-		this.compressor = compressor;
-	}
-
 }

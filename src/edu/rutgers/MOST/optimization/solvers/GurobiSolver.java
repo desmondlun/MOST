@@ -24,6 +24,7 @@ import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.Utilities;
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.Model;
+import edu.rutgers.MOST.data.ModelCompressor;
 import gurobi.GRB;
 import gurobi.GRBCallback;
 import gurobi.GRBEnv;
@@ -35,6 +36,7 @@ import gurobi.GRBLinExpr;
 public abstract class GurobiSolver implements MILSolver
 {
 	protected Model dataModel = null;
+	protected ModelCompressor compressor = null;
 	protected ArrayList< Double > soln = new ArrayList< Double >();
 	Vector< Double > geneExpr = new Vector< Double >();
 	protected double objval;
@@ -465,5 +467,11 @@ public abstract class GurobiSolver implements MILSolver
 	public ArrayList< Double > getObjectiveCoefs()
 	{
 		return this.objCoefs;
+	}
+	
+	@Override
+	public void setModelCompressor( ModelCompressor compressor )
+	{
+		this.compressor = compressor;
 	}
 }

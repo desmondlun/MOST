@@ -14,7 +14,6 @@ import edu.rutgers.MOST.presentation.GraphicalInterface.GDBBParam;
 
 public class MILGLPKSolver extends GLPKSolver implements MILSolver, GlpkCallbackListener
 {
-	ModelCompressor compressor = null;
 	int idx = 1;
 	private boolean firstSolution = true;
 	private Double lastSol = Double.NaN;
@@ -71,11 +70,5 @@ public class MILGLPKSolver extends GLPKSolver implements MILSolver, GlpkCallback
 			GraphicalInterface.addGDBBSolution( param );
 		//	GDBB.getintermediateSolution().add( sn );
 		}
-	}
-
-	@Override
-	public void setModelCompressor( ModelCompressor compressor )
-	{
-		this.compressor = compressor;
 	}
 }

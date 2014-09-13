@@ -174,9 +174,6 @@ public class ModelCompressor
 
 		// create the recmap
 		createRecMat();
-		
-		if( true )
-			return;
 
 		// start the compression
 		int orColCount;

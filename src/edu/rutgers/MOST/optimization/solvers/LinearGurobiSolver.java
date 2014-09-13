@@ -35,11 +35,4 @@ public class LinearGurobiSolver extends GurobiSolver implements LinearSolver
 			}
 		};
 	}
-
-	@Override
-	public void setModelCompressor( ModelCompressor compressor )
-	{
-		// TODO Auto-generated method stub
-		
-	}
 }

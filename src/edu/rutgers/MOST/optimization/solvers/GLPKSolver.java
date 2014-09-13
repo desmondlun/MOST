@@ -21,6 +21,7 @@ import org.gnu.glpk.glp_prob;
 import org.gnu.glpk.glp_tree;
 
 import edu.rutgers.MOST.data.Model;
+import edu.rutgers.MOST.data.ModelCompressor;
 import edu.rutgers.MOST.presentation.AbstractParametersDialog;
 import edu.rutgers.MOST.presentation.GLPKParameters;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
@@ -48,6 +49,7 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 	}
 	
 	protected Model dataModel;
+	protected ModelCompressor compressor = null;
 	protected SolverComponent component = new SolverComponentLightWeight();
 	protected ObjectiveType objective = new ObjectiveType();
 	protected ArrayList< Double > soln = new ArrayList< Double >();
@@ -375,5 +377,10 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 	public void setDataModel( Model model )
 	{
 		this.dataModel = model;
+	}
+	@Override
+	public void setModelCompressor( ModelCompressor compressor )
+	{
+		this.compressor = compressor;
 	}
 }
