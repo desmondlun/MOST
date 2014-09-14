@@ -3,6 +3,7 @@ package edu.rutgers.MOST.optimization.solvers;
 import java.util.ArrayList;
 
 import edu.rutgers.MOST.data.GDBBModel;
+import edu.rutgers.MOST.data.ModelCompressor;
 import edu.rutgers.MOST.data.Solution;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import gurobi.GRB;
@@ -37,6 +38,8 @@ public class MILGurobiSolver extends GurobiSolver
 						for( double v : vals )
 							sn.add( v );
 						
+						double objval_bio = compressor.getMaxObj( sn );
+						double objval_sol = this.getDoubleInfo( GRB.CB_MIPSOL_OBJ );
 						GraphicalInterface.GDBBParam param = new GraphicalInterface.GDBBParam();
 						objval = compressor.getMaxSynthObj( vals );
 						param.maxObj = objval;
@@ -45,7 +48,6 @@ public class MILGurobiSolver extends GurobiSolver
 						param.solution = new Solution( param.maxObj, compressor.decompress( vals ) );
 						param.solution.setIndex( idx++ );
 						param.addFolder = firstSolution;
-						param.compressor = compressor;
 						firstSolution = false;
 						
 						GraphicalInterface.addGDBBSolution( param );

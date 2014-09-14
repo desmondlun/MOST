@@ -7,6 +7,7 @@ import org.gnu.glpk.GlpkCallbackListener;
 import org.gnu.glpk.glp_tree;
 
 import edu.rutgers.MOST.data.GDBBModel;
+import edu.rutgers.MOST.data.ModelCompressor;
 import edu.rutgers.MOST.data.Solution;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterface.GDBBParam;
@@ -65,7 +66,6 @@ public class MILGLPKSolver extends GLPKSolver implements MILSolver, GlpkCallback
 			param.string = "success!";
 			param.addFolder = firstSolution;
 			param.maxObj = objval;
-			param.compressor = compressor;
 			firstSolution = false;
 			GraphicalInterface.addGDBBSolution( param );
 		//	GDBB.getintermediateSolution().add( sn );
