@@ -26,6 +26,7 @@ import edu.rutgers.MOST.presentation.AbstractParametersDialog;
 import edu.rutgers.MOST.presentation.GLPKParameters;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.ResizableDialog;
+import edu.rutgers.MOST.presentation.SimpleProgressBar;
 import edu.rutgers.MOST.presentation.Utilities;
 
 public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, GlpkCallbackListener
@@ -353,8 +354,6 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 		return this.abort;
 	}
 	@Override
-	public abstract void callback( glp_tree tree );
-	@Override
 	public void setGeneExpr( Vector< Double > geneExpr )
 	{
 		this.geneExpr = geneExpr;
@@ -387,5 +386,171 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 	public void FVA( ArrayList< Double > objCoefs, Double objVal, ArrayList< Double > fbaSoln,
 			ArrayList< Double > min, ArrayList< Double > max, SolverComponent component ) throws Exception
 	{
+		// optimize the solution and return the objective value
+		glp_prob problem = null;
+		Exception exception = null;
+
+		// add the Fv = 0 constraint
+		component.addConstraint( objCoefs, ConType.EQUAL, objVal );
+		try
+		{
+			boolean terminalOutput = false;
+			GLPK.glp_term_out( terminalOutput ? GLPKConstants.GLP_ON
+					: GLPKConstants.GLP_OFF );
+		
+			// set up
+			problem = GLPK.glp_create_prob();
+			GLPK.glp_set_prob_name( problem, "GLPK Problem" );
+			problem_tmp = problem;
+			
+			// set the variables
+			for( int j = 0; j < component.variableCount(); ++j )
+			{
+				Variable var = component.getVariable( j );
+
+				int colNum = GLPK.glp_add_cols( problem,  1 );
+				GLPK.glp_set_col_name( problem, colNum, null );
+				int kind = 0;
+				switch( var.type )
+				{
+				case INTEGER:
+					kind = GLPKConstants.GLP_IV;
+					break;
+				case BINARY:
+					kind = GLPKConstants.GLP_BV;
+					break;
+				default:
+				case CONTINUOUS:
+					kind = GLPKConstants.GLP_CV;
+					break;
+				}
+				int type = -1;
+				if( var.lb.equals( Double.NEGATIVE_INFINITY ) && var.ub.equals( Double.POSITIVE_INFINITY ) )
+						type = GLPKConstants.GLP_FR;
+				else if( var.lb.equals( Double.NEGATIVE_INFINITY ) && !var.ub.equals( Double.POSITIVE_INFINITY ) )
+					type = GLPKConstants.GLP_UP;
+				else if( !var.lb.equals( Double.NEGATIVE_INFINITY ) && var.ub.equals( Double.POSITIVE_INFINITY ) )
+					type = GLPKConstants.GLP_LO;
+				else if( !var.lb.isInfinite() && !var.ub.isInfinite() && Double.compare( var.lb, var.ub ) < 0 )
+					type = GLPKConstants.GLP_DB;
+				else if( var.lb.equals( var.ub ) && !var.lb.equals( Double.NEGATIVE_INFINITY ) && !var.lb.equals( Double.POSITIVE_INFINITY ) )
+					type = GLPKConstants.GLP_FX;
+				else
+					throw new Exception( "Invalid variable bounds are set" );
+				GLPK.glp_set_col_kind( problem, colNum, kind );
+				GLPK.glp_set_col_bnds( problem, colNum, type, var.lb, var.ub );
+			}
+			
+			// set the constraints
+			for( int i = 0; i < component.constraintCount(); ++i )
+			{
+				Constraint constraint = component.getConstraint( i );
+				
+				int rowNum = GLPK.glp_add_rows( problem, 1 );
+				int type = 0;
+				double lb = Double.NEGATIVE_INFINITY;
+				double ub = Double.POSITIVE_INFINITY;
+				switch( constraint.type )
+				{
+				case LESS_EQUAL:
+					ub = constraint.value;
+					type = GLPKConstants.GLP_UP;
+					break;
+				case EQUAL:
+					ub = lb = constraint.value;
+					type = GLPKConstants.GLP_FX;
+					break;
+				case GREATER_EQUAL:
+					type = GLPKConstants.GLP_LO;
+					lb = constraint.value;
+					break;
+				}
+				
+				SWIGTYPE_p_int ind = GLPK.new_intArray( 1 + component.variableCount() );
+				SWIGTYPE_p_double val = GLPK.new_doubleArray( 1 + component.variableCount() );
+				
+				for( int j = 0; j < component.variableCount(); ++j )
+				{
+					GLPK.intArray_setitem( ind, j+1, j+1 );
+					GLPK.doubleArray_setitem( val, j+1, constraint.getCoefficient( j ) );
+				}
+		
+				if( type == GLPKConstants.GLP_FX && lb != ub )
+					System.out.println( "Here! at Constraints setup!" );
+				GLPK.glp_set_row_bnds( problem, rowNum, type, lb, ub );
+				GLPK.glp_set_mat_row( problem, rowNum, component.variableCount(), ind, val );
+				GLPK.delete_intArray( ind );
+				GLPK.delete_doubleArray( val );
+			}
+		
+			// set some GLPK options
+			GlpkCallback.addListener( this );
+			glp_iocp glpk_params = new glp_iocp();
+			GLPK.glp_init_iocp( glpk_params );
+			glpk_params.setPresolve( GLPK.GLP_ON );
+			
+			// set the parameters
+			AbstractParametersDialog params = GraphicalInterface.getGLPKParameters();
+			glpk_params.setTol_obj( Double.valueOf( 
+				params.getParameter( GLPKParameters.FEASIBILITYTOL_NAME ) ) );
+			glpk_params.setTol_int( Double.valueOf( 
+				params.getParameter( GLPKParameters.INTFEASIBILITYTOL_NAME ) ) );
+			glpk_params.setMip_gap( Double.valueOf( 
+				params.getParameter( GLPKParameters.MIPGAP_NAME ) ) );
+			
+			// Aesthetics
+			SimpleProgressBar progress = new SimpleProgressBar( "Flux Variability Analysis", "Progress" );
+			progress.progressBar.setIndeterminate( false );
+			progress.progressBar.setMaximum( component.variableCount() );
+			progress.progressBar.setValue( 0 );
+			progress.progressBar.setStringPainted( true );
+			progress.setAlwaysOnTop( true );
+			progress.setLocationRelativeTo( null );
+			
+			// set the objective
+			for( int j = 1; j < component.variableCount() + 1; ++j )
+			{
+				progress.progressBar.setValue( j-1 );
+				if( !progress.isVisible() )
+					throw new Exception( "Exit" );
+				GLPK.glp_set_obj_coef( problem, j, 1.0 );
+				
+				// get the min flux
+				GLPK.glp_set_obj_dir( problem, GLPKConstants.GLP_MIN );
+				GLPK.glp_intopt( problem, glpk_params );
+				min.add( GLPK.glp_mip_col_val( problem, j ) );
+				
+				// get the max flux
+				GLPK.glp_set_obj_dir( problem, GLPKConstants.GLP_MAX );
+				GLPK.glp_intopt( problem, glpk_params );
+				max.add( GLPK.glp_mip_col_val( problem, j ) );
+
+				GLPK.glp_set_obj_coef( problem, j, 0.0 );
+			}
+			
+			progress.setVisible( false );
+			progress.dispose();
+			
+			// remove the extra constraint
+		}
+		catch( Exception except )
+		{
+			exception = except;
+		}
+	
+		// clean up
+		component.removeConstraint( component.constraintCount() - 1 );
+		GlpkCallback.removeListener( this );
+		GLPK.glp_delete_prob( problem );
+		problem_tmp = null;
+		if( exception != null ) throw exception;
+	}
+	@Override
+	public void callback( glp_tree tree )
+	{
+		if( aborted() )
+		{
+			GLPK.glp_ios_terminate( tree );
+		}
 	}
 }
