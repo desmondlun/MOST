@@ -85,9 +85,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -95,13 +93,11 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.nio.channels.FileChannel;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -205,7 +201,6 @@ public class GraphicalInterface extends JFrame {
 	//Methods of saving current directory
 	public static SettingsFactory curSettings;
 
-	protected GDBBTask gdbbTask;
 	public javax.swing.Timer gdbbTimer = null;
 
 	static protected Runnable solutionListener = null;
@@ -11466,331 +11461,6 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 	
-	class GDBBTask extends SwingWorker<Void, Solution> {
-		private GDBB gdbb = new GDBB();
-		private GDBBModel model;
-		private ReactionFactory rFactory;
-		private Vector<String> uniqueGeneAssociations;
-		private int knockoutOffset;
-		private Writer writer;
-		private StringBuffer outputText;
-		private ArrayList<Double> soln;
-		//private String optimizeName;
-		private String solutionName;
-		private String kString;
-		private String output;
-				
-		GDBBTask() {
-			model = new GDBBModel(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN]);
-		}
-
-		@Override
-		protected Void doInBackground() {
-			LocalConfig.getInstance().getOptimizationFilesList().add(getOptimizeName());
-			rFactory = new ReactionFactory("SBML");
-			uniqueGeneAssociations = rFactory.getUniqueGeneAssociations();
- 
-			setOutputText( new StringBuffer() );
-
-			GDBB.getintermediateSolution().clear();
-
-			this.getGdbb().setGDBBModel(model);
-			this.getGdbb().start();
-
-			knockoutOffset = 4*model.getNumReactions() + model.getNumMetabolites();
-
-			soln = new ArrayList<Double>();
-			Solution solution;
-
-			int index = 1;
-			try {
-				while (this.getGdbb().isAlive() || GDBB.getintermediateSolution().size() > 0) {
-					// is this code ever run?
-					try {
-						if (GDBB.getintermediateSolution().size() > 0) {
-							// need to lock if process is busy
-							solution = GDBB.getintermediateSolution().poll();
-							solutionName = getOptimizeName() + "_" + Double.toString(solution.getObjectiveValue());
-							System.out.println("soln " + solutionName);
-							//listModel.addElement(solutionName);
-							solution.setSolutionName(solutionName);					
-							solution.setDatabaseName(getOptimizeName());
-							solution.setIndex(index++);
-							publish(solution);
-							
-							// copy models, run optimization on these models
-							copyTableModelsForAnalysis(solution.getSolutionName());
-//							
-							writer = null;
-							try {
-								String synObjString = "";
-								for (int i = 0; i < getrFactory().getSyntheticObjectiveVector().size(); i ++) {
-									if (getrFactory().getSyntheticObjectiveVector().get(i) > 0) {
-										synObjString += "Reaction '" + getrFactory().getReactionAbbreviations().get(i) + "' Synthetic Objective = " + getrFactory().getSyntheticObjectiveVector().get(i) + "\n";
-
-									}
-								}
-								output = "";
-								StringBuffer text = new StringBuffer();
-								text.append("GDBB" + "\n");
-								text.append(synObjString);
-								text.append("Number of Knockouts = " + model.getC() + "\n");
-								//                                outputText.append(getDatabaseName() + "\n");
-								text.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions, " + model.getNumGeneAssociations() + " unique gene associations\n");
-								text.append("Synthetic objective: "        + Double.toString(solution.getObjectiveValue()) + "\n");				
-								text.append("Knockouts:");
-								if (kString != null) {
-									text.append(kString);
-								}
-								text.append("\n");
-								text.append( "MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() );
-
-								Utilities u = new Utilities();
-								File file = new File(u.createLogFileName(solution.getSolutionName() + ".log"));
-								writer = new BufferedWriter(new FileWriter(file));
-								writer.write(text.toString()); 
-								output = text.toString();
-							} catch (FileNotFoundException e) {
-								JOptionPane.showMessageDialog(null,                
-										"File Not Found Error.",                
-										"Error",                                
-										JOptionPane.ERROR_MESSAGE);
-								//e.printStackTrace();
-							} catch (IOException e) {
-								JOptionPane.showMessageDialog(null,                
-										"File Not Found Error.",                  
-										"Error",                                
-										JOptionPane.ERROR_MESSAGE);
-								//e.printStackTrace();
-							} finally {
-								try {
-									if (writer != null) {
-										writer.close();
-									}
-								} catch (IOException e) {
-									JOptionPane.showMessageDialog(null,                
-											"File Not Found Error.",                  
-											"Error",                                
-											JOptionPane.ERROR_MESSAGE);
-									//e.printStackTrace();
-								}
-							}
-							if (gdbbTimer.isRunning()) {
-								gdbbItem.setEnabled(false);
-								if (gdbbProcessed) {	
-									listModel.addElement(solutionName);
-									DynamicTreePanel.getTreePanel().addObject((DefaultMutableTreeNode)DynamicTreePanel.getTreePanel().getRootNode().getChildAt(DynamicTreePanel.getTreePanel().getRootNode().getChildCount() - 1), solution, true);
-								}						
-								outputTextArea.setText(output);
-								if (getPopout() != null) {
-									getPopout().setOutputText(output);
-								} 
-							} else {
-								if (isRoot) {
-									gdbbItem.setEnabled(true);
-								}						
-							}
-							// if no optimizations have been started, just kill the dialog and reset
-						} else if (gdbbStopped) {
-							gdbbTask.getGdbb().stopGDBB();
-							getGdbbDialog().setVisible(false);
-							getGdbbDialog().dispose();
-							gdbbTimer.stop();
-							// probably not necessary since dispose
-							getGdbbDialog().enableComponents();
-							getGdbbDialog().selectIndefiniteTimeButton();
-							// fixes bug where column header not aligned with columns when gdbb closes
-							reactionsTable.repaint();
-						}
-					} catch (Exception e) {
-						JOptionPane.showMessageDialog(null,                
-								"Solver Error.",                
-								"Error",                                
-								JOptionPane.ERROR_MESSAGE);
-						e.printStackTrace();
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return null;
-		}
-
-		public synchronized GDBB getGdbb() {
-			return gdbb;
-		}
-
-		public GDBBModel getModel() {
-			return model;
-		}
-
-		public void setModel(GDBBModel model) {
-			this.model = model;
-		}
-
-		@Override
-		protected void process(List<Solution> solutions) {
-			try {
-				Solution solution = solutions.get(solutions.size() - 1);
-				double[] x = solution.getKnockoutVector();
-				solution.getObjectiveValue();
-
-				kString = "";
-				//String kString = "";
-				soln.clear();
-				for (int j = 0; j < x.length; j++) {
-					soln.add(x[j]);
-					if ((j >= knockoutOffset) && (x[j] >= 0.5)) {        // compiler optimizes: boolean short circuiting
-						kString += "\n\t" + uniqueGeneAssociations.elementAt(j - knockoutOffset);
-					}
-				}
-
-				rFactory = new ReactionFactory("SBML");
-				rFactory.setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN, 
-						LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
-				rFactory.setKnockouts(soln.subList(knockoutOffset, soln.size()));
-				getGdbbFluxesMap().put(solution.getSolutionName(), new ArrayList<Double>(soln.subList(0, model.getNumReactions())));
-				LocalConfig.getInstance().getGdbbKnockoutsMap().put(solution.getSolutionName(), LocalConfig.getInstance().getGdbbKnockoutsList());
-				gdbbProcessed = true;
-                
-				DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);	
-			} catch (Exception e) {
-				JOptionPane.showMessageDialog(null,                
-						"Solver Error.",                
-						"Error",                                
-						JOptionPane.ERROR_MESSAGE);
-				//e.printStackTrace();
-			}
-		}
-
-		@Override
-		protected void done() {
-			try {
-				//System.out.println("GDBB is done!");
-				soln = this.getGdbb().getSolution();
-
-				if (soln == null || soln.isEmpty())
-					return;
-
-				getGdbbDialog().enableStart();
-				DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
-
-				setrFactory(new ReactionFactory("SBML"));
-				getrFactory().setFluxes(new ArrayList<Double>(soln.subList(0, model.getNumReactions())), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN, 
-						LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
-				getrFactory().setKnockouts(soln.subList(knockoutOffset, soln.size()));
-				gdbbProcessed = true;
-
-				if (gdbbTimer.isRunning()) {
-					gdbbItem.setEnabled(false);
-					outputTextArea.setText(output);
-					if (getPopout() != null) {
-						getPopout().setOutputText(output);
-					} 
-				} else {
-					if (isRoot) {
-						gdbbItem.setEnabled(true);
-					}						
-				}
-
-				getGdbbDialog().setVisible(false);
-				getGdbbDialog().dispose();
-				gdbbTimer.stop();
-				gdbbItem.setEnabled(true);
-				// probably not necessary since dispose
-				getGdbbDialog().enableComponents();
-				getGdbbDialog().selectIndefiniteTimeButton();
-				// fixes bug where column header not aligned with columns when gdbb closes
-				reactionsTable.repaint();
-				this.getGdbb().getSolver().setAbort(false);
-				// set table model to be loaded when folder GDBB clicked
-				// this will result in the last solution being loaded when folder clicked
-				LocalConfig.getInstance().getMetabolitesTableModelMap().remove(getOptimizeName());
-				LocalConfig.getInstance().getReactionsTableModelMap().remove(getOptimizeName());
-								
-				DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
-				DefaultTableModel reactionsOptModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
-				DefaultTableModel metabolitesOptModelCopy = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
-				DefaultTableModel reactionsOptModelCopy = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());				
-				LocalConfig.getInstance().getReactionsTableModelMap().put(solutionName, reactionsOptModel);
-				LocalConfig.getInstance().getMetabolitesTableModelMap().put(solutionName, metabolitesOptModel);
-				LocalConfig.getInstance().getReactionsTableModelMap().put(getOptimizeName(), reactionsOptModelCopy);
-				LocalConfig.getInstance().getMetabolitesTableModelMap().put(getOptimizeName(), metabolitesOptModelCopy);
-				Utilities u = new Utilities();
-				// The purpose of this line is so when the folder is clicked, it will load the same
-				// results as the last solution generated by GDBB
-				copyLogFile(u.createLogFileName(solutionName), u.createLogFileName(getOptimizeName())); 
-				disableMenuItems();
-				setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
-				setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(solutionName));
-				gdbbRunning = false;
-			} catch (Exception e) {
-				JOptionPane.showMessageDialog(null,                
-						"Solver Error.",                
-						"Error",                                
-						JOptionPane.ERROR_MESSAGE);
-				//e.printStackTrace();
-			}
-		}
-
-		public ReactionFactory getrFactory() {
-			return rFactory;
-		}
-
-		public void setrFactory(ReactionFactory rFactory) {
-			this.rFactory = rFactory;
-		}
-
-		public StringBuffer getOutputText()
-		{
-			return outputText;
-		}
-
-		public void setOutputText( StringBuffer outputText )
-		{
-			this.outputText = outputText;
-		}
-	}
-
-	public void copyLogFile(String oldLog, String newLog) {
-
-		File sourceFile = new File(oldLog + ".log");
-		File destFile = new File(newLog + ".log");
-		try{
-			copyFile(sourceFile, destFile);
-		}
-		catch(IOException exc){
-			JOptionPane.showMessageDialog(null,                
-					"Log File Error.",                
-					"Error",                                
-					JOptionPane.ERROR_MESSAGE);
-			//exc.printStackTrace();
-		}
-	}
-	
-	public static void copyFile(File sourceFile, File destFile) throws IOException {
-		if(!destFile.exists()) {
-			destFile.createNewFile();
-		}
-
-		FileChannel source = null;
-		FileChannel destination = null;
-
-		try {
-			source = new FileInputStream(sourceFile).getChannel();
-			destination = new FileOutputStream(destFile).getChannel();
-			destination.transferFrom(source, 0, source.size());
-		}
-		finally {
-			if(source != null) {
-				source.close();
-			}
-			if(destination != null) {
-				destination.close();
-			}
-		}
-	}
-	
 	class TimeListener implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			if (LocalConfig.getInstance().getProgress() > 0) {
@@ -11839,7 +11509,6 @@ public class GraphicalInterface extends JFrame {
 	
 	// used when stop button or finite time stops GDBB
 	public synchronized void stopGDBBAction() {
-		gdbbTask.getGdbb().stopGDBB();
 		getGdbbDialog().stopButton.setEnabled(false);
 		gdbbStopped = true;
 		dotCount = 0;

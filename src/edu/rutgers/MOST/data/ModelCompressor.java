@@ -388,22 +388,6 @@ public class ModelCompressor
 		return result;
 	}
 	
-	private ArrayList< Double > decompressKO( ArrayList< Double > ko )
-	{
-		ArrayList< Double > result = new ArrayList< Double >();
-		for( int i = 0; i < gMatrix.size(); ++i )
-		{
-			double dot = 0.0;
-			for( int j = 0; j < ko.size(); ++j )
-			{
-				dot += getgMat(i,j) * ko.get( j );
-			}
-			result.add( dot );
-		}
-		
-		return result;
-	}
-	
 	private Map< Integer, Double > removeColumn( int j, Map< Integer, Double > oldRow )
 	{
 		Map< Integer, Double > newRow = new HashMap< Integer, Double >();

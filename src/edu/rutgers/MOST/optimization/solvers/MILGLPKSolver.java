@@ -7,7 +7,6 @@ import org.gnu.glpk.GlpkCallbackListener;
 import org.gnu.glpk.glp_tree;
 
 import edu.rutgers.MOST.data.GDBBModel;
-import edu.rutgers.MOST.data.ModelCompressor;
 import edu.rutgers.MOST.data.Solution;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterface.GDBBParam;
