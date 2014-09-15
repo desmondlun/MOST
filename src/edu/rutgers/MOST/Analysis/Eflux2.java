@@ -30,7 +30,7 @@ public class Eflux2 extends Analysis
 			pb.setAlwaysOnTop( true );
 			pb.progressBar.setString( "integrating gene expression data..." );
 	 		pb.setVisible( true );
- 			modelFormatter.formatFluxBoundsfromGeneExpressionData( csvFile, this.model );
+ 			modelFormatter.formatFluxBoundsfromGeneExpressionData( csvFile, this.model, pb );
 			pb.progressBar.setString( "predicting biomass..." );
  		
  			this.setSolverParameters();

@@ -8,19 +8,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+
 import au.com.bytecode.opencsv.CSVReader;
 import edu.rutgers.MOST.data.Model;
 import edu.rutgers.MOST.data.ModelParser;
 import edu.rutgers.MOST.data.SBMLReaction;
+import edu.rutgers.MOST.presentation.SimpleProgressBar;
 
 public class ModelFormatter
 {
-	public Vector< Double > formatFluxBoundsfromGeneExpressionData( File file, Model model ) throws FileNotFoundException
+	private boolean promptExceptionMessage( Exception e )
+	{
+		return JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog( null, e.getMessage()
+				+ "\nDo you still want to continue?",
+				"Parser Error",
+				JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE );
+	}
+	public Vector< Double > formatFluxBoundsfromGeneExpressionData( File file, Model model, SimpleProgressBar pb ) throws Exception
 	{		
 		Vector< Double > gene_expr = new Vector< Double >();
 		if( file == null || !file.exists() )
 		{
-			throw new FileNotFoundException( "formatFluxBoundsfromGeneExpressionData" );
+			throw new FileNotFoundException( "Improper file format" );
 		}
 		try
 		{
@@ -46,7 +56,8 @@ public class ModelFormatter
 				val = val / levels.get( keyval[0] ).size();
 				expressionLevels.put( keyval[0], val );
 			}
-
+			
+			int matchCount = 0;
 			for( SBMLReaction reaction : model.getReactions() )
 			{
 				ModelParser parser = new ModelParser( reaction.getGeneAssociation(), expressionLevels )
@@ -59,23 +70,29 @@ public class ModelFormatter
 					}
 				};
 				double fluxBound = parser.getValue();
+				matchCount += parser.getMatchCount();
 				reaction.setLowerBound( reaction.getLowerBound() >= 0.0 ? 0.0 : -fluxBound );
 				reaction.setUpperBound( reaction.getUpperBound() <= 0.0 ? 0.0 : fluxBound  );
 				gene_expr.add( fluxBound );
 			}
 			model.setReactions( model.getReactions() );
+			
+			if( matchCount == 0 )
+				throw new Exception( "No gene association matches" );
 		}
 		catch ( Exception e )
 		{
-			e.printStackTrace();
+			pb.dispose();
+			if( !promptExceptionMessage( e ) )
+				throw e;
 		}
 		return gene_expr;
 	}
-	Vector< Double > parseGeneExpressionDataSPOT( File file, Model model, boolean originalSPOT ) throws Exception
+	Vector< Double > parseGeneExpressionDataSPOT( File file, Model model, boolean originalSPOT, SimpleProgressBar pb ) throws Exception
 	{
 		Vector< Double > gene_expr = new Vector< Double >();
 		if( file == null || !file.exists() )
-			throw new FileNotFoundException( "parseGeneExpressionDataSPOT" );
+			throw new FileNotFoundException( "Improper file format" );
 		try
 		{
 			
@@ -100,7 +117,8 @@ public class ModelFormatter
 				val = val / levels.get( keyval[0] ).size();
 				expressionLevels.put( keyval[0], val );
 			}
-
+			
+			int matchCount = 0;
 			for( SBMLReaction reaction : model.getReactions() )
 			{
 				ModelParser parser = new ModelParser( reaction.getGeneAssociation(), expressionLevels )
@@ -113,6 +131,7 @@ public class ModelFormatter
 					}
 				};
 				Double parse_expr = new Double( parser.getValue() );
+				matchCount += parser.getMatchCount();
 				
 				if( originalSPOT )
 				{
@@ -138,12 +157,15 @@ public class ModelFormatter
 						gene_expr.add( 0.0 );
 				}
 			}
-			
 			model.setReactions( model.getReactions() );
+			if( matchCount == 0 )
+				throw new Exception( "No gene association matches" );
 		}
 		catch ( Exception e )
 		{
-			e.printStackTrace();
+			pb.dispose();
+			if( !promptExceptionMessage( e ) );
+				throw e;
 		}
 		return gene_expr;
 	}
