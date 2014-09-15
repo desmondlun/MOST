@@ -45,5 +45,4 @@ public class LinearGLPKSolver extends GLPKSolver implements  GlpkCallbackListene
 		// TODO Auto-generated method stub
 		
 	}
-
 }

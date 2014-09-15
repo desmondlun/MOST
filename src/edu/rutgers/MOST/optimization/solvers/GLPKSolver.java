@@ -383,4 +383,9 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 	{
 		this.compressor = compressor;
 	}
+	@Override
+	public void FVA( ArrayList< Double > objCoefs, Double objVal, ArrayList< Double > fbaSoln,
+			ArrayList< Double > min, ArrayList< Double > max, SolverComponent component ) throws Exception
+	{
+	}
 }

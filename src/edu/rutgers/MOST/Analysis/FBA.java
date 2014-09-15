@@ -6,7 +6,6 @@ import javax.swing.JOptionPane;
 
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.optimization.solvers.LinearSolver;
-import edu.rutgers.MOST.optimization.solvers.QuadraticSolver;
 import edu.rutgers.MOST.optimization.solvers.Solver;
 import edu.rutgers.MOST.optimization.solvers.SolverFactory;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
@@ -53,10 +52,8 @@ public class FBA extends Analysis
 	 		{
 	 			pb.dispose();
 	 			LocalConfig.getInstance().fvaDone = false;
-	 			FVASelected = true;
-	 	 		QuadraticSolver quadraticSolver = SolverFactory.createQuadraticSolver();
-	 	 		
-		 		quadraticSolver.FVA( linearSolver.getObjectiveCoefs(), this.getMaxObj(), linearSolver.getSoln(), minVariability,
+	 			FVASelected = true;	 	 		
+		 		linearSolver.FVA( linearSolver.getObjectiveCoefs(), this.getMaxObj(), linearSolver.getSoln(), minVariability,
 		 				maxVariability, linearSolver.getSolverComponent() );
 	 		}
 	 		return linearSolver.getSoln();

@@ -4,7 +4,6 @@ import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 import edu.rutgers.MOST.presentation.ResizableDialog;
-import edu.rutgers.MOST.presentation.SimpleProgressBar;
 import gurobi.GRB;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
@@ -215,108 +214,5 @@ public class QuadraticGurobiSolver implements QuadraticSolver
 		}
 		
 		return soln;
-	}
-	@Override
-	public void FVA( ArrayList< Double > objCoefs, Double objVal, ArrayList< Double > fbaSoln,
-			ArrayList< Double > min, ArrayList< Double > max, SolverComponent component ) throws Exception
-	{
-		GRBEnv quad_env = null;
-		GRBModel quad_model = null;
-		try
-		{
-			quad_env = new GRBEnv();
-			quad_model = new GRBModel( quad_env );
-			ArrayList< GRBVar > vars = new ArrayList< GRBVar >();
-			quad_env.set( GRB.DoubleParam.IntFeasTol, 1.0E-9 );
-			quad_env.set( GRB.DoubleParam.FeasibilityTol, 1.0E-9 );
-			quad_env.set( GRB.IntParam.OutputFlag, 0 );
-			
-			// create the variables
-			for( int j = 0; j < component.variableCount(); ++ j )
-			{
-				Variable var = component.getVariable( j );
-
-				vars.add( quad_model.addVar( var.lb, var.ub, 0.0, getGRBVarType( var.type ),
-						null ) );
-			}
-			quad_model.update();
-			
-			// Fv = z extra constraint
-			component.addConstraint( objCoefs, ConType.EQUAL, objVal );
-			
-			// set constraints to Gurobi
-			for( int i = 0; i < component.constraintCount(); ++i )
-			{
-				Constraint constraint = component.getConstraint( i );
-
-				GRBLinExpr expr = new GRBLinExpr();
-				for( int j = 0; j < component.variableCount(); ++j )
-				{
-					expr.addTerm( constraint.getCoefficient( j ), vars.get( j ) );
-				}
-				quad_model.addConstr( expr, getGRBConType( constraint.type ), constraint.value, null );
-			}
-			
-			SimpleProgressBar progress = new SimpleProgressBar( "Flux Variability Analysis", "Progress" );
-			progress.progressBar.setIndeterminate( false );
-			progress.progressBar.setMaximum( component.variableCount() );
-			progress.progressBar.setValue( 0 );
-			progress.progressBar.setStringPainted( true );
-			progress.setAlwaysOnTop( true );
-			progress.setLocationRelativeTo( null );
-			
-			for( int j = 0; j < component.variableCount(); ++j )
-			{
-				if( !progress.isVisible() )
-					throw new Exception( "Exit" );
-				progress.progressBar.setValue( j );
-				// add the term to the objective expression
-				GRBLinExpr objExpr = new GRBLinExpr();
-				objExpr.addTerm( 1.0, vars.get( j ) );
-				
-				// set the objective to minimize the flux
-				quad_model.setObjective( objExpr, GRB.MINIMIZE );
-				
-				// optimize the model
-				quad_model.optimize();
-				
-				// add to the minimized flux vector
-				min.add( vars.get( j ).get( GRB.DoubleAttr.X ) );
-				
-				// set the objective to maximize the flux
-				quad_model.setObjective( objExpr, GRB.MAXIMIZE );
-				
-				// optimize the model
-				quad_model.optimize();
-				
-				// add to the maximized flux vector
-				max.add( vars.get( j ).get( GRB.DoubleAttr.X ) );
-			}
-			LocalConfig.getInstance().fvaDone = true;
-			progress.setVisible( false );
-			progress.dispose();
-			
-			// remove the extra constraint
-			component.removeConstraint( component.constraintCount() - 1 );
-			
-			// clean up
-		}
-		catch( GRBException e )
-		{
-			promptGRBError( e );
-			throw new Exception( e );
-		}
-		catch( Exception e )
-		{
-			e.printStackTrace();
-			throw new Exception( e );
-		}
-		finally
-		{
-			if( quad_model != null )
-				quad_model.dispose();
-			if( quad_env != null )
-				quad_env.dispose();
-		}
 	}
 }

@@ -239,4 +239,10 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 	{
 		this.dataModel = model;
 	}
+	
+	@Override
+	public void FVA( ArrayList< Double > objCoefs, Double objVal, ArrayList< Double > fbaSoln,
+			ArrayList< Double > min, ArrayList< Double > max, SolverComponent component ) throws Exception
+	{
+	}
 }

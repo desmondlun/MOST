@@ -6,12 +6,10 @@ import java.util.ArrayList;
 
 import org.coinor.Ipopt;
 
-import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.AbstractParametersDialog;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.IPoptParameters;
 import edu.rutgers.MOST.presentation.ResizableDialog;
-import edu.rutgers.MOST.presentation.SimpleProgressBar;
 
 public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 {
@@ -247,102 +245,5 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 		}
 		
 		return true;
-	}
-	
-	@Override
-	public void FVA( ArrayList< Double > objCoefs, Double objVal, ArrayList< Double > fbaSoln,
-			ArrayList< Double > min, ArrayList< Double > max,
-			SolverComponent componentSource ) throws Exception
-	{
-		this.FVA = true;
-		SimpleProgressBar progress = new SimpleProgressBar( "Flux Variability Analysis", "Progress" );
-		try
-		{
-			this.component = componentSource;
-			// Fv = z extra constraint
-			component.addConstraint( objCoefs, ConType.EQUAL, objVal );
-			
-			// set up the constraints and variables
-			double[] x_L = new double[ component.variableCount() ];
-			double[] x_U = new double[ component.variableCount() ];
-			double[] g_L = new double[ component.constraintCount() ]; 
-			double[] g_U = new double[ component.constraintCount() ];
-			
-			for( int j = 0; j < component.variableCount(); ++j )
-			{
-				x_L[ j ] = component.getVariable( j ).lb;
-				x_U[ j ] = component.getVariable( j ).ub;
-			}
-			
-			for( int i = 0; i < component.constraintCount(); ++i )
-			{
-				switch( component.getConstraint( i ).type )
-				{
-				case LESS_EQUAL:
-					g_L[ i ] = Double.NEGATIVE_INFINITY;
-					g_U[ i ] = component.getConstraint( i ).value;
-					break;
-				case EQUAL:
-					g_L[ i ] = component.getConstraint( i ).value;
-					g_U[ i ] = component.getConstraint( i ).value;
-					break;
-				case GREATER_EQUAL:
-					g_L[ i ] = component.getConstraint( i ).value;
-					g_U[ i ] = Double.POSITIVE_INFINITY;
-					break;
-				}
-			}
-			
-			this.create( component.variableCount(), x_L, x_U, component.constraintCount(), g_L, g_U,
-					component.constraintCount() * component.variableCount(), 0, Ipopt.C_STYLE );
-			
-			double[] vars = new double[ component.variableCount() ];
-
-			this.addIntOption( "mumps_mem_percent", 500 );
-			//this.addStrOption( KEY_HESSIAN_APPROXIMATION, "limited-memory" );
-			//this.addIntOption( KEY_MAX_ITER, 30000 );
-			progress.progressBar.setIndeterminate( false );
-			progress.progressBar.setMaximum( component.variableCount() );
-			progress.progressBar.setValue( 0 );
-			progress.progressBar.setStringPainted( true );
-			progress.setAlwaysOnTop( true );
-			progress.setLocationRelativeTo( null );
-			
-			for( this.current = 0; this.current < component.variableCount(); ++current )
-			{
-				if( !progress.isVisible() )
-					throw new Exception( "Exit" );
-				progress.progressBar.setValue( this.current );
-				
-				for( int j = 0; j < vars.length; ++j )
-					vars[ j ] = fbaSoln.get( j );
-				
-				this.addNumOption( KEY_OBJ_SCALING_FACTOR, 1.0 );
-				this.solve( vars );
-				min.add( vars[ current ] );
-				
-				for( int j = 0; j < vars.length; ++j )
-					vars[ j ] = fbaSoln.get( j );
-				
-				this.addNumOption( KEY_OBJ_SCALING_FACTOR, -1.0 );
-				this.solve( vars );
-				max.add( vars[ current ] );
-				
-			}
-		}
-		catch( Error | Exception thrown )
-		{
-			if( !thrown.getMessage().equals( "Exit" ) )
-			processStackTrace( thrown );
-			throw new Exception( thrown );
-		}
-		finally
-		{
-			LocalConfig.getInstance().fvaDone = true;
-			progress.setVisible( false );
-			progress.dispose();
-			// remove the extra constraint
-			component.removeConstraint( component.constraintCount() - 1 );
-		}
 	}
 }

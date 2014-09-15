@@ -34,4 +34,5 @@ public class LinearGurobiSolver extends GurobiSolver implements LinearSolver
 			}
 		};
 	}
+	
 }
