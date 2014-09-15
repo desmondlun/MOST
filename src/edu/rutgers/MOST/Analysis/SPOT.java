@@ -45,7 +45,7 @@ public class SPOT extends Analysis
 			pb.setVisible( true );
 			pb.progressBar.setIndeterminate( true );
 			pb.progressBar.setString( "Integrating gene expression data..." );
-			Vector< Double > geneExpr = modelFormatter.parseGeneExpressionDataSPOT( file, this.model, usingNormalSPOT );
+			Vector< Double > geneExpr = modelFormatter.parseGeneExpressionDataSPOT( file, this.model, usingNormalSPOT, pb );
 			linearSolver.setGeneExpr( geneExpr );
 			NonlinearSolver nonlinearSolver = null;
 			pb.progressBar.setString( "Finding a feasible starting point..." );

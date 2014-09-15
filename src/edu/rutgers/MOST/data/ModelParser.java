@@ -72,16 +72,18 @@ public class ModelParser
 			return word;
 		}
 	}
-	Lexicon lexer;
-	Vector< String > byteCode = new Vector< String >();
-	Map< String, Double > data = new HashMap< String, Double >();
-	Vector< Double > values = new Vector< Double >();
-	Vector< Double > stack = new Vector< Double >();
+	private Lexicon lexer;
+	private Vector< String > byteCode = new Vector< String >();
+	private Map< String, Double > data = new HashMap< String, Double >();
+	private Vector< Double > values = new Vector< Double >();
+	private Vector< Double > stack = new Vector< Double >();
+	private int matchCount;
 	
 	public ModelParser( String expression, Map< String, Double > data ) throws Exception
 	{
 		lexer = new Lexicon( expression );
 		this.data = data;
+		matchCount = 0;
 		parseExpression();
 	}
 	public Double getValue() throws Exception
@@ -114,6 +116,10 @@ public class ModelParser
 		if( stack.size() != 1 )
 			throw new Exception( "Interpretor getValue() error - stack size" );
 		return stack.firstElement();
+	}
+	public int getMatchCount()
+	{
+		return matchCount;
 	}
 	
 	private void parseExpression() throws Exception
@@ -166,7 +172,10 @@ public class ModelParser
 		else
 		{
 			if( data.containsKey( lexer.getToken() ) )
+			{
 				values.add( data.get( lexer.getToken() ) );
+				++matchCount;
+			}
 			else
 				values.add( substitute( lexer.getToken() ) );
 			
