@@ -11317,7 +11317,7 @@ public class GraphicalInterface extends JFrame {
 				StringBuffer text = new StringBuffer();
 				text.append("GDBB" + "\n");
 				text.append(synObjString);
-				text.append("Number of Knockouts = " + model.getC() + "\n");
+				text.append("Maximum Number of Knockouts = " + (int) model.getC() + "\n");
 				text.append(model.getNumMetabolites() + " metabolites, " + model.getNumReactions() + " reactions, " + model.getNumGeneAssociations() + " unique gene associations\n");
 				text.append("Synthetic objective: " + Double.toString(solution.getObjectiveValue()) + "\n");				
 				text.append("Knockouts:");
