@@ -3344,14 +3344,7 @@ public class GraphicalInterface extends JFrame {
 				rFactory.resetKnockOuts();
 				if( current_giSolution.knockoutOffset != null && current_giSolution.soln_ko != null )
 					rFactory.setKnockouts( current_giSolution.soln_ko.subList( current_giSolution.knockoutOffset, current_giSolution.soln_ko.size()));
-				
-//					DefaultTableModel reactionsOptModel2 = (DefaultTableModel) reactionsTable.getModel();	
-//					setUpReactionsTable(reactionsOptModel2);
-				// Selecting top node stops timer, then reselect node for optimization
-				// This action is too fast to be visible to user
-//					DynamicTreePanel.getTreePanel().setNodeSelected(0);
-//					DynamicTreePanel.getTreePanel().setNodeSelected(GraphicalInterface.listModel.getSize() - 1);
-				
+
 				if (LocalConfig.getInstance().hasValidGurobiKey) {
 					Writer writer = null;
 					try {
@@ -3386,14 +3379,6 @@ public class GraphicalInterface extends JFrame {
 					if (getPopout() != null) {
 						getPopout().load(u.createLogFileName(getOptimizeName() + ".log"), gi.getTitle());
 					}
-//					if (getMixedIntegerLinearSolverName().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
-//						File f = new File(Utilities.getMOSTSettingsPath() + "LastProblem_GLPK.mps");
-//						copyMPSFile(f);
-//					} else if (getMixedIntegerLinearSolverName().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
-//						File f = new File(Utilities.getMOSTSettingsPath() + "LastProblem_Gurobi.mps");
-//						copyMPSFile(f);
-//					}
-						
 				} else {
 					DynamicTreePanel.getTreePanel().setNodeSelected(0);
 				}
