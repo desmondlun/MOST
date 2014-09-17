@@ -216,8 +216,6 @@ public abstract class GurobiSolver implements MILSolver
 			// set up environment and the model/problem objects
 			if( env == null )
 				env = new GRBEnv();
-			env.set( GRB.DoubleParam.IntFeasTol, 1.0E-9 );
-			env.set( GRB.DoubleParam.FeasibilityTol, 1.0E-9 );
 		//	env.set( GRB.IntParam.OutputFlag, 0 );
 			
 		}
@@ -500,9 +498,6 @@ public abstract class GurobiSolver implements MILSolver
 				Double.valueOf( params.getParameter( GurobiParameters.HEURISTICS_NAME ) ) );
 			quad_env.set( GRB.DoubleParam.OptimalityTol,
 				Double.valueOf( params.getParameter( GurobiParameters.OPTIMALITYTOL_NAME ) ) );
-			quad_env.set( GRB.DoubleParam.IntFeasTol, 1.0E-9 );
-			quad_env.set( GRB.DoubleParam.FeasibilityTol, 1.0E-9 );
-			quad_env.set( GRB.IntParam.OutputFlag, 0 );
 			
 			// create the variables
 			for( int j = 0; j < component.variableCount(); ++ j )
