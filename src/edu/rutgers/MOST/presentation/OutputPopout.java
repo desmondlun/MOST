@@ -130,16 +130,26 @@ public class OutputPopout extends JFrame {
 				File f = fileChooser.getSelectedFile();
 				String filename = fileChooser.getSelectedFile().getName();
 				setTitle(GraphicalInterfaceConstants.TITLE + " - " + filename);
-				try {
-					FileReader reader = new FileReader(f);
-					textArea.read(reader, "");  // Use TextComponent read
-				} catch (IOException ie) {
-					System.exit(1);
-				}
+				readFile(f);
+//				try {
+//					FileReader reader = new FileReader(f);
+//					textArea.read(reader, "");  // Use TextComponent read
+//				} catch (IOException ie) {
+//					//System.exit(1);
+//				}
 			}
 		}
 	}
 
+	public void readFile(File f) {
+		try {
+			FileReader reader = new FileReader(f);
+			textArea.read(reader, "");  // Use TextComponent read
+		} catch (IOException ie) {
+			//System.exit(1);
+		}
+	}
+	
 	class SaveAction implements ActionListener {
 		public void actionPerformed(ActionEvent e) {			
 			boolean done = false;

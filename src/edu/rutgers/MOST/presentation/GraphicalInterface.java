@@ -1416,9 +1416,14 @@ public class GraphicalInterface extends JFrame {
 			public void actionPerformed(ActionEvent a) { 	
 				OutputPopout popout = new OutputPopout();
 				popout.setIconImages(icons);
-				setPopout(popout);
 				popout.setTitle(gi.getTitle() + ".mps");
-				popout.setOutputText(outputTextArea.getText());
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+						DynamicTreePanel.getTreePanel().tree.getLastSelectedPathComponent();
+				Solution nodeInfo = (Solution)node.getUserObject();	
+				File f = new File(Utilities.getMOSTSettingsPath() + nodeInfo.getDatabaseName() + ".mps");
+				if (f.exists()) {
+					popout.readFile(f);
+				}
 			}
 		});
 
@@ -1435,7 +1440,6 @@ public class GraphicalInterface extends JFrame {
 						DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 								DynamicTreePanel.getTreePanel().tree.getLastSelectedPathComponent();
 						Solution nodeInfo = (Solution)node.getUserObject();	
-						System.out.println(nodeInfo.getDatabaseName());
 						File f = new File(Utilities.getMOSTSettingsPath() + nodeInfo.getDatabaseName() + ".mps");
 						if (f.exists()) {
 							mpsItem.setEnabled(true);
