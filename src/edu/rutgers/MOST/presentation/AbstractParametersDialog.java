@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -16,6 +17,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
@@ -51,7 +53,10 @@ public class AbstractParametersDialog extends JDialog
 		setTitle( name + " Parameters" );
 		setName( name );
 		add( vContentBox );
+		
+		getRootPane().setDefaultButton(okButton);
 
+		okButton.setMnemonic(KeyStroke.getKeyStroke(AbstractParametersDialogConstants.OK_BUTTON_MNEMONIC).getKeyCode());
 		okButton.addActionListener( new ActionListener()
 		{
 			@Override
@@ -61,6 +66,7 @@ public class AbstractParametersDialog extends JDialog
 				setVisible( false );
 			}
 		} );
+		cancelButton.setMnemonic(KeyStroke.getKeyStroke(AbstractParametersDialogConstants.CANCEL_BUTTON_MNEMONIC).getKeyCode());
 		cancelButton.addActionListener( new ActionListener()
 		{
 			@Override
@@ -69,6 +75,7 @@ public class AbstractParametersDialog extends JDialog
 				setVisible( false );
 			}
 		} );
+		resetButton.setMnemonic(KeyStroke.getKeyStroke(AbstractParametersDialogConstants.RESET_BUTTON_MNEMONIC).getKeyCode());
 		resetButton.addActionListener( new ActionListener()
 		{
 			public void actionPerformed( ActionEvent event )

@@ -10,6 +10,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.KeyStroke;
 
 public class GLPKParameters
 {
@@ -72,17 +73,34 @@ public class GLPKParameters
 				MIPGAP_MAX_VALUE, MIPGAP_DEFAULT_VALUE ) );
 		
 		Box vBox = Box.createVerticalBox();
+		
+		Utilities u = new Utilities();
+		
+		// add used mnemonics to list
+		ArrayList<String> usedMnemonics = new ArrayList<String>();
+		for (int i = 0; i < AbstractParametersDialogConstants.USED_MNEMONICS.length; i++) {
+			usedMnemonics.add(AbstractParametersDialogConstants.USED_MNEMONICS[i]);
+		}
+		
 		for( JComponent segmentedParameter : segmentedParameterlist )
 		{
 			segmentedParameter.setPreferredSize( new Dimension( COMPONENT_WIDTH, COMPONENT_HEIGHT ) );
 			JLabel label = new JLabel();
 			label.setText( segmentedParameter.getName() );
 			label.setPreferredSize( new Dimension( LABEL_WIDTH, LABEL_HEIGHT ) );
+			String mnemonic = "";
 			
 			if( segmentedParameter instanceof ADRealSegmentJTextFieldParameter )
 			{
 				ADRealSegmentJTextFieldParameter param = (ADRealSegmentJTextFieldParameter)segmentedParameter;
 				param.setToolTipText( "real values from " + param.minVal + " to " + param.maxVal );
+				mnemonic = u.findMnemonic(usedMnemonics, segmentedParameter.getName());
+			}
+			
+			if (mnemonic.length() > 0) {
+				usedMnemonics.add(mnemonic.toUpperCase());
+				label.setDisplayedMnemonic(mnemonic.charAt(0));
+				label.setLabelFor(segmentedParameter);
 			}
 			
 			JPanel content = new JPanel();
@@ -100,6 +118,9 @@ public class GLPKParameters
 			ArrayList< AbstractButton > buttons = new ArrayList< AbstractButton >();
 			buttons.add( new JRadioButton( Boolean.toString( true ), false ) );
 			buttons.add( new JRadioButton( Boolean.toString( false ), true ) );
+			// add mnemonics to buttons
+			buttons.get(0).setMnemonic(KeyStroke.getKeyStroke(AbstractParametersDialogConstants.SAVE_TO_MPS_FILE_TRUE).getKeyCode());
+			buttons.get(1).setMnemonic(KeyStroke.getKeyStroke(AbstractParametersDialogConstants.SAVE_TO_MPS_FILE_FALSE).getKeyCode());
 			ADButtonGroup bg = new ADButtonGroup( SAVE_TO_MPS_NAME, buttons );
 			components.add( bg );
 			JLabel label = new JLabel();

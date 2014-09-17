@@ -75,23 +75,40 @@ public class IPoptParameters
 		
 		
 		Box vBox = Box.createVerticalBox();
+		
+		Utilities u = new Utilities();
+		
+		// add used mnemonics to list
+		ArrayList<String> usedMnemonics = new ArrayList<String>();
+		for (int i = 0; i < AbstractParametersDialogConstants.USED_MNEMONICS.length; i++) {
+			usedMnemonics.add(AbstractParametersDialogConstants.USED_MNEMONICS[i]);
+		}
+		
 		for( JComponent segmentedParameter : segmentedParameterlist )
 		{
 			segmentedParameter.setPreferredSize( new Dimension( COMPONENT_WIDTH, COMPONENT_HEIGHT ) );
 			JLabel label = new JLabel();
 			label.setText( segmentedParameter.getName() );
 			label.setPreferredSize( new Dimension( LABEL_WIDTH, LABEL_HEIGHT ) );
+			String mnemonic = "";
 			
 			if( segmentedParameter instanceof ADRealSegmentJTextFieldParameter )
 			{
 				ADRealSegmentJTextFieldParameter param = (ADRealSegmentJTextFieldParameter)segmentedParameter;
 				param.setToolTipText( "real values from " + param.minVal + " to " + param.maxVal );
+				mnemonic = u.findMnemonic(usedMnemonics, segmentedParameter.getName());
 			}
 			else if ( segmentedParameter instanceof ADIntegerSegmentJTextFieldParameter )
 			{
 				ADIntegerSegmentJTextFieldParameter param = (ADIntegerSegmentJTextFieldParameter)segmentedParameter;
 				param.setToolTipText( "real values from " + param.minVal + " to " + param.maxVal );
+				mnemonic = u.findMnemonic(usedMnemonics, segmentedParameter.getName());
+			}
 			
+			if (mnemonic.length() > 0) {
+				usedMnemonics.add(mnemonic.toUpperCase());
+				label.setDisplayedMnemonic(mnemonic.charAt(0));
+				label.setLabelFor(segmentedParameter);
 			}
 			
 			JPanel content = new JPanel();

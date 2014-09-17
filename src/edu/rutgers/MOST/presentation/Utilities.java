@@ -179,4 +179,24 @@ public class Utilities {
 		return duplicateSuffix;
 	}
 	
+	/**
+	 * Returns next available letter (to upper case) to be used as mnemonic
+	 * from parameter name and list of used mnemonics.
+	 * @param usedMnemonics
+	 * @param parameterName
+	 * @return mnemonic
+	 */
+	public String findMnemonic(ArrayList<String> usedMnemonics, String parameterName) {
+		String mnemonic = "";
+		for (int i = 0; i < parameterName.length(); i++) {
+			mnemonic = Character.toString(parameterName.charAt(i)).toUpperCase();
+			if (!usedMnemonics.contains(mnemonic)) {
+				break;
+			} 
+		}
+		
+		return mnemonic;
+		
+	}
+	
 }

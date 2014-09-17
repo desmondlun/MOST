@@ -10,6 +10,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.KeyStroke;
 
 public class GurobiParameters {
 
@@ -73,6 +74,14 @@ public class GurobiParameters {
 		JPanel result = new JPanel();
 		Box vBox = Box.createVerticalBox();
 		
+		Utilities u = new Utilities();
+		
+		// add used mnemonics to list
+		ArrayList<String> usedMnemonics = new ArrayList<String>();
+		for (int i = 0; i < AbstractParametersDialogConstants.USED_MNEMONICS.length; i++) {
+			usedMnemonics.add(AbstractParametersDialogConstants.USED_MNEMONICS[i]);
+		}
+		
 		// segmented parameters
 		ArrayList< JComponent > textParams = new ArrayList< JComponent >();
 
@@ -94,17 +103,25 @@ public class GurobiParameters {
 			JLabel label = new JLabel();
 			label.setText( textparam.getName() );
 			label.setPreferredSize( new Dimension( LABEL_WIDTH, LABEL_HEIGHT ) );
+			String mnemonic = "";
 			
 			if( textparam instanceof ADRealSegmentJTextFieldParameter )
 			{
 				ADRealSegmentJTextFieldParameter param = (ADRealSegmentJTextFieldParameter)textparam;
 				param.setToolTipText( "real values from " + param.minVal + " to " + param.maxVal );
+				mnemonic = u.findMnemonic(usedMnemonics, textparam.getName());
 			}
 			else if ( textparam instanceof ADIntegerSegmentJTextFieldParameter )
 			{
 				ADIntegerSegmentJTextFieldParameter param = (ADIntegerSegmentJTextFieldParameter)textparam;
 				param.setToolTipText( "real values from " + param.minVal + " to " + param.maxVal );
+				mnemonic = u.findMnemonic(usedMnemonics, textparam.getName());
+			}
 			
+			if (mnemonic.length() > 0) {
+				usedMnemonics.add(mnemonic.toUpperCase());
+				label.setDisplayedMnemonic(mnemonic.charAt(0));
+				label.setLabelFor(textparam);
 			}
 			
 			JPanel content = new JPanel();
@@ -129,6 +146,17 @@ public class GurobiParameters {
 			JLabel label = new JLabel();
 			label.setText( cbParam.getName() );
 			label.setPreferredSize( new Dimension( LABEL_WIDTH, LABEL_HEIGHT ) );
+			
+			String mnemonic = "";
+			
+			mnemonic = u.findMnemonic(usedMnemonics, cbParam.getName());
+			
+			if (mnemonic.length() > 0) {
+				usedMnemonics.add(mnemonic.toUpperCase());
+				label.setDisplayedMnemonic(mnemonic.charAt(0));
+				label.setLabelFor(cbParam);
+			}
+			
 			JPanel content = new JPanel();
 			Box hBox = Box.createHorizontalBox();
 			hBox.add( label );
@@ -143,6 +171,9 @@ public class GurobiParameters {
 			ArrayList< AbstractButton > buttons = new ArrayList< AbstractButton >();
 			buttons.add( new JRadioButton( Boolean.toString( true ), false ) );
 			buttons.add( new JRadioButton( Boolean.toString( false ), true ) );
+			// add mnemonics to buttons
+			buttons.get(0).setMnemonic(KeyStroke.getKeyStroke(AbstractParametersDialogConstants.SAVE_TO_MPS_FILE_TRUE).getKeyCode());
+			buttons.get(1).setMnemonic(KeyStroke.getKeyStroke(AbstractParametersDialogConstants.SAVE_TO_MPS_FILE_FALSE).getKeyCode());
 			ADButtonGroup bg = new ADButtonGroup( SAVE_TO_MPS_NAME, buttons );
 			components.add( bg );
 			JLabel label = new JLabel();
