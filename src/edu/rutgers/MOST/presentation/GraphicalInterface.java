@@ -633,6 +633,7 @@ public class GraphicalInterface extends JFrame {
 
 	public final JMenuItem outputCopyItem = new JMenuItem("Copy");
 	public final JMenuItem outputSelectAllItem = new JMenuItem("Select All");
+	public final JMenuItem mpsItem = new JMenuItem("View MPS File");
 
 	public final JMenuItem unhighlightParticipatingReactionsMenu = new JMenuItem("Un-Highlight Participating Reactions");
 	public final JMenuItem unhighlightMenu = new JMenuItem("Un-Highlight Participating Reactions");
@@ -1409,6 +1410,17 @@ public class GraphicalInterface extends JFrame {
 				popout.setOutputText(outputTextArea.getText());
 			}
 		});
+		outputPopupMenu.addSeparator();
+		outputPopupMenu.add(mpsItem);
+		mpsItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent a) { 	
+				OutputPopout popout = new OutputPopout();
+				popout.setIconImages(icons);
+				setPopout(popout);
+				popout.setTitle(gi.getTitle() + ".mps");
+				popout.setOutputText(outputTextArea.getText());
+			}
+		});
 
 		outputTextArea.addMouseListener(new MouseAdapter() {
 
@@ -1417,6 +1429,20 @@ public class GraphicalInterface extends JFrame {
 
 			public void check(MouseEvent e) {
 				if (e.isPopupTrigger()) { //if the event shows the menu
+					if (isRoot) {
+						mpsItem.setEnabled(false);
+					} else {
+						DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+								DynamicTreePanel.getTreePanel().tree.getLastSelectedPathComponent();
+						Solution nodeInfo = (Solution)node.getUserObject();	
+						System.out.println(nodeInfo.getDatabaseName());
+						File f = new File(Utilities.getMOSTSettingsPath() + nodeInfo.getDatabaseName() + ".mps");
+						if (f.exists()) {
+							mpsItem.setEnabled(true);
+						} else {
+							mpsItem.setEnabled(false);
+						}
+					}
 					outputPopupMenu.show(outputTextArea, e.getX(), e.getY()); 
 				}
 			}
@@ -3343,8 +3369,8 @@ public class GraphicalInterface extends JFrame {
 				DynamicTreePanel.getTreePanel().selectLastNode();
 				rFactory.resetKnockOuts();
 				if( current_giSolution.knockoutOffset != null && current_giSolution.soln_ko != null )
-					rFactory.setKnockouts( current_giSolution.soln_ko.subList( current_giSolution.knockoutOffset, current_giSolution.soln_ko.size()));
-
+					rFactory.setKnockouts( current_giSolution.soln_ko.subList( current_giSolution.knockoutOffset, current_giSolution.soln_ko.size()));			
+				
 				if (LocalConfig.getInstance().hasValidGurobiKey) {
 					Writer writer = null;
 					try {
