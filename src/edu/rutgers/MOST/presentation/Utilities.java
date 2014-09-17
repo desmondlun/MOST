@@ -2,6 +2,10 @@ package edu.rutgers.MOST.presentation;
 
 import java.awt.Image;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,6 +14,7 @@ import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileSystemView;
 
 /**
@@ -28,7 +33,7 @@ public class Utilities {
 	}
 	
 	// based on http://www.java2s.com/Code/Java/File-Input-Output/DeletefileusingJavaIOAPI.htm
-	public void delete(String fileName) {
+	public static void delete(String fileName) {
 		// A File object to represent the filename
 		File f = new File(fileName);
 
@@ -197,6 +202,29 @@ public class Utilities {
 		
 		return mnemonic;
 		
+	}
+	
+	public static void copyFile(File sourceFile, File destFile) throws IOException {
+		if(!destFile.exists()) {
+			destFile.createNewFile();
+		}
+
+		FileChannel source = null;
+		FileChannel destination = null;
+
+		try {
+			source = new FileInputStream(sourceFile).getChannel();
+			destination = new FileOutputStream(destFile).getChannel();
+			destination.transferFrom(source, 0, source.size());
+		}
+		finally {
+			if(source != null) {
+				source.close();
+			}
+			if(destination != null) {
+				destination.close();
+			}
+		}
 	}
 	
 }

@@ -3285,6 +3285,15 @@ public class GraphicalInterface extends JFrame {
 							+ "_" + getOptimizeName();
 					setOptimizeName(name);
 				}
+				
+				// copy mps file if exists to optimizationName + mps, then delete original file
+				if (getMixedIntegerLinearSolverName().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
+					File f = new File(Utilities.getMOSTSettingsPath() + "LastProblem_GLPK.mps");
+					copyMPSFile(f);
+				} else if (getMixedIntegerLinearSolverName().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
+					File f = new File(Utilities.getMOSTSettingsPath() + "LastProblem_Gurobi.mps");
+					copyMPSFile(f);
+				}
 
 				// copy models, run optimization on these models
 				DefaultTableModel metabolitesOptModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());
@@ -3377,6 +3386,13 @@ public class GraphicalInterface extends JFrame {
 					if (getPopout() != null) {
 						getPopout().load(u.createLogFileName(getOptimizeName() + ".log"), gi.getTitle());
 					}
+//					if (getMixedIntegerLinearSolverName().equals(GraphicalInterfaceConstants.GLPK_SOLVER_NAME)) {
+//						File f = new File(Utilities.getMOSTSettingsPath() + "LastProblem_GLPK.mps");
+//						copyMPSFile(f);
+//					} else if (getMixedIntegerLinearSolverName().equals(GraphicalInterfaceConstants.GUROBI_SOLVER_NAME)) {
+//						File f = new File(Utilities.getMOSTSettingsPath() + "LastProblem_Gurobi.mps");
+//						copyMPSFile(f);
+//					}
 						
 				} else {
 					DynamicTreePanel.getTreePanel().setNodeSelected(0);
@@ -3384,11 +3400,27 @@ public class GraphicalInterface extends JFrame {
 				LocalConfig.getInstance().hasValidGurobiKey = true;
 			}
 		};
+		
 	}
+	
+	
 	/********************************************************************************/
 	//end constructor and layout
 	/********************************************************************************/
 
+	public void copyMPSFile(File f) {
+		File copy = new File(Utilities.getMOSTSettingsPath() + getOptimizeName() + ".mps");
+		if (f.exists()) {
+			try {
+				Utilities.copyFile(f, copy);
+				Utilities.delete(f.getPath());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	/*******************************************************************************/
 	//begin formulaBar methods and actions
 	/*******************************************************************************/ 
@@ -11673,6 +11705,8 @@ public class GraphicalInterface extends JFrame {
 //					u.deleteFileIfExists(child.getAbsolutePath());
 //				}
 				if (child.getName().endsWith("log")) {
+					u.deleteFileIfExists(child.getAbsolutePath());
+				} else if (child.getName().endsWith("mps")) {
 					u.deleteFileIfExists(child.getAbsolutePath());
 				}
 			}
