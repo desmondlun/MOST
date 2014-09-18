@@ -26,4 +26,9 @@ public interface LinearSolver extends Solver
 	 * @param component The solver component containing the constraints
 	 */
 	public void FVA( ArrayList< Double > objCoefs, Double objVal, ArrayList< Double > fbasoln, ArrayList< Double > min, ArrayList< Double > max, SolverComponent component ) throws Exception;
+
+	/**
+	 * Disable solver error messages such as infeasibility
+	 */
+	public abstract void disableErrors();
 }

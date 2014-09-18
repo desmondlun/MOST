@@ -11445,6 +11445,7 @@ public class GraphicalInterface extends JFrame {
 				fba.setModel( fbaModel );
 				try
 				{
+					fba.disableSolverErrors();
 					fba.solve();
 				}
 				catch( Exception e )

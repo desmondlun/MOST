@@ -23,6 +23,11 @@ public class FBA extends Analysis
 		super();
 	}
 	
+	public void disableSolverErrors()
+	{
+		linearSolver.disableErrors();
+	}
+	
 	@Override
  	public ArrayList< Double > run() throws Exception
  	{
@@ -36,7 +41,7 @@ public class FBA extends Analysis
 	 		if( JOptionPane.CLOSED_OPTION == selectedOption ) {
 	 			GraphicalInterface.analysisRunning = false;
 	 			throw new Exception( "FVA dialog closed" );
-	 		}	
+	 		}
 	 		
 			pb = new SimpleProgressBar( "Calculating FBA", "progressing..." );
 			pb.setAlwaysOnTop( true );

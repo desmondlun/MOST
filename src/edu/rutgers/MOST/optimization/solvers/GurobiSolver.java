@@ -39,7 +39,7 @@ public abstract class GurobiSolver implements MILSolver
 	protected Model dataModel = null;
 	protected ModelCompressor compressor = null;
 	protected ArrayList< Double > soln = new ArrayList< Double >();
-	Vector< Double > geneExpr = new Vector< Double >();
+	protected Vector< Double > geneExpr = new Vector< Double >();
 	protected double objval;
 	protected GRBEnv env = null;
 	protected ObjType objType;
@@ -49,6 +49,7 @@ public abstract class GurobiSolver implements MILSolver
 	protected SolverComponent component = new SolverComponentLightWeight();
 	protected ArrayList< Double > objCoefs = new ArrayList< Double >();
 	protected GRBModel model = null;
+	protected boolean showErrorMessages = true;
 	public static boolean isGurobiLinked()
 	{
 		try
@@ -72,55 +73,61 @@ public abstract class GurobiSolver implements MILSolver
 	protected void processStackTrace( Exception e )
 	{
 		//e.printStackTrace();
-		StringWriter errors = new StringWriter();
-		e.printStackTrace( new PrintWriter( errors ) );
-		dialog.setErrorMessage( errors.toString() + "</p></html>" );
-		// centers dialog
-		dialog.setLocationRelativeTo(null);
-		dialog.setModal(true);		
-		dialog.setVisible( true );
+		if( showErrorMessages )
+		{
+			StringWriter errors = new StringWriter();
+			e.printStackTrace( new PrintWriter( errors ) );
+			dialog.setErrorMessage( errors.toString() + "</p></html>" );
+			// centers dialog
+			dialog.setLocationRelativeTo(null);
+			dialog.setModal(true);		
+			dialog.setVisible( true );
+		}
 	}
 	protected void promptGRBError( GRBException e )
 	{
 		abort();
-		String errMsg;
-		int code = e.getErrorCode();
-		switch( code )
+		if( showErrorMessages )
 		{
-		case GRB.Error.NO_LICENSE:
-			errMsg = "<html><p>No validation file - run 'grbgetkey' to refresh it.</p></html>";
-			LocalConfig.getInstance().hasValidGurobiKey = false;
-			break;
-		case GRB.Error.FAILED_TO_CREATE_MODEL:
-			errMsg = "<html><p>Gurobi failed to create the model";
-		case GRB.Error.NOT_SUPPORTED:
-			errMsg = "<html><p>This optimization is not supported by Gurobi";
-			break;
-		case GRB.Error.INVALID_ARGUMENT:
-			errMsg = "<html><p>Gurobi encountered an invalid argument";
-			break;
-		case GRB.Error.IIS_NOT_INFEASIBLE:
-			errMsg = "<html><p>Gurobi determined the IIS is not feasable";
-			break;
-		case GRB.Error.NUMERIC:
-			errMsg = "<html><p>Gurobi encountered a numerical error while optimizing the model";
-			break;
-		case GRB.Error.INTERNAL:
-			errMsg = "<html><p>Gurobi has encountered an internal error!";
-			break;
-		case 0:
-			errMsg = e.getMessage() + "\n";
-			break;
-		default:
-			errMsg = "<html><p>Gurobi encountered an error optimizing the model - <br> "
-					+ " <a href=" + GraphicalInterfaceConstants.GUROBI_ERROR_CODE_URL
-					+ ">Error Code:" + code + "</a><br>\n";
+			String errMsg;
+			int code = e.getErrorCode();
+			switch( code )
+			{
+			case GRB.Error.NO_LICENSE:
+				errMsg = "<html><p>No validation file - run 'grbgetkey' to refresh it.</p></html>";
+				LocalConfig.getInstance().hasValidGurobiKey = false;
+				break;
+			case GRB.Error.FAILED_TO_CREATE_MODEL:
+				errMsg = "<html><p>Gurobi failed to create the model";
+			case GRB.Error.NOT_SUPPORTED:
+				errMsg = "<html><p>This optimization is not supported by Gurobi";
+				break;
+			case GRB.Error.INVALID_ARGUMENT:
+				errMsg = "<html><p>Gurobi encountered an invalid argument";
+				break;
+			case GRB.Error.IIS_NOT_INFEASIBLE:
+				errMsg = "<html><p>Gurobi determined the IIS is not feasable";
+				break;
+			case GRB.Error.NUMERIC:
+				errMsg = "<html><p>Gurobi encountered a numerical error while optimizing the model";
+				break;
+			case GRB.Error.INTERNAL:
+				errMsg = "<html><p>Gurobi has encountered an internal error!";
+				break;
+			case 0:
+				errMsg = e.getMessage() + "\n";
+				break;
+			default:
+				errMsg = "<html><p>Gurobi encountered an error optimizing the model - <br> "
+						+ " <a href=" + GraphicalInterfaceConstants.GUROBI_ERROR_CODE_URL
+						+ ">Error Code:" + code + "</a><br>\n";
+			}
+			if( GraphicalInterface.getGdbbDialog() != null )
+				GraphicalInterface.getGdbbDialog().setVisible( false );
+	
+			processStackTrace( new Exception( errMsg ) );
+			LocalConfig.getInstance().getOptimizationFilesList().clear();
 		}
-		if( GraphicalInterface.getGdbbDialog() != null )
-			GraphicalInterface.getGdbbDialog().setVisible( false );
-
-		processStackTrace( new Exception( errMsg ) );
-		LocalConfig.getInstance().getOptimizationFilesList().clear();
 	}
 	protected char getGRBVarType( VarType type )
 	{
@@ -466,6 +473,12 @@ public abstract class GurobiSolver implements MILSolver
 	public ArrayList< Double > getObjectiveCoefs()
 	{
 		return this.objCoefs;
+	}
+	
+	@Override
+	public void disableErrors()
+	{
+		this.showErrorMessages = false;
 	}
 	
 	@Override

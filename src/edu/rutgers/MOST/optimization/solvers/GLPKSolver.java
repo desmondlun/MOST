@@ -58,8 +58,9 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 	protected glp_prob problem_tmp;
 	protected ResizableDialog dialog = new ResizableDialog( "Error",
 			"GLPK Solver Error", "GLPK Solver Error" );
-	private boolean abort = false;
+	protected boolean abort = false;
 	protected Vector< Double > geneExpr = new Vector< Double >();
+	protected boolean showErrorMessages = true;
 	
 	protected static void addLibraryPath( String pathToAdd ) throws Exception
 	{
@@ -87,13 +88,16 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 	protected void processStackTrace( Exception except )
 	{
 		//except.printStackTrace();
-		StringWriter errors = new StringWriter();
-		except.printStackTrace( new PrintWriter( errors ) );
-		dialog.setErrorMessage( errors.toString() );
-		// centers dialog
-		dialog.setLocationRelativeTo(null);
-		dialog.setModal(true);
-		dialog.setVisible( true );
+		if( showErrorMessages )
+		{
+			StringWriter errors = new StringWriter();
+			except.printStackTrace( new PrintWriter( errors ) );
+			dialog.setErrorMessage( errors.toString() );
+			// centers dialog
+			dialog.setLocationRelativeTo(null);
+			dialog.setModal(true);
+			dialog.setVisible( true );
+		}
 	}
 	
 	public GLPKSolver()
@@ -381,6 +385,11 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 	public void setModelCompressor( ModelCompressor compressor )
 	{
 		this.compressor = compressor;
+	}
+	@Override
+	public void disableErrors()
+	{
+		this.showErrorMessages = false;
 	}
 	@Override
 	public void FVA( ArrayList< Double > objCoefs, Double objVal, ArrayList< Double > fbaSoln,
