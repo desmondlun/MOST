@@ -272,6 +272,7 @@ public class GraphicalInterface extends JFrame {
 	public boolean enterPressed;
 	public boolean reactionsUndo;
 	public boolean saveChangesOKClicked;
+	public boolean mipPopoutVisible;
 	// save
 	public boolean saveFile;
 	public boolean saveSBML;
@@ -404,6 +405,16 @@ public class GraphicalInterface extends JFrame {
 
 	public static MetaboliteRenameInterface getMetaboliteRenameInterface() {
 		return metaboliteRenameInterface;
+	}
+	
+	private static MIPPopout mipPopout;
+
+	public static MIPPopout getMipPopout() {
+		return mipPopout;
+	}
+
+	public static void setMipPopout(MIPPopout mipPopout) {
+		GraphicalInterface.mipPopout = mipPopout;
 	}
 
 	private static ModelCollectionTable modelCollectionTable;
@@ -1030,6 +1041,13 @@ public class GraphicalInterface extends JFrame {
 						tree.getLastSelectedPathComponent();
 
 				if (node == null) return;
+				
+				// close mip popout if selected node changed
+				if (getMipPopout() != null) {
+					getMipPopout().setVisible(false);
+					getMipPopout().dispose();
+					mipPopoutVisible = false;
+				}
 
 				Solution nodeInfo = (Solution)node.getUserObject();
 				String solutionName = nodeInfo.getSolutionName();
@@ -1399,13 +1417,23 @@ public class GraphicalInterface extends JFrame {
 			}
 		});
 		outputPopupMenu.addSeparator();
-		JMenuItem popOutItem = new JMenuItem("Pop Out");
+		final JMenuItem popOutItem = new JMenuItem("Pop Out");
 		outputPopupMenu.add(popOutItem);
 		popOutItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 	
 				OutputPopout popout = new OutputPopout();
 				popout.setIconImages(icons);
 				setPopout(popout);
+				popout.setSize(700, 400);
+				popout.setLocationRelativeTo(null);
+				popout.addWindowListener(new WindowAdapter() {
+					public void windowClosing(WindowEvent evt) {
+						getPopout().setVisible(false);
+						getPopout().dispose();
+						popOutItem.setEnabled(true);
+					}
+				});	
+				popOutItem.setEnabled(false);
 				popout.setTitle(gi.getTitle());
 				popout.setOutputText(outputTextArea.getText());
 			}
@@ -1414,15 +1442,26 @@ public class GraphicalInterface extends JFrame {
 		outputPopupMenu.add(mpsItem);
 		mpsItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 	
-				OutputPopout popout = new OutputPopout();
-				popout.setIconImages(icons);
-				popout.setTitle(gi.getTitle() + ".mps");
+				MIPPopout mipPopout = new MIPPopout();
+				mipPopout.setIconImages(icons);
+				setMipPopout(mipPopout);
+				mipPopoutVisible = true;
+				mipPopout.addWindowListener(new WindowAdapter() {
+					public void windowClosing(WindowEvent evt) {
+						getMipPopout().setVisible(false);
+						getMipPopout().dispose();
+						mipPopoutVisible = false;
+						mpsItem.setEnabled(true);
+					}
+				});	
+				mpsItem.setEnabled(false);
+				mipPopout.setTitle(gi.getTitle() + ".mps");
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 						DynamicTreePanel.getTreePanel().tree.getLastSelectedPathComponent();
 				Solution nodeInfo = (Solution)node.getUserObject();	
 				File f = new File(Utilities.getMOSTSettingsPath() + nodeInfo.getDatabaseName() + ".mps");
 				if (f.exists()) {
-					popout.readFile(f);
+					mipPopout.readFile(f);
 				}
 			}
 		});
@@ -1442,7 +1481,13 @@ public class GraphicalInterface extends JFrame {
 						Solution nodeInfo = (Solution)node.getUserObject();	
 						File f = new File(Utilities.getMOSTSettingsPath() + nodeInfo.getDatabaseName() + ".mps");
 						if (f.exists()) {
-							mpsItem.setEnabled(true);
+							// prevent user from launching popout multiple times by
+							// disabling menu item if popout is visible
+							if (!mipPopoutVisible) {
+								mpsItem.setEnabled(true);
+							} else {
+								mpsItem.setEnabled(false);
+							}
 						} else {
 							mpsItem.setEnabled(false);
 						}
@@ -5444,6 +5489,7 @@ public class GraphicalInterface extends JFrame {
 		enterPressed = false;
 		reactionsUndo = false;
 		saveChangesOKClicked = false;
+		mipPopoutVisible = false;
 		// save
 		if (!saveSBML) {
 			saveFile = false;
