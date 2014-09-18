@@ -1829,81 +1829,89 @@ public class GraphicalInterface extends JFrame {
             			{
             				public void actionPerformed(ActionEvent prodActionEvent) 
             				{
-            					gdbbDialog.startButton.setEnabled( false );
-            					gdbbDialog.stopButton.setEnabled( true );
-            					gdbbStopped = false;       			
-            					
-            					// check if all entries are valid
-            					boolean isValid = true;
-            					boolean koIsInteger = true;
-            					boolean finiteTimeIsInteger = true;
-            					try 
+            					Thread t = new Thread()
             					{
-            						Integer.parseInt(gdbbDialog.getNumKnockouts());
-            					}
-            					catch(NumberFormatException nfe2) 
-            					{
-            						isValid = false;
-            						koIsInteger = false;
-            					}
-            					if (gdbbDialog.finiteTimeSelected) 
-            					{
-            						try 
+            						@Override
+            						public void run()
             						{
-            							Integer.parseInt(gdbbDialog.getFiniteTimeString());
+            							gdbbDialog.startButton.setEnabled( false );
+                    					gdbbDialog.stopButton.setEnabled( true );
+                    					gdbbStopped = false;       			
+                    					
+                    					// check if all entries are valid
+                    					boolean isValid = true;
+                    					boolean koIsInteger = true;
+                    					boolean finiteTimeIsInteger = true;
+                    					try 
+                    					{
+                    						Integer.parseInt(gdbbDialog.getNumKnockouts());
+                    					}
+                    					catch(NumberFormatException nfe2) 
+                    					{
+                    						isValid = false;
+                    						koIsInteger = false;
+                    					}
+                    					if (gdbbDialog.finiteTimeSelected) 
+                    					{
+                    						try 
+                    						{
+                    							Integer.parseInt(gdbbDialog.getFiniteTimeString());
+                    						}
+                    						catch(NumberFormatException nfe2) 
+                    						{
+                    							isValid = false;
+                    							finiteTimeIsInteger = false;
+                    						}
+                    					}        				
+                    					if (!isValid) 
+                    					{
+                    						JOptionPane.showMessageDialog(null,                
+                    								GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_TITLE,                
+                    								GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_MESSAGE,                               
+                    								JOptionPane.ERROR_MESSAGE);
+                    						if (!koIsInteger) 
+                    							gdbbDialog.setKnockoutDefaultValue();
+                    						if (!finiteTimeIsInteger)
+                    							gdbbDialog.setFiniteTimeDefaultValue();
+                    						gdbbDialog.startButton.setEnabled( true );
+                        					gdbbDialog.stopButton.setEnabled( false );
+                        					gdbbStopped = true;  
+                    					}
+                    					else 
+                    					{
+                    						// run gdbb
+                    						gdbbDialog.disableComponents();
+                    						gdbbDialog.stopButton.setEnabled(true);
+                    						gdbbTimer.start();
+
+                    						GDBBModel model = new GDBBModel(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN]);
+                    						model.setC((new Double(gdbbDialog.getNumKnockouts())).doubleValue());
+                    						model.setTimeLimit((new Double(gdbbDialog.getFiniteTimeString())).doubleValue());
+
+                    						if (!gdbbDialog.finiteTimeSelected)
+                    							model.setTimeLimit(Double.POSITIVE_INFINITY);
+                    						else
+                    							model.setTimeLimit((new Double(gdbbDialog.getFiniteTimeString())).doubleValue());
+
+                    						//gdbbTask.getModel().setThreadNum((Integer)gdbbDialog.cbNumThreads.getSelectedItem());
+                    						//model.setThreadNum(gdbbDialog.selectedNumberOfThreads());
+                    						gdbb.setGDBBModel( model );
+                    						gdbb.setFinalizingCallback( new GDBB.Callback()
+        									{
+        										@Override
+        										public void invoke()
+        										{
+        											gdbbDialog.setVisible( false );
+        											gdbbDialog.dispose();
+        										}
+        									} );
+                    						gdbb.start();
+                    						gdbbRunning = true;
+                    						gdbbProcessed = false;
+                    					}  
             						}
-            						catch(NumberFormatException nfe2) 
-            						{
-            							isValid = false;
-            							finiteTimeIsInteger = false;
-            						}
-            					}        				
-            					if (!isValid) 
-            					{
-            						JOptionPane.showMessageDialog(null,                
-            								GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_TITLE,                
-            								GraphicalInterfaceConstants.INTEGER_VALUE_ERROR_MESSAGE,                               
-            								JOptionPane.ERROR_MESSAGE);
-            						if (!koIsInteger) 
-            							gdbbDialog.setKnockoutDefaultValue();
-            						if (!finiteTimeIsInteger)
-            							gdbbDialog.setFiniteTimeDefaultValue();
-            						gdbbDialog.startButton.setEnabled( true );
-                					gdbbDialog.stopButton.setEnabled( false );
-                					gdbbStopped = true;  
-            					}
-            					else 
-            					{
-            						// run gdbb
-            						gdbbDialog.disableComponents();
-            						gdbbDialog.stopButton.setEnabled(true);
-            						gdbbTimer.start();
-
-            						GDBBModel model = new GDBBModel(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN]);
-            						model.setC((new Double(gdbbDialog.getNumKnockouts())).doubleValue());
-            						model.setTimeLimit((new Double(gdbbDialog.getFiniteTimeString())).doubleValue());
-
-            						if (!gdbbDialog.finiteTimeSelected)
-            							model.setTimeLimit(Double.POSITIVE_INFINITY);
-            						else
-            							model.setTimeLimit((new Double(gdbbDialog.getFiniteTimeString())).doubleValue());
-
-            						//gdbbTask.getModel().setThreadNum((Integer)gdbbDialog.cbNumThreads.getSelectedItem());
-            						//model.setThreadNum(gdbbDialog.selectedNumberOfThreads());
-            						gdbb.setGDBBModel( model );
-            						gdbb.setFinalizingCallback( new GDBB.Callback()
-									{
-										@Override
-										public void invoke()
-										{
-											gdbbDialog.setVisible( false );
-											gdbbDialog.dispose();
-										}
-									} );
-            						gdbb.start();
-            						gdbbRunning = true;
-            						gdbbProcessed = false;
-            					}       				
+            					};
+            					t.start();
             				}
             			});
             			gdbbDialog.stopButton.addActionListener(new ActionListener() 
@@ -11089,7 +11097,7 @@ public class GraphicalInterface extends JFrame {
 				System.out.println(u.createLogFileName(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".log") + " will be deleted.");
 				File f = new File(u.createLogFileName(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".log"));
 				if (f.exists()) {
-					u.delete(u.createLogFileName(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".log"));
+					Utilities.delete(u.createLogFileName(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".log"));
 				}						
 			}					
 		}				
@@ -11125,7 +11133,6 @@ public class GraphicalInterface extends JFrame {
 	}
 
 	public void deleteItemFromDynamicTree() {
-		Utilities u = new Utilities();
 		Object[] options = {"    Yes    ", "    No    ",};
 		int choice = JOptionPane.showOptionDialog(null, 
 				GraphicalInterfaceConstants.DELETE_ASSOCIATED_FILES, 
@@ -11137,7 +11144,7 @@ public class GraphicalInterface extends JFrame {
 		if (choice == JOptionPane.YES_OPTION) {
 			File f = new File(LocalConfig.getInstance().getOptimizationFilesList().get(DynamicTree.getRow() - 1) + ".log");
 			if (f.exists()) {
-				u.delete(LocalConfig.getInstance().getOptimizationFilesList().get(DynamicTree.getRow() - 1) + ".log");
+				Utilities.delete(LocalConfig.getInstance().getOptimizationFilesList().get(DynamicTree.getRow() - 1) + ".log");
 			}
 		}
 		if (choice == JOptionPane.NO_OPTION) {
@@ -11642,9 +11649,7 @@ public class GraphicalInterface extends JFrame {
 	 * Writes solver selections to config file.
 	 */
 	ActionListener solvOKActionListener = new ActionListener() {
-		@SuppressWarnings("static-access")
 		public void actionPerformed(ActionEvent ae) {
-			ConfigProperties configProp = new ConfigProperties();
 			String linear = "";
 			String quadratic = "";
 			String nonlinear = "";
@@ -11666,7 +11671,7 @@ public class GraphicalInterface extends JFrame {
 			setMixedIntegerLinearSolverName(linear);
 			setQuadraticSolverName(quadratic);
 			setNonlinearSolverName(nonlinear);
-			configProp.writeToFile(linear, quadratic, nonlinear);
+			ConfigProperties.writeToFile(linear, quadratic, nonlinear);
 
 			getSolverSetUpDialog().setVisible(false);
 		}
