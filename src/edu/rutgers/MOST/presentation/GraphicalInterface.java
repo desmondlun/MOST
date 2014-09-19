@@ -272,7 +272,7 @@ public class GraphicalInterface extends JFrame {
 	public boolean enterPressed;
 	public boolean reactionsUndo;
 	public boolean saveChangesOKClicked;
-	public boolean mipPopoutVisible;
+	public boolean mpsPopoutVisible;
 	// save
 	public boolean saveFile;
 	public boolean saveSBML;
@@ -406,16 +406,6 @@ public class GraphicalInterface extends JFrame {
 	public static MetaboliteRenameInterface getMetaboliteRenameInterface() {
 		return metaboliteRenameInterface;
 	}
-	
-	private static MIPPopout mipPopout;
-
-	public static MIPPopout getMipPopout() {
-		return mipPopout;
-	}
-
-	public static void setMipPopout(MIPPopout mipPopout) {
-		GraphicalInterface.mipPopout = mipPopout;
-	}
 
 	private static ModelCollectionTable modelCollectionTable;
 
@@ -425,6 +415,16 @@ public class GraphicalInterface extends JFrame {
 
 	public static void setModelCollectionTable(ModelCollectionTable modelCollectionTable) {
 		GraphicalInterface.modelCollectionTable = modelCollectionTable;
+	}
+	
+	private static MPSPopout mpsPopout;
+
+	public static MPSPopout getMpsPopout() {
+		return mpsPopout;
+	}
+
+	public static void setMpsPopout(MPSPopout mpsPopout) {
+		GraphicalInterface.mpsPopout = mpsPopout;
 	}
 
 	private static OutputPopout popout;
@@ -1042,11 +1042,11 @@ public class GraphicalInterface extends JFrame {
 
 				if (node == null) return;
 				
-				// close mip popout if selected node changed
-				if (getMipPopout() != null) {
-					getMipPopout().setVisible(false);
-					getMipPopout().dispose();
-					mipPopoutVisible = false;
+				// close mps popout if selected node changed
+				if (getMpsPopout() != null) {
+					getMpsPopout().setVisible(false);
+					getMpsPopout().dispose();
+					mpsPopoutVisible = false;
 				}
 
 				Solution nodeInfo = (Solution)node.getUserObject();
@@ -1442,26 +1442,26 @@ public class GraphicalInterface extends JFrame {
 		outputPopupMenu.add(mpsItem);
 		mpsItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 	
-				MIPPopout mipPopout = new MIPPopout();
-				mipPopout.setIconImages(icons);
-				setMipPopout(mipPopout);
-				mipPopoutVisible = true;
-				mipPopout.addWindowListener(new WindowAdapter() {
+				MPSPopout mpsPopout = new MPSPopout();
+				mpsPopout.setIconImages(icons);
+				setMpsPopout(mpsPopout);
+				mpsPopoutVisible = true;
+				mpsPopout.addWindowListener(new WindowAdapter() {
 					public void windowClosing(WindowEvent evt) {
-						getMipPopout().setVisible(false);
-						getMipPopout().dispose();
-						mipPopoutVisible = false;
+						getMpsPopout().setVisible(false);
+						getMpsPopout().dispose();
+						mpsPopoutVisible = false;
 						mpsItem.setEnabled(true);
 					}
 				});	
 				mpsItem.setEnabled(false);
-				mipPopout.setTitle(gi.getTitle() + ".mps");
+				mpsPopout.setTitle(gi.getTitle() + ".mps");
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 						DynamicTreePanel.getTreePanel().tree.getLastSelectedPathComponent();
 				Solution nodeInfo = (Solution)node.getUserObject();	
 				File f = new File(Utilities.getMOSTSettingsPath() + nodeInfo.getDatabaseName() + ".mps");
 				if (f.exists()) {
-					mipPopout.readFile(f);
+					mpsPopout.readFile(f);
 				}
 			}
 		});
@@ -1483,7 +1483,7 @@ public class GraphicalInterface extends JFrame {
 						if (f.exists()) {
 							// prevent user from launching popout multiple times by
 							// disabling menu item if popout is visible
-							if (!mipPopoutVisible) {
+							if (!mpsPopoutVisible) {
 								mpsItem.setEnabled(true);
 							} else {
 								mpsItem.setEnabled(false);
@@ -5497,7 +5497,7 @@ public class GraphicalInterface extends JFrame {
 		enterPressed = false;
 		reactionsUndo = false;
 		saveChangesOKClicked = false;
-		mipPopoutVisible = false;
+		mpsPopoutVisible = false;
 		// save
 		if (!saveSBML) {
 			saveFile = false;
