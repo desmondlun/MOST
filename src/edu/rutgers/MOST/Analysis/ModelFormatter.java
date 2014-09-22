@@ -23,7 +23,7 @@ public class ModelFormatter
 		return JOptionPane.OK_OPTION == JOptionPane.showConfirmDialog( null, e.getMessage()
 				+ "\nDo you still want to continue?",
 				"Parser Error",
-				JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE );
+				JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE );
 	}
 	public Vector< Double > formatFluxBoundsfromGeneExpressionData( File file, Model model, SimpleProgressBar pb ) throws Exception
 	{		

@@ -26,7 +26,7 @@ public class IPoptParameters
 	public static final int MAXITER_MIN_VALUE = 0;
 	public static final int MAXITER_MAX_VALUE = Integer.MAX_VALUE;
 	
-	public static final String DUALFEASIBILITYTOL_NAME = "Dual Feasibility Tolerance";
+	public static final String DUALFEASIBILITYTOL_NAME = "Dual Infeasibility Tolerance";
 	public static final double DUALFEASIBILITYTOL_DEFAULT_VALUE = 1.0;
 	public static final double DUALFEASIBILITYTOL_MIN_VALUE = 0.0;
 	public static final double DUALFEASIBILITYTOL_MAX_VALUE = Double.POSITIVE_INFINITY;
