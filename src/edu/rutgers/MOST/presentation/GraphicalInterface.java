@@ -4451,7 +4451,6 @@ public class GraphicalInterface extends JFrame {
 	 * Prompt shown on exit or load action to save optimizations if any have been run
 	 */
 	public void saveOptimizationsPrompt() {
-		System.out.println(LocalConfig.getInstance().getOptimizationFilesList());
 		saveChangesOKClicked = false;
 		Object[] options = {"  Yes  ", "   No   "};
 		int choice = JOptionPane.showOptionDialog(null, 
