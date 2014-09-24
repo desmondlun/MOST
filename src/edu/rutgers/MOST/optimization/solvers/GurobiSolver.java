@@ -223,7 +223,7 @@ public abstract class GurobiSolver implements MILSolver
 			// set up environment and the model/problem objects
 			if( env == null )
 				env = new GRBEnv();
-		//	env.set( GRB.IntParam.OutputFlag, 0 );
+			env.set( GRB.IntParam.OutputFlag, 0 );
 			
 		}
 		catch ( GRBException e )
