@@ -65,7 +65,7 @@ public class ModelFormatter
 					@Override
 					protected Double substitute( String token )
 					{
-						System.out.println( "Gene \"" + token + "\" not in database, replacing val with infinity" );
+			//			System.out.println( "Gene \"" + token + "\" not in database, replacing val with infinity" );
 						return Double.POSITIVE_INFINITY;
 					}
 				};
@@ -126,7 +126,7 @@ public class ModelFormatter
 					@Override
 					protected Double substitute( String token )
 					{
-						System.out.println( "Gene \"" + token + "\" not in database, replacing val with infinity" );
+				//		System.out.println( "Gene \"" + token + "\" not in database, replacing val with infinity" );
 						return Double.POSITIVE_INFINITY;
 					}
 				};

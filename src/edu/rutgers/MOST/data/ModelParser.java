@@ -196,7 +196,7 @@ public class ModelParser
 
 	protected Double substitute( String token )
 	{
-		System.out.println( "Token \"" + token + "\" not in database, replacing val with zero" );
+	//	System.out.println( "Token \"" + token + "\" not in database, replacing val with zero" );
 		return 0.0;
 	}
 }
