@@ -5407,7 +5407,6 @@ public class GraphicalInterface extends JFrame {
 			listModel.addElement(LocalConfig.getInstance().getModelName());
 			DynamicTreePanel.getTreePanel().addObject(new Solution(LocalConfig.getInstance().getModelName(), LocalConfig.getInstance().getModelName()));				
 			setSortDefault();
-			deleteAllOptimizationFiles();
 			LocalConfig.getInstance().getOptimizationFilesList().clear();
 			cleanupTemporaryDirectory();
 		}
@@ -11086,23 +11085,6 @@ public class GraphicalInterface extends JFrame {
 	// end find/replace methods
 	/******************************************************************************/
 
-	public void deleteAllOptimizationFiles() {
-		Utilities u = new Utilities();
-		//TODO: if "_orig" db exists rename to db w/out "_orig", delete db w/out "_orig"
-		// or delete db
-		if (LocalConfig.getInstance().getOptimizationFilesList().size() > 0) {
-			for (int i = 0; i < LocalConfig.getInstance().getOptimizationFilesList().size(); i++) {
-				// TODO: determine where and how to display these messages, and actually delete these files
-				System.out.println(u.createLogFileName(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".log") + " will be deleted.");
-				File f = new File(u.createLogFileName(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".log"));
-				if (f.exists()) {
-					Utilities.delete(u.createLogFileName(LocalConfig.getInstance().getOptimizationFilesList().get(i) + ".log"));
-				}						
-			}					
-		}				
-		LocalConfig.getInstance().getOptimizationFilesList().clear(); 
-	}
-
 	public void createUnusedMetabolitesList() {
 		Map<String, Object> idMap = LocalConfig.getInstance().getMetaboliteAbbreviationIdMap();
 
@@ -11160,7 +11142,8 @@ public class GraphicalInterface extends JFrame {
 				JOptionPane.QUESTION_MESSAGE, 
 				null, options, options[0]);
 		if (choice == JOptionPane.YES_OPTION) {				
-			deleteAllOptimizationFiles();
+			cleanupTemporaryDirectory();
+			LocalConfig.getInstance().getOptimizationFilesList().clear(); 
 		}
 		if (choice == JOptionPane.NO_OPTION) {
 
