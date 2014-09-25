@@ -133,7 +133,7 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 			
 			// set IPopt settings
 			AbstractParametersDialog params = GraphicalInterface.getIPOptParameters();
-			this.addNumOption( KEY_MAX_ITER, 
+			this.addIntOption( KEY_MAX_ITER, 
 				Integer.valueOf( params.getParameter( IPoptParameters.MAXITER_NAME ) ) );
 			this.addNumOption( KEY_TOL,
 				Double.valueOf( params.getParameter( IPoptParameters.FEASIBILITYTOL_NAME ) ) );
@@ -145,7 +145,6 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 			
 			this.addNumOption( KEY_OBJ_SCALING_FACTOR, -1.0 );
 			this.addIntOption( "mumps_mem_percent", 500 );
-			this.addIntOption( KEY_MAX_ITER, 30000 );
 			this.addStrOption( KEY_HESSIAN_APPROXIMATION, "limited-memory" );
 			this.solve( vars );
 			
