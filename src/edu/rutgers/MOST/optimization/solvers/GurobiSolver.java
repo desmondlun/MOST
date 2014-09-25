@@ -312,6 +312,7 @@ public abstract class GurobiSolver implements MILSolver
 				Double.valueOf( params.getParameter( GurobiParameters.HEURISTICS_NAME ) ) );
 			env.set( GRB.DoubleParam.OptimalityTol,
 				Double.valueOf( params.getParameter( GurobiParameters.OPTIMALITYTOL_NAME ) ) );
+			env.set( GRB.IntParam.OutputFlag, 0 );
 
 			model = new GRBModel( env );
 			ArrayList< GRBVar > vars = new ArrayList< GRBVar >();
@@ -497,20 +498,21 @@ public abstract class GurobiSolver implements MILSolver
 		{
 			AbstractParametersDialog params = GraphicalInterface.getGurobiParameters();
 			quad_env = new GRBEnv();
+			quad_env.set( GRB.IntParam.Threads, 
+					Integer.valueOf( params.getParameter( GurobiParameters.NUM_THREADS_NAME ) ) );
+				quad_env.set( GRB.IntParam.MIPFocus,
+					Integer.valueOf( params.getParameter( GurobiParameters.MIPFOCUS_NAME ) ) );
+				quad_env.set( GRB.DoubleParam.FeasibilityTol,
+					Double.valueOf( params.getParameter( GurobiParameters.FEASIBILITYTOL_NAME ) ) );
+				quad_env.set( GRB.DoubleParam.IntFeasTol,
+					Double.valueOf( params.getParameter( GurobiParameters.INTFEASIBILITYTOL_NAME ) ) );
+				quad_env.set( GRB.DoubleParam.Heuristics, 
+					Double.valueOf( params.getParameter( GurobiParameters.HEURISTICS_NAME ) ) );
+				quad_env.set( GRB.DoubleParam.OptimalityTol,
+					Double.valueOf( params.getParameter( GurobiParameters.OPTIMALITYTOL_NAME ) ) );
+				quad_env.set( GRB.IntParam.OutputFlag, 0 );
 			quad_model = new GRBModel( quad_env );
 			ArrayList< GRBVar > vars = new ArrayList< GRBVar >();
-			quad_env.set( GRB.IntParam.Threads, 
-				Integer.valueOf( params.getParameter( GurobiParameters.NUM_THREADS_NAME ) ) );
-			quad_env.set( GRB.IntParam.MIPFocus,
-				Integer.valueOf( params.getParameter( GurobiParameters.MIPFOCUS_NAME ) ) );
-			quad_env.set( GRB.DoubleParam.FeasibilityTol,
-				Double.valueOf( params.getParameter( GurobiParameters.FEASIBILITYTOL_NAME ) ) );
-			quad_env.set( GRB.DoubleParam.IntFeasTol,
-				Double.valueOf( params.getParameter( GurobiParameters.INTFEASIBILITYTOL_NAME ) ) );
-			quad_env.set( GRB.DoubleParam.Heuristics, 
-				Double.valueOf( params.getParameter( GurobiParameters.HEURISTICS_NAME ) ) );
-			quad_env.set( GRB.DoubleParam.OptimalityTol,
-				Double.valueOf( params.getParameter( GurobiParameters.OPTIMALITYTOL_NAME ) ) );
 			
 			// create the variables
 			for( int j = 0; j < component.variableCount(); ++ j )

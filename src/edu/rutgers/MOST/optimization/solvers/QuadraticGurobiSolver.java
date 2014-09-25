@@ -154,11 +154,11 @@ public class QuadraticGurobiSolver implements QuadraticSolver
 		{
 			// set up the quadratic environment model
 			GRBEnv quad_env = new GRBEnv();
-			GRBModel quad_model = new GRBModel( quad_env );
 			ArrayList< GRBVar > vars = new ArrayList< GRBVar >();
 			quad_env.set( GRB.DoubleParam.IntFeasTol, 1.0E-9 );
 			quad_env.set( GRB.DoubleParam.FeasibilityTol, 1.0E-9 );
 			quad_env.set( GRB.IntParam.OutputFlag, 0 );
+			GRBModel quad_model = new GRBModel( quad_env );
 			
 			// create the variables
 			for( int j = 0; j < component.variableCount(); ++ j )
