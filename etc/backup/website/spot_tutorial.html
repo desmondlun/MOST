@@ -94,12 +94,12 @@ A{text-decoration:none}
 	<ul><li><font size=2><a href="select_solvers.html">Select Solvers</a></font></li>
 	<li><font size=2><a href="solver_parameters.html">Set Solver Parameters</a></font></li></ul>
 
-	<p><font size=2>Toolbar</font></p>
+	<p><font size=2><a href="toolbar.html">Toolbar</a></font></p>
 
-	<ul><li><font size=2><a href="#save">Save</a></font></li>
-	<li><font size=2><a href="#copy">Copy/Paste</a></font></li>
-	<li><font size=2><a href="#undo">Undo/Redo</a></font></li>
-	<li><font size=2><a href="#find">Find/Replace</a></font></li></ul>
+	<ul><li><font size=2><a href="toolbar.html#save">Save</a></font></li>
+	<li><font size=2><a href="toolbar.html#copy">Copy/Paste</a></font></li>
+	<li><font size=2><a href="toolbar.html#undo">Undo/Redo</a></font></li>
+	<li><font size=2><a href="toolbar.html#find">Find/Replace</a></font></li></ul>
 
 	<p><font size=2><a href="context_menu.html">Context Menus</a></font></p>
 
@@ -126,29 +126,64 @@ A{text-decoration:none}
 	</td>
 
 	<td width=600 valign=top>
-	<p align=center><font size=5>Toolbar</font></p>
+	<p align=center><font size=5>SPOT (Simplified Pearson cOrrelation<br> with Transcriptomic data) Tutorial</font></p>
 
-	<p align="center"><img src ="images/toolbar_enabled2.jpg" alt="Image - Toolbar Enabled" border="0"></p>
+	<p><strong>Step 1</strong></p>
+	
+	<blockquote><strong>Load Model. </strong>
+	Select File –> Load from Model Collection Database (Alt+F then Alt+D). Select <strong>ecoli_core_model</strong>, 
+	then click the OK button on the Model Collection dialog. This model will be used for this tutorial
+	since it is a small model and therefore analysis will be completed rapidly on any computer.</blockquote> 
 
-	<blockquote>Toolbar with Save, Copy, Paste, Undo, Redo, and Find buttons.</blockquote>
+	<p align="center"><a href="images/load_ecoli_core.jpg" target="_blank">
+	<img src ="images/load_ecoli_core.jpg" alt="Image - Load E coli core" border="0" height="90%" width="90%"></a></p>
 
-	<p><a name="save"><strong>  Save:</strong></a></p>
-	<blockquote>See File Menu - <a href="file_menu.html#saving">Saving Files</a>.</blockquote>
+	<blockquote>The progress
+                bar will appear while the model is loading, then close when the load is finished.
+	</blockquote>
 
-	<br>
-	<p><a name="copy"><strong>  Copy/Paste:</strong></a></p>
-	<blockquote>The Paste button will be grayed out if the cell(s) selected are in a non-editable column, or an
-	optimization results table.</blockquote>
+	<p align="center"><a href="images/loadsbml.jpg" target="_blank">
+	<img src ="images/loadsbml.jpg" alt="Image - Load SBML" border="0" height="90%" width="90%"></a></p>
 
-	<br>
-	<p><a name="undo"><strong>  Undo/Redo:</strong></a></p>
-	<blockquote>These buttons will be grayed out if there are no edits to undo or redo, or if an optimization results table 
- 	is selected. Any edit will clear all redo events and the button will become grayed out. The arrows next to the buttons
-	will each open a menu which contains all available undo or redo events respectively.</blockquote>
+	<blockquote><strong>Note: SPOT does not require a Biological Objective to be set.</strong></blockquote>
 
-	<br>
-	<p><a name="find"><strong>  Find/Replace:</strong></a></p>
-	<blockquote>This button opens the Find/Replace dialog.</blockquote>
+	<p><strong>Step 2</strong></p>
+
+	<blockquote><strong>Download Gene Expression File.</strong></blockquote> 
+
+	<blockquote>E-Flux2 requires a CSV file with two columns where the first column in the gene name and the
+	second column is the gene expression. A portion of the gene expression csv file used for the ecoli_core_model
+	is shown below:</blockquote>
+
+	<p align="center"><img src ="images/gene_expr.jpg" alt="Image - Gene Expression" border="0"></p>
+
+	<blockquote>Click <a href="gene_expr.csv" target="_blank">here</a> to download the gene expression csv file for
+	the ecoli_core_model.</blockquote>
+
+	<p><strong>Step 3</strong></p>
+
+	<blockquote><strong>Run Analysis. </strong>Select Analysis –> SPOT (Alt+A then Alt+S)..</blockquote>  
+
+    	<blockquote>A file browser will appear. Select the gene expression csv downloaded in Step 2, then click the Open button
+	on the file browser.</blockquote>
+
+	<p align="center"><a href="images/load_gene_expr.jpg" target="_blank">
+	<img src ="images/load_gene_expr.jpg" alt="Image - Load Gene Expression" border="0" height="90%" width="90%"></a></p>
+
+	<blockquote>A progress bar will appear:</blockquote>
+
+	<p align="center"><a href="images/spot_progress.jpg" target="_blank">
+	<img src ="images/spot_progress.jpg" alt="Image - SPOT progress" border="0" height="90%" width="90%"></a></p>
+
+	<blockquote>After SPOT is finished, a link will be added to the tree, and results will be displayed in the console.</blockquote>
+
+	<p align="center"><a href="images/spot_done.jpg" target="_blank">
+	<img src ="images/spot_done.jpg" alt="Image - SPOT Results" border="0" height="90%" width="90%"></a></p>
+
+	<blockquote>SPOT is fast for the ecoli_core_model because it is such a small model. However, SPOT can take a 
+	significant amount of time to run, on the order of a half-hour for a large model such
+	as the iAF1260 model.
+	</blockquote>
 
 	</td>
 	</tr>
