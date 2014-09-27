@@ -1747,7 +1747,7 @@ public class GraphicalInterface extends JFrame {
 			@Override
 			protected boolean getWillTModelUpdate()
 			{
-				return false;
+				return true;
 			}
 		});
 
