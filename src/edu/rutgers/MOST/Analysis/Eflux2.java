@@ -3,6 +3,7 @@ package edu.rutgers.MOST.Analysis;
 import java.io.File;
 import java.util.ArrayList;
 
+import edu.rutgers.MOST.data.SBMLReaction;
 import edu.rutgers.MOST.optimization.solvers.*;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.SimpleProgressBar;
@@ -37,7 +38,10 @@ public class Eflux2 extends Analysis
  			this.maxObj = linearSolver.optimize();
  			pb.progressBar.setString( "searching for unique flux set..." );
  			QuadraticSolver quadraticSolver = SolverFactory.createQuadraticSolver();
- 			return quadraticSolver.minimizeEuclideanNorm( linearSolver.getObjectiveCoefs(), this.getMaxObj(), linearSolver.getSolverComponent() );
+ 			ArrayList< Double > soln = quadraticSolver.minimizeEuclideanNorm( linearSolver.getObjectiveCoefs(), this.getMaxObj(), linearSolver.getSolverComponent() );
+ 			for( SBMLReaction r : model.getReactions() )
+ 				r.setFluxValue( soln.get( r.getId() ) );
+ 			return soln;
  		}
  		catch( Exception e )
  		{
