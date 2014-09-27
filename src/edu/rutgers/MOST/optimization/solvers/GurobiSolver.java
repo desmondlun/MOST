@@ -550,8 +550,12 @@ public abstract class GurobiSolver implements MILSolver
 			
 			for( int j = 0; j < component.variableCount(); ++j )
 			{
-				if( !progress.isVisible() )
+				if( !progress.isVisible() ) {
+					// this allows x button of Graphical Interface to work
+					// correctly if progress closed
+					LocalConfig.getInstance().fvaDone = true;
 					throw new Exception( "Exit" );
+				}
 				progress.progressBar.setValue( j );
 				// add the term to the objective expression
 				GRBLinExpr objExpr = new GRBLinExpr();
