@@ -2016,10 +2016,12 @@ public class GraphicalInterface extends JFrame {
 
         spotItem.addActionListener( new AnalysisCommonActionListener( false ){
         	private Double maxObj = 0.0;
+        	private Model model = null;
         	
 			@Override
 			protected ArrayList< Double > analysisPart( Model model ) throws Exception
 			{
+				this.model = model;
 				SPOT spot = new SPOT();
 				spot.setModel( model );
 				// uncomment next three lines for proof of concept of adding a
@@ -2049,13 +2051,13 @@ public class GraphicalInterface extends JFrame {
 			@Override
 			protected Model getUpdateModel()
 			{
-				return null;
+				return model;
 			}
 
 			@Override
 			protected boolean getWillTModelUpdate()
 			{
-				return false;
+				return true;
 			}
         });
         
