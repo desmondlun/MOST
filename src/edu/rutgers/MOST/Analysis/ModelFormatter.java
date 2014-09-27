@@ -146,7 +146,7 @@ public class ModelFormatter
 						gene_expr.add( 0.0 );
 					else
 						gene_expr.add( parse_expr );
-					}
+				}
 				else
 				{
 					if( !parse_expr.isInfinite() && reaction.getLowerBound() >= 0.0 )
@@ -157,6 +157,7 @@ public class ModelFormatter
 						gene_expr.add( 0.0 );
 				}
 			}
+			
 			model.setReactions( model.getReactions() );
 			if( matchCount == 0 )
 				throw new Exception( "No gene association matches" );
