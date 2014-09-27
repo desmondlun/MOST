@@ -667,6 +667,8 @@ public class GraphicalInterface extends JFrame {
 		protected String folderName = "";
 		protected Integer knockoutOffset = null;
 		protected ArrayList< Double > soln_ko = null;
+		public Model model = null;
+		public boolean updateGUIWithModel = false;
 	}
 	private static Vector< GISolution > vecGISolution = new Vector< GISolution >();
 
@@ -1633,6 +1635,8 @@ public class GraphicalInterface extends JFrame {
 						outputPart( model, outputText );
 						giSolution.soln = soln;
 						giSolution.stringBuffer = outputText;
+						giSolution.model = getUpdateModel();
+						giSolution.updateGUIWithModel = getWillTModelUpdate();
 						vecGISolution.add( giSolution );
 						java.awt.EventQueue.invokeLater( solutionListener );
 					}
@@ -1656,6 +1660,18 @@ public class GraphicalInterface extends JFrame {
 			 * @param outputText The string buffer that will be displayed on the console
 			 */
 			protected abstract void outputPart( Model model, StringBuffer outputText );
+			
+			/**
+			 * Get the Model object that will update the TableModel for the GUI
+			 * @return The Model object
+			 */
+			protected abstract Model getUpdateModel();
+			
+			/**
+			 * Get the boolean value that represents whether or not the TableModel will update
+			 * @return A boolean value
+			 */
+			protected abstract boolean getWillTModelUpdate();
 		}
 		
 		// based on http://stackoverflow.com/questions/9358710/java-action-listener-on-menu-and-not-on-menu-item
@@ -1720,6 +1736,18 @@ public class GraphicalInterface extends JFrame {
 				} else {
 					LocalConfig.getInstance().fvaColumnsVisible = false;
 				}*/
+			}
+
+			@Override
+			protected Model getUpdateModel()
+			{
+				return null;
+			}
+
+			@Override
+			protected boolean getWillTModelUpdate()
+			{
+				return false;
 			}
 		});
 
@@ -1939,10 +1967,11 @@ public class GraphicalInterface extends JFrame {
         
         eflux2Item.addActionListener( new AnalysisCommonActionListener(){
 			private	Double maxObj = 0.0;
-			
+			private Model model = null;
 			@Override
 			protected ArrayList< Double > analysisPart( Model model ) throws Exception
 			{
+				this.model = model;
 				Eflux2 eflux2 = new Eflux2();
 				eflux2.setModel(model);
 	            // uncomment next three lines for proof of concept of adding a new tab at runtime
@@ -1967,6 +1996,18 @@ public class GraphicalInterface extends JFrame {
 				outputText.append("MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() + "\n" );
 				outputText.append( "Quadratic Solver = " + GraphicalInterface.getQuadraticSolverName() + "\n" );
 			}
+
+			@Override
+			protected Model getUpdateModel()
+			{
+				return model;
+			}
+
+			@Override
+			protected boolean getWillTModelUpdate()
+			{
+				return true;
+			}
         });
 
         //Analysis --> SPOT
@@ -1975,10 +2016,12 @@ public class GraphicalInterface extends JFrame {
 
         spotItem.addActionListener( new AnalysisCommonActionListener( false ){
         	private Double maxObj = 0.0;
+        	private Model model = null;
         	
 			@Override
 			protected ArrayList< Double > analysisPart( Model model ) throws Exception
 			{
+				this.model = model;
 				SPOT spot = new SPOT();
 				spot.setModel( model );
 				// uncomment next three lines for proof of concept of adding a
@@ -2003,6 +2046,18 @@ public class GraphicalInterface extends JFrame {
 				outputText.append( "SPOT value: " + maxObj + "\n" );
 				outputText.append("MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() + "\n" );
 				outputText.append("Nonlinear solver = " + GraphicalInterface.getNonlinearSolverName() + "\n" );
+			}
+
+			@Override
+			protected Model getUpdateModel()
+			{
+				return model;
+			}
+
+			@Override
+			protected boolean getWillTModelUpdate()
+			{
+				return true;
 			}
         });
         
@@ -3426,7 +3481,11 @@ public class GraphicalInterface extends JFrame {
 				DynamicTreePanel.getTreePanel().selectLastNode();
 				rFactory.resetKnockOuts();
 				if( current_giSolution.knockoutOffset != null && current_giSolution.soln_ko != null )
-					rFactory.setKnockouts( current_giSolution.soln_ko.subList( current_giSolution.knockoutOffset, current_giSolution.soln_ko.size()));			
+					rFactory.setKnockouts( current_giSolution.soln_ko.subList( current_giSolution.knockoutOffset, current_giSolution.soln_ko.size()));		
+				
+				// update the tablemodel
+				if( current_giSolution.updateGUIWithModel )
+					current_giSolution.model.updateGUITableModel();
 				
 				if (LocalConfig.getInstance().hasValidGurobiKey) {
 					Writer writer = null;

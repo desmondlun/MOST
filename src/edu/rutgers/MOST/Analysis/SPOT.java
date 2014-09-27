@@ -86,6 +86,9 @@ public class SPOT extends Analysis
 			g_length = Math.sqrt( g_length );
 			this.maxObj = g_dot_v / (v_length*g_length);
 			
+			for( SBMLReaction r : this.model.getReactions() )
+				r.setFluxValue( optimizedFluxes.get( r.getId() ) );
+			
 			return optimizedFluxes;
 		}
 		catch( Exception e )

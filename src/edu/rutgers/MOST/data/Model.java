@@ -125,7 +125,12 @@ public class Model
 	public void setReactions( Vector< SBMLReaction > reactions )
 	{
 		this.reactions = reactions;
-		rFactory.setAllReactions( reactions );
+		//rFactory.setAllReactions( reactions );
+	}
+	
+	public void updateGUITableModel()
+	{
+		rFactory.setAllReactions( this.reactions );
 	}
 
 	public int getNumMetabolites()
