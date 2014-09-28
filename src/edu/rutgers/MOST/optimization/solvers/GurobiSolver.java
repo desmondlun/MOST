@@ -27,6 +27,7 @@ import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.Model;
 import edu.rutgers.MOST.data.ModelCompressor;
 import gurobi.GRB;
+import gurobi.GRB.DoubleAttr;
 import gurobi.GRBCallback;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
@@ -280,20 +281,6 @@ public abstract class GurobiSolver implements MILSolver
 	{
 		this.dataModel = model;
 	}
-	protected double minimizeEuclideanNorm() throws Exception
-	{
-		double result = 0.0;
-		
-		QuadraticGurobiSolver quadSolver = new QuadraticGurobiSolver();
-		this.soln = quadSolver.minimizeEuclideanNorm( new ArrayList< Double >( this.objCoefs ), this.objval, this.component );
-		
-		for( Double val : soln )
-			result += val * val;
-		
-		result = Math.sqrt( result );
-		
-		return result;
-	}
 	@Override
 	public double optimize() throws Exception
 	{
@@ -499,18 +486,19 @@ public abstract class GurobiSolver implements MILSolver
 			AbstractParametersDialog params = GraphicalInterface.getGurobiParameters();
 			quad_env = new GRBEnv();
 			quad_env.set( GRB.IntParam.Threads, 
-					Integer.valueOf( params.getParameter( GurobiParameters.NUM_THREADS_NAME ) ) );
-				quad_env.set( GRB.IntParam.MIPFocus,
-					Integer.valueOf( params.getParameter( GurobiParameters.MIPFOCUS_NAME ) ) );
-				quad_env.set( GRB.DoubleParam.FeasibilityTol,
-					Double.valueOf( params.getParameter( GurobiParameters.FEASIBILITYTOL_NAME ) ) );
-				quad_env.set( GRB.DoubleParam.IntFeasTol,
-					Double.valueOf( params.getParameter( GurobiParameters.INTFEASIBILITYTOL_NAME ) ) );
-				quad_env.set( GRB.DoubleParam.Heuristics, 
-					Double.valueOf( params.getParameter( GurobiParameters.HEURISTICS_NAME ) ) );
-				quad_env.set( GRB.DoubleParam.OptimalityTol,
-					Double.valueOf( params.getParameter( GurobiParameters.OPTIMALITYTOL_NAME ) ) );
-				quad_env.set( GRB.IntParam.OutputFlag, 0 );
+				Integer.valueOf( params.getParameter( GurobiParameters.NUM_THREADS_NAME ) ) );
+			quad_env.set( GRB.IntParam.MIPFocus,
+				Integer.valueOf( params.getParameter( GurobiParameters.MIPFOCUS_NAME ) ) );
+			quad_env.set( GRB.DoubleParam.FeasibilityTol,
+				Double.valueOf( params.getParameter( GurobiParameters.FEASIBILITYTOL_NAME ) ) );
+			quad_env.set( GRB.DoubleParam.IntFeasTol,
+				Double.valueOf( params.getParameter( GurobiParameters.INTFEASIBILITYTOL_NAME ) ) );
+			quad_env.set( GRB.DoubleParam.Heuristics, 
+				Double.valueOf( params.getParameter( GurobiParameters.HEURISTICS_NAME ) ) );
+			quad_env.set( GRB.DoubleParam.OptimalityTol,
+				Double.valueOf( params.getParameter( GurobiParameters.OPTIMALITYTOL_NAME ) ) );
+			quad_env.set( GRB.IntParam.OutputFlag, 0 );
+				
 			quad_model = new GRBModel( quad_env );
 			ArrayList< GRBVar > vars = new ArrayList< GRBVar >();
 			
@@ -525,7 +513,9 @@ public abstract class GurobiSolver implements MILSolver
 			quad_model.update();
 			
 			// Fv = z extra constraint
-			component.addConstraint( objCoefs, ConType.EQUAL, objVal );
+			double param_feas = Double.valueOf( params.getParameter( GurobiParameters.FEASIBILITYTOL_NAME ) );
+			component.addConstraint( objCoefs, ConType.GREATER_EQUAL, objVal - param_feas );
+			component.addConstraint( objCoefs, ConType.LESS_EQUAL, objVal + param_feas );
 			
 			// set constraints to Gurobi
 			for( int i = 0; i < component.constraintCount(); ++i )

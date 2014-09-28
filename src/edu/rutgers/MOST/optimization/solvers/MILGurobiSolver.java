@@ -9,7 +9,7 @@ import gurobi.GRB;
 import gurobi.GRBCallback;
 import gurobi.GRBException;
 
-public class MILGurobiSolver extends GurobiSolver
+public class MILGurobiSolver extends GurobiSolver implements MILSolver
 {
 	private int idx = 1;
 	private boolean firstSolution = true;
