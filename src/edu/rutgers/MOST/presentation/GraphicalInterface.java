@@ -3759,7 +3759,6 @@ public class GraphicalInterface extends JFrame {
 					//System.out.println(file.getAbsolutePath());
 					return true;
 				}
-				analysisRunning = false;
 				return false;
 			}
 
