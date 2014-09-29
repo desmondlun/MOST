@@ -2,12 +2,15 @@ package edu.rutgers.MOST.Analysis;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import edu.rutgers.MOST.data.SBMLReaction;
 import edu.rutgers.MOST.optimization.solvers.ConType;
 import edu.rutgers.MOST.optimization.solvers.LinearSolver;
 import edu.rutgers.MOST.optimization.solvers.NonlinearSolver;
+import edu.rutgers.MOST.optimization.solvers.ObjType;
 import edu.rutgers.MOST.optimization.solvers.Solver;
 import edu.rutgers.MOST.optimization.solvers.SolverFactory;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
@@ -60,12 +63,12 @@ public class SPOT extends Analysis
 			}
 			nonlinearSolver.setSolverComponent( linearSolver.getSolverComponent() );
 			nonlinearSolver.setGeneExpr( geneExpr );
+			// recreate the objective to get a feasible solution
 			super.setVars();
 			super.setConstraints();
-			super.setObjective();
-			linearSolver.getSolverComponent().addConstraint( new ArrayList< Double >(model.getObjective()), ConType.EQUAL, 0.0 );
+			this.getSolver().setObj( new HashMap< Integer, Double >() );
+			this.getSolver().setObjType( ObjType.Maximize );
 			linearSolver.optimize();
-			linearSolver.getSolverComponent().removeConstraint( linearSolver.getSolverComponent().constraintCount() - 1 );
 			pb.setVisible( false );
 			pb.dispose();
 			pb = null;
