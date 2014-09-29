@@ -85,19 +85,27 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 		newPaths[newPaths.length - 1] = pathToAdd;
 		usrPathsField.set( null, newPaths );
 	}
-	protected void processStackTrace( Exception except )
+	protected void processStackTrace( final Exception except )
 	{
 		//except.printStackTrace();
-		if( showErrorMessages )
+		Thread t = new Thread()
 		{
-			StringWriter errors = new StringWriter();
-			except.printStackTrace( new PrintWriter( errors ) );
-			dialog.setErrorMessage( errors.toString() );
-			// centers dialog
-			dialog.setLocationRelativeTo(null);
-			dialog.setModal(true);
-			dialog.setVisible( true );
-		}
+			@Override
+			public void run()
+			{
+				if( showErrorMessages )
+				{
+					StringWriter errors = new StringWriter();
+					except.printStackTrace( new PrintWriter( errors ) );
+					dialog.setErrorMessage( errors.toString() );
+					// centers dialog
+					dialog.setLocationRelativeTo(null);
+					dialog.setModal(true);
+					dialog.setVisible( true );
+				}
+			}
+		};
+		t.start();
 	}
 	
 	public GLPKSolver()

@@ -3,11 +3,9 @@ package edu.rutgers.MOST.Analysis;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Vector;
 
 import edu.rutgers.MOST.data.SBMLReaction;
-import edu.rutgers.MOST.optimization.solvers.ConType;
 import edu.rutgers.MOST.optimization.solvers.LinearSolver;
 import edu.rutgers.MOST.optimization.solvers.NonlinearSolver;
 import edu.rutgers.MOST.optimization.solvers.ObjType;
