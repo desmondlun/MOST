@@ -585,7 +585,6 @@ public abstract class GurobiSolver implements MILSolver
 		}
 		catch( Exception e )
 		{
-			e.printStackTrace();
 			throw new Exception( e );
 		}
 		finally
