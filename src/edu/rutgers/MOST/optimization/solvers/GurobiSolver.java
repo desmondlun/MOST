@@ -71,19 +71,28 @@ public abstract class GurobiSolver implements MILSolver
 
 		return true; // gurobi does link
 	}
-	protected void processStackTrace( Exception e )
+	protected void processStackTrace( final Exception e )
 	{
 		//e.printStackTrace();
-		if( showErrorMessages )
+		Thread t = new Thread()
 		{
-			StringWriter errors = new StringWriter();
-			e.printStackTrace( new PrintWriter( errors ) );
-			dialog.setErrorMessage( errors.toString() + "</p></html>" );
-			// centers dialog
-			dialog.setLocationRelativeTo(null);
-			dialog.setModal(true);		
-			dialog.setVisible( true );
-		}
+			@Override
+			public void run()
+			{
+				if( showErrorMessages )
+				{
+					StringWriter errors = new StringWriter();
+					e.printStackTrace( new PrintWriter( errors ) );
+					dialog.setErrorMessage( errors.toString() + "</p></html>" );
+					// centers dialog
+					dialog.setLocationRelativeTo(null);
+					dialog.setModal(true);		
+					dialog.setVisible( true );
+				}
+			}
+		};
+		t.run();
+		
 	}
 	protected void promptGRBError( GRBException e )
 	{
