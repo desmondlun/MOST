@@ -1202,8 +1202,10 @@ public class GraphicalInterface extends JFrame {
 				loadExistingItem.setEnabled(true);
 				getModelCollectionTable().setVisible(false);
 				getModelCollectionTable().dispose();
+				enableLoadItems();
+				disableMenuItemsForFVA(false);
 			}
-		});	
+		});
 		
 		SuspiciousMetabolitesDialog suspiciousMetabolitesDialog = new SuspiciousMetabolitesDialog();
 		suspiciousMetabolitesDialog.setIconImages(icons);
@@ -3899,6 +3901,8 @@ public class GraphicalInterface extends JFrame {
 				if (!saveChangesOKClicked) {
 					getModelCollectionTable().setVisible(true);
 					loadExistingItem.setEnabled(false);
+					disableLoadItems();
+					disableMenuItemsForFVA(true);
 				} else {
 					loadExistingItem.setEnabled(true);
 				}
@@ -3914,7 +3918,6 @@ public class GraphicalInterface extends JFrame {
 				listModel.clear();
 				DynamicTreePanel.getTreePanel().clear();
 				saveEnabled = false;
-				enableSaveItems(false);
 				modelCollectionLoad = true;
 				if (getModelCollectionTable().getFileType().equals(GraphicalInterfaceConstants.SBML_FILE_TYPE)) {
 					setFileType(GraphicalInterfaceConstants.SBML_FILE_TYPE);
@@ -3924,6 +3927,7 @@ public class GraphicalInterface extends JFrame {
 					LocalConfig.getInstance().setModelName(getModelCollectionTable().getFileName());
 					LocalConfig.getInstance().setProgress(0);
 					disableLoadItems();
+					disableMenuItemsForFVA(true);
 					progressBar.setVisible(true);
 					progressBar.progress.setIndeterminate(true);
 
@@ -3944,7 +3948,9 @@ public class GraphicalInterface extends JFrame {
 
 	ActionListener modelCollectionCancelButtonActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {						
-			loadExistingItem.setEnabled(true);						
+			loadExistingItem.setEnabled(true);
+			enableLoadItems();
+			disableMenuItemsForFVA(false);
 		}
 	};
 
@@ -11219,6 +11225,9 @@ public class GraphicalInterface extends JFrame {
 		findReplaceItem.setEnabled(true);
 		selectAllItem.setEnabled(true);
 	    setUpSolver.setEnabled(true);
+	    gurobiParametersItem.setEnabled(true);
+		glpkParametersItem.setEnabled(true);
+		ipOptParametersItem.setEnabled(true);
 		enableMenuItems();
 	}
 	
@@ -11235,6 +11244,9 @@ public class GraphicalInterface extends JFrame {
 		findReplaceItem.setEnabled(false);	
 		selectAllItem.setEnabled(false);
 	    setUpSolver.setEnabled(false);
+	    gurobiParametersItem.setEnabled(false);
+		glpkParametersItem.setEnabled(false);
+		ipOptParametersItem.setEnabled(false);
 		disableMenuItems();
 	}
 
