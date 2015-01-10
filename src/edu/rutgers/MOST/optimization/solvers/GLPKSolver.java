@@ -25,6 +25,7 @@ import edu.rutgers.MOST.data.ModelCompressor;
 import edu.rutgers.MOST.presentation.AbstractParametersDialog;
 import edu.rutgers.MOST.presentation.GLPKParameters;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
+import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 import edu.rutgers.MOST.presentation.ResizableDialog;
 import edu.rutgers.MOST.presentation.SimpleProgressBar;
 import edu.rutgers.MOST.presentation.Utilities;
@@ -61,6 +62,7 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 	protected boolean abort = false;
 	protected Vector< Double > geneExpr = new Vector< Double >();
 	protected boolean showErrorMessages = true;
+	protected boolean hasOutput = GraphicalInterfaceConstants.SOLVER_DEBUG_OUTPUT;
 	
 	protected static void addLibraryPath( String pathToAdd ) throws Exception
 	{
@@ -181,7 +183,7 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 		Exception exception = null;
 		try
 		{
-			boolean terminalOutput = false;
+			boolean terminalOutput = hasOutput;
 			GLPK.glp_term_out( terminalOutput ? GLPKConstants.GLP_ON
 					: GLPKConstants.GLP_OFF );
 		

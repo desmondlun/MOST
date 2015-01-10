@@ -307,6 +307,7 @@ public abstract class GurobiSolver implements MILSolver
 				Double.valueOf( params.getParameter( GurobiParameters.HEURISTICS_NAME ) ) );
 			env.set( GRB.DoubleParam.OptimalityTol,
 				Double.valueOf( params.getParameter( GurobiParameters.OPTIMALITYTOL_NAME ) ) );
+			env.set( GRB.IntParam.OutputFlag, GraphicalInterfaceConstants.SOLVER_DEBUG_OUTPUT ? 1 : 0 );
 
 			model = new GRBModel( env );
 			ArrayList< GRBVar > vars = new ArrayList< GRBVar >();
@@ -492,6 +493,7 @@ public abstract class GurobiSolver implements MILSolver
 		{
 			AbstractParametersDialog params = GraphicalInterface.getGurobiParameters();
 			quad_env = new GRBEnv();
+			quad_env.set( GRB.IntParam.OutputFlag, GraphicalInterfaceConstants.SOLVER_DEBUG_OUTPUT ? 1 : 0 );
 			
 			quad_model = new GRBModel( quad_env );
 			ArrayList< GRBVar > vars = new ArrayList< GRBVar >();

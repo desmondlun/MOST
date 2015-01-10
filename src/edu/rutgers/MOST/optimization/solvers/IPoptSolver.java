@@ -10,6 +10,7 @@ import org.coinor.Ipopt;
 import edu.rutgers.MOST.data.Model;
 import edu.rutgers.MOST.presentation.AbstractParametersDialog;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
+import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 import edu.rutgers.MOST.presentation.IPoptParameters;
 import edu.rutgers.MOST.presentation.SimpleProgressBar;
 
@@ -73,6 +74,8 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 		component.addConstraint( map, conType, value );
 	}
 
+	
+	@SuppressWarnings( "unused" )
 	@Override
 	public double optimize()
 	{
@@ -141,6 +144,8 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 				Double.valueOf( params.getParameter( IPoptParameters.DUALFEASIBILITYTOL_NAME ) ) );
 			this.addNumOption( KEY_CONSTR_VIOL_TOL,
 				Double.valueOf( params.getParameter( IPoptParameters.CONSTRAINTOL_NAME ) ) );
+			if( GraphicalInterfaceConstants.SOLVER_DEBUG_OUTPUT == false )
+				this.addNumOption( KEY_PRINT_LEVEL, 0 );
 			
 			
 			this.addNumOption( KEY_OBJ_SCALING_FACTOR, -1.0 );
