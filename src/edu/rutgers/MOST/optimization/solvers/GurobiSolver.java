@@ -85,8 +85,16 @@ public abstract class GurobiSolver implements MILSolver
 					dialog.setErrorMessage( errors.toString() + "</p></html>" );
 					// centers dialog
 					dialog.setLocationRelativeTo(null);
-					dialog.setModal(true);		
-					dialog.setVisible( true );
+					dialog.setModal(true);
+					Thread t = new Thread()
+					{
+						@Override
+						public void run()
+						{
+							dialog.setVisible( true );
+						}
+					};
+					t.start();
 				}
 			}
 		};

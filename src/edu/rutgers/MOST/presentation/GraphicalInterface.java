@@ -1623,6 +1623,7 @@ public class GraphicalInterface extends JFrame {
 						}
 						catch( Exception e )
 						{
+							analysisRunning = false;
 							return;
 						}
 						finally

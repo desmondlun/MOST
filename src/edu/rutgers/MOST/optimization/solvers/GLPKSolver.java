@@ -103,7 +103,16 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 					// centers dialog
 					dialog.setLocationRelativeTo(null);
 					dialog.setModal(true);
-					dialog.setVisible( true );
+					
+					Thread t = new Thread()
+					{
+						@Override
+						public void run()
+						{
+							dialog.setVisible( true );
+						}
+					};
+					t.start();
 				}
 			}
 		};
