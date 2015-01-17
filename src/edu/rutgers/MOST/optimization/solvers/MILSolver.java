@@ -12,4 +12,6 @@ public interface MILSolver extends LinearSolver
 	public abstract SolverComponent getSolverComponent();
 	
 	public abstract void setModelCompressor( ModelCompressor compressor );
+	
+	public abstract void postCheck();
 }

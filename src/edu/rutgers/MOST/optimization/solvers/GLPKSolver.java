@@ -328,6 +328,8 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 					throw new Exception( "The time limit has been exceeded" );
 				else if( optres == GLPKConstants.GLP_ESTOP ); //terminated by application, no real exception thrown
 			}
+			else
+				postCheck();
 		}
 		catch( Exception except )
 		{

@@ -14,6 +14,19 @@ public class LinearGLPKSolver extends GLPKSolver implements  GlpkCallbackListene
 	{
 		super();
 	}
+	
+	private void fillSoln()
+	{
+		// get the solution columns
+		soln.clear();
+		int columnCount = GLPK.glp_get_num_cols( problem_tmp );
+		for( int i = 1; i <= columnCount; ++i)
+			// soln.add( GLPK.glp_get_col_prim( problem, i ) );
+			soln.add( GLPK.glp_mip_col_val( problem_tmp, i ) );
+
+		// objval = GLPK.glp_get_obj_val( problem );
+		objval = GLPK.glp_mip_obj_val( problem_tmp );
+	}
 
 	
 	@Override
@@ -26,23 +39,20 @@ public class LinearGLPKSolver extends GLPKSolver implements  GlpkCallbackListene
 		}
 		else if( reason == GLPKConstants.GLP_IBINGO )
 		{
-			// get the solution columns
-			soln.clear();
-			int columnCount = GLPK.glp_get_num_cols( problem_tmp );
-			for( int i = 1; i <= columnCount; ++i)
-				// soln.add( GLPK.glp_get_col_prim( problem, i ) );
-				soln.add( GLPK.glp_mip_col_val( problem_tmp, i ) );
-	
-			// objval = GLPK.glp_get_obj_val( problem );
-			objval = GLPK.glp_mip_obj_val( problem_tmp );
+			fillSoln();
 		}
 	}
 
 
 	@Override
 	public void setModelCompressor( ModelCompressor compressor )
+	{		
+	}
+	
+	@Override
+	public void postCheck()
 	{
-		// TODO Auto-generated method stub
-		
+		if( soln.size() == 0 )
+			fillSoln();
 	}
 }

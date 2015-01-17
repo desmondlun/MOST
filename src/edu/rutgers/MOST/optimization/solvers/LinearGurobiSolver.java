@@ -34,5 +34,10 @@ public class LinearGurobiSolver extends GurobiSolver implements LinearSolver
 			}
 		};
 	}
+
+	@Override
+	public void postCheck()
+	{		
+	}
 	
 }

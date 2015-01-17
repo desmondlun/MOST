@@ -21,9 +21,39 @@ public class MILGLPKSolver extends GLPKSolver implements MILSolver, GlpkCallback
 		super();
 	}
 	
-	synchronized void func()
+	void func()
 	{
+		soln.clear();
+		int columnCount = GLPK.glp_get_num_cols( problem_tmp );
+		for( int i = 1; i <= columnCount; ++i)
+			soln.add( GLPK.glp_mip_col_val( problem_tmp, i ) );
 		
+		double[] darray = ArrayUtils.toPrimitive( soln
+				.toArray( new Double[] {} ) );
+		
+		objval = compressor.getMaxSynthObj( darray );
+		
+		if( lastSol.equals( objval ) )
+			return;
+		lastSol = objval;
+		// get the solution columns
+		soln.clear();
+
+		darray = compressor.decompress( darray );
+		soln.clear();
+		for( double d : darray )
+			soln.add( d );
+		
+		Solution sn = new Solution( objval, darray );
+		sn.setIndex( idx++ );
+		GDBBParam param = new GDBBParam();
+		param.solution = sn;
+		param.model = (GDBBModel)this.dataModel;
+		param.string = "success!";
+		param.addFolder = firstSolution;
+		param.maxObj = objval;
+		firstSolution = false;
+		GraphicalInterface.addGDBBSolution( param );
 	}
 
 	public void callback( glp_tree tree )
@@ -35,39 +65,11 @@ public class MILGLPKSolver extends GLPKSolver implements MILSolver, GlpkCallback
 		}
 		else if( reason == GLPKConstants.GLP_IBINGO )
 		{
-			
-			int columnCount = GLPK.glp_get_num_cols( problem_tmp );
-			for( int i = 1; i <= columnCount; ++i)
-				// soln.add( GLPK.glp_get_col_prim( problem, i ) );
-				soln.add( GLPK.glp_mip_col_val( problem_tmp, i ) );
-			
-			double[] darray = ArrayUtils.toPrimitive( soln
-					.toArray( new Double[] {} ) );
-			
-			objval = compressor.getMaxSynthObj( darray );
-			
-			if( lastSol.equals( objval ) )
-				return;
-			lastSol = objval;
-			// get the solution columns
-			soln.clear();
-
-			darray = compressor.decompress( darray );
-			soln.clear();
-			for( double d : darray )
-				soln.add( d );
-			
-			Solution sn = new Solution( objval, darray );
-			sn.setIndex( idx++ );
-			GDBBParam param = new GDBBParam();
-			param.solution = sn;
-			param.model = (GDBBModel)this.dataModel;
-			param.string = "success!";
-			param.addFolder = firstSolution;
-			param.maxObj = objval;
-			firstSolution = false;
-			GraphicalInterface.addGDBBSolution( param );
-		//	GDBB.getintermediateSolution().add( sn );
+			func();
 		}
+	}
+	
+	public void postCheck()
+	{
 	}
 }
