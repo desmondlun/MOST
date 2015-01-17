@@ -13,6 +13,7 @@ public abstract class Analysis
 {
 	protected Model model = null;
 	protected double maxObj = Double.NaN;
+	private ModelCompressor compressor = new ModelCompressor();
 
 	protected void setVars()
 	{
@@ -49,7 +50,6 @@ public abstract class Analysis
 			ConType conType, double bValue )
 	{
 		ArrayList< Map< Integer, Double >> sMatrix = this.model.getSMatrix();
-		ModelCompressor compressor = new ModelCompressor();
 		ArrayList< Double > lowerBounds = new ArrayList< Double >();
 		ArrayList< Double > upperBounds = new ArrayList< Double >();
 		for( SBMLReaction reac : reactions )
@@ -104,7 +104,7 @@ public abstract class Analysis
 		this.setSolverParameters();
 		this.maxObj = this.getSolver().optimize();
 
-		return this.getSolver().getSoln();
+		return compressor.decompress( this.getSolver().getSoln() );
 	}
 	
 	public abstract Solver getSolver();
