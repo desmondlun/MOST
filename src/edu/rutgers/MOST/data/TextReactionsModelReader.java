@@ -270,6 +270,7 @@ public class TextReactionsModelReader {
 						SBMLReactionEquation equn = new SBMLReactionEquation();
 						equn = ReactionParser.getEquation();
 						updateReactionEquation(reactionEqunAbbr, id, equn, reacRow);
+						reversible = equn.getReversible();
 					} else {
 						if (reactionEqunAbbr != null && reactionEqunAbbr.trim().length() > 0) {
 							LocalConfig.getInstance().getInvalidReactions().add(reactionEqunAbbr);
@@ -286,11 +287,12 @@ public class TextReactionsModelReader {
 							reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
 						} 
 					} else {
-						reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[0];
+						//reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[0];
 					}
 					
 					if (LocalConfig.getInstance().getLowerBoundColumnIndex() > -1) {
 						if (isNumber(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()])) {
+							//System.out.println(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()]);
 							lowerBound = Double.valueOf(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()]);
 						} else {
 							// false
@@ -305,6 +307,9 @@ public class TextReactionsModelReader {
 					// TODO : add error message here?
 					// reversible = false
 					if (lowerBound < 0.0 && reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
+						System.out.println("lb " + lowerBound);
+						System.out.println(reversible);
+						System.out.println(GraphicalInterfaceConstants.BOOLEAN_VALUES[0]);
 						lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
 					} 
 					reacRow.add(Double.toString(lowerBound));
