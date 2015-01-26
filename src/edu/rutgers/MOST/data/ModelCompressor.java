@@ -1,5 +1,9 @@
 package edu.rutgers.MOST.data;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +31,96 @@ public class ModelCompressor
 	private ArrayList< Double > upperBounds = null;
 	private int or_column_count = 0;
 	private int or_row_count = 0;
+	
+	@SuppressWarnings( "resource" )
+	private void compareCSV()
+	{
+		BufferedReader brMost = null;
+		BufferedReader brMatlab = null;
+		try
+		{
+			brMost = new BufferedReader( new FileReader( "MostDump.txt" ) );
+			brMatlab = new BufferedReader( new FileReader( "MatlabDump.txt" ) );
+			
+			String lineMost = "";
+			String lineMatlab = "";
+			String delim = "\t";
+			
+			int row = 0;
+			while( (lineMatlab = brMatlab.readLine()) != null )
+			{
+				++row;
+				lineMost = brMost.readLine();
+				if( lineMost.equals( "" ) || lineMatlab.equals( "" ) )
+					break;
+				
+				String[] valsMost = lineMost.split( delim );
+				String[] valsMatlab = lineMatlab.split( delim );
+				
+				if( valsMost.length != valsMatlab.length )
+					throw new Exception( "Warning! matrix columns are not the same!" );
+				
+				for( int i = 0; i < valsMatlab.length; ++i )
+				{
+					Double valMatlab = Double.valueOf( valsMatlab[i] );
+					Double valMost = Double.valueOf( valsMost[i] );
+					
+					if( !valMatlab.equals( valMost ) )
+						System.out.println( "difference in row " + row + " column " + i+1 );
+					
+				}
+				
+			}
+		}
+		catch ( Exception e )
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				brMost.close();
+				brMatlab.close();
+			}
+			catch ( Exception e )
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void dump( ArrayList< Map< Integer, Double > > mat )
+	{
+		PrintWriter writer = null;
+		try
+		{
+			writer = new PrintWriter("dump.txt", "US-ASCII" );
+			
+			for( Map< Integer, Double > m : mat )
+			{
+				String delim = "";
+				for( int i = 0; i < lowerBounds.size(); ++i )
+				{
+					Double value = m.get( i );
+					if( value == null )
+						value = 0.0;
+					writer.write( delim + value.toString() );
+					delim = "\t";
+				}
+				writer.write( "\r\n" );
+			}
+		}
+		catch( Exception e )
+		{
+		}
+		finally
+		{
+			if( writer !=null )
+				writer.close();
+		}
+
+	}
 	
 	public Vector< SBMLReaction > getReactions()
 	{
@@ -174,7 +268,7 @@ public class ModelCompressor
 
 		// create the recmap
 		createRecMat();
-
+		
 		// start the compression
 		int orColCount;
 		int orRowCount;
@@ -186,17 +280,34 @@ public class ModelCompressor
 			// (Y-dimension) across the matrix
 			for( int j = 0; j < columnCount(); ++j )
 			{
-				boolean isZeroColumn = true;
+				int nonzerocount = 0;
 				for( int i = 0; i < rowCount(); ++i )
 					if( getsMat( i, j ) != 0.0 )
-						isZeroColumn = false;
-				if( isZeroColumn )
+						nonzerocount++;
+				if( nonzerocount == 0 )
 					this.removeColumn( j );
 			}
 			
+			// debug code
+			ArrayList< Integer > badrows = new ArrayList< Integer >();
+			for( int i = rowCount() - 1; i >= 0; --i )
+			{
+				int nonzerocount = 0;
+				for( int j = 0; j < columnCount(); ++j )
+					if( getsMat( i, j ) != 0.0 )
+						++nonzerocount;
+				if( nonzerocount == 1 )
+					badrows.add( i );
+			}
+			
+			// more debug code
+			ArrayList< Integer > badrows_mat = new ArrayList< Integer >();
+			for( Integer i : badrows )
+				badrows_mat.add( i + 1 );
+			
 			// remove the rows (reactions) that have only 1 nonzero column (flux)
 			// due to steady-state constraint, it will optimize to be 0 anyway
-			for( int i = 0; i < rowCount(); ++i )
+			for( int i : badrows )
 			{
 				ArrayList< Integer > cols = new ArrayList< Integer >();
 				for( int j = 0; j < columnCount(); ++j )
@@ -205,11 +316,11 @@ public class ModelCompressor
 				if( cols.size() == 1 )
 				{
 					removeColumn( cols.get( 0 ) );
-					removeRow( i );
 				}
+				removeRow( i );
 			}
 		
-			
+		
 			
 			for( boolean repeat = true; repeat; )
 			{
@@ -244,6 +355,8 @@ public class ModelCompressor
 					repeat = false;
 					continue;
 				}
+				
+			//	System.out.println( "merging columns:[" + Integer.toString( mergecols.get( 0 ) +1) + " " + Integer.toString( mergecols.get( 1 ) +1) + "]" );
 				
 				// for sMatrix
 				for( int i = 0; i < rowCount(); ++i )
@@ -298,6 +411,9 @@ public class ModelCompressor
 				if( lowerBounds.get( mergecols.get( 0 ) ) >= upperBounds.get( mergecols.get( 0 ) ) )
 					removeColumn( mergecols.get( 0 ) );
 				removeRow( candmass );
+				
+		//		dump( sMatrix );
+		//		dump( gMatrix );
 			}
 			
 			
