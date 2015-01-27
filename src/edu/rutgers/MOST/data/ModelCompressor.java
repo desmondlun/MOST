@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -273,32 +274,35 @@ public class ModelCompressor
 
 		// create the recmap
 		createRecMat();
-	//	this.dump( "MostSMatrix-or.txt",  sMatrix );
-	//	this.dump( "MostGMatrix-or.txt", gMatrix );
-	//	compareCSV( "MostSMatrix-or.txt", "MatlabSMatrix-or.txt", "\t" );
-	//	compareCSV( "MostGMatrix-or.txt", "MatlabGMatrix-or.txt", "\t" );
 		
 		// start the compression
 		int orColCount;
 		int orRowCount;
 		do
 		{
+			
+			
+	//		dump( "MostSMatrix-red-part.txt", sMatrix );
+	//		dump( "MostGMatrix-red-part.txt", gMatrix );
+	//		compareCSV( "MostSMatrix-red-part.txt", "MatlabSMatrix-red-part.txt", "\t" );
+	//		compareCSV( "MostGMatrix-red-part.txt", "MatlabGMatrix-red-part.txt", "\t" );
+			
 			orColCount = columnCount();
 			orRowCount = rowCount();
-			// keep only the columns that have a nonzero value
-			// (Y-dimension) across the matrix
-		/*
-			for( int j = 0; j < columnCount(); ++j )
+			
+			// remove the 0-value rows
+			for( int i = rowCount() - 1; i >= 0; --i )
 			{
 				int nonzerocount = 0;
-				for( int i = 0; i < rowCount(); ++i )
+				for( int j = 0; j < columnCount(); ++j )
 					if( getsMat( i, j ) != 0.0 )
-						nonzerocount++;
+						++nonzerocount;
 				if( nonzerocount == 0 )
-					this.removeColumn( j );
+					removeRow( i );
 			}
-		*/
 			
+			// keep only the columns that have a nonzero value
+			// (Y-dimension) across the matrix
 			// debug code
 			ArrayList< Integer > badrows = new ArrayList< Integer >();
 			for( int i = rowCount() - 1; i >= 0; --i )
@@ -313,11 +317,12 @@ public class ModelCompressor
 			
 			// more debug code
 			ArrayList< Integer > badrows_mat = new ArrayList< Integer >();
-			for( Integer i : badrows )
-				badrows_mat.add( i + 1 );
+			for( int i = badrows.size() - 1; i >= 0; --i )
+				badrows_mat.add( badrows.get( i ) + 1 );
 			
 			// remove the rows (reactions) that have only 1 nonzero column (flux)
 			// due to steady-state constraint, it will optimize to be 0 anyway
+			ArrayList< Integer > badcols = new ArrayList< Integer >();
 			for( int i : badrows )
 			{
 				ArrayList< Integer > cols = new ArrayList< Integer >();
@@ -325,10 +330,31 @@ public class ModelCompressor
 					if( getsMat( i, j ) != 0.0 )
 						cols.add( j );
 				if( cols.size() == 1 )
-				{
-					removeColumn( cols.get( 0 ) );
-				}
+					if( !badcols.contains( cols.get( 0 ) ) )
+						badcols.add( cols.get( 0 ) );
+			}
+			
+			ArrayList< Integer > badcols_mat = new ArrayList< Integer >();
+			for( int i = badcols.size()-1; i >= 0; --i )
+				badcols_mat.add( badcols.get( i ) + 1 );
+			
+			Collections.sort( badcols, Collections.reverseOrder() );
+			Collections.sort( badcols_mat, Collections.reverseOrder() );
+			
+			for( int i : badcols )
+				removeColumn( i );
+			for( int i : badrows )
 				removeRow( i );
+			
+			//again, remove the 0-value rows
+			for( int i = rowCount() - 1; i >= 0; --i )
+			{
+				int nonzerocount = 0;
+				for( int j = 0; j < columnCount(); ++j )
+					if( getsMat( i, j ) != 0.0 )
+						++nonzerocount;
+				if( nonzerocount == 0 )
+					removeRow( i );
 			}
 		
 	//		dump( "MostSMatrix-red-part.txt", sMatrix );
@@ -441,12 +467,12 @@ public class ModelCompressor
 			
 		} while( rowCount() < orRowCount || columnCount() < orColCount );
 		
-
-	//	dump( "MostSMatrix-reduced.txt", sMatrix );
-	//	dump( "MostGMatrix-reduced.txt", gMatrix );
-	//	compareCSV( "MostSMatrix-reduced.txt", "MatlabSMatrix-reduced.txt", "\t" );
-	//	compareCSV( "MostGMatrix-reduced.txt", "MatlabGMatrix-reduced.txt", "\t" );
+		dump( "MostSMatrix-red-part.txt", sMatrix );
+	//	dump( "MostGMatrix-red-part.txt", gMatrix );
+		compareCSV( "MostSMatrix-red-part.txt", "MatlabSMatrix-red-part.txt", "\t" );
+	//	compareCSV( "MostGMatrix-red-part.txt", "MatlabGMatrix-red-part.txt", "\t" );
 		
+		System.out.println( "Done!" );
 	}
 	
 	/**
@@ -570,7 +596,7 @@ public class ModelCompressor
 	 	
 	 	// gMat
 	 	if( gMatrix != null )
-		 	removeColumn( j, gMatrix, true );
+		 	removeColumn( j, gMatrix, false );
 	 	
 	 	//objVec
  		objVec = removeColumn( j, objVec );
