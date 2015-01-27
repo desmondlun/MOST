@@ -2,7 +2,6 @@ package edu.rutgers.MOST.data;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,20 +32,20 @@ public class ModelCompressor
 	private int or_row_count = 0;
 	
 	@SuppressWarnings( "resource" )
-	private void compareCSV()
+	private void compareCSV( String file1, String file2, String delim )
 	{
 		BufferedReader brMost = null;
 		BufferedReader brMatlab = null;
 		try
 		{
-			brMost = new BufferedReader( new FileReader( "MostDump.txt" ) );
-			brMatlab = new BufferedReader( new FileReader( "MatlabDump.txt" ) );
+			brMost = new BufferedReader( new FileReader( file1 ) );
+			brMatlab = new BufferedReader( new FileReader( file2 ) );
 			
 			String lineMost = "";
 			String lineMatlab = "";
-			String delim = "\t";
 			
 			int row = 0;
+			boolean same = true;
 			while( (lineMatlab = brMatlab.readLine()) != null )
 			{
 				++row;
@@ -66,11 +65,17 @@ public class ModelCompressor
 					Double valMost = Double.valueOf( valsMost[i] );
 					
 					if( !valMatlab.equals( valMost ) )
-						System.out.println( "difference in row " + row + " column " + i+1 );
+					{
+						System.out.println( "difference in row " + row + " column " + (i+1) );
+						System.out.println( "correct: " + valMatlab + "\tcurrent: " + valMost );
+						same = false;
+					}
 					
 				}
 				
 			}
+			if( same )
+				System.out.println( file1 + " and " + file2 + "have the same values. Parsed " + row + " rows" );
 		}
 		catch ( Exception e )
 		{
@@ -90,12 +95,12 @@ public class ModelCompressor
 		}
 	}
 	
-	private void dump( ArrayList< Map< Integer, Double > > mat )
+	private void dump( String filename, ArrayList< Map< Integer, Double > > mat )
 	{
 		PrintWriter writer = null;
 		try
 		{
-			writer = new PrintWriter("dump.txt", "US-ASCII" );
+			writer = new PrintWriter( filename, "US-ASCII" );
 			
 			for( Map< Integer, Double > m : mat )
 			{
@@ -268,6 +273,10 @@ public class ModelCompressor
 
 		// create the recmap
 		createRecMat();
+	//	this.dump( "MostSMatrix-or.txt",  sMatrix );
+	//	this.dump( "MostGMatrix-or.txt", gMatrix );
+	//	compareCSV( "MostSMatrix-or.txt", "MatlabSMatrix-or.txt", "\t" );
+	//	compareCSV( "MostGMatrix-or.txt", "MatlabGMatrix-or.txt", "\t" );
 		
 		// start the compression
 		int orColCount;
@@ -278,6 +287,7 @@ public class ModelCompressor
 			orRowCount = rowCount();
 			// keep only the columns that have a nonzero value
 			// (Y-dimension) across the matrix
+		/*
 			for( int j = 0; j < columnCount(); ++j )
 			{
 				int nonzerocount = 0;
@@ -287,6 +297,7 @@ public class ModelCompressor
 				if( nonzerocount == 0 )
 					this.removeColumn( j );
 			}
+		*/
 			
 			// debug code
 			ArrayList< Integer > badrows = new ArrayList< Integer >();
@@ -320,7 +331,11 @@ public class ModelCompressor
 				removeRow( i );
 			}
 		
-		
+	//		dump( "MostSMatrix-red-part.txt", sMatrix );
+	//		dump( "MostGMatrix-red-part.txt", gMatrix );
+	//		compareCSV( "MostSMatrix-red-part.txt", "MatlabSMatrix-red-part.txt", "\t" );
+	//		compareCSV( "MostGMatrix-red-part.txt", "MatlabGMatrix-red-part.txt", "\t" );
+	//		compareCSV( "MOSTpass.txt", "Matlabpass.txt", "\t" );
 			
 			for( boolean repeat = true; repeat; )
 			{
@@ -356,8 +371,10 @@ public class ModelCompressor
 					continue;
 				}
 				
-			//	System.out.println( "merging columns:[" + Integer.toString( mergecols.get( 0 ) +1) + " " + Integer.toString( mergecols.get( 1 ) +1) + "]" );
+		//		System.out.println( "merging columns:[" + Integer.toString( mergecols.get( 0 ) +1) + " " + Integer.toString( mergecols.get( 1 ) +1) + "]" );
 				
+				if( candmass == 234 )
+					System.out.println( "Row 234 commensing.. watch column 24" );
 				// for sMatrix
 				for( int i = 0; i < rowCount(); ++i )
 				{
@@ -365,7 +382,7 @@ public class ModelCompressor
 					double val1 = getsMat( i, mergecols.get( 1 ) ); // current row
 					
 					// for sMatrix
-					setsMat( i, mergecols.get( 0 ), val0 - ( val1 / mergecoefs.get( 1 ) * mergecoefs.get( 0 ) ) );
+					setsMat( i, mergecols.get( 0 ), val0 - val1 * mergecoefs.get( 0 ) / mergecoefs.get( 1 ) );
 				}
 				
 				// for recMat
@@ -374,7 +391,7 @@ public class ModelCompressor
 					double val0_rec = getrMat( i, mergecols.get( 0 ) ); // current row reccoef
 					double val1_rec = getrMat( i, mergecols.get( 1 ) ); // current row reccoef
 					
-					setrMat( i, mergecols.get( 0 ), val0_rec - ( val1_rec / mergecoefs.get( 1 ) * mergecoefs.get( 0 ) ) );
+					setrMat( i, mergecols.get( 0 ), val0_rec - val1_rec * mergecoefs.get( 0 ) / mergecoefs.get( 1 ) );
 				}
 				
 				// for gMat
@@ -396,7 +413,7 @@ public class ModelCompressor
 					shift( mergecols.get( 0 ), mergecols.get( 1 ), mergecoefs.get( 0 ), mergecoefs.get( 1 ), synthObjVec );
 				
 				// shift the upper/lower bounds
-				if( mergecoefs.get( 0 ) / mergecoefs.get( 1 ) > 0 )
+				if( (mergecoefs.get( 0 ) / mergecoefs.get( 1 )) > 0 )
 				{
 					lowerBounds.set( mergecols.get( 0 ), Math.max( lowerBounds.get( mergecols.get( 0 ) ), -upperBounds.get( mergecols.get( 1 ) ) * mergecoefs.get( 1 ) / mergecoefs.get( 0 ) ) );
 					upperBounds.set( mergecols.get( 0 ), Math.min( upperBounds.get( mergecols.get( 0 ) ), -lowerBounds.get( mergecols.get( 1 ) ) * mergecoefs.get( 1 ) / mergecoefs.get( 0 ) ) );
@@ -407,18 +424,28 @@ public class ModelCompressor
 					upperBounds.set( mergecols.get( 0 ), Math.min( upperBounds.get( mergecols.get( 0 ) ), -upperBounds.get( mergecols.get( 1 ) ) * mergecoefs.get( 1 ) / mergecoefs.get( 0 ) ) );
 				}
 
+				 boolean removeExtra = (lowerBounds.get( mergecols.get( 0 ) ) >= upperBounds.get( mergecols.get( 0 ) ));
 				removeColumn( mergecols.get( 1 ) );
-				if( lowerBounds.get( mergecols.get( 0 ) ) >= upperBounds.get( mergecols.get( 0 ) ) )
+				if( removeExtra )
 					removeColumn( mergecols.get( 0 ) );
 				removeRow( candmass );
 				
-		//		dump( sMatrix );
-		//		dump( gMatrix );
+	//			System.out.println( Integer.toString( candmass+1 ) + "\t" + Integer.toString( mergecols.get( 0 ) +1) + "\t"
+	//				+ Integer.toString( mergecols.get( 1 ) +1) + "\t" + (removeExtra ? "1" : "0") );
 			}
 			
-			
+	//		dump( "MostSMatrix-red-part.txt", sMatrix );
+	//		dump( "MostGMatrix-red-part.txt", gMatrix );
+	//		compareCSV( "MostSMatrix-red-part.txt", "MatlabSMatrix-red-part.txt", "\t" );
+	//		compareCSV( "MostGMatrix-red-part.txt", "MatlabGMatrix-red-part.txt", "\t" );
 			
 		} while( rowCount() < orRowCount || columnCount() < orColCount );
+		
+
+	//	dump( "MostSMatrix-reduced.txt", sMatrix );
+	//	dump( "MostGMatrix-reduced.txt", gMatrix );
+	//	compareCSV( "MostSMatrix-reduced.txt", "MatlabSMatrix-reduced.txt", "\t" );
+	//	compareCSV( "MostGMatrix-reduced.txt", "MatlabGMatrix-reduced.txt", "\t" );
 		
 	}
 	
@@ -516,24 +543,34 @@ public class ModelCompressor
  		return newRow;
 	}
 	
-	private void removeColumn( int j, ArrayList< Map< Integer, Double > > vvec )
+	private void removeColumn( int j, ArrayList< Map< Integer, Double > > vvec, boolean removeRows )
 	{
-		for( int i = 0; i < vvec.size(); ++i )
-			vvec.set( i, removeColumn( j, vvec.get( i ) ) );
+		if( !removeRows )
+			for( int i = 0; i < vvec.size(); ++i )
+				vvec.set( i, removeColumn( j, vvec.get( i ) ) );
+		else
+			for( int i = 0; i < vvec.size(); ++i )
+			{
+				Map< Integer, Double > newvec = removeColumn( j, vvec.get( i ) );
+				if( newvec.size() > 0 )
+					vvec.set( i, newvec );
+				else
+					vvec.remove( i-- );
+			}
 	}
 	
 	private void removeColumn( int j )
 	{
 	
 		// sMat
-	 	removeColumn( j, sMatrix );
+	 	removeColumn( j, sMatrix, false );
 	 	
 	 	// recMat
-	 	removeColumn( j, recMat );
+	 	removeColumn( j, recMat, false );
 	 	
 	 	// gMat
 	 	if( gMatrix != null )
-		 	removeColumn( j, gMatrix );
+		 	removeColumn( j, gMatrix, true );
 	 	
 	 	//objVec
  		objVec = removeColumn( j, objVec );
