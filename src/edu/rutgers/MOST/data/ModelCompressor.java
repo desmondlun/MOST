@@ -266,6 +266,171 @@ public class ModelCompressor
 			vec.remove( col0 );
 	}
 	
+	public void compressNetDebug()
+	{
+		BufferedReader br = null;
+		try
+		{
+			// read Smatrix
+			sMatrix.clear();
+			br = new BufferedReader( new FileReader( "MatlabSMatrix-red-part.txt" ) );
+			String line = "";
+			while( (line = br.readLine()) != null )
+			{
+				Map< Integer, Double > con = new HashMap< Integer, Double >();
+				if( line.equals( "" ) )
+					break;
+				String[] vals = line.split( "\t" );
+				
+				for( int i = 0; i < vals.length; ++i )
+				{
+					Double val = Double.valueOf( vals[ i ] );
+					if( val != 0.0 )
+						con.put( i, val );
+				}
+				if( !con.isEmpty() )
+					sMatrix.add( con );
+			}
+			br.close();
+			
+			// read Gmatrix
+			gMatrix.clear();
+			br = new BufferedReader( new FileReader( "MatlabGMatrix-red-part.txt" ) );
+			while( (line = br.readLine()) != null )
+			{
+				Map< Integer, Double > con = new HashMap< Integer, Double >();
+				if( line.equals( "" ) )
+					break;
+				String[] vals = line.split( "\t" );
+				
+				for( int i = 0; i < vals.length; ++i )
+				{
+					Double val = Double.valueOf( vals[ i ] );
+					if( val != 0.0 )
+						con.put( i, val );
+				}
+				if( !con.isEmpty() )
+					gMatrix.add( con );
+			}
+			br.close();
+			
+			
+			// read Rmatrix
+			recMat = new ArrayList< Map< Integer, Double > >();
+			br = new BufferedReader( new FileReader( "MatlabRMatrix-red-part.txt" ) );
+			while( (line = br.readLine()) != null )
+			{
+				Map< Integer, Double > con = new HashMap< Integer, Double >();
+				if( line.equals( "" ) )
+					break;
+				String[] vals = line.split( "\t" );
+				
+				for( int i = 0; i < vals.length; ++i )
+				{
+					Double val = Double.valueOf( vals[ i ] );
+					if( val != 0.0 )
+						con.put( i, val );
+				}
+				if( !con.isEmpty() )
+					recMat.add( con );
+			}
+			br.close();
+			
+			// read LBounds
+			lowerBounds.clear();
+			br = new BufferedReader( new FileReader( "MatlabLBounds.txt" ) );
+			while( (line = br.readLine()) != null )
+			{
+				if( line.equals( "" ) )
+					break;
+				String[] vals = line.split( "\t" );
+				
+				for( int i = 0; i < vals.length; ++i )
+				{
+					lowerBounds.add( Double.valueOf( vals[ i ].equals( "-Inf" ) ? "-100" : vals[ i ] ) );
+				}
+			}
+			br.close();
+			
+			// read UBounds
+			upperBounds.clear();
+			br = new BufferedReader( new FileReader( "MatlabUBounds.txt" ) );
+			while( (line = br.readLine()) != null )
+			{
+				if( line.equals( "" ) )
+					break;
+				String[] vals = line.split( "\t" );
+				
+				for( int i = 0; i < vals.length; ++i )
+				{
+					upperBounds.add( Double.valueOf(  vals[ i ].equals( "Inf" ) ? "100" : vals[ i ] ) );
+				}
+			}
+			br.close();
+			
+			// read BObj
+			objVec.clear();
+			br = new BufferedReader( new FileReader( "MatlabBObj.txt" ) );
+			int idx = 0;
+			while( (line = br.readLine()) != null )
+			{
+				if( line.equals( "" ) )
+					break;
+				String[] vals = line.split( "\t" );
+				
+				for( int i = 0; i < vals.length; ++i )
+				{
+					double v = Double.valueOf( vals[ i ] );
+					if( v != 0.0 )
+						objVec.put( idx, v );
+				}
+				++idx;
+			}
+			br.close();
+			
+			// read SObj
+			synthObjVec.clear();
+			br = new BufferedReader( new FileReader( "MatlabSObj.txt" ) );
+			idx = 0;
+			while( (line = br.readLine()) != null )
+			{
+				if( line.equals( "" ) )
+					break;
+				String[] vals = line.split( "\t" );
+				
+				for( int i = 0; i < vals.length; ++i )
+				{
+					double v = Double.valueOf( vals[ i ] );
+					if( v != 0.0 )
+						synthObjVec.put( idx, v );
+				}
+				++idx;
+			}
+			br.close();
+			
+			while( this.reactions.size() > this.lowerBounds.size() )
+				this.reactions.remove( 0 );
+			
+			br = null;
+		}
+		catch( Exception e )
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				if( br != null )
+					br.close();
+			}
+			catch( Exception e )
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public void compressNet()
 	{
 		if( sMatrix == null || /*gMatrix == null ||*/
@@ -651,6 +816,11 @@ public class ModelCompressor
 	public Vector< ModelMetabolite > getMetabolitesCopy()
 	{
 		return metabolitesCopy;
+	}
+	
+	public Vector< ModelMetabolite > getMetabolites()
+	{
+		return metabolites;
 	}
 
 	public Vector<String> getGeneAssociations()
