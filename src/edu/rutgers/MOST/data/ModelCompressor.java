@@ -399,8 +399,6 @@ public class ModelCompressor
 				
 		//		System.out.println( "merging columns:[" + Integer.toString( mergecols.get( 0 ) +1) + " " + Integer.toString( mergecols.get( 1 ) +1) + "]" );
 				
-				if( candmass == 234 )
-					System.out.println( "Row 234 commensing.. watch column 24" );
 				// for sMatrix
 				for( int i = 0; i < rowCount(); ++i )
 				{
@@ -467,12 +465,12 @@ public class ModelCompressor
 			
 		} while( rowCount() < orRowCount || columnCount() < orColCount );
 		
-		dump( "MostSMatrix-red-part.txt", sMatrix );
+	//	dump( "MostSMatrix-red-part.txt", sMatrix );
 	//	dump( "MostGMatrix-red-part.txt", gMatrix );
-		compareCSV( "MostSMatrix-red-part.txt", "MatlabSMatrix-red-part.txt", "\t" );
+	//	compareCSV( "MostSMatrix-red-part.txt", "MatlabSMatrix-red-part.txt", "\t" );
 	//	compareCSV( "MostGMatrix-red-part.txt", "MatlabGMatrix-red-part.txt", "\t" );
 		
-		System.out.println( "Done!" );
+	//	System.out.println( "Done!" );
 	}
 	
 	/**
