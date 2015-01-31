@@ -2513,7 +2513,7 @@ public class GraphicalInterface extends JFrame {
 					ReactionUndoItem undoItem = createReactionUndoItem("", "", getCurrentReactionsRow(), getCurrentReactionsColumn(), 0, UndoConstants.ADD_COLUMN, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 					setOldUsedMap(undoItem);
 					undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());
-					undoItem.setAddedColumnIndex(LocalConfig.getInstance().getReactionsMetaColumnNames().size() + GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length);
+					undoItem.setAddedColumnIndex(LocalConfig.getInstance().getReactionsMetaColumnNames().size() + GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length - 1);
 					ArrayList<String> oldMetaCol = new ArrayList<String>();
 					ArrayList<String> newMetaCol = new ArrayList<String>();
 					for (int i = 0; i < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); i++) {
@@ -2596,7 +2596,7 @@ public class GraphicalInterface extends JFrame {
 					LocalConfig.getInstance().getMetabolitesMetaColumnNames().add(MetaboliteColAddRenameInterface.textField.getText());
 					MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", getCurrentMetabolitesRow(), getCurrentMetabolitesColumn(), 0, UndoConstants.ADD_COLUMN, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);		
 					undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
-					undoItem.setAddedColumnIndex(LocalConfig.getInstance().getMetabolitesMetaColumnNames().size() + GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length);
+					undoItem.setAddedColumnIndex(LocalConfig.getInstance().getMetabolitesMetaColumnNames().size() + GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length - 1);
 					setUndoOldCollections(undoItem);
 					ArrayList<String> oldMetaCol = new ArrayList<String>();
 					ArrayList<String> newMetaCol = new ArrayList<String>();
@@ -11502,7 +11502,7 @@ public class GraphicalInterface extends JFrame {
 					if( reaction.getBiologicalObjective() != 0.0 )
 						gdbbBioObj = soln.get( reaction.getId() );
 				}
-				
+		
 				FBA fba = new FBA();
 				fba.setModel( fbaModel );
 				try

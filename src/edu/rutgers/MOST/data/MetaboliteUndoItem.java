@@ -382,10 +382,10 @@ public class MetaboliteUndoItem implements UndoItem {
 	
 	public String displayMetabolitesColumnNameFromIndex(int columnIndex, ArrayList<String> metaColumnNames) {
 		String columnName = "";
-		if (columnIndex > GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length) {
-			columnName = metaColumnNames.get(columnIndex - (GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length + 1));
-		} else {
+		if (columnIndex < GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length) {
 			columnName = GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES[columnIndex];
+		} else {
+			columnName = metaColumnNames.get(columnIndex - GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length);
 		}
 		return columnName;
 	}

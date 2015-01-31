@@ -512,14 +512,11 @@ public class ReactionUndoItem implements UndoItem {
     }
 	
 	public String displayReactionsColumnNameFromIndex(int columnIndex, ArrayList<String> metaColumnNames) {
-//		System.out.println("meta " + metaColumnNames);
-//		System.out.println(columnIndex);
-//		System.out.println(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length);
 		String columnName = "";
-		if (columnIndex > GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length) {
-			columnName = metaColumnNames.get(columnIndex - (GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length + 1));
-		} else {
+		if (columnIndex < GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length) {
 			columnName = GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[columnIndex];
+		} else {
+			columnName = metaColumnNames.get(columnIndex - GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length);
 		}
 		return columnName;
 	}
