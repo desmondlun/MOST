@@ -11514,8 +11514,9 @@ public class GraphicalInterface extends JFrame {
 					if( reaction.getBiologicalObjective() != 0.0 )
 						gdbbBioObj = soln.get( reaction.getId() );
 				}
-		
-				FBA fba = new FBA();
+
+				
+		/*		FBA fba = new FBA();
 				fba.setModel( fbaModel );
 				try
 				{
@@ -11534,6 +11535,7 @@ public class GraphicalInterface extends JFrame {
 				Double fbaCheckTol = 1E-1;
 				
 				if( diff * diff <= fbaCheckTol * fbaCheckTol )
+		*/
 				{
 					if( param.addFolder )
 					{

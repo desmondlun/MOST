@@ -32,7 +32,7 @@ public class ModelCompressor
 	private int or_column_count = 0;
 	private int or_row_count = 0;
 	
-	@SuppressWarnings( "resource" )
+	@SuppressWarnings( { "resource", "unused" } )
 	private void compareCSV( String file1, String file2, String delim )
 	{
 		BufferedReader brMost = null;
@@ -96,6 +96,7 @@ public class ModelCompressor
 		}
 	}
 	
+	@SuppressWarnings( "unused" )
 	private void dump( String filename, ArrayList< Map< Integer, Double > > mat )
 	{
 		PrintWriter writer = null;
