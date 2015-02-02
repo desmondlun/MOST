@@ -3,6 +3,7 @@ package edu.rutgers.MOST.Analysis;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Vector;
 
 import edu.rutgers.MOST.data.*;
@@ -24,6 +25,13 @@ public class GDBB extends Thread {
 
 	private ArrayList<Double> solution;
 
+	private Double noNull( Double d )
+	{
+		if( d == null )
+			return 0.0;
+		return d;
+	}
+	
 	public GDBB() {
 		this.setSolver( SolverFactory.createGDBBSolver() );
 		new Vector<String>();
@@ -39,7 +47,7 @@ public class GDBB extends Thread {
 	{
 		
 	}
-
+	
 	private void setConstraints()
 	{
 		// A matrix (see matlab code)
@@ -47,14 +55,15 @@ public class GDBB extends Thread {
 		int nmetab = this.model.getSMatrix().size();
 		int nrxn = this.model.getReactions().size();
 		int nbin = this.model.getGprMatrix().size();
+		double MAXDUAL = 100.0;
+		
 		
 //		r1: -speye(nrxn)               sparse(nrxn, nmetab)        sparse(nrxn, nrxn)             sparse(nrxn, nrxn)               sparse(nrxn, nrxn)         -fbamodel.G' .* repmat(fbamodel.vmin, 1, nbin)   ; 
 //      r2:  speye(nrxn)               sparse(nrxn, nmetab)        sparse(nrxn, nrxn)             sparse(nrxn, nrxn)               sparse(nrxn, nrxn)          fbamodel.G' .* repmat(fbamodel.vmax, 1, nbin)   ;
 //      r3:  sparse(nrxn, nrxn)        sparse(nrxn, nmetab)        sparse(nrxn, nrxn)             sparse(nrxn, nrxn)              -speye(nrxn)                -fbamodel.G' * MAXDUAL                           ;
 //      r4:  sparse(nrxn, nrxn)        sparse(nrxn, nmetab)        sparse(nrxn, nrxn)             sparse(nrxn, nrxn)               speye(nrxn)                -fbamodel.G' * MAXDUAL                           ;
-//      r5:  sparse(1, nrxn)           sparse(1, nmetab)           sparse(1, nrxn)                sparse(1, nrxn)                  sparse(1, nrxn)             ((y0(:, istart) == 0) - (y0(:, istart) == 1))'  ;
-//      r6:  sparse(size(y, 2), nrxn)  sparse(size(y, 2), nmetab)  sparse(size(y, 2), nrxn)       sparse(size(y, 2), nrxn)         sparse(size(y, 2), nrxn)   -((y == 0) - (y == 1))'                          ;
-//      r7:  sparse(1, nrxn)           sparse(1, nmetab)           sparse(1, nrxn)                sparse(1, nrxn)                  sparse(1, nrxn)             fbamodel.ko_cost'                               ; 
+//      r5:  sparse(1, nrxn)           sparse(1, nmetab)           sparse(1, nrxn)                sparse(1, nrxn)                  sparse(1, nrxn)             ((y0(:, istart) == 0) - (y0(:, istart) == 1))'  ;                     ;
+//      r6:  sparse(1, nrxn)           sparse(1, nmetab)           sparse(1, nrxn)                sparse(1, nrxn)                  sparse(1, nrxn)             fbamodel.ko_cost'                               ; 
 		
 		
 		// r1
@@ -62,8 +71,63 @@ public class GDBB extends Thread {
 		{
 			Map< Integer, Double > row = new HashMap< Integer, Double >();
 			row.put( i, -1.0 );
-			
+			for( int j = 0; j < nbin; ++j )
+			{
+				Double gTVal = -noNull( this.model.getGprMatrix().get( j ).get( i ) ) * this.model.getReactions().get( i ).getLowerBound();
+				if( !gTVal.equals( 0.0 ) )
+					row.put( i + 4 * nrxn + nmetab, gTVal );
+			}
 			A.add( row );
+		}
+		
+		// r2
+		for( int i = 0; i < nrxn; ++i )
+		{
+			Map< Integer, Double > row = new HashMap< Integer, Double >();
+			row.put( i, 1.0 );
+			for( int j = 0; j < nbin; ++j )
+			{
+				Double gTVal = noNull( this.model.getGprMatrix().get( j ).get( i ) ) * this.model.getReactions().get( i ).getUpperBound();
+				if( !gTVal.equals( 0.0 ) )
+					row.put( i + 4 * nrxn + nmetab, gTVal );
+			}
+			A.add( row );
+		}
+		
+		// r3
+		for( int i = 0; i < nrxn; ++i )
+		{
+			Map< Integer, Double > row = new HashMap< Integer, Double >();
+			row.put( 3 * nrxn + nmetab + i, -1.0 );
+			for( int j = 0; j < nbin; ++j )
+			{
+				Double gTVal = -noNull( this.model.getGprMatrix().get( j ).get( i ) ) * MAXDUAL;
+				if( !gTVal.equals( 0.0 ) )
+					row.put( i + 3 * nrxn + nmetab, gTVal );
+			}
+			A.add( row );
+		}
+		
+		// r4
+		for( int i = 0; i < nrxn; ++i )
+		{
+			Map< Integer, Double > row = new HashMap< Integer, Double >();
+			row.put( 3 * nrxn + nmetab + i, 1.0 );
+			for( int j = 0; j < nbin; ++j )
+			{
+				Double gTVal = -noNull( this.model.getGprMatrix().get( j ).get( i ) ) * MAXDUAL;
+				if( !gTVal.equals( 0.0 ) )
+					row.put( i + 3 * nrxn + nmetab, gTVal );
+			}
+			A.add( row );
+		}
+		
+		// r5
+		{
+			Map< Integer, Double > constraint = new HashMap< Integer, Double >();
+			for( int i = 4 * nrxn + nmetab; i < 5 * nrxn + nmetab; ++i )
+				constraint.put( i, 1.0 );
+			A.add( constraint );
 		}
 		
 				
