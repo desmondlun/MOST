@@ -220,7 +220,7 @@ public class MetaboliteUndoItem implements UndoItem {
 		} else if (this.undoType.equals(UndoConstants.DELETE_ROW)) {
 			undoDescription = UndoConstants.DELETE_ROW;	
 		} else if (this.undoType.equals(UndoConstants.DELETE_COLUMN)) {
-			undoDescription = UndoConstants.DELETE_COLUMN_PREFIX + displayMetabolitesColumnNameFromIndex(this.deletedColumnIndex + 1, this.oldMetaColumnNames) + UndoConstants.DELETE_COLUMN_SUFFIX;	
+			undoDescription = UndoConstants.DELETE_COLUMN_PREFIX + displayMetabolitesColumnNameFromIndex(this.deletedColumnIndex, this.oldMetaColumnNames) + UndoConstants.DELETE_COLUMN_SUFFIX;	
 		} else if (this.undoType.equals(UndoConstants.PASTE)) {
 			undoDescription = UndoConstants.PASTE;	
 		} else if (this.undoType.equals(UndoConstants.CLEAR_CONTENTS)) {

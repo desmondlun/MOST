@@ -6693,23 +6693,26 @@ public class GraphicalInterface extends JFrame {
 		}
 		deleteColumnMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				// copy old model for undo/redo
-				DefaultTableModel oldReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
-				copyReactionsTableModels(oldReactionsModel);
-				ReactionUndoItem undoItem = createReactionUndoItem("", "", reactionsTable.getSelectedRow(), reactionsTable.getSelectedColumn(), 0, UndoConstants.DELETE_COLUMN, UndoConstants.REACTION_UNDO_ITEM_TYPE);
-				setOldUsedMap(undoItem);
-				undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());								
-				undoItem.setDeletedColumnIndex(columnIndex);
+				// copy old meta column lists
 				ArrayList<String> oldMetaCol = new ArrayList<String>();
-				ArrayList<String> newMetaCol = new ArrayList<String>();
 				for (int i = 0; i < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); i++) {
 					oldMetaCol.add(LocalConfig.getInstance().getReactionsMetaColumnNames().get(i));
 				}
+				// copy old model for undo/redo
+				DefaultTableModel oldReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
+				copyReactionsTableModels(oldReactionsModel);
+				ReactionUndoItem undoItem = createReactionUndoItem("", "", reactionsTable.getSelectedRow(), columnIndex, 0, UndoConstants.DELETE_COLUMN, UndoConstants.REACTION_UNDO_ITEM_TYPE);
+				setOldUsedMap(undoItem);
+				undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());								
+				undoItem.setDeletedColumnIndex(columnIndex);
+				
 				undoItem.setOldMetaColumnNames(oldMetaCol);
 				DefaultTableModel model = deletedColumnReactionsTableModel(columnIndex);
 				reactionsTable.setModel(model);
 				setUpReactionsTable(model);
 				copyReactionsTableModels(model);
+				// copy new meta column lists
+				ArrayList<String> newMetaCol = new ArrayList<String>();
 				for (int i = 0; i < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); i++) {
 					newMetaCol.add(LocalConfig.getInstance().getReactionsMetaColumnNames().get(i));
 				}
@@ -6760,23 +6763,26 @@ public class GraphicalInterface extends JFrame {
 		}
 		deleteColumnMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				// copy old model for undo/redo
-				DefaultTableModel oldMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());			
-				copyMetabolitesTableModels(oldMetabolitesModel);
-				MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn(), 0, UndoConstants.DELETE_COLUMN, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
-				setUndoOldCollections(undoItem);
-				undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());								
-				undoItem.setDeletedColumnIndex(columnIndex);
+				// copy old meta column lists
 				ArrayList<String> oldMetaCol = new ArrayList<String>();
-				ArrayList<String> newMetaCol = new ArrayList<String>();
 				for (int i = 0; i < LocalConfig.getInstance().getMetabolitesMetaColumnNames().size(); i++) {
 					oldMetaCol.add(LocalConfig.getInstance().getMetabolitesMetaColumnNames().get(i));
 				}
+				// copy old model for undo/redo
+				DefaultTableModel oldMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());			
+				copyMetabolitesTableModels(oldMetabolitesModel);
+				MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", metabolitesTable.getSelectedRow(), columnIndex, 0, UndoConstants.DELETE_COLUMN, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+				setUndoOldCollections(undoItem);
+				undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());								
+				undoItem.setDeletedColumnIndex(columnIndex);
+				
 				undoItem.setOldMetaColumnNames(oldMetaCol);
 				DefaultTableModel model = deletedColumnMetabolitesTableModel(columnIndex);
 				metabolitesTable.setModel(model);
 				setUpMetabolitesTable(model);
 				copyMetabolitesTableModels(model);
+				// copy new meta column lists
+				ArrayList<String> newMetaCol = new ArrayList<String>();
 				for (int i = 0; i < LocalConfig.getInstance().getMetabolitesMetaColumnNames().size(); i++) {
 					newMetaCol.add(LocalConfig.getInstance().getMetabolitesMetaColumnNames().get(i));
 				}
