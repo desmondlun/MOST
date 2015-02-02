@@ -3,7 +3,6 @@ package edu.rutgers.MOST.Analysis;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Vector;
 
 import edu.rutgers.MOST.data.*;
@@ -45,6 +44,107 @@ public class GDBB extends Thread {
 
 	private void setVars()
 	{
+		// the vars (see matlab code)
+		ArrayList< Double > c = new ArrayList< Double >();
+		int nmetab = this.model.getSMatrix().size();
+		int nrxn = this.model.getReactions().size();
+		int nbin = this.model.getGprMatrix().size();
+		
+		// fbamodel.g;
+        // zeros(nmetab, 1);
+        // zeros(nrxn, 1);
+        // zeros(nrxn, 1);
+        // zeros(nrxn, 1);
+        // zeros(nbin, 1);
+		
+		for( Double d : this.model.getSyntheticObjective() )
+			c.add( d );
+		
+		for( int i = 0; i < 3 * nrxn + nmetab + nbin; ++i )
+			c.add( 0.0 );
+		
+		/**************************************************/
+		ArrayList< Double > b = new ArrayList< Double >();
+		
+		// -fbamodel.vmin;
+        //  fbamodel.vmax;
+        //  zeros(nrxn, 1);
+        //  zeros(nrxn, 1);
+        //  numknock;
+        //  MAXKNOCK;
+		
+		for( int i = 0; i < nrxn; ++ i )
+			b.add( -this.model.getReactions().get( i ).getLowerBound() );
+		
+		for( int i = 0; i < nrxn; ++ i )
+			b.add( this.model.getReactions().get( i ).getUpperBound() );
+		
+		for( int i = 0; i < 2 * nrxn; ++i )
+			b.add( 0.0 );
+		
+		b.add( this.model.getC() );
+		
+		b.add( 20.0 );
+		
+		/**************************************************/
+		ArrayList< Double > lb = new ArrayList< Double >();
+		
+		//   fbamodel.vmin;
+        //  -Inf * ones(nmetab, 1);
+        //   zeros(nrxn, 1);
+        //   zeros(nrxn, 1);
+        //  -Inf * ones(nrxn, 1);
+        //   zeros(nbin, 1);
+		
+		for( int i = 0; i < nrxn; ++i )
+			lb.add( this.model.getReactions().get( i ).getLowerBound() );
+		
+		for( int i = 0; i < nmetab; ++i )
+			lb.add( Double.NEGATIVE_INFINITY );
+		
+		for( int i = 0; i < 2 * nrxn; ++i )
+			lb.add( 0.0 );
+		
+		for( int i = 0; i < nrxn; ++i )
+			lb.add( Double.NEGATIVE_INFINITY );
+		
+		for( int i = 0; i < nbin; ++i )
+			lb.add( 0.0 );
+		
+		/**************************************************/
+		ArrayList< Double > ub = new ArrayList< Double >();
+		
+		//   fbamodel.vmax;
+        //   Inf * ones(nmetab, 1);
+        //   Inf * ones(nrxn, 1);
+        //   Inf * ones(nrxn, 1);
+        //   Inf * ones(nrxn, 1);
+		//   ones(nbin, 1)
+		
+		for( int i = 0; i < nrxn; ++i )
+			ub.add( model.getReactions().get( i ).getUpperBound() );
+		
+		for( int i = 0; i < 3 * nrxn + nmetab; ++i )
+			ub.add( Double.POSITIVE_INFINITY );
+		
+		for( int i = 0; i < nbin; ++i )
+			ub.add( 1.0 );
+		
+		/**************************************************/
+		ArrayList< VarType > varTypes = new ArrayList< VarType >();
+		
+		//  'C' * ones(nrxn, 1);
+		//  'C' * ones(nmetab, 1);
+		//  'C' * ones(nrxn, 1);
+		//  'C' * ones(nrxn, 1);
+		//  'C' * ones(nrxn, 1);
+		//  'B' * ones(nbin, 1);
+		
+		for( int i = 0; i < 4 * nrxn + nmetab; ++i )
+			varTypes.add( VarType.CONTINUOUS );
+		
+		for( int i = 0; i < nrxn; ++i )
+			varTypes.add( VarType.BINARY );
 		
 	}
 	
@@ -130,7 +230,54 @@ public class GDBB extends Thread {
 			A.add( constraint );
 		}
 		
-				
+		// r6
+		{
+			Map< Integer, Double > constraint = new HashMap< Integer, Double >();
+			for( int i = 4 * nrxn + nmetab; i < 5 * nrxn + nmetab; ++i )
+				constraint.put( i, 1.0 );
+			A.add( constraint );
+		}
+		
+		
+		ArrayList< Map< Integer, Double > > Aeq = new ArrayList< Map< Integer, Double > >();
+		
+//      r1:  Aeq = [ fbamodel.S           sparse(nmetab, nmetab)      sparse(nmetab, nrxn)                             sparse(nmetab, nrxn)                             sparse(nmetab, nrxn)        sparse(nmetab, nbin);
+//      r2:  sparse(nrxn, nrxn)   fbamodel.S'                -sparse(jmu, 1:nrxn, ones(nrxn, 1), nrxn, nrxn)   sparse(jnu, 1:nrxn, ones(nrxn, 1), nrxn, nrxn)   speye(nrxn)                 sparse(nrxn, nbin);
+//      r3:  fbamodel.f'          sparse(1, nmetab)           fbamodel.vmin(jmu)'                             -fbamodel.vmax(jnu)'                              sparse(1, nrxn)             sparse(1, nbin); ];
+		
+		// r1
+		for( Map< Integer, Double > m : this.model.getSMatrix() )
+			Aeq.add( m );
+		
+		// r2
+		for( int i = 0; i < nrxn; ++i )
+		{
+			Map< Integer, Double > constraint = new HashMap< Integer, Double >();
+			for( int j = 0; j < nmetab; ++j )
+			{
+				Double valT = this.model.getSMatrix().get( j ).get( i );
+				if( valT != null )
+					constraint.put( j, valT );
+			}
+			Aeq.add( constraint );
+		}
+		
+		// r3
+		{
+			Map< Integer, Double > constraint = new HashMap< Integer, Double >();
+			for( int i = 0; i < this.model.getObjective().size(); ++i )
+				if( this.model.getObjective().get( i ).equals( 0.0 ) )
+					constraint.put( i, this.model.getObjective().get( i ) );
+			
+			for( int i = 0; i < nrxn; ++i )
+				if( this.model.getReactions().get( i ).getLowerBound() != 0.0 )
+					constraint.put( 1 * nrxn + nmetab + i, this.model.getReactions().get( i ).getLowerBound() );
+			
+			for( int i = 0; i < nrxn; ++i )
+				if( this.model.getReactions().get( i ).getUpperBound() != 0.0 )
+					constraint.put( 2 * nrxn + nmetab + i, -this.model.getReactions().get( i ).getUpperBound() );
+					
+		}
 		
 	}        
 
