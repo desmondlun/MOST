@@ -2505,6 +2505,11 @@ public class GraphicalInterface extends JFrame {
 //					reactionColAddRenameInterface.setAlwaysOnTop(true);
 //					reactionColAddRenameInterface.setModal(true);
 				} else {
+					// copy old meta column list
+					ArrayList<String> oldMetaCol = new ArrayList<String>();
+					for (int i = 0; i < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); i++) {
+						oldMetaCol.add(LocalConfig.getInstance().getReactionsMetaColumnNames().get(i));
+					}
 					// copy old model for undo/redo
 					DefaultTableModel oldReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
 					copyReactionsTableModels(oldReactionsModel);
@@ -2514,11 +2519,7 @@ public class GraphicalInterface extends JFrame {
 					setOldUsedMap(undoItem);
 					undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());
 					undoItem.setAddedColumnIndex(LocalConfig.getInstance().getReactionsMetaColumnNames().size() + GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length - 1);
-					ArrayList<String> oldMetaCol = new ArrayList<String>();
-					ArrayList<String> newMetaCol = new ArrayList<String>();
-					for (int i = 0; i < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); i++) {
-						oldMetaCol.add(LocalConfig.getInstance().getReactionsMetaColumnNames().get(i));
-					}
+					
 					undoItem.setOldMetaColumnNames(oldMetaCol);
 					getReactionColAddRenameInterface().addColumn();
 					
@@ -2528,6 +2529,8 @@ public class GraphicalInterface extends JFrame {
 					setUpReactionsTable(LocalConfig.getInstance().getReactionsTableModelMap().get(LocalConfig.getInstance().getModelName()));
 					DefaultTableModel newReactionsModel = copyReactionsTableModel((DefaultTableModel) reactionsTable.getModel());			
 					copyReactionsTableModels(newReactionsModel);
+					// copy new meta column list
+					ArrayList<String> newMetaCol = new ArrayList<String>();
 					for (int i = 0; i < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); i++) {
 						newMetaCol.add(LocalConfig.getInstance().getReactionsMetaColumnNames().get(i));
 					}
@@ -2590,6 +2593,11 @@ public class GraphicalInterface extends JFrame {
 //					metaboliteColAddRenameInterface.setAlwaysOnTop(true);
 //					metaboliteColAddRenameInterface.setModal(true);
 				} else {
+					// copy old meta column list
+					ArrayList<String> oldMetaCol = new ArrayList<String>();
+					for (int i = 0; i < LocalConfig.getInstance().getMetabolitesMetaColumnNames().size(); i++) {
+						oldMetaCol.add(LocalConfig.getInstance().getMetabolitesMetaColumnNames().get(i));
+					}
 					// copy old model for undo/redo
 					DefaultTableModel oldMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());			
 					copyMetabolitesTableModels(oldMetabolitesModel);
@@ -2598,11 +2606,7 @@ public class GraphicalInterface extends JFrame {
 					undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
 					undoItem.setAddedColumnIndex(LocalConfig.getInstance().getMetabolitesMetaColumnNames().size() + GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length - 1);
 					setUndoOldCollections(undoItem);
-					ArrayList<String> oldMetaCol = new ArrayList<String>();
-					ArrayList<String> newMetaCol = new ArrayList<String>();
-					for (int i = 0; i < LocalConfig.getInstance().getMetabolitesMetaColumnNames().size(); i++) {
-						oldMetaCol.add(LocalConfig.getInstance().getMetabolitesMetaColumnNames().get(i));
-					}
+					
 					undoItem.setOldMetaColumnNames(oldMetaCol);
 					getMetaboliteColAddRenameInterface().addColumn();
 					
@@ -2612,6 +2616,8 @@ public class GraphicalInterface extends JFrame {
 					setUpMetabolitesTable(LocalConfig.getInstance().getMetabolitesTableModelMap().get(LocalConfig.getInstance().getModelName()));					
 					DefaultTableModel newMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());			
 					copyMetabolitesTableModels(newMetabolitesModel);
+					// copy new meta column list
+					ArrayList<String> newMetaCol = new ArrayList<String>();
 					for (int i = 0; i < LocalConfig.getInstance().getMetabolitesMetaColumnNames().size(); i++) {
 						newMetaCol.add(LocalConfig.getInstance().getMetabolitesMetaColumnNames().get(i));
 					}
