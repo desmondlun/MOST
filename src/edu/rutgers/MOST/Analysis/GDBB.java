@@ -21,10 +21,9 @@ public class GDBB extends Thread {
 	private GDBBModel model;
 	private MILSolver solver;
 	private double maxObj;
-
 	private ArrayList<Double> solution;
 
-	private Double noNull( Double d )
+ 	private Double noNull( Double d )
 	{
 		if( d == null )
 			return 0.0;
@@ -42,9 +41,9 @@ public class GDBB extends Thread {
 		new Vector<String>();
 	}
 
-	private void setVars()
+	private void setVarsAndObjective()
 	{
-		// the vars (see matlab code)
+		// the vars and objective (see matlab code)
 		ArrayList< Double > c = new ArrayList< Double >();
 		int nmetab = this.model.getSMatrix().size();
 		int nrxn = this.model.getReactions().size();
@@ -63,28 +62,11 @@ public class GDBB extends Thread {
 		for( int i = 0; i < 3 * nrxn + nmetab + nbin; ++i )
 			c.add( 0.0 );
 		
-		/**************************************************/
-		ArrayList< Double > b = new ArrayList< Double >();
-		
-		// -fbamodel.vmin;
-        //  fbamodel.vmax;
-        //  zeros(nrxn, 1);
-        //  zeros(nrxn, 1);
-        //  numknock;
-        //  MAXKNOCK;
-		
-		for( int i = 0; i < nrxn; ++ i )
-			b.add( -this.model.getReactions().get( i ).getLowerBound() );
-		
-		for( int i = 0; i < nrxn; ++ i )
-			b.add( this.model.getReactions().get( i ).getUpperBound() );
-		
-		for( int i = 0; i < 2 * nrxn; ++i )
-			b.add( 0.0 );
-		
-		b.add( this.model.getC() );
-		
-		b.add( 20.0 );
+		Map< Integer, Double > obj = new HashMap< Integer, Double >();
+
+		for( int i = 0; i < c.size(); ++i )
+			if( !c.get( i ).equals( 0.0 ) )
+				obj.put( i, c.get( i ) );
 		
 		/**************************************************/
 		ArrayList< Double > lb = new ArrayList< Double >();
@@ -143,8 +125,17 @@ public class GDBB extends Thread {
 		for( int i = 0; i < 4 * nrxn + nmetab; ++i )
 			varTypes.add( VarType.CONTINUOUS );
 		
-		for( int i = 0; i < nrxn; ++i )
+		for( int i = 0; i < nbin; ++i )
 			varTypes.add( VarType.BINARY );
+		
+		/**************************************************/
+		
+		for( int i = 0; i < 4 * nrxn + nmetab + nbin; ++i )
+			this.getSolver().setVar( null, varTypes.get( i ), lb.get( i ), ub.get( i ) );
+		
+		this.getSolver().setObjType( ObjType.Maximize );
+		
+		this.getSolver().setObj( obj );
 		
 	}
 	
@@ -156,6 +147,30 @@ public class GDBB extends Thread {
 		int nrxn = this.model.getReactions().size();
 		int nbin = this.model.getGprMatrix().size();
 		double MAXDUAL = 100.0;
+		ArrayList< Map< Integer, Double > > gTransposed = new ArrayList< Map< Integer, Double > >();
+		for( int i = 0; i < nrxn; ++i )
+		{
+			Map< Integer, Double > con = new HashMap< Integer, Double >();
+			for( int j = 0; j < nbin; ++j )
+			{
+				Double d = this.model.getGprMatrix().get( j ).get( i );
+				if( d != null )
+					con.put( j, d );
+			}
+			gTransposed.add( con );
+		}
+		ArrayList< Map< Integer, Double > > sTransposed = new ArrayList< Map< Integer, Double > >();
+		for( int i = 0; i < nrxn; ++i )
+		{
+			Map< Integer, Double > con = new HashMap< Integer, Double >();
+			for( int j = 0; j < nmetab; ++j )
+			{
+				Double d = this.model.getSMatrix().get( j ).get( i );
+				if( d != null )
+					con.put( j, d );
+			}
+			sTransposed.add( con );
+		}
 		
 		
 //		r1: -speye(nrxn)               sparse(nrxn, nmetab)        sparse(nrxn, nrxn)             sparse(nrxn, nrxn)               sparse(nrxn, nrxn)         -fbamodel.G' .* repmat(fbamodel.vmin, 1, nbin)   ; 
@@ -173,9 +188,9 @@ public class GDBB extends Thread {
 			row.put( i, -1.0 );
 			for( int j = 0; j < nbin; ++j )
 			{
-				Double gTVal = -noNull( this.model.getGprMatrix().get( j ).get( i ) ) * this.model.getReactions().get( i ).getLowerBound();
+				Double gTVal = -noNull( gTransposed.get( i ).get( j ) )* this.model.getReactions().get( i ).getLowerBound() + 0.0;
 				if( !gTVal.equals( 0.0 ) )
-					row.put( i + 4 * nrxn + nmetab, gTVal );
+					row.put( j + 4 * nrxn + nmetab, gTVal );
 			}
 			A.add( row );
 		}
@@ -187,9 +202,9 @@ public class GDBB extends Thread {
 			row.put( i, 1.0 );
 			for( int j = 0; j < nbin; ++j )
 			{
-				Double gTVal = noNull( this.model.getGprMatrix().get( j ).get( i ) ) * this.model.getReactions().get( i ).getUpperBound();
+				Double gTVal = noNull( gTransposed.get( i ).get( j ) )* this.model.getReactions().get( i ).getUpperBound() + 0.0;
 				if( !gTVal.equals( 0.0 ) )
-					row.put( i + 4 * nrxn + nmetab, gTVal );
+					row.put( j + 4 * nrxn + nmetab, gTVal );
 			}
 			A.add( row );
 		}
@@ -201,9 +216,9 @@ public class GDBB extends Thread {
 			row.put( 3 * nrxn + nmetab + i, -1.0 );
 			for( int j = 0; j < nbin; ++j )
 			{
-				Double gTVal = -noNull( this.model.getGprMatrix().get( j ).get( i ) ) * MAXDUAL;
+				Double gTVal = -noNull( gTransposed.get( i ).get( j ) ) * MAXDUAL + 0.0;
 				if( !gTVal.equals( 0.0 ) )
-					row.put( i + 3 * nrxn + nmetab, gTVal );
+					row.put( j + 4 * nrxn + nmetab, gTVal );
 			}
 			A.add( row );
 		}
@@ -215,9 +230,9 @@ public class GDBB extends Thread {
 			row.put( 3 * nrxn + nmetab + i, 1.0 );
 			for( int j = 0; j < nbin; ++j )
 			{
-				Double gTVal = -noNull( this.model.getGprMatrix().get( j ).get( i ) ) * MAXDUAL;
+				Double gTVal = -noNull( gTransposed.get( i ).get( j ) ) * MAXDUAL + 0.0;
 				if( !gTVal.equals( 0.0 ) )
-					row.put( i + 3 * nrxn + nmetab, gTVal );
+					row.put( j + 4 * nrxn + nmetab, gTVal );
 			}
 			A.add( row );
 		}
@@ -234,14 +249,14 @@ public class GDBB extends Thread {
 		{
 			Map< Integer, Double > constraint = new HashMap< Integer, Double >();
 			for( int i = 4 * nrxn + nmetab; i < 5 * nrxn + nmetab; ++i )
-				constraint.put( i, 1.0 );
+				constraint.put( i, 6.0 );
 			A.add( constraint );
 		}
 		
-		
+		/**************************************************/
 		ArrayList< Map< Integer, Double > > Aeq = new ArrayList< Map< Integer, Double > >();
 		
-//      r1:  Aeq = [ fbamodel.S           sparse(nmetab, nmetab)      sparse(nmetab, nrxn)                             sparse(nmetab, nrxn)                             sparse(nmetab, nrxn)        sparse(nmetab, nbin);
+//      r1:  Aeq = [ fbamodel.S   sparse(nmetab, nmetab)      sparse(nmetab, nrxn)                             sparse(nmetab, nrxn)                             sparse(nmetab, nrxn)        sparse(nmetab, nbin);
 //      r2:  sparse(nrxn, nrxn)   fbamodel.S'                -sparse(jmu, 1:nrxn, ones(nrxn, 1), nrxn, nrxn)   sparse(jnu, 1:nrxn, ones(nrxn, 1), nrxn, nrxn)   speye(nrxn)                 sparse(nrxn, nbin);
 //      r3:  fbamodel.f'          sparse(1, nmetab)           fbamodel.vmin(jmu)'                             -fbamodel.vmax(jnu)'                              sparse(1, nrxn)             sparse(1, nbin); ];
 		
@@ -255,10 +270,14 @@ public class GDBB extends Thread {
 			Map< Integer, Double > constraint = new HashMap< Integer, Double >();
 			for( int j = 0; j < nmetab; ++j )
 			{
-				Double valT = this.model.getSMatrix().get( j ).get( i );
+				Double valT = sTransposed.get( i ).get( j );
 				if( valT != null )
-					constraint.put( j, valT );
+					constraint.put( j + nrxn, valT );
 			}
+			
+			constraint.put( i + 1 * nrxn + nmetab , -1.0 );
+			constraint.put( i + 2 * nrxn + nmetab, 1.0 );
+			constraint.put( i + 3 * nrxn + nmetab, 1.0 );
 			Aeq.add( constraint );
 		}
 		
@@ -266,7 +285,7 @@ public class GDBB extends Thread {
 		{
 			Map< Integer, Double > constraint = new HashMap< Integer, Double >();
 			for( int i = 0; i < this.model.getObjective().size(); ++i )
-				if( this.model.getObjective().get( i ).equals( 0.0 ) )
+				if( !this.model.getObjective().get( i ).equals( 0.0 ) )
 					constraint.put( i, this.model.getObjective().get( i ) );
 			
 			for( int i = 0; i < nrxn; ++i )
@@ -276,25 +295,67 @@ public class GDBB extends Thread {
 			for( int i = 0; i < nrxn; ++i )
 				if( this.model.getReactions().get( i ).getUpperBound() != 0.0 )
 					constraint.put( 2 * nrxn + nmetab + i, -this.model.getReactions().get( i ).getUpperBound() );
-					
+			
+			Aeq.add( constraint );
 		}
 		
+		/**************************************************/
+		ArrayList< Double > b = new ArrayList< Double >();
+		
+		// -fbamodel.vmin;
+        //  fbamodel.vmax;
+        //  zeros(nrxn, 1);
+        //  zeros(nrxn, 1);
+        //  numknock;
+        //  MAXKNOCK;
+		
+		for( int i = 0; i < nrxn; ++ i )
+			b.add( -this.model.getReactions().get( i ).getLowerBound() );
+		
+		for( int i = 0; i < nrxn; ++ i )
+			b.add( this.model.getReactions().get( i ).getUpperBound() );
+		
+		for( int i = 0; i < 2 * nrxn; ++i )
+			b.add( 0.0 );
+		
+		b.add( this.model.getC() );
+		
+		b.add( 20.0 );
+		
+		/**************************************************/
+		ArrayList< Double > beq = new ArrayList< Double >();
+		
+		//  zeros(nmetab, 1);
+        //  fbamodel.f;
+        //  0;
+		
+		for( int i = 0; i < nmetab; ++i )
+			beq.add( 0.0 );
+		
+		for( int i = 0; i < nrxn; ++i )
+			beq.add( this.model.getObjective().get( i ) );
+		
+		beq.add( 0.0 );
+		
+		/**We have everything necessary to put the constraints into the solver
+		 *
+		 */
+		
+		ModelCompressor.dump( "MOST-A.txt", A, 4*nrxn+nmetab+nbin );
+		ModelCompressor.dump( "MOST-Aeq.txt", Aeq, 4*nrxn+nmetab+nbin );
+		
+		ModelCompressor.compareCSV( "MOST-A.txt", "Matlab-A.txt", "\t" );
+		ModelCompressor.compareCSV( "MOST-Aeq.txt", "Matlab-Aeq.txt", "\t" );
+		
+		for( int i = 0; i < A.size(); ++i )
+			this.getSolver().addConstraint( A.get( i ), ConType.LESS_EQUAL, b.get( i ) );
+		
+		for( int i = 0; i < Aeq.size(); ++i )
+			this.getSolver().addConstraint( Aeq.get( i ), ConType.EQUAL, beq.get( i ) );
+		
 	}        
-
 //  Setting Synthetic Objective Function
-	private void setSyntheticObjective() {
-		this.getSolver().setObjType(ObjType.Maximize);
-		Vector<Double> objective = this.model.getSyntheticObjective();
-
-		Map<Integer, Double> map = new HashMap<Integer, Double>();
-		for (int i = 0; i < objective.size(); i++) {
-			if (objective.elementAt(i) != 0.0) {
-				map.put(i, objective.elementAt(i));
-			}
-		}
-		this.getSolver().setObj(map);
-
-	}
+	
 
 	public void setGDBBModel(GDBBModel m) {
 		
@@ -370,18 +431,20 @@ public class GDBB extends Thread {
 			else
 				m.getSyntheticObjective().add( 0.0 );
 		}
+		
+		m.setReactions( compressor.getReactions() );
+		m.setMetabolites( compressor.getMetabolites() );
 	
 	}
 
 //  public ArrayList<Double> run() {
-	public void run() {
+	
+	public void run()
+	{
 		this.setEnv(model.getTimeLimit(), model.getThreadNum());
-		this.setVars();
+		this.setVarsAndObjective();
 		this.setConstraints();
-		this.setSyntheticObjective();
 		this.getSolver().setDataModel( this.model );
-		this.model.setReactions( compressor.getReactions() );
-		this.model.setMetabolites( compressor.getMetabolites() );
 		this.solver.setModelCompressor( this.compressor );
 		try
 		{
@@ -401,7 +464,7 @@ public class GDBB extends Thread {
 	public void setTimeLimit(double timeLimit) {
 	}
 
-	private void setEnv(double timeLimit, int threadNum) {
+	private void setEnv( double timeLimit, int threadNum ) {
 		this.getSolver().setEnv(timeLimit, threadNum);
 	}
 

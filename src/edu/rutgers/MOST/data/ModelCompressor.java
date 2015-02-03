@@ -32,8 +32,8 @@ public class ModelCompressor
 	private int or_column_count = 0;
 	private int or_row_count = 0;
 	
-	@SuppressWarnings( { "resource", "unused" } )
-	private void compareCSV( String file1, String file2, String delim )
+	@SuppressWarnings( "resource" )
+	public static void compareCSV( String file1, String file2, String delim )
 	{
 		BufferedReader brMost = null;
 		BufferedReader brMatlab = null;
@@ -62,8 +62,8 @@ public class ModelCompressor
 				
 				for( int i = 0; i < valsMatlab.length; ++i )
 				{
-					Double valMatlab = Double.valueOf( valsMatlab[i] );
-					Double valMost = Double.valueOf( valsMost[i] );
+					Double valMatlab = Double.valueOf( valsMatlab[i] ) + 0.0;
+					Double valMost = Double.valueOf( valsMost[i] ) + 0.0;
 					
 					if( !valMatlab.equals( valMost ) )
 					{
@@ -96,8 +96,7 @@ public class ModelCompressor
 		}
 	}
 	
-	@SuppressWarnings( "unused" )
-	private void dump( String filename, ArrayList< Map< Integer, Double > > mat )
+	public static void dump( String filename, ArrayList< Map< Integer, Double > > mat, int nrxn )
 	{
 		PrintWriter writer = null;
 		try
@@ -107,7 +106,7 @@ public class ModelCompressor
 			for( Map< Integer, Double > m : mat )
 			{
 				String delim = "";
-				for( int i = 0; i < lowerBounds.size(); ++i )
+				for( int i = 0; i < nrxn; ++i )
 				{
 					Double value = m.get( i );
 					if( value == null )
@@ -116,6 +115,30 @@ public class ModelCompressor
 					delim = "\t";
 				}
 				writer.write( "\r\n" );
+			}
+		}
+		catch( Exception e )
+		{
+		}
+		finally
+		{
+			if( writer !=null )
+				writer.close();
+		}
+	}
+	
+	public static void dump( String filename, ArrayList< Double > v )
+	{
+		PrintWriter writer = null;
+		try
+		{
+			writer = new PrintWriter( filename, "US-ASCII" );
+					
+			String delim = "";
+			for( Double d : v )
+			{
+				writer.write( delim + d.toString() );
+				delim = "\r\n";
 			}
 		}
 		catch( Exception e )
@@ -286,7 +309,7 @@ public class ModelCompressor
 				for( int i = 0; i < vals.length; ++i )
 				{
 					Double val = Double.valueOf( vals[ i ] );
-					if( val != 0.0 )
+					if( val + 0.0 != 0.0 )
 						con.put( i, val );
 				}
 				if( !con.isEmpty() )
@@ -307,7 +330,7 @@ public class ModelCompressor
 				for( int i = 0; i < vals.length; ++i )
 				{
 					Double val = Double.valueOf( vals[ i ] );
-					if( val != 0.0 )
+					if( val + 0.0 != 0.0 )
 						con.put( i, val );
 				}
 				if( !con.isEmpty() )
@@ -329,7 +352,7 @@ public class ModelCompressor
 				for( int i = 0; i < vals.length; ++i )
 				{
 					Double val = Double.valueOf( vals[ i ] );
-					if( val != 0.0 )
+					if( val + 0.0 != 0.0 )
 						con.put( i, val );
 				}
 				if( !con.isEmpty() )
@@ -382,7 +405,7 @@ public class ModelCompressor
 				for( int i = 0; i < vals.length; ++i )
 				{
 					double v = Double.valueOf( vals[ i ] );
-					if( v != 0.0 )
+					if( v + 0.0 != 0.0 )
 						objVec.put( idx, v );
 				}
 				++idx;
@@ -402,7 +425,7 @@ public class ModelCompressor
 				for( int i = 0; i < vals.length; ++i )
 				{
 					double v = Double.valueOf( vals[ i ] );
-					if( v != 0.0 )
+					if( v + 0.0 != 0.0 )
 						synthObjVec.put( idx, v );
 				}
 				++idx;
@@ -450,8 +473,12 @@ public class ModelCompressor
 			
 	//		dump( "MostSMatrix-red-part.txt", sMatrix );
 	//		dump( "MostGMatrix-red-part.txt", gMatrix );
+	//		dump( "MostLB-red-part.txt", lowerBounds );
+	//		dump( "MostUB-red-part.txt", upperBounds );
 	//		compareCSV( "MostSMatrix-red-part.txt", "MatlabSMatrix-red-part.txt", "\t" );
 	//		compareCSV( "MostGMatrix-red-part.txt", "MatlabGMatrix-red-part.txt", "\t" );
+	//		compareCSV( "MostLB-red-part.txt", "MatlabLB-red-part.txt", "\t" );
+	//		compareCSV( "MostUB-red-part.txt", "MatlabUB-red-part.txt", "\t" );
 			
 			orColCount = columnCount();
 			orRowCount = rowCount();
@@ -461,7 +488,7 @@ public class ModelCompressor
 			{
 				int nonzerocount = 0;
 				for( int j = 0; j < columnCount(); ++j )
-					if( getsMat( i, j ) != 0.0 )
+					if( getsMat( i, j ) + 0.0 != 0.0 )
 						++nonzerocount;
 				if( nonzerocount == 0 )
 					removeRow( i );
@@ -475,7 +502,7 @@ public class ModelCompressor
 			{
 				int nonzerocount = 0;
 				for( int j = 0; j < columnCount(); ++j )
-					if( getsMat( i, j ) != 0.0 )
+					if( getsMat( i, j ) + 0.0 != 0.0 )
 						++nonzerocount;
 				if( nonzerocount == 1 )
 					badrows.add( i );
@@ -493,7 +520,7 @@ public class ModelCompressor
 			{
 				ArrayList< Integer > cols = new ArrayList< Integer >();
 				for( int j = 0; j < columnCount(); ++j )
-					if( getsMat( i, j ) != 0.0 )
+					if( getsMat( i, j ) + 0.0 != 0.0 )
 						cols.add( j );
 				if( cols.size() == 1 )
 					if( !badcols.contains( cols.get( 0 ) ) )
@@ -517,7 +544,7 @@ public class ModelCompressor
 			{
 				int nonzerocount = 0;
 				for( int j = 0; j < columnCount(); ++j )
-					if( getsMat( i, j ) != 0.0 )
+					if( getsMat( i, j ) + 0.0 != 0.0 )
 						++nonzerocount;
 				if( nonzerocount == 0 )
 					removeRow( i );
@@ -525,9 +552,12 @@ public class ModelCompressor
 		
 	//		dump( "MostSMatrix-red-part.txt", sMatrix );
 	//		dump( "MostGMatrix-red-part.txt", gMatrix );
+	//		dump( "MostLB-red-part.txt", lowerBounds );
+	//		dump( "MostUB-red-part.txt", upperBounds );
 	//		compareCSV( "MostSMatrix-red-part.txt", "MatlabSMatrix-red-part.txt", "\t" );
 	//		compareCSV( "MostGMatrix-red-part.txt", "MatlabGMatrix-red-part.txt", "\t" );
-	//		compareCSV( "MOSTpass.txt", "Matlabpass.txt", "\t" );
+	//		compareCSV( "MostLB-red-part.txt", "MatlabLB-red-part.txt", "\t" );
+	//		compareCSV( "MostUB-red-part.txt", "MatlabUB-red-part.txt", "\t" );
 			
 			for( boolean repeat = true; repeat; )
 			{
@@ -626,15 +656,23 @@ public class ModelCompressor
 			
 	//		dump( "MostSMatrix-red-part.txt", sMatrix );
 	//		dump( "MostGMatrix-red-part.txt", gMatrix );
+	//		dump( "MostLB-red-part.txt", lowerBounds );
+	//		dump( "MostUB-red-part.txt", upperBounds );
 	//		compareCSV( "MostSMatrix-red-part.txt", "MatlabSMatrix-red-part.txt", "\t" );
 	//		compareCSV( "MostGMatrix-red-part.txt", "MatlabGMatrix-red-part.txt", "\t" );
+	//		compareCSV( "MostLB-red-part.txt", "MatlabLB-red-part.txt", "\t" );
+	//		compareCSV( "MostUB-red-part.txt", "MatlabUB-red-part.txt", "\t" );
 			
 		} while( rowCount() < orRowCount || columnCount() < orColCount );
 		
 	//	dump( "MostSMatrix-red-part.txt", sMatrix );
 	//	dump( "MostGMatrix-red-part.txt", gMatrix );
+	//	dump( "MostLB-red-part.txt", lowerBounds );
+	//	dump( "MostUB-red-part.txt", upperBounds );
 	//	compareCSV( "MostSMatrix-red-part.txt", "MatlabSMatrix-red-part.txt", "\t" );
 	//	compareCSV( "MostGMatrix-red-part.txt", "MatlabGMatrix-red-part.txt", "\t" );
+	//	compareCSV( "MostLB-red-part.txt", "MatlabLB-red-part.txt", "\t" );
+	//	compareCSV( "MostUB-red-part.txt", "MatlabUB-red-part.txt", "\t" );
 		
 	//	System.out.println( "Done!" );
 	}
@@ -760,7 +798,7 @@ public class ModelCompressor
 	 	
 	 	// gMat
 	 	if( gMatrix != null )
-		 	removeColumn( j, gMatrix, false );
+		 	removeColumn( j, gMatrix, true );
 	 	
 	 	//objVec
  		objVec = removeColumn( j, objVec );
