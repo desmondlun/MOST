@@ -685,13 +685,13 @@ public class ModelCompressor
 	public ArrayList< Double > decompress( ArrayList< Double > v )
 	{
 		ArrayList< Double > result = new ArrayList< Double >();
-		for( int i = 0; i < recMat.size(); ++i )
+		for( Map< Integer, Double > row : recMat ) // recMat.size() == reactions.size()
 		{
 			double dot = 0.0;
-			for( int j = 0; j < v.size(); ++j )
-			{
-				dot += getrMat(i,j) * v.get( j );
-			}
+			
+			for( Entry< Integer, Double > rowEntry : row.entrySet() )
+				dot += rowEntry.getValue() * v.get( rowEntry.getKey() );
+			
 			result.add( dot );
 		}
 		
