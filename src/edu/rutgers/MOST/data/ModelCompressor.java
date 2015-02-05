@@ -732,7 +732,7 @@ public class ModelCompressor
 			result[ i ] = vecFluxes.get( i );
 		
 		// fill in the knockouts part (nbin)
-		for( int i = v.length - geneAssociations.size(); i < v.length + geneAssociations.size(); ++i )
+		for( int i = v.length - geneAssociations.size(); i < v.length; ++i )
 			result[ i ] = v[ i ];
 				
 		return result;
