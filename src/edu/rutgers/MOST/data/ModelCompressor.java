@@ -169,6 +169,8 @@ public class ModelCompressor
 		}
 		
 		this.or_column_count = reactions.size();
+		
+		createRecMat();
 			
 	}
 	
@@ -208,7 +210,7 @@ public class ModelCompressor
 	{
 		recMat = new ArrayList< Map< Integer, Double > >();
 		int j = 0;
-		for( int i = 0; i < columnCount(); ++i )
+		for( int i = 0; i < reactions.size(); ++i )
 		{
 			HashMap< Integer, Double > map = new HashMap< Integer, Double >();
 			map.put( j++, 1.0 );
@@ -454,9 +456,6 @@ public class ModelCompressor
 		if( sMatrix == null || /*gMatrix == null ||*/
 				objVec == null || lowerBounds == null || upperBounds == null )
 			return;
-
-		// create the recmap
-		createRecMat();
 		
 		// start the compression
 		int orColCount;
@@ -733,7 +732,10 @@ public class ModelCompressor
 		
 		// fill in the knockouts part (nbin)
 		for( int i = v.length - geneAssociations.size(); i < v.length; ++i )
-			result[ i ] = v[ i ];
+			vecFluxes.add( v[ i ] );
+		
+		for( int i = 0; i < vecFluxes.size(); ++i )
+			result[ i ] = vecFluxes.get( i );
 				
 		return result;
 	}
@@ -850,7 +852,6 @@ public class ModelCompressor
 		this.geneAssociations = (Vector<String>)geneAssociations.clone();
 	}
 
-	
 	public ArrayList< Map< Integer, Double > > getSMatrix()
 	{
 		return this.sMatrix;

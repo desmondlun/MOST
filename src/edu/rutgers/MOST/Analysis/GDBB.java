@@ -387,7 +387,7 @@ public class GDBB extends Thread {
 		compressor.setsMatrix( m.getSMatrix() );
 		compressor.setObjVec( mapObjective );
 		compressor.setSynthObjVec( mapSyntheticObjective );
-		compressor.compressNet();	
+	//	compressor.compressNet();	
 	}
 
 //  public ArrayList<Double> run() {
