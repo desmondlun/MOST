@@ -19,8 +19,6 @@ public class ModelCompressor
 {
 	private Vector< SBMLReaction > reactions = null;
 	Vector< ModelMetabolite > metabolites = null;
-	Vector< ModelMetabolite > metabolitesCopy = null;
-	private Vector< SBMLReaction > reactionsCopy = null;
 	private Vector<String> geneAssociations = null;
 	private ArrayList< Map< Integer, Double > > sMatrix = null;
 	private ArrayList< Map< Integer, Double > > gMatrix = null;
@@ -157,17 +155,23 @@ public class ModelCompressor
 		return reactions;
 	}
 
+	@SuppressWarnings( "unchecked" )
 	public void setReactions( Vector< SBMLReaction > reactions )
 	{
-		this.reactions = reactions;
-		this.reactionsCopy = new Vector< SBMLReaction >( reactions );
+		this.reactions = (Vector< SBMLReaction >)reactions.clone();
+		this.lowerBounds = new ArrayList< Double >();
+		this.upperBounds = new ArrayList< Double >();
+		
+		for( SBMLReaction r : reactions )
+		{
+			lowerBounds.add( r.getLowerBound() );
+			upperBounds.add( r.getUpperBound() );
+		}
+		
+		this.or_column_count = reactions.size();
+			
 	}
 	
-	public Vector< SBMLReaction > getReactionsCopy()
-	{
-		return reactionsCopy;
-	}
-
 	private int rowCount()
 	{
 		return sMatrix.size();
@@ -241,16 +245,6 @@ public class ModelCompressor
 	public int getOrColumnCount()
 	{
 		return or_column_count;
-	}
-	
-	public ArrayList< Double > getLowerBounds()
-	{
-		return this.lowerBounds;
-	}
-	
-	public ArrayList< Double > getUpperBounds()
-	{
-		return this.upperBounds;
 	}
 	
 	public ModelCompressor()
@@ -674,6 +668,12 @@ public class ModelCompressor
 	//	compareCSV( "MostLB-red-part.txt", "MatlabLB-red-part.txt", "\t" );
 	//	compareCSV( "MostUB-red-part.txt", "MatlabUB-red-part.txt", "\t" );
 		
+		for( int i = 0; i < reactions.size(); ++i )
+		{
+			reactions.get( i ).setLowerBound( lowerBounds.get( i ) );
+			reactions.get( i ).setUpperBound( upperBounds.get( i ) );
+		}
+		
 	//	System.out.println( "Done!" );
 	}
 	
@@ -693,6 +693,8 @@ public class ModelCompressor
 				dot += getrMat(i,j) * v.get( j );
 			}
 			result.add( dot );
+			if( Double.toString( dot ).contains( "9.26" ) )
+				System.out.println( "Here!" );
 		}
 		
 		return result;
@@ -712,33 +714,28 @@ public class ModelCompressor
 	 	X
 	 	_
 	 	X
-	 	X } 3n + m (???) (compressed)
+	 	X } 3n + m (fluxes and metabs) (compressed)
 	 	X
 	 	_
 	 	X
-	 	X } u (knockouts:unique gene associations) (compressed)
+	 	X } u (knockouts:unique gene associations) (uncompressed)
 	 	X
 	 	_
 	*/
-		double[] result = new double[ 4 * or_column_count + or_row_count + geneAssociations.size() ];
+		double[] result = new double[ or_column_count + geneAssociations.size() ];
 		
 		// fill in the fluxes part
 		ArrayList< Double > vecFluxes = new ArrayList< Double >();
-		for( int j = 0; j < lowerBounds.size(); ++j )
+		for( int j = 0; j < this.reactions.size(); ++j )
 			vecFluxes.add( v[ j ] );
 		vecFluxes = decompress( vecFluxes );
-		for( int j = 0; j < or_column_count; ++j )
-			result[ j ] = vecFluxes.get( j );
-		vecFluxes.clear();
 		
-		// fill in the knockouts part
-		ArrayList< Double > knockouts = new ArrayList< Double >();
-		for( int j = 4 * lowerBounds.size() + sMatrix.size(); j < 4 * lowerBounds.size() + sMatrix.size() + geneAssociations.size(); ++j )
-			knockouts.add( v[ j ] );
-		//knockouts = decompressKO( knockouts );
-		for( int j = 4 * or_column_count + or_row_count; j < 4 * or_column_count + or_row_count + geneAssociations.size(); ++j )
-			result[ j ] = knockouts.get( j - (4 * or_column_count + or_row_count) );
-		knockouts.clear();
+		for( int i = 0; i < vecFluxes.size(); ++i )
+			result[ i ] = vecFluxes.get( i );
+		
+		// fill in the knockouts part (nbin)
+		for( int i = v.length - geneAssociations.size(); i < v.length + geneAssociations.size(); ++i )
+			result[ i ] = v[ i ];
 				
 		return result;
 	}
@@ -789,7 +786,6 @@ public class ModelCompressor
 	
 	private void removeColumn( int j )
 	{
-	
 		// sMat
 	 	removeColumn( j, sMatrix, false );
 	 	
@@ -798,7 +794,7 @@ public class ModelCompressor
 	 	
 	 	// gMat
 	 	if( gMatrix != null )
-		 	removeColumn( j, gMatrix, true );
+		 	removeColumn( j, gMatrix, false );
 	 	
 	 	//objVec
  		objVec = removeColumn( j, objVec );
@@ -824,18 +820,6 @@ public class ModelCompressor
 			metabolites.remove( i );
 	}
 
-	public void setLowerBounds( ArrayList< Double > lowerBounds )
-	{
-		this.lowerBounds = lowerBounds;
-		if( lowerBounds != null )
-			or_column_count = lowerBounds.size();
-	}
-
-	public void setUpperBounds( ArrayList< Double > upperBounds )
-	{
-		this.upperBounds = upperBounds;
-	}
-
 	public void setSynthObjVec( Map< Integer, Double > mapSyntheticObjective )
 	{
 		this.synthObjVec = mapSyntheticObjective;
@@ -846,15 +830,10 @@ public class ModelCompressor
 		return this.synthObjVec;
 	}
 	
+	@SuppressWarnings( "unchecked" )
 	public void setMetabolites( Vector< ModelMetabolite > metabolites )
 	{
-		this.metabolites = metabolites;
-		this.metabolitesCopy = new Vector< ModelMetabolite >( metabolites );
-	}
-	
-	public Vector< ModelMetabolite > getMetabolitesCopy()
-	{
-		return metabolitesCopy;
+		this.metabolites = (Vector< ModelMetabolite >)metabolites.clone();
 	}
 	
 	public Vector< ModelMetabolite > getMetabolites()
@@ -867,8 +846,44 @@ public class ModelCompressor
 		return geneAssociations;
 	}
 
+	@SuppressWarnings( "unchecked" )
 	public void setGeneAssociations( Vector<String> geneAssociations )
 	{
-		this.geneAssociations = geneAssociations;
+		this.geneAssociations = (Vector<String>)geneAssociations.clone();
+	}
+
+	
+	public ArrayList< Map< Integer, Double > > getSMatrix()
+	{
+		return this.sMatrix;
+	}
+
+	public ArrayList< Map< Integer, Double > > getGprMatrix()
+	{
+		return this.gMatrix;
+	}
+
+	public ArrayList< Double > getSyntheticObjective()
+	{
+		ArrayList< Double > result = new ArrayList< Double >();
+		for( int i = 0; i < this.reactions.size(); ++i )
+			result.add( 0.0 );
+		
+		for( Entry< Integer, Double > entry : this.synthObjVec.entrySet() )
+			result.set( entry.getKey(), entry.getValue() );
+		
+		return result;
+	}
+
+	public ArrayList< Double > getObjective()
+	{
+		ArrayList< Double > result = new ArrayList< Double >();
+		for( int i = 0; i < this.reactions.size(); ++i )
+			result.add( 0.0 );
+		
+		for( Entry< Integer, Double > entry : this.objVec.entrySet() )
+			result.set( entry.getKey(), entry.getValue() );
+		
+		return result;
 	}
 }

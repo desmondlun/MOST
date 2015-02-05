@@ -60,8 +60,7 @@ public abstract class Analysis
 			upperBounds.add( ko ? 0.0 : reac.getUpperBound() );
 		}
 		compressor.setsMatrix( sMatrix );
-		compressor.setLowerBounds( lowerBounds );
-		compressor.setUpperBounds( upperBounds );
+		compressor.setReactions( reactions );
 		compressor.compressNet();
 		sMatrix = compressor.getsMatrix();
 	

@@ -11471,7 +11471,7 @@ public class GraphicalInterface extends JFrame {
 				double[] x = solution.getKnockoutVector();
 				String synObjString = "";
 				Vector< String > uniqueGeneAssociations = rFactory.getUniqueGeneAssociations();
-				int knockoutOffset = 4*model.getNumReactions() + model.getNumMetabolites();
+				int knockoutOffset = model.getNumReactions();
 				Vector< Double > synthObjVector = rFactory.getSyntheticObjectiveVector();
 				Vector< String > reactionAbbreviations = rFactory.getReactionAbbreviations();
 				for (int i = 0; i < synthObjVector.size(); i ++) {
