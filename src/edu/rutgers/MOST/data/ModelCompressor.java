@@ -693,8 +693,6 @@ public class ModelCompressor
 				dot += getrMat(i,j) * v.get( j );
 			}
 			result.add( dot );
-			if( Double.toString( dot ).contains( "9.26" ) )
-				System.out.println( "Here!" );
 		}
 		
 		return result;

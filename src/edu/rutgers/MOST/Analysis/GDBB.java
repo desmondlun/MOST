@@ -7,7 +7,6 @@ import java.util.Vector;
 
 import edu.rutgers.MOST.data.*;
 import edu.rutgers.MOST.optimization.solvers.*;
-import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 
 public class GDBB extends Thread {
 	
