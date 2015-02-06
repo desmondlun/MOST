@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 
+import edu.rutgers.MOST.presentation.GraphicalInterface;
+
 /**
  * This is a model reducer class used for
  * compressing FBA and GDBB models
@@ -29,6 +31,12 @@ public class ModelCompressor
 	private ArrayList< Double > upperBounds = null;
 	private int or_column_count = 0;
 	private int or_row_count = 0;
+	
+	private void setStatus( String status )
+	{
+	//	GraphicalInterface.getGdbbDialog().getti
+		GraphicalInterface.getGdbbDialog().getCounterLabel().setText( status );
+	}
 	
 	@SuppressWarnings( "resource" )
 	public static void compareCSV( String file1, String file2, String delim )
@@ -457,6 +465,7 @@ public class ModelCompressor
 				objVec == null || lowerBounds == null || upperBounds == null )
 			return;
 		
+		setStatus( "Preparing to compress model..." );
 		// start the compression
 		int orColCount;
 		int orRowCount;
@@ -484,7 +493,10 @@ public class ModelCompressor
 					if( getsMat( i, j ) + 0.0 != 0.0 )
 						++nonzerocount;
 				if( nonzerocount == 0 )
+				{
 					removeRow( i );
+					setStatus( "Removing redundant constraint: row " + Integer.toString( i+1 ) );
+				}
 			}
 			
 			// keep only the columns that have a nonzero value
@@ -498,13 +510,11 @@ public class ModelCompressor
 					if( getsMat( i, j ) + 0.0 != 0.0 )
 						++nonzerocount;
 				if( nonzerocount == 1 )
+				{
 					badrows.add( i );
+					setStatus( "Found a redundant constraint: row " + (i+1) );
+				}
 			}
-			
-			// more debug code
-			ArrayList< Integer > badrows_mat = new ArrayList< Integer >();
-			for( int i = badrows.size() - 1; i >= 0; --i )
-				badrows_mat.add( badrows.get( i ) + 1 );
 			
 			// remove the rows (reactions) that have only 1 nonzero column (flux)
 			// due to steady-state constraint, it will optimize to be 0 anyway
@@ -517,15 +527,14 @@ public class ModelCompressor
 						cols.add( j );
 				if( cols.size() == 1 )
 					if( !badcols.contains( cols.get( 0 ) ) )
+					{
 						badcols.add( cols.get( 0 ) );
+						setStatus( "Found a redundant reaction: column " + (cols.get( 0 )+1) );
+					}
 			}
 			
-			ArrayList< Integer > badcols_mat = new ArrayList< Integer >();
-			for( int i = badcols.size()-1; i >= 0; --i )
-				badcols_mat.add( badcols.get( i ) + 1 );
-			
+			setStatus( "Applying changes..." );
 			Collections.sort( badcols, Collections.reverseOrder() );
-			Collections.sort( badcols_mat, Collections.reverseOrder() );
 			
 			for( int i : badcols )
 				removeColumn( i );
@@ -540,7 +549,10 @@ public class ModelCompressor
 					if( getsMat( i, j ) + 0.0 != 0.0 )
 						++nonzerocount;
 				if( nonzerocount == 0 )
+				{
 					removeRow( i );
+					setStatus( "Removing redundant constraint: row " + Integer.toString( i+1 ) );
+				}
 			}
 		
 	//		dump( "MostSMatrix-red-part.txt", sMatrix );
@@ -556,6 +568,7 @@ public class ModelCompressor
 			{
 				// find the rows that have only 2 nonzero columns (fluxes)
 				// and merge them
+				setStatus( "Searching for candidate masses to merge..." );
 				ArrayList< Integer > mergecols = new ArrayList< Integer >();
 				ArrayList< Double > mergecoefs = new ArrayList< Double >();
 				int candmass = 0;
@@ -587,6 +600,8 @@ public class ModelCompressor
 				}
 				
 		//		System.out.println( "merging columns:[" + Integer.toString( mergecols.get( 0 ) +1) + " " + Integer.toString( mergecols.get( 1 ) +1) + "]" );
+				
+				setStatus( "Candidate masses found! \nColumns " + mergecols.get( 0 ) + " and " + mergecols.get( 1 ) );
 				
 				// for sMatrix
 				for( int i = 0; i < rowCount(); ++i )
@@ -637,6 +652,7 @@ public class ModelCompressor
 					upperBounds.set( mergecols.get( 0 ), Math.min( upperBounds.get( mergecols.get( 0 ) ), -upperBounds.get( mergecols.get( 1 ) ) * mergecoefs.get( 1 ) / mergecoefs.get( 0 ) ) );
 				}
 
+				setStatus( "Applying merge.." );
 				 boolean removeExtra = (lowerBounds.get( mergecols.get( 0 ) ) >= upperBounds.get( mergecols.get( 0 ) ));
 				removeColumn( mergecols.get( 1 ) );
 				if( removeExtra )
@@ -672,7 +688,8 @@ public class ModelCompressor
 			reactions.get( i ).setLowerBound( lowerBounds.get( i ) );
 			reactions.get( i ).setUpperBound( upperBounds.get( i ) );
 		}
-		
+		setStatus( "Done!" );
+		GraphicalInterface.startGDBBTimer();
 	//	System.out.println( "Done!" );
 	}
 	

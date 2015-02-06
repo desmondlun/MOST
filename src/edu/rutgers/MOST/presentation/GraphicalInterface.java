@@ -201,7 +201,12 @@ public class GraphicalInterface extends JFrame {
 	//Methods of saving current directory
 	public static SettingsFactory curSettings;
 
-	public javax.swing.Timer gdbbTimer = null;
+	public static javax.swing.Timer gdbbTimer = null;
+	
+	public static synchronized void startGDBBTimer()
+	{
+		gdbbTimer.start();
+	}
 
 	static protected Runnable solutionListener = null;
 	
@@ -362,7 +367,7 @@ public class GraphicalInterface extends JFrame {
 	
 	private static GDBBDialog gdbbDialog;
 
-	public static GDBBDialog getGdbbDialog() {
+	public static synchronized GDBBDialog getGdbbDialog() {
 		return gdbbDialog;
 	}
 
@@ -1913,7 +1918,6 @@ public class GraphicalInterface extends JFrame {
                     						// run gdbb
                     						gdbbDialog.disableComponents();
                     						gdbbDialog.stopButton.setEnabled(true);
-                    						gdbbTimer.start();
 
                     						GDBBModel model = new GDBBModel(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN]);
                     						model.setC((new Double(gdbbDialog.getNumKnockouts())).doubleValue());
