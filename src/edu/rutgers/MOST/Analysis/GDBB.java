@@ -239,7 +239,7 @@ public class GDBB extends Thread {
 		// r5
 		{
 			Map< Integer, Double > constraint = new HashMap< Integer, Double >();
-			for( int i = 4 * nrxn + nmetab; i < 5 * nrxn + nmetab; ++i )
+			for( int i = 4 * nrxn + nmetab; i < 4 * nrxn + nmetab + nbin; ++i )
 				constraint.put( i, 1.0 );
 			A.add( constraint );
 		}
@@ -247,8 +247,8 @@ public class GDBB extends Thread {
 		// r6
 		{
 			Map< Integer, Double > constraint = new HashMap< Integer, Double >();
-			for( int i = 4 * nrxn + nmetab; i < 5 * nrxn + nmetab; ++i )
-				constraint.put( i, 6.0 );
+			for( int i = 4 * nrxn + nmetab; i < 4 * nrxn + nmetab + nbin; ++i )
+				constraint.put( i, 1.0 );
 			A.add( constraint );
 		}
 		
@@ -340,11 +340,11 @@ public class GDBB extends Thread {
 		 *
 		 */
 		
-	//	ModelCompressor.dump( "MOST-A.txt", A, 4*nrxn+nmetab+nbin );
-	//	ModelCompressor.dump( "MOST-Aeq.txt", Aeq, 4*nrxn+nmetab+nbin );
+		ModelCompressor.dump( "MOST-A.txt", A, 4*nrxn+nmetab+nbin );
+		ModelCompressor.dump( "MOST-Aeq.txt", Aeq, 4*nrxn+nmetab+nbin );
 		
-	//	ModelCompressor.compareCSV( "MOST-A.txt", "Matlab-A.txt", "\t" );
-	//	ModelCompressor.compareCSV( "MOST-Aeq.txt", "Matlab-Aeq.txt", "\t" );
+		ModelCompressor.compareCSV( "MOST-A.txt", "Matlab-A.txt", "\t" );
+		ModelCompressor.compareCSV( "MOST-Aeq.txt", "Matlab-Aeq.txt", "\t" );
 		
 		for( int i = 0; i < A.size(); ++i )
 			this.getSolver().addConstraint( A.get( i ), ConType.LESS_EQUAL, b.get( i ) );
@@ -353,9 +353,7 @@ public class GDBB extends Thread {
 			this.getSolver().addConstraint( Aeq.get( i ), ConType.EQUAL, beq.get( i ) );
 		
 	}        
-//  Setting Synthetic Objective Function
 	
-
 	public void setGDBBModel(GDBBModel m) {
 		
 		this.model = m;
@@ -389,8 +387,6 @@ public class GDBB extends Thread {
 		compressor.setSynthObjVec( mapSyntheticObjective );
 		compressor.compressNet();	
 	}
-
-//  public ArrayList<Double> run() {
 	
 	public void run()
 	{
