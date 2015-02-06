@@ -340,11 +340,11 @@ public class GDBB extends Thread {
 		 *
 		 */
 		
-		ModelCompressor.dump( "MOST-A.txt", A, 4*nrxn+nmetab+nbin );
-		ModelCompressor.dump( "MOST-Aeq.txt", Aeq, 4*nrxn+nmetab+nbin );
+	//	ModelCompressor.dump( "MOST-A.txt", A, 4*nrxn+nmetab+nbin );
+	//	ModelCompressor.dump( "MOST-Aeq.txt", Aeq, 4*nrxn+nmetab+nbin );
 		
-		ModelCompressor.compareCSV( "MOST-A.txt", "Matlab-A.txt", "\t" );
-		ModelCompressor.compareCSV( "MOST-Aeq.txt", "Matlab-Aeq.txt", "\t" );
+	//	ModelCompressor.compareCSV( "MOST-A.txt", "Matlab-A.txt", "\t" );
+	//	ModelCompressor.compareCSV( "MOST-Aeq.txt", "Matlab-Aeq.txt", "\t" );
 		
 		for( int i = 0; i < A.size(); ++i )
 			this.getSolver().addConstraint( A.get( i ), ConType.LESS_EQUAL, b.get( i ) );
