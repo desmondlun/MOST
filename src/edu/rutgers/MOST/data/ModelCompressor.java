@@ -296,171 +296,6 @@ public class ModelCompressor
 	
 	public void compressNetDebug()
 	{
-		BufferedReader br = null;
-		try
-		{
-			// read Smatrix
-			sMatrix.clear();
-			br = new BufferedReader( new FileReader( "MatlabSMatrix-red-part.txt" ) );
-			String line = "";
-			while( (line = br.readLine()) != null )
-			{
-				Map< Integer, Double > con = new HashMap< Integer, Double >();
-				if( line.equals( "" ) )
-					break;
-				String[] vals = line.split( "\t" );
-				
-				for( int i = 0; i < vals.length; ++i )
-				{
-					Double val = Double.valueOf( vals[ i ] );
-					if( val + 0.0 != 0.0 )
-						con.put( i, val );
-				}
-				if( !con.isEmpty() )
-					sMatrix.add( con );
-			}
-			br.close();
-			
-			// read Gmatrix
-			gMatrix.clear();
-			br = new BufferedReader( new FileReader( "MatlabGMatrix-red-part.txt" ) );
-			while( (line = br.readLine()) != null )
-			{
-				Map< Integer, Double > con = new HashMap< Integer, Double >();
-				if( line.equals( "" ) )
-					break;
-				String[] vals = line.split( "\t" );
-				
-				for( int i = 0; i < vals.length; ++i )
-				{
-					Double val = Double.valueOf( vals[ i ] );
-					if( val + 0.0 != 0.0 )
-						con.put( i, val );
-				}
-				if( !con.isEmpty() )
-					gMatrix.add( con );
-			}
-			br.close();
-			
-			
-			// read Rmatrix
-			recMat = new ArrayList< Map< Integer, Double > >();
-			br = new BufferedReader( new FileReader( "MatlabRMatrix-red-part.txt" ) );
-			while( (line = br.readLine()) != null )
-			{
-				Map< Integer, Double > con = new HashMap< Integer, Double >();
-				if( line.equals( "" ) )
-					break;
-				String[] vals = line.split( "\t" );
-				
-				for( int i = 0; i < vals.length; ++i )
-				{
-					Double val = Double.valueOf( vals[ i ] );
-					if( val + 0.0 != 0.0 )
-						con.put( i, val );
-				}
-				if( !con.isEmpty() )
-					recMat.add( con );
-			}
-			br.close();
-			
-			// read LBounds
-			lowerBounds.clear();
-			br = new BufferedReader( new FileReader( "MatlabLBounds.txt" ) );
-			while( (line = br.readLine()) != null )
-			{
-				if( line.equals( "" ) )
-					break;
-				String[] vals = line.split( "\t" );
-				
-				for( int i = 0; i < vals.length; ++i )
-				{
-					lowerBounds.add( Double.valueOf( vals[ i ].equals( "-Inf" ) ? "-100" : vals[ i ] ) );
-				}
-			}
-			br.close();
-			
-			// read UBounds
-			upperBounds.clear();
-			br = new BufferedReader( new FileReader( "MatlabUBounds.txt" ) );
-			while( (line = br.readLine()) != null )
-			{
-				if( line.equals( "" ) )
-					break;
-				String[] vals = line.split( "\t" );
-				
-				for( int i = 0; i < vals.length; ++i )
-				{
-					upperBounds.add( Double.valueOf(  vals[ i ].equals( "Inf" ) ? "100" : vals[ i ] ) );
-				}
-			}
-			br.close();
-			
-			// read BObj
-			objVec.clear();
-			br = new BufferedReader( new FileReader( "MatlabBObj.txt" ) );
-			int idx = 0;
-			while( (line = br.readLine()) != null )
-			{
-				if( line.equals( "" ) )
-					break;
-				String[] vals = line.split( "\t" );
-				
-				for( int i = 0; i < vals.length; ++i )
-				{
-					double v = Double.valueOf( vals[ i ] );
-					if( v + 0.0 != 0.0 )
-						objVec.put( idx, v );
-				}
-				++idx;
-			}
-			br.close();
-			
-			// read SObj
-			synthObjVec.clear();
-			br = new BufferedReader( new FileReader( "MatlabSObj.txt" ) );
-			idx = 0;
-			while( (line = br.readLine()) != null )
-			{
-				if( line.equals( "" ) )
-					break;
-				String[] vals = line.split( "\t" );
-				
-				for( int i = 0; i < vals.length; ++i )
-				{
-					double v = Double.valueOf( vals[ i ] );
-					if( v + 0.0 != 0.0 )
-						synthObjVec.put( idx, v );
-				}
-				++idx;
-			}
-			br.close();
-			
-			while( this.reactions.size() > this.lowerBounds.size() )
-				this.reactions.remove( 0 );
-			
-			br = null;
-		}
-		catch( Exception e )
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
-				if( br != null )
-					br.close();
-			}
-			catch( Exception e )
-			{
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	public void compressNet()
-	{
 		if( sMatrix == null || /*gMatrix == null ||*/
 				objVec == null || lowerBounds == null || upperBounds == null )
 			return;
@@ -592,6 +427,258 @@ public class ModelCompressor
 						mergecoefs.clear();
 					}
 				}
+				
+				if( mergecols.size() != 2 )
+				{
+					repeat = false;
+					continue;
+				}
+				
+		//		System.out.println( "merging columns:[" + Integer.toString( mergecols.get( 0 ) +1) + " " + Integer.toString( mergecols.get( 1 ) +1) + "]" );
+				
+				setStatus( "Candidate masses found! \nColumns " + mergecols.get( 0 ) + " and " + mergecols.get( 1 ) );
+				
+				// for sMatrix
+				for( int i = 0; i < rowCount(); ++i )
+				{
+					double val0 = getsMat( i, mergecols.get( 0 ) ); // current row
+					double val1 = getsMat( i, mergecols.get( 1 ) ); // current row
+					
+					// for sMatrix
+					setsMat( i, mergecols.get( 0 ), val0 - val1 * mergecoefs.get( 0 ) / mergecoefs.get( 1 ) );
+				}
+				
+				// for recMat
+				for( int i = 0; i < recMat.size(); ++i )
+				{
+					double val0_rec = getrMat( i, mergecols.get( 0 ) ); // current row reccoef
+					double val1_rec = getrMat( i, mergecols.get( 1 ) ); // current row reccoef
+					
+					setrMat( i, mergecols.get( 0 ), val0_rec - val1_rec * mergecoefs.get( 0 ) / mergecoefs.get( 1 ) );
+				}
+				
+				// for gMat
+				if( gMatrix != null )
+				{
+					for( int i = 0; i < gMatrix.size(); ++i )
+					{
+						boolean b0 = getgMat( i, mergecols.get( 0 ) ) != 0.0;
+						boolean b1 = getgMat( i, mergecols.get( 1 ) ) != 0.0;
+						if( b0 || b1 ) setgMat( i, mergecols.get( 0 ), 1.0 );
+					}
+				}
+				
+				// shift the objective
+				shift( mergecols.get( 0 ), mergecols.get( 1 ), mergecoefs.get( 0 ), mergecoefs.get( 1 ), objVec );
+				
+				// shift the synthetic objective
+				if( synthObjVec != null )
+					shift( mergecols.get( 0 ), mergecols.get( 1 ), mergecoefs.get( 0 ), mergecoefs.get( 1 ), synthObjVec );
+				
+				// shift the upper/lower bounds
+				if( (mergecoefs.get( 0 ) / mergecoefs.get( 1 )) > 0 )
+				{
+					lowerBounds.set( mergecols.get( 0 ), Math.max( lowerBounds.get( mergecols.get( 0 ) ), -upperBounds.get( mergecols.get( 1 ) ) * mergecoefs.get( 1 ) / mergecoefs.get( 0 ) ) );
+					upperBounds.set( mergecols.get( 0 ), Math.min( upperBounds.get( mergecols.get( 0 ) ), -lowerBounds.get( mergecols.get( 1 ) ) * mergecoefs.get( 1 ) / mergecoefs.get( 0 ) ) );
+				}
+				else
+				{
+					lowerBounds.set( mergecols.get( 0 ), Math.max( lowerBounds.get( mergecols.get( 0 ) ), -lowerBounds.get( mergecols.get( 1 ) ) * mergecoefs.get( 1 ) / mergecoefs.get( 0 ) ) );
+					upperBounds.set( mergecols.get( 0 ), Math.min( upperBounds.get( mergecols.get( 0 ) ), -upperBounds.get( mergecols.get( 1 ) ) * mergecoefs.get( 1 ) / mergecoefs.get( 0 ) ) );
+				}
+
+				setStatus( "Applying merge.." );
+				 boolean removeExtra = (lowerBounds.get( mergecols.get( 0 ) ) >= upperBounds.get( mergecols.get( 0 ) ));
+				removeColumn( mergecols.get( 1 ) );
+				if( removeExtra )
+					removeColumn( mergecols.get( 0 ) );
+				removeRow( candmass );
+				
+	//			System.out.println( Integer.toString( candmass+1 ) + "\t" + Integer.toString( mergecols.get( 0 ) +1) + "\t"
+	//				+ Integer.toString( mergecols.get( 1 ) +1) + "\t" + (removeExtra ? "1" : "0") );
+			}
+			
+	//		dump( "MostSMatrix-red-part.txt", sMatrix );
+	//		dump( "MostGMatrix-red-part.txt", gMatrix );
+	//		dump( "MostLB-red-part.txt", lowerBounds );
+	//		dump( "MostUB-red-part.txt", upperBounds );
+	//		compareCSV( "MostSMatrix-red-part.txt", "MatlabSMatrix-red-part.txt", "\t" );
+	//		compareCSV( "MostGMatrix-red-part.txt", "MatlabGMatrix-red-part.txt", "\t" );
+	//		compareCSV( "MostLB-red-part.txt", "MatlabLB-red-part.txt", "\t" );
+	//		compareCSV( "MostUB-red-part.txt", "MatlabUB-red-part.txt", "\t" );
+			
+		} while( rowCount() < orRowCount || columnCount() < orColCount );
+		
+	//	dump( "MostSMatrix-red-part.txt", sMatrix );
+	//	dump( "MostGMatrix-red-part.txt", gMatrix );
+	//	dump( "MostLB-red-part.txt", lowerBounds );
+	//	dump( "MostUB-red-part.txt", upperBounds );
+	//	compareCSV( "MostSMatrix-red-part.txt", "MatlabSMatrix-red-part.txt", "\t" );
+	//	compareCSV( "MostGMatrix-red-part.txt", "MatlabGMatrix-red-part.txt", "\t" );
+	//	compareCSV( "MostLB-red-part.txt", "MatlabLB-red-part.txt", "\t" );
+	//	compareCSV( "MostUB-red-part.txt", "MatlabUB-red-part.txt", "\t" );
+		
+		for( int i = 0; i < reactions.size(); ++i )
+		{
+			reactions.get( i ).setLowerBound( lowerBounds.get( i ) );
+			reactions.get( i ).setUpperBound( upperBounds.get( i ) );
+		}
+		setStatus( "Done!" );
+		GraphicalInterface.startGDBBTimer();
+	//	System.out.println( "Done!" );
+	}
+	
+	public void compressNet()
+	{
+		if( sMatrix == null || /*gMatrix == null ||*/
+				objVec == null || lowerBounds == null || upperBounds == null )
+			return;
+		
+		setStatus( "Preparing to compress model..." );
+		// start the compression
+		int orColCount;
+		int orRowCount;
+		do
+		{
+			
+			
+	//		dump( "MostSMatrix-red-part.txt", sMatrix );
+	//		dump( "MostGMatrix-red-part.txt", gMatrix );
+	//		dump( "MostLB-red-part.txt", lowerBounds );
+	//		dump( "MostUB-red-part.txt", upperBounds );
+	//		compareCSV( "MostSMatrix-red-part.txt", "MatlabSMatrix-red-part.txt", "\t" );
+	//		compareCSV( "MostGMatrix-red-part.txt", "MatlabGMatrix-red-part.txt", "\t" );
+	//		compareCSV( "MostLB-red-part.txt", "MatlabLB-red-part.txt", "\t" );
+	//		compareCSV( "MostUB-red-part.txt", "MatlabUB-red-part.txt", "\t" );
+			
+			orColCount = columnCount();
+			orRowCount = rowCount();
+			
+			// remove the 0-value rows
+			for( int i = rowCount() - 1; i >= 0; --i )
+			{
+				int nonzerocount = 0;
+				for( Entry< Integer, Double > rowEntry : sMatrix.get( i ).entrySet() )
+					if( rowEntry.getValue().doubleValue() + 0.0 != 0.0 )
+						++nonzerocount;
+				
+				if( nonzerocount == 0 )
+				{
+					removeRow( i );
+					setStatus( "Removing redundant constraint: row " + Integer.toString( i+1 ) );
+				}
+			}
+			
+			// keep only the columns that have a nonzero value
+			// (Y-dimension) across the matrix
+			// debug code
+			ArrayList< Integer > badrows = new ArrayList< Integer >();
+			for( int i = rowCount() - 1; i >= 0; --i )
+			{
+				int nonzerocount = 0;
+				for( Entry< Integer, Double > rowEntry : sMatrix.get( i ).entrySet() )
+					if( rowEntry.getValue().doubleValue() + 0.0 != 0.0 )
+						++nonzerocount;
+				if( nonzerocount == 1 )
+				{
+					badrows.add( i );
+					setStatus( "Found a redundant constraint: row " + (i+1) );
+				}
+			}
+			
+			// remove the rows (reactions) that have only 1 nonzero column (flux)
+			// due to steady-state constraint, it will optimize to be 0 anyway
+			ArrayList< Integer > badcols = new ArrayList< Integer >();
+			for( int i : badrows )
+			{
+				ArrayList< Integer > cols = new ArrayList< Integer >();
+				for( int j = 0; j < columnCount(); ++j )
+					if( getsMat( i, j ) + 0.0 != 0.0 )
+						cols.add( j );
+				if( cols.size() == 1 )
+					if( !badcols.contains( cols.get( 0 ) ) )
+					{
+						badcols.add( cols.get( 0 ) );
+						setStatus( "Found a redundant reaction: column " + (cols.get( 0 )+1) );
+					}
+			}
+			
+			setStatus( "Applying changes..." );
+			Collections.sort( badcols, Collections.reverseOrder() );
+			
+			for( int i : badcols )
+				removeColumn( i );
+			for( int i : badrows )
+				removeRow( i );
+			
+			//again, remove the 0-value rows
+			for( int i = rowCount() - 1; i >= 0; --i )
+			{
+				int nonzerocount = 0;
+				
+				for( Entry< Integer, Double > rowEntry : sMatrix.get( i ).entrySet() )
+					if( rowEntry.getValue().doubleValue() + 0.0 != 0.0 )
+						++nonzerocount;
+				
+				if( nonzerocount == 0 )
+				{
+					removeRow( i );
+					setStatus( "Removing redundant constraint: row " + Integer.toString( i+1 ) );
+				}
+			}
+		
+	//		dump( "MostSMatrix-red-part.txt", sMatrix );
+	//		dump( "MostGMatrix-red-part.txt", gMatrix );
+	//		dump( "MostLB-red-part.txt", lowerBounds );
+	//		dump( "MostUB-red-part.txt", upperBounds );
+	//		compareCSV( "MostSMatrix-red-part.txt", "MatlabSMatrix-red-part.txt", "\t" );
+	//		compareCSV( "MostGMatrix-red-part.txt", "MatlabGMatrix-red-part.txt", "\t" );
+	//		compareCSV( "MostLB-red-part.txt", "MatlabLB-red-part.txt", "\t" );
+	//		compareCSV( "MostUB-red-part.txt", "MatlabUB-red-part.txt", "\t" );
+			
+			for( boolean repeat = true; repeat; )
+			{
+				// find the rows that have only 2 nonzero columns (fluxes)
+				// and merge them
+				setStatus( "Searching for candidate masses to merge..." );
+				ArrayList< Integer > mergecols = new ArrayList< Integer >();
+				ArrayList< Double > mergecoefs = new ArrayList< Double >();
+				int candmass = 0;
+
+		
+				for( Map< Integer, Double > row : sMatrix )
+				{
+					for( Entry< Integer, Double > rowEntry : row.entrySet() )
+					{
+						if( rowEntry.getValue().doubleValue() != 0 )
+						{
+							mergecols.add( rowEntry.getKey() );
+							mergecoefs.add( rowEntry.getValue() );
+						}
+					}
+					if( mergecols.size() == 2 )
+					{
+						if( mergecols.get( 0 ) > mergecols.get( 1 ) )
+						{
+							int tmpidx = mergecols.get( 0 );
+							mergecols.set( 0, mergecols.get( 1 ) );
+							mergecols.set( 1, tmpidx );
+							double tmpval = mergecoefs.get( 0 );
+							mergecoefs.set( 0, mergecoefs.get( 1 ) );
+							mergecoefs.set( 1, tmpval );
+						}
+						break;
+					}
+					else
+					{
+						mergecols.clear();
+						mergecoefs.clear();
+					}
+
+					++candmass;
+				}
+		
+		
 				
 				if( mergecols.size() != 2 )
 				{
