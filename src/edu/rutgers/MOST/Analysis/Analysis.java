@@ -25,8 +25,6 @@ public abstract class Analysis
 			String varName = Integer.toString( (Integer)this.model
 					.getReactionsIdPositionMap().get( reac.getId() ) );
 			// String varName = Integer.toString(reac.getId());
-			double lb = reac.getLowerBound();
-			double ub = reac.getUpperBound();
 
 			this.getSolver().setVar( varName, VarType.CONTINUOUS, reac.getLowerBound(), reac.getUpperBound() );
 		}
