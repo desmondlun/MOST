@@ -28,14 +28,7 @@ public abstract class Analysis
 			double lb = reac.getLowerBound();
 			double ub = reac.getUpperBound();
 
-			if( reac.getKnockout().equals(
-					GraphicalInterfaceConstants.BOOLEAN_VALUES[1] ) )
-			{
-				lb = 0;
-				ub = 0;
-			}
-
-			this.getSolver().setVar( varName, VarType.CONTINUOUS, lb, ub );
+			this.getSolver().setVar( varName, VarType.CONTINUOUS, reac.getLowerBound(), reac.getUpperBound() );
 		}
 	
 	}
@@ -59,6 +52,7 @@ public abstract class Analysis
 			{
 				Map< Integer, Double > knockoutConstraint = new HashMap< Integer, Double >();
 				knockoutConstraint.put( reac.getId(), 1.0 );
+				sMatrix.add( knockoutConstraint );
 			}
 		}
 		compressor.setsMatrix( sMatrix );
