@@ -31,11 +31,20 @@ public class ModelCompressor
 	private ArrayList< Double > upperBounds = null;
 	private int or_column_count = 0;
 	private int or_row_count = 0;
+	private boolean abortFlag = false;
 	
-	private void setStatus( String status )
+	public synchronized void abort()
+	{
+		this.abortFlag = true;
+	}
+	
+	private void setStatus( String status ) throws Exception
 	{
 	//	GraphicalInterface.getGdbbDialog().getti
 		GraphicalInterface.getGdbbDialog().getCounterLabel().setText( status );
+		
+		if( abortFlag )
+			throw new Exception( "AbortFlag" );
 	}
 	
 	@SuppressWarnings( "resource" )
@@ -294,7 +303,7 @@ public class ModelCompressor
 			vec.remove( col0 );
 	}
 	
-	public void compressNetDebug()
+	public void compressNetDebug() throws Exception
 	{
 		if( sMatrix == null || /*gMatrix == null ||*/
 				objVec == null || lowerBounds == null || upperBounds == null )
@@ -524,11 +533,10 @@ public class ModelCompressor
 			reactions.get( i ).setUpperBound( upperBounds.get( i ) );
 		}
 		setStatus( "Done!" );
-		GraphicalInterface.startGDBBTimer();
 	//	System.out.println( "Done!" );
 	}
 	
-	public void compressNet()
+	public void compressNet() throws Exception
 	{
 		if( sMatrix == null || /*gMatrix == null ||*/
 				objVec == null || lowerBounds == null || upperBounds == null )
@@ -776,7 +784,6 @@ public class ModelCompressor
 			reactions.get( i ).setUpperBound( upperBounds.get( i ) );
 		}
 		setStatus( "Done!" );
-		GraphicalInterface.startGDBBTimer();
 	//	System.out.println( "Done!" );
 	}
 	
@@ -898,7 +905,7 @@ public class ModelCompressor
 	 	
 	 	// gMat
 	 	if( gMatrix != null )
-		 	removeColumn( j, gMatrix, false );
+		 	removeColumn( j, gMatrix, true );
 	 	
 	 	//objVec
  		objVec = removeColumn( j, objVec );

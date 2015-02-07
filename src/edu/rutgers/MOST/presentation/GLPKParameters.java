@@ -21,18 +21,18 @@ public class GLPKParameters
 	// http://www.maximalsoftware.com/solvopt/optglpk.html
 	
 	public static final String FEASIBILITYTOL_NAME = "Feasibility Tolerance";
-	public static final double FEASIBILITYTOL_DEFAULT_VALUE = 1e-8;
-	public static final double FEASIBILITYTOL_MIN_VALUE = 0.0;
+	public static final double FEASIBILITYTOL_DEFAULT_VALUE = 1.0E-9;
+	public static final double FEASIBILITYTOL_MIN_VALUE = 1.0E-9;
 	public static final double FEASIBILITYTOL_MAX_VALUE = Double.MAX_VALUE;
 	
 	public static final String INTFEASIBILITYTOL_NAME = "Integer Feasibility Tolerance";
-	public static final double INTFEASIBILITYTOL_DEFAULT_VALUE = 1.0E-6;
-	public static final double INTFEASIBILITYTOL_MIN_VALUE = 0.0;
+	public static final double INTFEASIBILITYTOL_DEFAULT_VALUE = 1.0E-9;
+	public static final double INTFEASIBILITYTOL_MIN_VALUE = 1.0E-9;
 	public static final double INTFEASIBILITYTOL_MAX_VALUE = Double.MAX_VALUE;
 	
 	public static final String MIPGAP_NAME = "MIP Gap";
-	public static final double MIPGAP_DEFAULT_VALUE = 0.0;
-	public static final double MIPGAP_MIN_VALUE = 0.0;
+	public static final double MIPGAP_DEFAULT_VALUE = 1.0E-4;
+	public static final double MIPGAP_MIN_VALUE = 1.0E-9;
 	public static final double MIPGAP_MAX_VALUE = Double.MAX_VALUE;
 	
 

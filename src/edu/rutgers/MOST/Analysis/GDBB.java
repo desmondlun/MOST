@@ -7,6 +7,7 @@ import java.util.Vector;
 
 import edu.rutgers.MOST.data.*;
 import edu.rutgers.MOST.optimization.solvers.*;
+import edu.rutgers.MOST.presentation.GraphicalInterface;
 
 public class GDBB extends Thread {
 	
@@ -21,6 +22,11 @@ public class GDBB extends Thread {
 	private MILSolver solver;
 	private double maxObj;
 	private ArrayList<Double> solution;
+	
+	private void setStatus( String status )
+	{
+		GraphicalInterface.getGdbbDialog().getCounterLabel().setText( status );
+	}
 
  	private Double noNull( Double d )
 	{
@@ -43,11 +49,11 @@ public class GDBB extends Thread {
 	private void setVarsAndObjective()
 	{
 		// the vars and objective (see matlab code)
+		setStatus( "constructing c array" );
 		ArrayList< Double > c = new ArrayList< Double >();
 		int nmetab = this.compressor.getSMatrix().size();
 		int nrxn = this.compressor.getReactions().size();
 		int nbin = this.compressor.getGprMatrix().size();
-		
 		// fbamodel.g;
         // zeros(nmetab, 1);
         // zeros(nrxn, 1);
@@ -68,6 +74,7 @@ public class GDBB extends Thread {
 				obj.put( i, c.get( i ) );
 		
 		/**************************************************/
+		setStatus( "constructing lower bounds array" );
 		ArrayList< Double > lb = new ArrayList< Double >();
 		
 		//   fbamodel.vmin;
@@ -93,6 +100,7 @@ public class GDBB extends Thread {
 			lb.add( 0.0 );
 		
 		/**************************************************/
+		setStatus( "constructing upper bounds array" );
 		ArrayList< Double > ub = new ArrayList< Double >();
 		
 		//   fbamodel.vmax;
@@ -112,6 +120,7 @@ public class GDBB extends Thread {
 			ub.add( 1.0 );
 		
 		/**************************************************/
+		setStatus( "constructing varTypes array" );
 		ArrayList< VarType > varTypes = new ArrayList< VarType >();
 		
 		//  'C' * ones(nrxn, 1);
@@ -129,9 +138,12 @@ public class GDBB extends Thread {
 		
 		/**************************************************/
 		
+		setStatus( "plugging in variables into solver" );
 		for( int i = 0; i < 4 * nrxn + nmetab + nbin; ++i )
 			this.getSolver().setVar( null, varTypes.get( i ), lb.get( i ), ub.get( i ) );
 		
+		
+		setStatus( "plugging in objective into solver" );
 		this.getSolver().setObjType( ObjType.Maximize );
 		
 		this.getSolver().setObj( obj );
@@ -141,6 +153,7 @@ public class GDBB extends Thread {
 	private void setConstraints()
 	{
 		// A matrix (see matlab code)
+		setStatus( "constructing A matrix" );
 		ArrayList< Map< Integer, Double > > A = new ArrayList< Map< Integer, Double > >();
 		int nmetab = this.compressor.getSMatrix().size();
 		int nrxn = this.compressor.getReactions().size();
@@ -253,6 +266,7 @@ public class GDBB extends Thread {
 		}
 		
 		/**************************************************/
+		setStatus( "constructing Aeq matrix" );
 		ArrayList< Map< Integer, Double > > Aeq = new ArrayList< Map< Integer, Double > >();
 		
 //      r1:  Aeq = [ fbamodel.S   sparse(nmetab, nmetab)      sparse(nmetab, nrxn)                             sparse(nmetab, nrxn)                             sparse(nmetab, nrxn)        sparse(nmetab, nbin);
@@ -299,6 +313,7 @@ public class GDBB extends Thread {
 		}
 		
 		/**************************************************/
+		setStatus( "constructing b array" );
 		ArrayList< Double > b = new ArrayList< Double >();
 		
 		// -fbamodel.vmin;
@@ -322,6 +337,7 @@ public class GDBB extends Thread {
 		b.add( 20.0 );
 		
 		/**************************************************/
+		setStatus( "constructing beq array" );
 		ArrayList< Double > beq = new ArrayList< Double >();
 		
 		//  zeros(nmetab, 1);
@@ -346,57 +362,63 @@ public class GDBB extends Thread {
 	//	ModelCompressor.compareCSV( "MOST-A.txt", "Matlab-A.txt", "\t" );
 	//	ModelCompressor.compareCSV( "MOST-Aeq.txt", "Matlab-Aeq.txt", "\t" );
 		
+		setStatus( "plugging in constraints into solver..." );
 		for( int i = 0; i < A.size(); ++i )
 			this.getSolver().addConstraint( A.get( i ), ConType.LESS_EQUAL, b.get( i ) );
 		
 		for( int i = 0; i < Aeq.size(); ++i )
 			this.getSolver().addConstraint( Aeq.get( i ), ConType.EQUAL, beq.get( i ) );
-		
+
 	}        
 	
-	public void setGDBBModel(GDBBModel m) {
-		
+	public void setGDBBModel(GDBBModel m)
+	{
 		this.model = m;
-		
-		Vector< Double > objective = m.getObjective();
-		Map< Integer, Double > mapObjective = new HashMap< Integer, Double >();
-		for( int i = 0; i < objective.size(); i++)
-		{
-			if( objective.elementAt( i ) != 0.0 )
-			{
-				mapObjective.put( i, objective.elementAt( i ) );
-			}
-		}
-		
-		Vector< Double > syntheticObjective = m.getSyntheticObjective();
-		Map< Integer, Double > mapSyntheticObjective = new HashMap< Integer, Double >();
-		for( int i = 0; i < syntheticObjective.size(); i++)
-		{
-			if( syntheticObjective.elementAt( i ) != 0.0 )
-			{
-				mapSyntheticObjective.put( i, syntheticObjective.elementAt( i ) );
-			}
-		}
-		
-		compressor.setReactions( m.getReactions() );
-		compressor.setMetabolites( m.getMetabolites() );
-		compressor.setGeneAssociations( m.getGeneAssociations() );
-		compressor.setgMatrix( m.getGprMatrix() );
-		compressor.setsMatrix( m.getSMatrix() );
-		compressor.setObjVec( mapObjective );
-		compressor.setSynthObjVec( mapSyntheticObjective );
-		compressor.compressNet();	
 	}
 	
 	public void run()
 	{
-		this.setEnv(model.getTimeLimit(), model.getThreadNum());
-		this.setVarsAndObjective();
-		this.setConstraints();
-		this.getSolver().setDataModel( this.model );
-		this.solver.setModelCompressor( this.compressor );
 		try
 		{
+			// perform the model reduction
+			GDBBModel m = this.model;
+			Vector< Double > objective = m.getObjective();
+			Map< Integer, Double > mapObjective = new HashMap< Integer, Double >();
+			for( int i = 0; i < objective.size(); i++)
+			{
+				if( objective.elementAt( i ) != 0.0 )
+				{
+					mapObjective.put( i, objective.elementAt( i ) );
+				}
+			}
+			
+			Vector< Double > syntheticObjective = m.getSyntheticObjective();
+			Map< Integer, Double > mapSyntheticObjective = new HashMap< Integer, Double >();
+			for( int i = 0; i < syntheticObjective.size(); i++)
+			{
+				if( syntheticObjective.elementAt( i ) != 0.0 )
+				{
+					mapSyntheticObjective.put( i, syntheticObjective.elementAt( i ) );
+				}
+			}
+			
+			compressor.setReactions( m.getReactions() );
+			compressor.setMetabolites( m.getMetabolites() );
+			compressor.setGeneAssociations( m.getGeneAssociations() );
+			compressor.setgMatrix( m.getGprMatrix() );
+			compressor.setsMatrix( m.getSMatrix() );
+			compressor.setObjVec( mapObjective );
+			compressor.setSynthObjVec( mapSyntheticObjective );
+			compressor.compressNet();
+			
+			
+			// perform normal duties
+			this.setEnv(model.getTimeLimit(), model.getThreadNum());
+			this.setVarsAndObjective();
+			this.setConstraints();
+			this.getSolver().setDataModel( this.model );
+			this.solver.setModelCompressor( this.compressor );
+			GraphicalInterface.startGDBBTimer();
 			this.maxObj = this.getSolver().optimize();
 			solution = this.getSolver().getSoln();
 		}
@@ -423,6 +445,7 @@ public class GDBB extends Thread {
 
 	public void stopGDBB() {
 		this.getSolver().abort();
+		this.compressor.abort();
 	}
 
 	public ArrayList<Double> getSolution() {

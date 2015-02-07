@@ -1953,7 +1953,7 @@ public class GraphicalInterface extends JFrame {
             			{
             				public void actionPerformed(ActionEvent prodActionEvent) 
             				{
-            					gdbb.getSolver().abort();
+            					gdbb.stopGDBB();
             					gdbbDialog.setVisible( false );
             					gdbbDialog.dispose();
             				}
