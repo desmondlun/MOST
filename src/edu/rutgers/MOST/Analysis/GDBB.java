@@ -27,6 +27,11 @@ public class GDBB extends Thread {
 	{
 		GraphicalInterface.getGdbbDialog().getCounterLabel().setText( status );
 	}
+	
+	private void setDesc( String desc )
+	{
+		GraphicalInterface.getGdbbDialog().setTitle( desc );
+	}
 
  	private Double noNull( Double d )
 	{
@@ -380,6 +385,7 @@ public class GDBB extends Thread {
 	{
 		try
 		{
+			setDesc( "Preparing the metabolic network..." );
 			// perform the model reduction
 			GDBBModel m = this.model;
 			Vector< Double > objective = m.getObjective();
@@ -409,16 +415,19 @@ public class GDBB extends Thread {
 			compressor.setsMatrix( m.getSMatrix() );
 			compressor.setObjVec( mapObjective );
 			compressor.setSynthObjVec( mapSyntheticObjective );
+			setDesc( "Compressing the model..." );
 			compressor.compressNet();
 			
 			
 			// perform normal duties
+			setDesc( "Preparing " + this.getSolver().getName() + "..." );
 			this.setEnv(model.getTimeLimit(), model.getThreadNum());
 			this.setVarsAndObjective();
 			this.setConstraints();
 			this.getSolver().setDataModel( this.model );
 			this.solver.setModelCompressor( this.compressor );
 			GraphicalInterface.startGDBBTimer();
+			setDesc( "Finding solutions..." );
 			this.maxObj = this.getSolver().optimize();
 			solution = this.getSolver().getSoln();
 		}
