@@ -30,7 +30,7 @@ public class GDBB extends Thread {
 	
 	private void setDesc( String desc )
 	{
-		GraphicalInterface.getGdbbDialog().setTitle( desc );
+		GraphicalInterface.getGdbbDialog().setTitle( "MOST - GDBB: " + desc );
 	}
 
  	private Double noNull( Double d )
