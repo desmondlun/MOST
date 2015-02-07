@@ -905,7 +905,7 @@ public class ModelCompressor
 	 	
 	 	// gMat
 	 	if( gMatrix != null )
-		 	removeColumn( j, gMatrix, true );
+		 	removeColumn( j, gMatrix, false );
 	 	
 	 	//objVec
  		objVec = removeColumn( j, objVec );
