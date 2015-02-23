@@ -5,7 +5,7 @@ WindowTitle=MOST Setup
 ProductName=MOST
 
 [Graphics]
-SplashScreen=C:\Users\Rutgers\Documents\MOST_dist080114\etc\MOSTSplash.bmp
+SplashScreen=C:\Users\Rutgers\Documents\MOST_alpha-12\etc\MOSTSplash.bmp
 SplashScreenDelay=1
 Header=C:\Program Files (x86)\InstallSimple 2.7\images\2.bmp
 HeaderJustify=Right
@@ -258,7 +258,7 @@ The precise terms and conditions for copying, distribution and modification foll
 l.
 
 [SetupFiles]
-SourceFolder=C:\Users\Rutgers\Documents\MOSTWin080114
+SourceFolder=C:\Users\Rutgers\Documents\MOSTWin020715
 SpecialFolder=System Drive
 SetupPath=Program Files\MOST
 

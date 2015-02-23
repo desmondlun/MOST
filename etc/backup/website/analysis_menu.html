@@ -79,16 +79,6 @@ A{text-decoration:none}
 	<li><font size=2><a href="#eflux2">E-Flux2</a></font></li>
 	<li><font size=2><a href="#spot">SPOT</a></font></li></ul>
 
-	<p><font size=2><a href="Edit_Menu.html">Edit Menu</a></font></p>
-
-	<ul><li><font size=2><a href="Edit_Menu.html#unused">Unused Metabolites</a></font></li>
-	<li><font size=2><a href="Edit_Menu.html#suspicious">Suspicious Metabolites</a></font></li>
-	<li><font size=2><a href="Edit_Menu.html#undo">Undo/Redo</a></font></li>
-	<li><font size=2><a href="Edit_Menu.html#find">Find/Replace</a></font></li>
-	<li><font size=2><a href="Edit_Menu.html#select">Select All</a></font></li>
-	<li><font size=2><a href="Edit_Menu.html#add">Add Row/Column</a></font></li>
-	<li><font size=2><a href="Edit_Menu.html#unsort">Unsort</a></font></li></ul>
-
 	<p><font size=2><a href="edit_menu.html">Edit Menu</a></font></p>
 
 	<ul><li><font size=2><a href="edit_menu.html#unused">Unused Metabolites</a></font></li>
@@ -145,10 +135,11 @@ A{text-decoration:none}
 	<p><a name="fba"><strong>  FBA:</strong></a></p>
 
 	<blockquote>Before running FBA, the Biological Objective for a reaction should be set to 1.0. Usually the biomass reaction is chosen
-	as the Biological Objective to be maximized.
+	as the Biological Objective to be maximized. Drain metabolites (usually abbreviations end with "_b" in SBML files) should have
+	Boundary Condition set to true. If these are set wrong, an "Infeasible Model" error will be displayed when FBA is run.
 	All of the models in the <a href="file_menu.html#collection">Model Collection Database</a>, and SBML models
 	from <a href="http://blog.theseed.org/model_seed/">Model Seed</a> have the Biological Objective of biomass 
-	reaction set to 1.0.</blockquote>
+	reaction set to 1.0 and Boundary Conditions set correctly.</blockquote>
 
 	<blockquote>FBA has an option to include FVA (Flux Variability Analysis) results.Running FBA with FVA
 	results takes significantly more time than running FBA without FVA.</blockquote>
