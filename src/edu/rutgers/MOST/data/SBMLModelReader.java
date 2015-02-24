@@ -293,11 +293,13 @@ public class SBMLModelReader {
 			//System.out.println("name " + reactions.get(j).getName());
 
 			String reversible = "";
-			// This code will be removed when reactions read since it is defined above
 			if (!reactions.get(j).getReversible()) {
 				reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[0];
 			} else {
-				reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];;
+				reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
+				// set lower bound to default reversible so if lower bound is not found in file
+				// it will not be 0
+				lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT_REVERSIBLE_STRING;
 			}
 			//System.out.println("reversible " + reversible);
 
