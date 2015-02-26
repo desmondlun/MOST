@@ -173,6 +173,7 @@ public class AbstractParametersDialog extends JDialog
 			}
 			for( AbstractSavableObjectInterface param : paramsCopy )
 				param.resetToDefault();
+			saveParametersToFile( loadFile );
 		}
 	}
 	
