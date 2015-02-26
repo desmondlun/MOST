@@ -75,7 +75,6 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 	}
 
 	
-	@SuppressWarnings( "unused" )
 	@Override
 	public double optimize()
 	{
@@ -144,7 +143,7 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 				Double.valueOf( params.getParameter( IPoptParameters.DUALFEASIBILITYTOL_NAME ) ) );
 			this.addNumOption( KEY_CONSTR_VIOL_TOL,
 				Double.valueOf( params.getParameter( IPoptParameters.CONSTRAINTOL_NAME ) ) );
-			if( GraphicalInterfaceConstants.SOLVER_DEBUG_OUTPUT == false )
+			if( GraphicalInterfaceConstants.SOLVER_DEBUG_OUTPUT )
 				this.addNumOption( KEY_PRINT_LEVEL, 0 );
 			
 			
