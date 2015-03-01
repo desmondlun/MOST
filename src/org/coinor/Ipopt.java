@@ -9,6 +9,8 @@
 
 package org.coinor;
 
+import java.io.File;
+
 /**
  * A Java Native Interface for the Ipopt optimization solver.
  * <p>
@@ -194,7 +196,10 @@ public abstract class Ipopt {
 				.contains( "mac os x" ) )
 		{
 			dependsFolder += "mac/";
-			System.out.println( "No Mac dylib available yet" );
+			File file = new File(dependsFolder + "/lib" + DLL + ".so");
+			String filepath = file.getAbsolutePath();
+			System.load( filepath );
+			return;
 		}
 		else
 		{
