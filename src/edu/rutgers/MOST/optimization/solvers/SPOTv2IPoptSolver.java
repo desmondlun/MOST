@@ -1,5 +1,9 @@
 package edu.rutgers.MOST.optimization.solvers;
 
+import java.util.ArrayList;
+
+import edu.rutgers.MOST.data.Model;
+
 public class SPOTv2IPoptSolver extends NonlinearIPoptSolver
 {
 	public SPOTv2IPoptSolver()
@@ -15,10 +19,6 @@ public class SPOTv2IPoptSolver extends NonlinearIPoptSolver
 		double dotProduct = 0.0;
 		for( int i = 0; i < geneExpr.size(); ++i )
 			dotProduct += geneExpr.get( i ) * x[ i ];
-		
-		if( !pb.isVisible() )
-			return false;
-		pb.progressBar.setString( Double.toString( dotProduct ) );
 		
 		obj_value[ 0 ] = dotProduct;
 		
@@ -147,5 +147,21 @@ public class SPOTv2IPoptSolver extends NonlinearIPoptSolver
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public void setDataModel( Model model )
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void FVA( ArrayList< Double > objCoefs, Double objVal,
+		ArrayList< Double > fbasoln, ArrayList< Double > min,
+		ArrayList< Double > max, SolverComponent component ) throws Exception
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }
