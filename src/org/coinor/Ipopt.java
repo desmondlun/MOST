@@ -329,6 +329,11 @@ public abstract class Ipopt
 	{
 		return x;
 	}
+	
+	public double[] getState()
+	{
+		return x;
+	}
 
 	/** Gives objective function value at final point.
 	 * @return the final value of the objective function.
