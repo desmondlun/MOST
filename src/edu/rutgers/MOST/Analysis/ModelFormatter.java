@@ -172,10 +172,10 @@ public class ModelFormatter
 		}
 		return gene_expr;
 	}
-	public void formatSMatrixSPOT( ArrayList< Map< Integer, Double > > sMatrix, 
+	public void formatParamsForSPOT( ArrayList< Map< Integer, Double > > sMatrix, 
 		ArrayList< Double > lb, ArrayList< Double > ub, ArrayList< Integer > vNetIdxs, 
-		 ArrayList< Map< Integer, Double > > result_sMatrix, ArrayList< Double > result_lb,
-		 ArrayList< Double > result_ub )
+		ArrayList< Double > geneExprData, ArrayList< Map< Integer, Double > > result_sMatrix,
+		ArrayList< Double > result_lb, ArrayList< Double > result_ub, ArrayList< Double > result_geneExprData )
 	{		
 		try
 		{
@@ -199,6 +199,10 @@ public class ModelFormatter
 					// v_i_b
 					result_lb.add( 0.0 );
 					result_ub.add( -lb.get( i ) );
+					
+					// geneData
+					result_geneExprData.add( geneExprData.get( i ) );
+					result_geneExprData.add( geneExprData.get( i ) );
 					
 					
 					// form a new sMatrix with [ ..., V_j-1, v_j_f, V_j_b, V_j+1, ... ]
@@ -229,6 +233,7 @@ public class ModelFormatter
 				{
 					result_lb.add( lb.get( i ) );
 					result_ub.add( ub.get( i ) );
+					result_geneExprData.add( geneExprData.get( i ) );
 				}
 			}
 			
@@ -245,11 +250,13 @@ public class ModelFormatter
 	{
 		ArrayList< Double > lbs = new ArrayList< Double >();
 		ArrayList< Double > ubs = new ArrayList< Double >();
+		ArrayList< Double > geneExprData = new ArrayList< Double >();
 		ArrayList< Double > lb_res = new ArrayList< Double >();
 		ArrayList< Double > ub_res = new ArrayList< Double >();
 		ArrayList< Integer > fluxIdxs = new ArrayList< Integer >();
+		ArrayList< Double > geneExprData_res = new ArrayList< Double >();
 		ArrayList< Map< Integer, Double > > sMatrix = new ArrayList< Map< Integer, Double > >();
-		ArrayList< Map< Integer, Double > > sMat_res = new ArrayList< Map< Integer, Double > >();
+		ArrayList< Map< Integer, Double > > sMat_res = new ArrayList< Map< Integer, Double > >();		
 		
 		/*
 		 * -1 < x <  1
@@ -263,6 +270,15 @@ public class ModelFormatter
 		ubs.add( 2.0 );
 		lbs.add( -3.0 );
 		ubs.add( -1.0 );
+		
+		/*
+		 * g_1 =  2.6
+		 * g_2 =  5.7
+		 * g_3 = -7.0
+		 */
+		geneExprData.add( 2.6 );
+		geneExprData.add( 5.7 );
+		geneExprData.add( -7.0 );
 		
 		/*
 		 * [  0.5    2.7    73  ]
@@ -287,11 +303,17 @@ public class ModelFormatter
 		/*
 		 * result:
 		 * 
+		 *  0 < x_f < 1
+		 *  0 < x_b < 1
+		 *  0 <  y  < 2
+		 *  0 < z_f < 1
+		 *  0 < z_b < 3
+		 * 
 		 * [  0.5   -0.5   2.7   -73   -73  ]
 		 * [  0.0   -0.0   15     3     3   ]
 		 */
 		
-		formatter.formatSMatrixSPOT( sMatrix, lbs, ubs, fluxIdxs, sMat_res, lb_res, ub_res );
+		formatter.formatParamsForSPOT( sMatrix, lbs, ubs, fluxIdxs, geneExprData, sMat_res, lb_res, ub_res, geneExprData_res );
 		
 		
 	}
