@@ -189,11 +189,18 @@ public class ModelFormatter
 			for( int i = 0; i < lb.size(); ++i )
 			{
 				vNetIdxs.add( i + n );
-				result_lb.add( Math.abs( lb.get( i ) ) );
-				result_ub.add( Math.abs( ub.get( i ) ) ); // will account for later if negative
 				
 				if( lb.get( i ) < 0.0 )
 				{
+					// v_i_f
+					result_lb.add( 0.0 );
+					result_ub.add( Math.abs( ub.get( i ) ) ); // will account for later if negative
+					
+					// v_i_b
+					result_lb.add( 0.0 );
+					result_ub.add( -lb.get( i ) );
+					
+					
 					// form a new sMatrix with [ ..., V_j-1, v_j_f, V_j_b, V_j+1, ... ]
 					ArrayList< Map< Integer, Double > > new_S = new ArrayList< Map< Integer, Double > >();
 					
@@ -209,14 +216,19 @@ public class ModelFormatter
 						
 						if( con.containsKey( i ) )
 						{
-							new_con.put( i + n + 0, con.get( i + n + 0 ) * ( ub.get( i ) < 0.0 ? -1.0 : 1.0 )  ); // if v_i_f < 0
-							new_con.put( i + n + 1, con.get( i + n + 1 ) * -1.0 ); // because of: if( lb.get( i ) < 0.0 )
+							new_con.put( i + n + 0, con.get( i + n ) * ( ub.get( i ) < 0.0 ? -1.0 : 1.0 )  ); // if v_i_f < 0
+							new_con.put( i + n + 1, con.get( i + n ) * -1.0 ); // because of: if( lb.get( i ) < 0.0 )
 						}
 						new_S.add( new_con );
 					}
 					
 					result_s = new_S;
 					++n;
+				}
+				else
+				{
+					result_lb.add( lb.get( i ) );
+					result_ub.add( ub.get( i ) );
 				}
 			}
 			
@@ -227,5 +239,60 @@ public class ModelFormatter
 		{
 			e.printStackTrace();
 		}
+	}
+
+	public static void main( String[] args )
+	{
+		ArrayList< Double > lbs = new ArrayList< Double >();
+		ArrayList< Double > ubs = new ArrayList< Double >();
+		ArrayList< Double > lb_res = new ArrayList< Double >();
+		ArrayList< Double > ub_res = new ArrayList< Double >();
+		ArrayList< Integer > fluxIdxs = new ArrayList< Integer >();
+		ArrayList< Map< Integer, Double > > sMatrix = new ArrayList< Map< Integer, Double > >();
+		ArrayList< Map< Integer, Double > > sMat_res = new ArrayList< Map< Integer, Double > >();
+		
+		/*
+		 * -1 < x <  1
+		 *  0 < y <  2
+		 * -3 < z < -1
+		 */
+		
+		lbs.add( -1.0 );
+		ubs.add( 1.0 );
+		lbs.add( 0.0 );
+		ubs.add( 2.0 );
+		lbs.add( -3.0 );
+		ubs.add( -1.0 );
+		
+		/*
+		 * [  0.5    2.7    73  ]
+		 * [  0.0    15     -3  ]
+		 */
+		
+		Map< Integer, Double > con1 = new HashMap< Integer, Double >();
+		con1.put( 0, 0.5 );
+		con1.put( 1, 2.7 );
+		con1.put( 2, 73.0 );
+		
+		Map< Integer, Double > con2 = new HashMap< Integer, Double >();
+		con2.put( 1, 15.0 );
+		con2.put( 2, -3.0 );
+		
+		sMatrix.add( con1 );
+		sMatrix.add( con2 );
+		
+		ModelFormatter formatter = new ModelFormatter();
+		
+		
+		/*
+		 * result:
+		 * 
+		 * [  0.5   -0.5   2.7   -73   -73  ]
+		 * [  0.0   -0.0   15     3     3   ]
+		 */
+		
+		formatter.formatSMatrixSPOT( sMatrix, lbs, ubs, fluxIdxs, sMat_res, lb_res, ub_res );
+		
+		
 	}
 }
