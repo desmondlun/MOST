@@ -3,9 +3,11 @@ package edu.rutgers.MOST.Analysis;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -169,5 +171,61 @@ public class ModelFormatter
 				throw e;
 		}
 		return gene_expr;
+	}
+	public void formatSMatrixSPOT( ArrayList< Map< Integer, Double > > sMatrix, 
+		ArrayList< Double > lb, ArrayList< Double > ub, ArrayList< Integer > vNetIdxs, 
+		 ArrayList< Map< Integer, Double > > result_sMatrix, ArrayList< Double > result_lb,
+		 ArrayList< Double > result_ub )
+	{		
+		try
+		{
+			ArrayList< Map< Integer, Double > > result_s = sMatrix;
+			vNetIdxs.clear();
+			result_sMatrix.clear();
+			result_lb.clear();
+			result_ub.clear();
+			
+			int n = 0; // extra fluxes
+			for( int i = 0; i < lb.size(); ++i )
+			{
+				vNetIdxs.add( i + n );
+				result_lb.add( Math.abs( lb.get( i ) ) );
+				result_ub.add( Math.abs( ub.get( i ) ) ); // will account for later if negative
+				
+				if( lb.get( i ) < 0.0 )
+				{
+					// form a new sMatrix with [ ..., V_j-1, v_j_f, V_j_b, V_j+1, ... ]
+					ArrayList< Map< Integer, Double > > new_S = new ArrayList< Map< Integer, Double > >();
+					
+					for( Map< Integer, Double > con : result_s )
+					{
+						Map< Integer, Double > new_con = new HashMap< Integer, Double >();
+						
+						for( Entry< Integer, Double > term : con.entrySet() )
+						{
+							int key = term.getKey();
+							new_con.put( key > i + n ? key + n + 1 : key , term.getValue() );
+						}
+						
+						if( con.containsKey( i ) )
+						{
+							new_con.put( i + n + 0, con.get( i + n + 0 ) * ( ub.get( i ) < 0.0 ? -1.0 : 1.0 )  ); // if v_i_f < 0
+							new_con.put( i + n + 1, con.get( i + n + 1 ) * -1.0 ); // because of: if( lb.get( i ) < 0.0 )
+						}
+						new_S.add( new_con );
+					}
+					
+					result_s = new_S;
+					++n;
+				}
+			}
+			
+			for( Map< Integer, Double > con : result_s )
+				result_sMatrix.add( con );
+		}
+		catch( Exception e )
+		{
+			e.printStackTrace();
+		}
 	}
 }
