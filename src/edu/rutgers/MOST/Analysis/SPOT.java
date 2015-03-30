@@ -81,6 +81,7 @@ public class SPOT extends Analysis
 			//update the objective
 			updatedModel.setObjective( new Vector< Double >( geneExpr_res ) );
 			
+			Model original = this.model;
 			this.model = updatedModel;
 			
 			pb.progressBar.setString( "Finding an optimal solution..." );
@@ -88,10 +89,8 @@ public class SPOT extends Analysis
 			linearSolver.setObjType( ObjType.Maximize );
 			this.maxObj = linearSolver.optimize();
 			ArrayList< Double > fluxes = linearSolver.getSoln();
-			pb.setVisible( false );
-			pb.dispose();
-			pb = null;
 			
+			pb.progressBar.setString( "Calculating V*G / (||V|| ||G||)" );
 			ArrayList< Double > optimizedFluxes = fluxes;
 			
 			double lengthG = 0.0;
@@ -106,6 +105,7 @@ public class SPOT extends Analysis
 			double SPOTVal = this.maxObj / (  Math.sqrt( lengthG ) * Math.sqrt( lengthV ) );
 			this.maxObj = SPOTVal;
 			
+			pb.progressBar.setString( "Updating table..." );
 			
 			while( fluxIds.size() > 0 )
 			{
@@ -120,7 +120,13 @@ public class SPOT extends Analysis
 				fluxIds.remove( lastIdx );
 			}
 			
-			optimizedFluxes.set( 5, 32.0 );
+			for( int i = 0; i < optimizedFluxes.size(); ++i )
+				original.getReactions().get( i ).setFluxValue( optimizedFluxes.get( i ) );
+			
+			pb.setVisible( false );
+			pb.dispose();
+			pb = null;
+			
 			return optimizedFluxes;
 		}
 		catch( Exception e )
