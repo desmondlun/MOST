@@ -3,8 +3,10 @@ package edu.rutgers.MOST.Analysis;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
+import edu.rutgers.MOST.data.Model;
 import edu.rutgers.MOST.data.SBMLReaction;
 import edu.rutgers.MOST.optimization.solvers.LinearSolver;
 import edu.rutgers.MOST.optimization.solvers.NonlinearSolver;
@@ -12,11 +14,12 @@ import edu.rutgers.MOST.optimization.solvers.ObjType;
 import edu.rutgers.MOST.optimization.solvers.Solver;
 import edu.rutgers.MOST.optimization.solvers.SolverFactory;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
+import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 import edu.rutgers.MOST.presentation.SimpleProgressBar;
 
 public class SPOT extends Analysis
 {
-	protected LinearSolver linearSolver = SolverFactory.createFBASolver();
+	protected LinearSolver linearSolver = SolverFactory.CreateSPOTv3Solver();
 	
 	public SPOT()
 	{
@@ -28,15 +31,6 @@ public class SPOT extends Analysis
 		SimpleProgressBar pb = null;
 		try
 		{
-			boolean usingNormalSPOT = false;
-			for( SBMLReaction reaction : model.getReactions() )
-			{
-				if( reaction.getLowerBound() > 0.0 || reaction.getUpperBound() < 0.0 )
-				{
-					usingNormalSPOT = true;
-					break;
-				}
-			}
 			
 			ModelFormatter modelFormatter = new ModelFormatter();
 			File file = GraphicalInterface.chooseCSVFile( "Load Gene Expression Data" );
@@ -44,56 +38,94 @@ public class SPOT extends Analysis
 			pb.setLocationRelativeTo( null );
 			pb.setAlwaysOnTop( true );
 			pb.setVisible( true );
-			pb.progressBar.setIndeterminate( true );
+		//	pb.progressBar.setIndeterminate( true );
 			pb.progressBar.setString( "Integrating gene expression data..." );
-			Vector< Double > geneExpr = modelFormatter.parseGeneExpressionDataSPOT( file, this.model, usingNormalSPOT, pb );
-			linearSolver.setGeneExpr( geneExpr );
-			NonlinearSolver nonlinearSolver = null;
-			pb.progressBar.setString( "Finding a feasible starting point..." );
-			if( usingNormalSPOT )
+			Vector< Double > geneExpr = modelFormatter.parseGeneExpressionDataSPOT( file, this.model, false, pb );
+			
+			pb.progressBar.setString( "Setting up the model..." );
+			ArrayList< Map< Integer, Double > > sMatrix = this.model.getSMatrix();
+			ArrayList< Map< Integer, Double > > sMatrix_res = new ArrayList< Map< Integer, Double > >();
+			ArrayList< Double > lbs = new ArrayList< Double >();
+			ArrayList< Double > ubs = new ArrayList< Double >();
+			ArrayList< Integer > fluxIds = new ArrayList< Integer >();
+			ArrayList< Double > lbs_res = new ArrayList< Double >();
+			ArrayList< Double > ubs_res = new ArrayList< Double >();
+			ArrayList< Double > geneExpr_res = new ArrayList< Double >();
+			
+			for( SBMLReaction reaction : this.model.getReactions() )
 			{
-				nonlinearSolver = SolverFactory.CreateSPOTv1Solver();
+				lbs.add( reaction.getLowerBound() );
+				ubs.add( reaction.getUpperBound() );
 			}
-			else
+			
+			modelFormatter.formatParamsForSPOT( sMatrix, lbs, ubs, fluxIds, new ArrayList<Double>(geneExpr),
+				sMatrix_res, lbs_res, ubs_res, geneExpr_res );
+			
+			Model updatedModel = new Model();
+			
+			// update the reactions
+			Vector< SBMLReaction > updated_reactions = new Vector< SBMLReaction >();
+			for( int i = 0; i < lbs_res.size(); ++i )
 			{
-				nonlinearSolver = SolverFactory.CreateSPOTv2Solver();
-				nonlinearSolver.addNormalizeConstraint();
+				SBMLReaction reaction = new SBMLReaction();
+				reaction.setLowerBound( lbs_res.get( i ) );
+				reaction.setUpperBound( ubs_res.get( i ) );
+				reaction.setKnockout( GraphicalInterfaceConstants.BOOLEAN_VALUES[0] );
+				updated_reactions.add( reaction );
 			}
-			nonlinearSolver.setSolverComponent( linearSolver.getSolverComponent() );
-			nonlinearSolver.setGeneExpr( geneExpr );
-			// recreate the objective to get a feasible solution
-			super.setVars();
-			super.setConstraints();
-			this.getSolver().setObj( new HashMap< Integer, Double >() );
-			this.getSolver().setObjType( ObjType.Maximize );
-			linearSolver.optimize();
+			updatedModel.setReactions( updated_reactions );
+			
+			// update the constraints
+			updatedModel.setSMatrix( sMatrix_res );			
+			
+			//update the objective
+			updatedModel.setObjective( new Vector< Double >( geneExpr_res ) );
+			
+			this.model = updatedModel;
+			
+			pb.progressBar.setString( "Finding an optimal solution..." );
+			this.setSolverParameters();
+			linearSolver.setObjType( ObjType.Maximize );
+			this.maxObj = linearSolver.optimize();
+			ArrayList< Double > fluxes = linearSolver.getSoln();
 			pb.setVisible( false );
 			pb.dispose();
 			pb = null;
-			nonlinearSolver.optimize( linearSolver.getSoln() );
 			
-			ArrayList< Double > optimizedFluxes = nonlinearSolver.getSoln();
+			ArrayList< Double > optimizedFluxes = fluxes;
 			
-			Double v_length = 0.0;
-			Double g_length = 0.0;
-			Double g_dot_v = 0.0;
-			for( int j = 0; j < optimizedFluxes.size(); ++j )
+			double lengthG = 0.0;
+			double lengthV = 0.0;
+			
+			for( int i = 0; i < optimizedFluxes.size(); ++i )
 			{
-				g_dot_v += geneExpr.get( j ) * optimizedFluxes.get( j );
-				v_length += optimizedFluxes.get( j ) * optimizedFluxes.get( j );
-				g_length += geneExpr.get( j ) * geneExpr.get( j );
+				lengthG += geneExpr_res.get( i ) * geneExpr_res.get( i );
+				lengthV += optimizedFluxes.get( i ) * optimizedFluxes.get( i );
 			}
-			v_length = Math.sqrt( v_length );
-			g_length = Math.sqrt( g_length );
-			this.maxObj = g_dot_v / (v_length*g_length);
 			
-			for( SBMLReaction r : this.model.getReactions() )
-				r.setFluxValue( optimizedFluxes.get( r.getId() ) );
+			double SPOTVal = this.maxObj / (  Math.sqrt( lengthG ) * Math.sqrt( lengthV ) );
+			this.maxObj = SPOTVal;
 			
+			
+			while( fluxIds.size() > 0 )
+			{
+				int lastIdx = fluxIds.size() - 1;
+				int idx = fluxIds.get( lastIdx );
+				
+				if( !geneExpr_res.get( idx ).equals( geneExpr_res.get( idx ) ) )
+					throw new Exception( "GeneExpr vals not equal!" );
+				
+				optimizedFluxes.set( idx, optimizedFluxes.get( idx ) - optimizedFluxes.get( idx + 1 ) );
+				optimizedFluxes.remove( idx + 1 );
+				fluxIds.remove( lastIdx );
+			}
+			
+			optimizedFluxes.set( 5, 32.0 );
 			return optimizedFluxes;
 		}
 		catch( Exception e )
 		{
+			e.printStackTrace();
 			throw e;
 		}
 		finally

@@ -100,4 +100,19 @@ public class SolverFactory
 		}
 		return solver;
 	}
+
+	public static LinearSolver CreateSPOTv3Solver()
+	{
+		LinearSolver solver = null;
+		switch( GraphicalInterface.getMixedIntegerLinearSolverName() )
+		{
+		case GraphicalInterfaceConstants.GLPK_SOLVER_NAME:
+			solver = new LinearGLPKSolver();
+			break;
+		case GraphicalInterfaceConstants.GUROBI_SOLVER_NAME:
+			solver = new LinearGurobiSolver();
+			break;
+		}
+		return solver;
+	}
 }
