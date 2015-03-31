@@ -246,4 +246,11 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 		
 		return true;
 	}
+	@Override
+	public ArrayList< Double > SPOTAlgorithm( ArrayList< Double > objCoefs,
+		SolverComponent component ) throws Exception
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

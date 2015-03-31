@@ -215,4 +215,81 @@ public class QuadraticGurobiSolver implements QuadraticSolver
 		
 		return soln;
 	}
+	@Override
+	public ArrayList< Double > SPOTAlgorithm( ArrayList< Double > objCoefs,
+		SolverComponent component ) throws Exception
+	{
+		ArrayList< Double > soln = new ArrayList< Double >();
+		
+		try
+		{
+			// set up the quadratic environment model
+			GRBEnv quad_env = new GRBEnv();
+			GRBModel quad_model = new GRBModel( quad_env );
+			ArrayList< GRBVar > vars = new ArrayList< GRBVar >();
+			quad_env.set( GRB.DoubleParam.IntFeasTol, 1.0E-9 );
+			quad_env.set( GRB.DoubleParam.FeasibilityTol, 1.0E-9 );
+			quad_env.set( GRB.IntParam.OutputFlag, 0 );
+			
+			// create the variables
+			for( int j = 0; j < component.variableCount(); ++ j )
+			{
+				Variable var = component.getVariable( j );
+
+				vars.add( quad_model.addVar( var.lb, var.ub, 0.0, getGRBVarType( var.type ),
+						null ) );
+			}
+			quad_model.update();
+			
+			// set constraints to Gurobi
+			// steady state constraint
+			for( int i = 0; i < component.constraintCount(); ++i )
+			{
+				Constraint constraint = component.getConstraint( i );
+
+				GRBLinExpr expr = new GRBLinExpr();
+				for( int j = 0; j < component.variableCount(); ++j )
+				{
+					expr.addTerm( constraint.getCoefficient( j ), vars.get( j ) );
+				}
+				quad_model.addConstr( expr, getGRBConType( constraint.type ), constraint.value, null );
+			}
+			
+			// ||V||^2 = 1 constraint
+			GRBQuadExpr normcon = new GRBQuadExpr();
+			for( GRBVar var : vars )
+			{
+				normcon.addTerm( 1.0, var, var );
+			}
+			quad_model.addQConstr( normcon, GRB.EQUAL, 1.0, null );
+	
+			// set the objective
+			GRBLinExpr expr = new GRBLinExpr();
+			for( int i = 0; i < objCoefs.size(); ++i )
+				expr.addTerm( expr.getCoeff( i ), vars.get( i ) );
+			quad_model.setObjective( expr, GRB.MAXIMIZE );
+			
+			// optimize the model
+			quad_model.optimize();
+			
+			// remove the extra constraint
+			component.removeConstraint( component.constraintCount() - 1 );
+			
+			// get min of sum of min v^2
+			// objval = result = quad_model.get( GRB.DoubleAttr.ObjVal );
+			
+			for( GRBVar var : vars)
+				soln.add( var.get( GRB.DoubleAttr.X ) );
+			
+			// clean up
+			quad_model.dispose();
+			quad_env.dispose();
+		}
+		catch( GRBException e )
+		{
+			promptGRBError( e );
+		}
+		
+		return soln;
+	}
 }

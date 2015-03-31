@@ -12,4 +12,6 @@ public interface QuadraticSolver
 	 * @return The optimized flux vector
 	 */
 	public ArrayList< Double > minimizeEuclideanNorm( ArrayList< Double > objCoefs, Double objVal, SolverComponent component ) throws Exception;
+	
+	public ArrayList< Double > SPOTAlgorithm( ArrayList< Double > objCoefs, SolverComponent component ) throws Exception;
 }
