@@ -11,6 +11,7 @@ import edu.rutgers.MOST.data.SBMLReaction;
 import edu.rutgers.MOST.optimization.solvers.LinearSolver;
 import edu.rutgers.MOST.optimization.solvers.NonlinearSolver;
 import edu.rutgers.MOST.optimization.solvers.ObjType;
+import edu.rutgers.MOST.optimization.solvers.QuadraticSolver;
 import edu.rutgers.MOST.optimization.solvers.Solver;
 import edu.rutgers.MOST.optimization.solvers.SolverFactory;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
@@ -19,7 +20,7 @@ import edu.rutgers.MOST.presentation.SimpleProgressBar;
 
 public class SPOT extends Analysis
 {
-	protected LinearSolver linearSolver = SolverFactory.CreateSPOTv3Solver();
+	protected LinearSolver linearSolver = SolverFactory.createFBASolver();
 	
 	public SPOT()
 	{
@@ -86,23 +87,25 @@ public class SPOT extends Analysis
 			
 			pb.progressBar.setString( "Finding an optimal solution..." );
 			this.setSolverParameters();
-			linearSolver.setObjType( ObjType.Maximize );
-			this.maxObj = linearSolver.optimize();
-			ArrayList< Double > fluxes = linearSolver.getSoln();
+			QuadraticSolver quadSolver = SolverFactory.CreateSPOTv3Solver();
+			ArrayList< Double > fluxes = quadSolver.SPOTAlgorithm( geneExpr_res, linearSolver.getSolverComponent() );
+			this.maxObj = 0.0;
 			
 			pb.progressBar.setString( "Calculating V*G / (||V|| ||G||)" );
 			ArrayList< Double > optimizedFluxes = fluxes;
 			
 			double lengthG = 0.0;
 			double lengthV = 0.0;
+			double dotProduct = 0.0;
 			
 			for( int i = 0; i < optimizedFluxes.size(); ++i )
 			{
+				dotProduct += geneExpr_res.get( i ) * optimizedFluxes.get( i );
 				lengthG += geneExpr_res.get( i ) * geneExpr_res.get( i );
 				lengthV += optimizedFluxes.get( i ) * optimizedFluxes.get( i );
 			}
 			
-			double SPOTVal = this.maxObj / (  Math.sqrt( lengthG ) * Math.sqrt( lengthV ) );
+			double SPOTVal = dotProduct / (  Math.sqrt( lengthG ) * Math.sqrt( lengthV ) );
 			this.maxObj = SPOTVal;
 			
 			pb.progressBar.setString( "Updating table..." );

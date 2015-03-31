@@ -11,6 +11,7 @@ import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBQuadExpr;
 import gurobi.GRBVar;
+import gurobi.GRB.DoubleAttr;
 
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -235,7 +236,6 @@ public class QuadraticGurobiSolver implements QuadraticSolver
 			for( int j = 0; j < component.variableCount(); ++ j )
 			{
 				Variable var = component.getVariable( j );
-
 				vars.add( quad_model.addVar( var.lb, var.ub, 0.0, getGRBVarType( var.type ),
 						null ) );
 			}
@@ -261,22 +261,16 @@ public class QuadraticGurobiSolver implements QuadraticSolver
 			{
 				normcon.addTerm( 1.0, var, var );
 			}
-			quad_model.addQConstr( normcon, GRB.EQUAL, 1.0, null );
+			quad_model.addQConstr( normcon, GRB.LESS_EQUAL, 1.0, null );
 	
 			// set the objective
 			GRBLinExpr expr = new GRBLinExpr();
 			for( int i = 0; i < objCoefs.size(); ++i )
-				expr.addTerm( expr.getCoeff( i ), vars.get( i ) );
+				expr.addTerm( objCoefs.get( i ), vars.get( i ) );
 			quad_model.setObjective( expr, GRB.MAXIMIZE );
 			
 			// optimize the model
 			quad_model.optimize();
-			
-			// remove the extra constraint
-			component.removeConstraint( component.constraintCount() - 1 );
-			
-			// get min of sum of min v^2
-			// objval = result = quad_model.get( GRB.DoubleAttr.ObjVal );
 			
 			for( GRBVar var : vars)
 				soln.add( var.get( GRB.DoubleAttr.X ) );

@@ -101,17 +101,18 @@ public class SolverFactory
 		return solver;
 	}
 
-	public static LinearSolver CreateSPOTv3Solver()
+	public static QuadraticSolver CreateSPOTv3Solver()
 	{
-		LinearSolver solver = null;
-		switch( GraphicalInterface.getMixedIntegerLinearSolverName() )
+		QuadraticSolver solver = null;
+		switch( GraphicalInterface.getQuadraticSolverName() )
 		{
-		case GraphicalInterfaceConstants.GLPK_SOLVER_NAME:
-			solver = new LinearGLPKSolver();
-			break;
 		case GraphicalInterfaceConstants.GUROBI_SOLVER_NAME:
-			solver = new LinearGurobiSolver();
+			solver = new QuadraticGurobiSolver();
 			break;
+			
+		case GraphicalInterfaceConstants.IPOPT_SOLVER_NAME:
+			solver = new QuadraticIPoptSolver();
+			break;			
 		}
 		return solver;
 	}
