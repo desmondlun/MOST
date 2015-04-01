@@ -197,7 +197,7 @@ public class ModelFormatter
 						for( Entry< Integer, Double > term : con.entrySet() )
 						{
 							int key = term.getKey();
-							new_con.put( key > i + n ? key + n + 1 : key , term.getValue() );
+							new_con.put( key > i + n ? key + 1 : key , term.getValue() );
 						}
 						
 						if( con.containsKey( i + n ) )

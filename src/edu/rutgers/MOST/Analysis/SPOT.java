@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Vector;
 
 import edu.rutgers.MOST.data.Model;
@@ -115,7 +116,7 @@ public class SPOT extends Analysis
 				int lastIdx = fluxIds.size() - 1;
 				int idx = fluxIds.get( lastIdx );
 				
-				if( !geneExpr_res.get( idx ).equals( geneExpr_res.get( idx ) ) )
+				if( !geneExpr_res.get( idx ).equals( geneExpr_res.get( idx+1 ) ) )
 					throw new Exception( "GeneExpr vals not equal!" );
 				
 				optimizedFluxes.set( idx, optimizedFluxes.get( idx ) - optimizedFluxes.get( idx + 1 ) );

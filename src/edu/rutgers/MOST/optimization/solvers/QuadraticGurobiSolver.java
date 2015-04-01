@@ -284,6 +284,22 @@ public class QuadraticGurobiSolver implements QuadraticSolver
 			promptGRBError( e );
 		}
 		
+		
+		// check against constraints
+		ArrayList< Double > checks = new ArrayList< Double >();
+		for( int i = 0; i < component.constraintCount(); ++i )
+		{
+			double c = 0.0;
+			for( int j = 0; j < component.variableCount(); ++j )
+			{
+				c += component.getConstraint( i ).getCoefficient( j ) * soln.get( j );
+			}
+			checks.add( c );
+			if( c > 1E-8 )
+				System.out.println( "Problem!" );
+		}
+		
+		
 		return soln;
 	}
 }
