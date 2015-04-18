@@ -19,6 +19,10 @@ public class Model
 	protected ReactionFactory rFactory = new ReactionFactory( "SBML" );
 	protected boolean bioObjVecWarning = true;
 	
+	public void setSMatrix( ArrayList< Map< Integer, Double > > sMatrix )
+	{
+		this.sMatrix = sMatrix;
+	}
 
 	public Map< Object, Object > getReactionsIdPositionMap()
 	{

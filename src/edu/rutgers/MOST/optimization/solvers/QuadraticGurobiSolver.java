@@ -11,6 +11,7 @@ import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBQuadExpr;
 import gurobi.GRBVar;
+import gurobi.GRB.DoubleAttr;
 
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -212,6 +213,92 @@ public class QuadraticGurobiSolver implements QuadraticSolver
 		{
 			promptGRBError( e );
 		}
+		
+		return soln;
+	}
+	@Override
+	public ArrayList< Double > SPOTAlgorithm( ArrayList< Double > objCoefs,
+		SolverComponent component ) throws Exception
+	{
+		ArrayList< Double > soln = new ArrayList< Double >();
+		
+		try
+		{
+			// set up the quadratic environment model
+			GRBEnv quad_env = new GRBEnv();
+			GRBModel quad_model = new GRBModel( quad_env );
+			ArrayList< GRBVar > vars = new ArrayList< GRBVar >();
+			quad_env.set( GRB.DoubleParam.IntFeasTol, 1.0E-9 );
+			quad_env.set( GRB.DoubleParam.FeasibilityTol, 1.0E-9 );
+			quad_env.set( GRB.IntParam.OutputFlag, 0 );
+			
+			// create the variables
+			for( int j = 0; j < component.variableCount(); ++ j )
+			{
+				Variable var = component.getVariable( j );
+				vars.add( quad_model.addVar( var.lb, var.ub, 0.0, getGRBVarType( var.type ),
+						null ) );
+			}
+			quad_model.update();
+			
+			// set constraints to Gurobi
+			// steady state constraint
+			for( int i = 0; i < component.constraintCount(); ++i )
+			{
+				Constraint constraint = component.getConstraint( i );
+
+				GRBLinExpr expr = new GRBLinExpr();
+				for( int j = 0; j < component.variableCount(); ++j )
+				{
+					expr.addTerm( constraint.getCoefficient( j ), vars.get( j ) );
+				}
+				quad_model.addConstr( expr, getGRBConType( constraint.type ), constraint.value, null );
+			}
+			
+			// ||V||^2 = 1 constraint
+			GRBQuadExpr normcon = new GRBQuadExpr();
+			for( GRBVar var : vars )
+			{
+				normcon.addTerm( 1.0, var, var );
+			}
+			quad_model.addQConstr( normcon, GRB.LESS_EQUAL, 1.0, null );
+	
+			// set the objective
+			GRBLinExpr expr = new GRBLinExpr();
+			for( int i = 0; i < objCoefs.size(); ++i )
+				expr.addTerm( objCoefs.get( i ), vars.get( i ) );
+			quad_model.setObjective( expr, GRB.MAXIMIZE );
+			
+			// optimize the model
+			quad_model.optimize();
+			
+			for( GRBVar var : vars)
+				soln.add( var.get( GRB.DoubleAttr.X ) );
+			
+			// clean up
+			quad_model.dispose();
+			quad_env.dispose();
+		}
+		catch( GRBException e )
+		{
+			promptGRBError( e );
+		}
+		
+		
+		// check against constraints
+		ArrayList< Double > checks = new ArrayList< Double >();
+		for( int i = 0; i < component.constraintCount(); ++i )
+		{
+			double c = 0.0;
+			for( int j = 0; j < component.variableCount(); ++j )
+			{
+				c += component.getConstraint( i ).getCoefficient( j ) * soln.get( j );
+			}
+			checks.add( c );
+			if( c > 1E-8 )
+				System.out.println( "Problem!" );
+		}
+		
 		
 		return soln;
 	}

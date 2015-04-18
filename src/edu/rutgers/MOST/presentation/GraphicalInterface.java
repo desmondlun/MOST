@@ -2050,9 +2050,8 @@ public class GraphicalInterface extends JFrame {
 				outputText.append( model.getNumMetabolites()
 						+ " metabolites, " + model.getNumReactions()
 						+ " reactions\n" );
-				outputText.append( "SPOT value: " + maxObj + "\n" );
-				outputText.append("MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() + "\n" );
-				outputText.append("Nonlinear solver = " + GraphicalInterface.getNonlinearSolverName() + "\n" );
+				outputText.append( "SPOT value: ( V*G / ( ||V|| ||G|| )\n\t" + maxObj + "\n" );
+				outputText.append("Quadratic Solver = " + GraphicalInterface.getQuadraticSolverName() + "\n" );
 			}
 
 			@Override

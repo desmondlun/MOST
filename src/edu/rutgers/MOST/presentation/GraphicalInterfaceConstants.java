@@ -480,7 +480,7 @@ public class GraphicalInterfaceConstants
 	public static final String GUROBI_KEY_ERROR_TITLE = "Gurobi Key Error";
 	public static final String GUROBI_KEY_ERROR = "Gurobi Key Error";
 
-	public static final String GUROBI_ERROR_CODE_URL = "http://www.gurobi.com/documentation/5.6/reference-manual/error_codes";
+	public static final String GUROBI_ERROR_CODE_URL = "http://www.gurobi.com/documentation/5.6/refman/error_codes.html";
 
 	public static final String LOAD_FROM_MODEL_COLLECTION_TABLE_TITLE = "Load from Model Collection Database";
 

@@ -100,4 +100,20 @@ public class SolverFactory
 		}
 		return solver;
 	}
+
+	public static QuadraticSolver CreateSPOTv3Solver()
+	{
+		QuadraticSolver solver = null;
+		switch( GraphicalInterface.getQuadraticSolverName() )
+		{
+		case GraphicalInterfaceConstants.GUROBI_SOLVER_NAME:
+			solver = new QuadraticGurobiSolver();
+			break;
+			
+		case GraphicalInterfaceConstants.IPOPT_SOLVER_NAME:
+			solver = new QuadraticIPoptSolver();
+			break;			
+		}
+		return solver;
+	}
 }
