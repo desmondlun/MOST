@@ -176,11 +176,13 @@ public class ModelFormatter
 					
 					// v_i_f
 					result_lb.add( 0.0 );
-					result_ub.add( Math.abs( ub.get( i ) ) ); // will account for later if negative
+					Double upperB = Math.abs( ub.get( i ) );
+					result_ub.add( upperB > 0.0 ? Double.POSITIVE_INFINITY : 0.0 ); // will account for later if negative
 					
 					// v_i_b
 					result_lb.add( 0.0 );
-					result_ub.add( -lb.get( i ) );
+					upperB = -lb.get( i );
+					result_ub.add( upperB < 0.0 ? Double.NEGATIVE_INFINITY : 0.0 );
 					
 					// geneData
 					result_geneExprData.add( geneExprData.get( i ) );
@@ -213,8 +215,8 @@ public class ModelFormatter
 				}
 				else
 				{
-					result_lb.add( lb.get( i ) );
-					result_ub.add( ub.get( i ) );
+					result_lb.add( lb.get( i ) < 0.0 ? Double.NEGATIVE_INFINITY : 0.0 );
+					result_ub.add( ub.get( i ) > 0.0 ? Double.POSITIVE_INFINITY : 0.0 );
 					result_geneExprData.add( geneExprData.get( i ) );
 				}
 			}
