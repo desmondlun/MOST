@@ -217,8 +217,8 @@ public class TextReactionsModelReader {
 					String reactionName = "";
 					String reactionEqunAbbr = "";
 					String reversible = "";
-					Double lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
-					Double upperBound =	GraphicalInterfaceConstants.UPPER_BOUND_DEFAULT;
+					Double lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_REVERSIBLE_CSV_DEFAULT;
+					Double upperBound =	GraphicalInterfaceConstants.UPPER_BOUND_CSV_DEFAULT;
 					Double biologicalObjective = GraphicalInterfaceConstants.BIOLOGICAL_OBJECTIVE_DEFAULT;
 					Double syntheticObjective = GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_DEFAULT;
 					String geneAssociation = "";
@@ -291,6 +291,9 @@ public class TextReactionsModelReader {
 					}
 					
 					if (LocalConfig.getInstance().getLowerBoundColumnIndex() > -1) {
+						// if value in csv is numeric, use the value, else if reversible, set value as negative
+						// infinity, else set value as zero. to change what value to use as infinity, change
+						// LOWER_BOUND_REVERSIBLE_CSV_DEFAULT and UPPER_BOUND_CSV_DEFAULT in GraphicalInterfaceConstants
 						if (isNumber(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()])) {
 							//System.out.println(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()]);
 							lowerBound = Double.valueOf(dataArray[LocalConfig.getInstance().getLowerBoundColumnIndex()]);
@@ -300,15 +303,15 @@ public class TextReactionsModelReader {
 								lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
 								// true
 							} else if (reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[1])) {
-								lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_REVERSIBLE_DEFAULT;
+								lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_REVERSIBLE_CSV_DEFAULT;
 							}
 						}
 					} 
 					// TODO : add error message here?
 					// reversible = false
 					if (lowerBound < 0.0 && reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
-						System.out.println("lb " + lowerBound);
-						System.out.println(reversible);
+//						System.out.println("lb " + lowerBound);
+//						System.out.println(reversible);
 						System.out.println(GraphicalInterfaceConstants.BOOLEAN_VALUES[0]);
 						lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
 					} 
