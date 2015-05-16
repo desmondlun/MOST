@@ -403,16 +403,16 @@ public class SBMLModelReader {
 			String reactionEquationNames = equation.equationNames;
 			reacRow.add(reactionEquationNames);	
 			
-			reacRow.add(reversible);
 
 			if (reactions.get(j).isSetKineticLaw()) {
 				for(int k = 0; k < reactions.get(j).getKineticLaw().getListOfLocalParameters().size(); k++) {
 					if (reactions.get(j).getKineticLaw().getListOfLocalParameters().get(k).getId().matches("LOWER_BOUND")) {
 						lowerBound = Double.toString(reactions.get(j).getKineticLaw().getLocalParameter("LOWER_BOUND").getValue());
 						// if reaction is not reversible and lower bound < 0, lower bound set to 0
-				//		if (reactions.get(j).getKineticLaw().getLocalParameter("LOWER_BOUND").getValue() < 0.0 && reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
+						if (reactions.get(j).getKineticLaw().getLocalParameter("LOWER_BOUND").getValue() < 0.0 && reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
 //SBML override //			lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT_IRREVERBIBLE_STRING;
-				//		}
+							reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
+						}
 					} else if (reactions.get(j).getKineticLaw().getListOfLocalParameters().get(k).getName().matches("LOWER_BOUND")) {
 						lowerBound = Double.toString(reactions.get(j).getKineticLaw().getListOfLocalParameters().get(k).getValue());
 						// if reaction is not reversible and lower bound < 0, lower bound set to 0
@@ -432,6 +432,7 @@ public class SBMLModelReader {
 					}
 				}
 			} 
+			reacRow.add(reversible);
 			reacRow.add(lowerBound);
 			//System.out.println("lower bound " + lowerBound);
 			reacRow.add(upperBound);
