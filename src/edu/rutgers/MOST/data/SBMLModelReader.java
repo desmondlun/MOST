@@ -412,6 +412,8 @@ public class SBMLModelReader {
 						if (reactions.get(j).getKineticLaw().getLocalParameter("LOWER_BOUND").getValue() < 0.0 && reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
 //SBML override //			lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT_IRREVERBIBLE_STRING;
 							reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
+							Exception e = new Exception( "Forcing reversibility to conform to flux bound" );
+							if( GraphicalInterfaceConstants.DEBUG_MODE ) e.printStackTrace();
 						}
 					} else if (reactions.get(j).getKineticLaw().getListOfLocalParameters().get(k).getName().matches("LOWER_BOUND")) {
 						lowerBound = Double.toString(reactions.get(j).getKineticLaw().getListOfLocalParameters().get(k).getValue());
