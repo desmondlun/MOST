@@ -281,9 +281,10 @@ public class TextReactionsModelReader {
 					}
 					
 					if (LocalConfig.getInstance().getReversibleColumnIndex() > -1) {
-						if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("false") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("FALSE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0.0") == 0) {
+						String str = dataArray[LocalConfig.getInstance().getReversibleColumnIndex()];
+						if ( str.equals("false") || str.equals("FALSE") || str.equals("0") || str.equals("0.0") ) {
 							reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[0];
-						} else if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("true") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("TRUE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1.0") == 0) {
+						} else if ( str.equals("true") || str.equals("TRUE") || str.equals("1") || str.equals("1.0") ) {
 							reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
 						} 
 					} else {
@@ -309,12 +310,15 @@ public class TextReactionsModelReader {
 					} 
 					// TODO : add error message here?
 					// reversible = false
+					// CSV-Override: if LB < 0 and reaction.isNotReversible, then use LB and set reaction.reversibility to True
 					if (lowerBound < 0.0 && reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
 //						System.out.println("lb " + lowerBound);
 //						System.out.println(reversible);
-						System.out.println(GraphicalInterfaceConstants.BOOLEAN_VALUES[0]);
-						lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
-					} 
+						System.out.println(GraphicalInterfaceConstants.BOOLEAN_VALUES[1]);
+						//lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
+						reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
+					}
+					
 					reacRow.add(Double.toString(lowerBound));
 					if (LocalConfig.getInstance().getUpperBoundColumnIndex() > -1) {
 						if (isNumber(dataArray[LocalConfig.getInstance().getUpperBoundColumnIndex()])) {
