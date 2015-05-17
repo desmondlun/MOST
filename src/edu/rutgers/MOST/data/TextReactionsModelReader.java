@@ -308,15 +308,27 @@ public class TextReactionsModelReader {
 							}
 						}
 					} 
-					// TODO : add error message here?
-					// reversible = false
-					// CSV-Override: if LB < 0 and reaction.isNotReversible, then use LB and set reaction.reversibility to True
-					if (lowerBound < 0.0 && reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
-//						System.out.println("lb " + lowerBound);
-//						System.out.println(reversible);
-						System.out.println(GraphicalInterfaceConstants.BOOLEAN_VALUES[1]);
-						//lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
-						reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
+
+					// error messaging: exception handling to outline precisely where any 'error' of
+					// interest can be in code. Easy hop by clicking on stack-trace
+					try
+					{
+						// reversible = false
+						// CSV-Override: if LB < 0 and reaction.isNotReversible, 
+						//               then use LB and set reaction.reversibility to True
+						if (lowerBound < 0.0 && reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) 
+						{
+	//						System.out.println("lb " + lowerBound);
+	//						System.out.println(reversible);
+							//lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
+							reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
+							if( GraphicalInterfaceConstants.DEBUG_MODE )
+								throw new Exception( "flux bound non-conforming" );
+						}
+					}
+					catch( Exception e )
+					{
+						e.printStackTrace();
 					}
 					
 					reacRow.add(Double.toString(lowerBound));

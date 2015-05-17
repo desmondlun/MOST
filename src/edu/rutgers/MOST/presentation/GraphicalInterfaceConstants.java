@@ -499,6 +499,7 @@ public class GraphicalInterfaceConstants
 	public static final String GDBB_PREFIX = "GDBB_";
 	
 	// output solver text
-	public static final boolean SOLVER_DEBUG_OUTPUT = false;
+	public static final boolean DEBUG_MODE = true;
+	public static final boolean SOLVER_DEBUG_OUTPUT = DEBUG_MODE;
 
 }
