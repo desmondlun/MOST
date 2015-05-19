@@ -143,10 +143,12 @@ public class GraphicalInterfaceConstants
 	public static final double MAX_FLUX_DEFAULT = 0;
 	public static final String MAX_FLUX_DEFAULT_STRING = "0";
 	public static final double LOWER_BOUND_DEFAULT = 0.0;
+	public static final double LOWER_BOUND_REVERSIBLE_CSV_DEFAULT = Double.valueOf("-" + GraphicalInterfaceConstants.VALID_INFINITY_ENTRY);
 	public static final double LOWER_BOUND_REVERSIBLE_DEFAULT = -999999.0;
 	public static final String LOWER_BOUND_DEFAULT_IRREVERBIBLE_STRING = "0.0";
 	public static final String LOWER_BOUND_DEFAULT_REVERSIBLE_STRING = "-999999.0";
 	public static final double UPPER_BOUND_DEFAULT = 999999.0;
+	public static final double UPPER_BOUND_CSV_DEFAULT = Double.valueOf(GraphicalInterfaceConstants.VALID_INFINITY_ENTRY);
 	public static final String UPPER_BOUND_DEFAULT_STRING = "999999.0";
 	public static final double BIOLOGICAL_OBJECTIVE_DEFAULT = 0.0;
 	public static final String BIOLOGICAL_OBJECTIVE_DEFAULT_STRING = "0.0";
@@ -357,7 +359,7 @@ public class GraphicalInterfaceConstants
 	// about
 	public static final String ABOUT_BOX_TITLE = "About MOST";
 	public static final String ABOUT_BOX_TEXT = "MOST - Metabolic Optimization and Simulation Tool.";
-	public static final String ABOUT_BOX_VERSION_TEXT = "Version: alpha-12";
+	public static final String ABOUT_BOX_VERSION_TEXT = "Version: alpha-13";
 
 	public static final String ABOUT_LICENSE_URL = "http://most.ccib.rutgers.edu/help.html#about";
 
@@ -497,6 +499,7 @@ public class GraphicalInterfaceConstants
 	public static final String GDBB_PREFIX = "GDBB_";
 	
 	// output solver text
-	public static final boolean SOLVER_DEBUG_OUTPUT = false;
+	public static final boolean DEBUG_MODE = true;
+	public static final boolean SOLVER_DEBUG_OUTPUT = DEBUG_MODE;
 
 }

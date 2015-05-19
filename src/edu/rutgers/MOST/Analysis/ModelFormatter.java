@@ -176,11 +176,13 @@ public class ModelFormatter
 					
 					// v_i_f
 					result_lb.add( 0.0 );
-					result_ub.add( Math.abs( ub.get( i ) ) ); // will account for later if negative
+					Double upperB = Math.abs( ub.get( i ) );
+					result_ub.add( upperB > 0.0 ? Double.POSITIVE_INFINITY : 0.0 ); // will account for later if negative
 					
 					// v_i_b
 					result_lb.add( 0.0 );
-					result_ub.add( -lb.get( i ) );
+					upperB = -lb.get( i );
+					result_ub.add( upperB > 0.0 ? Double.POSITIVE_INFINITY : 0.0 );
 					
 					// geneData
 					result_geneExprData.add( geneExprData.get( i ) );
@@ -213,8 +215,8 @@ public class ModelFormatter
 				}
 				else
 				{
-					result_lb.add( lb.get( i ) );
-					result_ub.add( ub.get( i ) );
+					result_lb.add( lb.get( i ) < 0.0 ? Double.NEGATIVE_INFINITY : 0.0 );
+					result_ub.add( ub.get( i ) > 0.0 ? Double.POSITIVE_INFINITY : 0.0 );
 					result_geneExprData.add( geneExprData.get( i ) );
 				}
 			}
@@ -228,7 +230,7 @@ public class ModelFormatter
 		}
 	}
 
-	public static void main( String[] args )
+	 public static void main( String[] args )
 	{
 		ArrayList< Double > lbs = new ArrayList< Double >();
 		ArrayList< Double > ubs = new ArrayList< Double >();
@@ -240,33 +242,38 @@ public class ModelFormatter
 		ArrayList< Map< Integer, Double > > sMatrix = new ArrayList< Map< Integer, Double > >();
 		ArrayList< Map< Integer, Double > > sMat_res = new ArrayList< Map< Integer, Double > >();		
 		
+		
 		/*
-		 * -1 < x <  1
-		 *  0 < y <  2
-		 * -3 < z < -1
+		 * -inf < x < inf
+		 *  0 < y < inf
+		 *  0 < z < inf
 		 */
 		
-		lbs.add( -1.0 );
-		ubs.add( 1.0 );
-		lbs.add( 0.0 );
-		ubs.add( 2.0 );
-		lbs.add( -3.0 );
-		ubs.add( -1.0 );
+		
+	     lbs.add(Double.NEGATIVE_INFINITY );
+	     ubs.add(Double.POSITIVE_INFINITY );
+	     lbs.add(0.0 );
+	     ubs.add(Double.POSITIVE_INFINITY );
+	     lbs.add(0.0 );
+	     ubs.add(Double.POSITIVE_INFINITY );
 		
 		/*
 		 * g_1 =  2.6
 		 * g_2 =  5.7
-		 * g_3 = -7.0
+		 * g_3 =  7.0
 		 */
+	
+	
 		geneExprData.add( 2.6 );
 		geneExprData.add( 5.7 );
-		geneExprData.add( -7.0 );
+		geneExprData.add( 7.0 );
 		
 		/*
 		 * [  0.5    2.7    73  ]
-		 * [  0.0    15     -3  ]
+		 * [  0.0    15     3  ]
 		 */
 		
+	
 		Map< Integer, Double > con1 = new HashMap< Integer, Double >();
 		con1.put( 0, 0.5 );
 		con1.put( 1, 2.7 );
@@ -274,7 +281,7 @@ public class ModelFormatter
 		
 		Map< Integer, Double > con2 = new HashMap< Integer, Double >();
 		con2.put( 1, 15.0 );
-		con2.put( 2, -3.0 );
+		con2.put( 2, 3.0 );
 		
 		sMatrix.add( con1 );
 		sMatrix.add( con2 );
@@ -285,18 +292,19 @@ public class ModelFormatter
 		/*
 		 * result:
 		 * 
-		 *  0 < x_f < 1
-		 *  0 < x_b < 1
-		 *  0 <  y  < 2
-		 *  0 < z_f < 1
-		 *  0 < z_b < 3
+		 *  0 < x_f < inf
+		 *  0 < x_b < inf
+		 *  0 <  y  < inf
+		 *  0 < z < inf
+		 
 		 * 
-		 * [  0.5   -0.5   2.7   -73   -73  ]
-		 * [  0.0   -0.0   15     3     3   ]
+		 * [  0.5   -0.5   2.7   73   ]
+		 * [  0.0   -0.0   15     3   ]
 		 */
 		
+	
 		formatter.formatParamsForSPOT( sMatrix, lbs, ubs, fluxIdxs, geneExprData, sMat_res, lb_res, ub_res, geneExprData_res );
 		
 		
-	}
+	} 
 }

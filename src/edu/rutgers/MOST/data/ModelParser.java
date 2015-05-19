@@ -33,7 +33,7 @@ public class ModelParser
 				{
 				case '(':
 				case ')':
-				case '-':
+			    //case '-':   //some gene names include '-' (e.g. 'YML081C-A' in S.cerevisiae)	
 					word += string.charAt( idx++ );
 					return word;
 				case '_':
@@ -58,6 +58,7 @@ public class ModelParser
 					while( idx < string.length() &&
 							( Character.isAlphabetic( string.charAt( idx ) )
 							|| Character.isDigit( string.charAt( idx ) )
+							|| string.charAt( idx ) == '-' 
 							|| string.charAt( idx ) == '.' 
 							|| string.charAt( idx ) == '_' )
 						)
@@ -104,9 +105,7 @@ public class ModelParser
 				stack.set( stack.size() - 2, stack.get( stack.size() - 2 ) +  stack.get( stack.size() - 1 ) );
 				stack.remove( stack.size() - 1 );
 				break;
-			case "negate":
-				stack.set( stack.size() - 1, -stack.get( stack.size() - 1 ) );
-				break;
+		
 				default:
 					throw new Exception( "Unsupportd operation \""
 							+ byteCode.firstElement() + " \"" );
@@ -150,15 +149,10 @@ public class ModelParser
 	}
 	private void parsePrefix() throws Exception
 	{
-		Vector< String > codeAppend = new Vector< String >();
-		while( lexer.getToken().equals( "-" ) )
-		{
-			codeAppend.add( "negate" );
-			lexer.advance();
-		}
+
 		parsePostfix();
-		for( String code : codeAppend )
-			byteCode.add( code );
+		// no prefix necessary
+		
 	}
 	private void parsePostfix() throws Exception
 	{

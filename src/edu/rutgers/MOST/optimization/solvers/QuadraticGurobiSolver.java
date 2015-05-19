@@ -11,7 +11,6 @@ import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBQuadExpr;
 import gurobi.GRBVar;
-import gurobi.GRB.DoubleAttr;
 
 import java.awt.Image;
 import java.awt.event.ActionEvent;
