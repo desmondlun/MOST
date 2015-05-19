@@ -6,18 +6,22 @@ should be removed from etc folder.
 Create folder named lib in this folder and copy linux, mac, win32 and win64 folders in lib folder into this folder.
 
 Note if Project is loaded through git into Eclipse, you will not be able to make an executable jar.
-3. Right click on the MOST project folder in Eclipse and select
+
+3. Set GraphicalInterfaceConstants.DEBUG_MODE = false in code to used for build only. 
+GraphicalInterfaceConstants.DEBUG_MODE should remain true in the GitHub repository.
+
+4. Right click on the MOST project folder in Eclipse and select
 Export -> Runnable Jar. Select "Extract required libraries into generated jar.
 Locate the correct GraphicalInterface, and browse for folder. 
 Browse for folder created in step 2 and type in MOST.jar
 in input box. Click Finish.
 Click OK for next two dialogs.
 
-4. Create a folder MOST_alpha-x where x is version. The MOST.jar, etc folder, lib folder, ModelCollection.csv,
+5. Create a folder MOST_alpha-x where x is version. The MOST.jar, etc folder, lib folder, ModelCollection.csv,
 and README, and SOURCES from folder created in step 3 must be placed in this folder. This folder will be used to create a tar.gz
 for Linux and zip file.
 
-5. Create Windows executable:
+6. Create Windows executable:
 Open launch4j
 In Basic Tab - Output file - browse for folder created in step 2. Type in MOST.exe. 
 In Jar runtime path type MOST.jar
@@ -31,7 +35,7 @@ Click the gear icon on top to build exe.
 If the arrow is clicked, MOST will launch but strangely no icons will exist in
 the toolbar. Instead to test exe, double click newly created exe in folder.
 
-6. Create installer:
+7. Create installer:
 Copy contents from MOST_distXXXXXX folder into a new folder MOSTWinXXXXXX where XXXXXX is the date.
 Delete linux and mac folders from the lib folder.
 Open InstallSimple.
@@ -49,4 +53,4 @@ Click Next
 Click Next until Build Setup is reached. Click Build.
 Rename Setup.exe to MOST_Setup.exe
 
-7. Update links in download.html and Installing_MOST.html.
+8. Update links in download.html and Installing_MOST.html.
