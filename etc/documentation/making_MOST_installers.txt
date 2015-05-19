@@ -3,7 +3,8 @@
 2. Create a folder MOST_distXXXXXX where XXXXXX is the date.  The etc folder, ModelCollection.csv,
 README, and SOURCES must be placed in this folder. The backup folder and documentation folder 
 should be removed from etc folder.
-Create folder named lib in this folder and copy linux, mac, win32 and win64 folders in lib folder into this folder.
+Create folder named lib in folder MOST_distXXXXXX and copy linux, mac, win32 and win64 folders from
+the lib folder of the code used for the build into this folder.
 
 Note if Project is loaded through git into Eclipse, you will not be able to make an executable jar.
 
@@ -11,7 +12,7 @@ Note if Project is loaded through git into Eclipse, you will not be able to make
 GraphicalInterfaceConstants.DEBUG_MODE should remain true in the GitHub repository.
 
 4. Right click on the MOST project folder in Eclipse and select
-Export -> Runnable Jar. Select "Extract required libraries into generated jar.
+Export -> Java -> Runnable Jar. Select "Extract required libraries into generated jar.
 Locate the correct GraphicalInterface, and browse for folder. 
 Browse for folder created in step 2 and type in MOST.jar
 in input box. Click Finish.
