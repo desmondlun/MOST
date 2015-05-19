@@ -131,9 +131,12 @@ A{text-decoration:none}
 	<p><strong>Step 1</strong></p>
 	
 	<blockquote><strong>Load Model. </strong>
-	Select File –> Load from Model Collection Database (Alt+F then Alt+D). Select <strong>ecoli_core_model</strong>, 
-	then click the OK button on the Model Collection dialog. This model will be used for this tutorial
-	since it is a small model and therefore analysis will be completed rapidly on any computer.</blockquote> 
+	You can load your own SBML or CSV model (To do this, go to File, then click either Load SBML or Load CSV).
+	You can also utilize a model of our Model Collection Database. 
+	Select File &#8594; Load from Model Collection Database (Alt+F then Alt+D).
+	If necessary, you can edit the model after loading one depending on your experiment.  
+	For a test purpose, select <strong>ecoli_core_model</strong>, 
+	then click the OK button on the Model Collection dialog. This model will be used for this tutorial </blockquote> 
 
 	<p align="center"><a href="images/load_ecoli_core.jpg" target="_blank">
 	<img src ="images/load_ecoli_core.jpg" alt="Image - Load E coli core" border="0" height="90%" width="90%"></a></p>
@@ -149,20 +152,19 @@ A{text-decoration:none}
 
 	<p><strong>Step 2</strong></p>
 
-	<blockquote><strong>Download Gene Expression File.</strong></blockquote> 
+	<blockquote><strong>Load Gene Expression File.</strong></blockquote> 
 
-	<blockquote>E-Flux2 requires a CSV file with two columns where the first column in the gene name and the
-	second column is the gene expression. A portion of the gene expression csv file used for the ecoli_core_model
-	is shown below:</blockquote>
+	<blockquote>SPOT requires a CSV file with two columns where the first column in the gene name and the
+	second column is the gene expression as shown below:</blockquote>
 
 	<p align="center"><img src ="images/gene_expr.jpg" alt="Image - Gene Expression" border="0"></p>
 
-	<blockquote>Click <a href="gene_expr.csv" target="_blank">here</a> to download the gene expression csv file for
-	the ecoli_core_model.</blockquote>
+	<blockquote>Click <a href="gene_expr.csv" target="_blank">here</a> to download a sample gene expression csv file that can be used for
+	the test of the ecoli_core_model.</blockquote>
 
 	<p><strong>Step 3</strong></p>
 
-	<blockquote><strong>Run Analysis. </strong>Select Analysis –> SPOT (Alt+A then Alt+S)..</blockquote>  
+	<blockquote><strong>Run Analysis. </strong>Select Analysis &#8594; SPOT (Alt+A then Alt+S)..</blockquote>  
 
     	<blockquote>A file browser will appear. Select the gene expression csv downloaded in Step 2, then click the Open button
 	on the file browser.</blockquote>
@@ -175,15 +177,12 @@ A{text-decoration:none}
 	<p align="center"><a href="images/spot_progress.jpg" target="_blank">
 	<img src ="images/spot_progress.jpg" alt="Image - SPOT progress" border="0" height="90%" width="90%"></a></p>
 
-	<blockquote>After SPOT is finished, a link will be added to the tree, and results will be displayed in the console.</blockquote>
+	<blockquote>After SPOT is finished, a new link of the optimization result will be added to the tree on the upper right panel, 
+	and results will be displayed in the console. The numerical values in the Flux Value column shows the predicted metabolic fluxes. </blockquote>
 
 	<p align="center"><a href="images/spot_done.jpg" target="_blank">
 	<img src ="images/spot_done.jpg" alt="Image - SPOT Results" border="0" height="90%" width="90%"></a></p>
 
-	<blockquote>SPOT is fast for the ecoli_core_model because it is such a small model. However, SPOT can take a 
-	significant amount of time to run, on the order of a half-hour for a large model such
-	as the iAF1260 model.
-	</blockquote>
 
 	</td>
 	</tr>
