@@ -224,7 +224,10 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 	public ArrayList< Double > SPOTAlgorithm( ArrayList< Double > objCoefs,
 		SolverComponent component ) throws Exception
 	{
-		// TODO Auto-generated method stub
-		return null;
+		ResizableDialog dialog = new ResizableDialog( "Error",
+			"Gurobi must be used for SPOT", "IPopt does not have SPOT implemented, please use Gurobi instead" );
+		dialog.setLocationRelativeTo( null );
+		dialog.setVisible( true );
+		throw new Exception( "SPOT--QuadraticIPoptSolver" );
 	}
 }
