@@ -3,6 +3,7 @@ package edu.rutgers.MOST.optimization.solvers;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import org.coinor.Ipopt;
 
@@ -250,7 +251,12 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 	public ArrayList< Double > SPOTAlgorithm( ArrayList< Double > objCoefs,
 		SolverComponent component ) throws Exception
 	{
-		// TODO Auto-generated method stub
-		return null;
+		SPOTv2IPoptSolver solver = new SPOTv2IPoptSolver();
+		solver.setSolverComponent( component );
+		solver.setGeneExpr( new Vector(objCoefs) );
+		solver.addNormalizeConstraint();
+		double o = solver.optimize();
+		this.soln = solver.getSoln();
+		return soln;
 	}
 }
