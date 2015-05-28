@@ -71,6 +71,7 @@ public class FBA extends Analysis
 	 		
 	 		if( minEucBox.isSelected() )
 	 		{
+	 			pb.progressBar.setString( "We are now minimizing ||V||" );
 	 			// minimize the euclidean norm like with Eflux-2
 	 			QuadraticSolver quadraticSolver = SolverFactory.createQuadraticSolver();
 	 			soln = quadraticSolver.minimizeEuclideanNorm( linearSolver.getObjectiveCoefs(), this.getMaxObj(), linearSolver.getSolverComponent() );
