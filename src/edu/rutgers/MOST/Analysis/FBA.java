@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.optimization.solvers.LinearSolver;
+import edu.rutgers.MOST.optimization.solvers.QuadraticSolver;
 import edu.rutgers.MOST.optimization.solvers.Solver;
 import edu.rutgers.MOST.optimization.solvers.SolverFactory;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
@@ -36,7 +37,7 @@ public class FBA extends Analysis
 		try
 		{
 			JCheckBox FVACheckBox = new JCheckBox( "Run FVA analysis" );
-			JCheckBox minEucBox = new JCheckBox( "Run Euclidean normalization" );
+			JCheckBox minEucBox = new JCheckBox( "Run Euclidean norm minimization" );
 			Object[] params = { "Select optional analysis along FBA", FVACheckBox, minEucBox };
 	 		int selectedOption = JOptionPane.showConfirmDialog( null, 
 	 				params, "FVA analysis", 
@@ -66,7 +67,16 @@ public class FBA extends Analysis
 		 		linearSolver.FVA( linearSolver.getObjectiveCoefs(), this.getMaxObj(), linearSolver.getSoln(), minVariability,
 		 				maxVariability, linearSolver.getSolverComponent() );
 	 		}
-	 		return linearSolver.getSoln();
+	 		ArrayList< Double > soln = linearSolver.getSoln();
+	 		
+	 		if( minEucBox.isSelected() )
+	 		{
+	 			// minimize the euclidean norm like with Eflux-2
+	 			QuadraticSolver quadraticSolver = SolverFactory.createQuadraticSolver();
+	 			soln = quadraticSolver.minimizeEuclideanNorm( linearSolver.getObjectiveCoefs(), this.getMaxObj(), linearSolver.getSolverComponent() );
+	 		}
+	 		
+	 		return soln;
 		}
 		catch( Exception e )
 		{
