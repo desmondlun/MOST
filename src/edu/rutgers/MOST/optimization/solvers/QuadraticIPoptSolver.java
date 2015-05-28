@@ -253,9 +253,9 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 	{
 		SPOTv2IPoptSolver solver = new SPOTv2IPoptSolver();
 		solver.setSolverComponent( component );
-		solver.setGeneExpr( new Vector(objCoefs) );
+		solver.setGeneExpr( new Vector< Double >(objCoefs) );
 		solver.addNormalizeConstraint();
-		double o = solver.optimize();
+		solver.optimize();
 		this.soln = solver.getSoln();
 		return soln;
 	}
