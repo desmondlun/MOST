@@ -6,6 +6,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
 import edu.rutgers.MOST.config.LocalConfig;
+import edu.rutgers.MOST.data.SBMLReaction;
 import edu.rutgers.MOST.optimization.solvers.LinearSolver;
 import edu.rutgers.MOST.optimization.solvers.QuadraticSolver;
 import edu.rutgers.MOST.optimization.solvers.Solver;
@@ -77,6 +78,8 @@ public class FBA extends Analysis
 	 			soln = quadraticSolver.minimizeEuclideanNorm( linearSolver.getObjectiveCoefs(), this.getMaxObj(), linearSolver.getSolverComponent() );
 	 		}
 	 		
+	 		for( SBMLReaction r : model.getReactions() )
+	 			r.setFluxValue( soln.get( r.getId() ) );
 	 		return soln;
 		}
 		catch( Exception e )

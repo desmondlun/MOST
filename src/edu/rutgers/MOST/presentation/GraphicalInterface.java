@@ -1731,7 +1731,15 @@ public class GraphicalInterface extends JFrame {
 					maxObj = Double.valueOf( "0.0" );
 				}
 				outputText.append("Maximum objective: "	+ maxObj + "\n");
+				{
+					double dot = 0.0;
+					for( SBMLReaction v : model.getReactions() )
+						dot += v.getFluxValue() * v.getFluxValue();
+					double norm = Math.sqrt( dot );
+					outputText.append( "||V|| = " + norm + "\n" );
+				}
 				outputText.append("MIL solver = " + GraphicalInterface.getMixedIntegerLinearSolverName() + "\n" );
+				outputText.append( "Quadratic Solver = " + GraphicalInterface.getQuadraticSolverName() + "\n" );
 				/*if (fba.FVASelected) {
 					LocalConfig.getInstance().fvaColumnsVisible = true;
 					ReactionFactory rFactory = new ReactionFactory("SBML");
