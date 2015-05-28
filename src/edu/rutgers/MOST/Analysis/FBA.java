@@ -2,6 +2,7 @@ package edu.rutgers.MOST.Analysis;
 
 import java.util.ArrayList;
 
+import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
 import edu.rutgers.MOST.config.LocalConfig;
@@ -34,14 +35,18 @@ public class FBA extends Analysis
 		SimpleProgressBar pb = null;
 		try
 		{
+			JCheckBox FVACheckBox = new JCheckBox( "Run FVA analysis" );
+			JCheckBox minEucBox = new JCheckBox( "Run Euclidean normalization" );
+			Object[] params = { "Select optional analysis along FBA", FVACheckBox, minEucBox };
 	 		int selectedOption = JOptionPane.showConfirmDialog( null, 
-	 				"Do you want to perform Flux Variability Analysis?", "FVA analysis", 
-	 				JOptionPane.YES_NO_OPTION );
+	 				params, "FVA analysis", 
+	 				JOptionPane.OK_CANCEL_OPTION );
 	 		
-	 		if( JOptionPane.CLOSED_OPTION == selectedOption ) {
+	 		if( JOptionPane.CANCEL_OPTION == selectedOption || JOptionPane.CLOSED_OPTION == selectedOption ) {
 	 			GraphicalInterface.analysisRunning = false;
 	 			throw new Exception( "FVA dialog closed" );
 	 		}
+	 		
 	 		
 			pb = new SimpleProgressBar( "Calculating FBA", "progressing..." );
 			pb.setAlwaysOnTop( true );
@@ -53,7 +58,7 @@ public class FBA extends Analysis
 	 		this.setSolverParameters();
 	 		this.maxObj = linearSolver.optimize();
 	 		
-	 		if( JOptionPane.YES_OPTION == selectedOption )
+	 		if( FVACheckBox.isSelected() )
 	 		{
 	 			pb.dispose();
 	 			LocalConfig.getInstance().fvaDone = false;
