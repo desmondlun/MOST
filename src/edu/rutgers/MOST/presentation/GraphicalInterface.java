@@ -1885,6 +1885,7 @@ public class GraphicalInterface extends JFrame {
                     					// check if all entries are valid
                     					boolean isValid = true;
                     					boolean koIsInteger = true;
+                    					boolean infReplaceIsReal = true;
                     					boolean finiteTimeIsInteger = true;
                     					try 
                     					{
@@ -1894,6 +1895,15 @@ public class GraphicalInterface extends JFrame {
                     					{
                     						isValid = false;
                     						koIsInteger = false;
+                    					}
+                    					try
+                    					{
+                    						Double.parseDouble( gdbbDialog.getInfReplace() );
+                    					}
+                    					catch( NumberFormatException nfe3 )
+                    					{
+                    						isValid = false;
+                    						infReplaceIsReal = false;
                     					}
                     					if (gdbbDialog.finiteTimeSelected) 
                     					{
@@ -1917,6 +1927,8 @@ public class GraphicalInterface extends JFrame {
                     							gdbbDialog.setKnockoutDefaultValue();
                     						if (!finiteTimeIsInteger)
                     							gdbbDialog.setFiniteTimeDefaultValue();
+                    						if(!infReplaceIsReal)
+                    							gdbbDialog.setInfReplaceDefaultValue();
                     						gdbbDialog.startButton.setEnabled( true );
                         					gdbbDialog.stopButton.setEnabled( false );
                         					gdbbStopped = true;  

@@ -34,6 +34,8 @@ public class GDBBDialog  extends JDialog {
 	
 	private JLabel numKnockoutsLabel = new JLabel();
 	private JTextField numKnockoutsField = new JTextField();
+	private JLabel infReplaceLabel = new JLabel();
+	private JTextField infReplaceField = new JTextField();
 	public JButton startButton = new JButton("Start");
 	public JButton stopButton = new JButton("Stop");
 	private JRadioButton indefiniteTimeButton = new JRadioButton(GDBBConstants.INDEFINITE_TIME_LABEL);
@@ -44,6 +46,7 @@ public class GDBBDialog  extends JDialog {
 	
 	private String numKnockouts;
 	private String finiteTimeString;
+	private String infReplace;
 	
 	public boolean finiteTimeSelected = false;
 	
@@ -53,6 +56,16 @@ public class GDBBDialog  extends JDialog {
 
 	public void setNumKnockouts(String numKnockouts) {
 		this.numKnockouts = numKnockouts;
+	}
+	
+	public String getInfReplace()
+	{
+		return infReplace;
+	}
+	
+	public void setInfReplace( String infReplace )
+	{
+		this.infReplace = infReplace;
 	}
 	
 	private int count;
@@ -144,6 +157,52 @@ public class GDBBDialog  extends JDialog {
 			}
 		});
 		
+		infReplaceField.setPreferredSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
+		infReplaceField.setMaximumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
+		infReplaceField.setMinimumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
+		
+		setInfReplaceDefaultValue();
+		
+		infReplaceField.addFocusListener( new FocusListener()
+		{
+			@Override
+			public void focusGained( FocusEvent e )
+			{
+				Component c = e.getComponent();
+				if ( c instanceof JTextField )
+				{
+		            ((JTextField)c).selectAll();
+		        }
+			}
+
+			@Override
+			public void focusLost( FocusEvent e )
+			{
+			}
+		} );
+		
+		infReplaceField.getDocument().addDocumentListener( new DocumentListener()
+		{
+			@Override
+			public void insertUpdate( DocumentEvent e )
+			{
+				infReplace = infReplaceField.getText();
+			}
+
+			@Override
+			public void removeUpdate( DocumentEvent e )
+			{
+				infReplace = infReplaceField.getText();
+			}
+
+			@Override
+			public void changedUpdate( DocumentEvent e )
+			{
+				infReplace = infReplaceField.getText();
+			}
+		} );
+		
+		
 		blankLabel.setPreferredSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
 		blankLabel.setMaximumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
 		blankLabel.setMinimumSize(new Dimension(GDBBConstants.COMPONENT_WIDTH, GDBBConstants.COMPONENT_HEIGHT));
@@ -207,6 +266,8 @@ public class GDBBDialog  extends JDialog {
 		Box hbTop = Box.createHorizontalBox();
 		Box hbNumKnockoutsLabel = Box.createHorizontalBox();	    
 		Box hbNumKnockouts = Box.createHorizontalBox();
+		Box hbInfReplaceLabel = Box.createHorizontalBox();
+		Box hbInfReplace = Box.createHorizontalBox();
 		Box hbIndefiniteTime = Box.createHorizontalBox();	    
 		Box hbBlankLabel = Box.createHorizontalBox();
 		Box hbFiniteTime = Box.createHorizontalBox();	    
@@ -263,6 +324,40 @@ public class GDBBDialog  extends JDialog {
 		JLabel blankLabel1 = new JLabel("");
 		vbLabels.add(blankLabel1);
 		vbCombos.add(hbNumKnockouts);
+		
+		
+		// inf replace and combo
+		//Number of Knockouts Label and combo
+		infReplaceLabel.setText(GDBBConstants.INF_REPLACE_LABEL);
+		infReplaceLabel.setPreferredSize(new Dimension(GDBBConstants.LABEL_WIDTH, GDBBConstants.LABEL_HEIGHT));
+		infReplaceLabel.setMaximumSize(new Dimension(GDBBConstants.LABEL_WIDTH, GDBBConstants.LABEL_HEIGHT));
+		infReplaceLabel.setMinimumSize(new Dimension(GDBBConstants.LABEL_WIDTH, GDBBConstants.LABEL_HEIGHT));
+		infReplaceLabel.setBorder(BorderFactory.createEmptyBorder(10,0,ColumnInterfaceConstants.LABEL_BOTTOM_BORDER_SIZE,10));
+		infReplaceLabel.setAlignmentX(LEFT_ALIGNMENT);
+		//infReplaceLabel.setAlignmentY(TOP_ALIGNMENT);
+		infReplaceLabel.setLabelFor(infReplaceField);
+
+		JPanel panelinfReplaceLabel = new JPanel();
+		panelinfReplaceLabel.setLayout(new BoxLayout(panelinfReplaceLabel, BoxLayout.X_AXIS));
+		panelinfReplaceLabel.add(infReplaceLabel);
+		panelinfReplaceLabel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+
+		hbInfReplaceLabel.add(panelinfReplaceLabel);
+		hbInfReplaceLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+		JPanel panelInfReplace = new JPanel();
+		panelInfReplace.setLayout(new BoxLayout(panelInfReplace, BoxLayout.X_AXIS));
+		panelInfReplace.add(infReplaceField);
+		panelInfReplace.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+		panelInfReplace.setAlignmentX(RIGHT_ALIGNMENT);
+
+		hbInfReplace.add(panelInfReplace);
+		hbInfReplace.setAlignmentX(RIGHT_ALIGNMENT);
+
+		vbLabels.add(hbInfReplaceLabel);
+		JLabel blankLabel2 = new JLabel("");
+		vbLabels.add(blankLabel2);
+		vbCombos.add(hbInfReplace);
 
 		JLabel blankLabel3 = new JLabel("");
 		vbLabels.add(blankLabel3);
@@ -382,6 +477,9 @@ public class GDBBDialog  extends JDialog {
 		numKnockoutsLabel.setForeground(GraphicalInterfaceConstants.GRAYED_LABEL_COLOR);
 		numKnockoutsField.setEditable(false);
 		numKnockoutsField.setEnabled(false);
+		infReplaceLabel.setForeground( GraphicalInterfaceConstants.GRAYED_LABEL_COLOR );
+		infReplaceField.setEditable( false );
+		infReplaceField.setEnabled( false );
 		indefiniteTimeButton.setEnabled(false);
 		finiteTimeButton.setEnabled(false);
 		finiteTimeField.setEnabled(false);
@@ -394,6 +492,8 @@ public class GDBBDialog  extends JDialog {
 	public void enableComponents() {
 		numKnockoutsLabel.setForeground(Color.BLACK);
 		numKnockoutsField.setEditable(true);
+		infReplaceLabel.setForeground( Color.black );
+		infReplaceField.setEditable( true );
 		indefiniteTimeButton.setEnabled(true);
 		finiteTimeButton.setEnabled(true);
 	}
@@ -419,6 +519,11 @@ public class GDBBDialog  extends JDialog {
 		setFiniteTimeString(GDBBConstants.FINITE_TIME_DEFAULT);
 	}	
 
+	public void setInfReplaceDefaultValue()
+	{
+		infReplaceField.setText( GDBBConstants.INF_REPLACE_DEFAULT );
+		setInfReplace( GDBBConstants.INF_REPLACE_DEFAULT );
+	}
 	public static void main(String[] args) throws Exception {
 //		//based on code from http:stackoverflow.com/questions/6403821/how-to-add-an-image-to-a-jframe-title-bar
 //		final ArrayList<Image> icons = new ArrayList<Image>(); 

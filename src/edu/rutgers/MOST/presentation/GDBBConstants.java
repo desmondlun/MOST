@@ -6,6 +6,7 @@ public class GDBBConstants {
 	
 	public static final String NUM_KNOCKOUTS_LABEL = "  Maximum Number of Knockouts";
 	public static final String NUM_THREADS_LABEL = "   Number of Threads";
+	public static final String INF_REPLACE_LABEL = "  Infinite values replaced with";
 	public static final String SYN_OBJ_COLUMN_LABEL = "   Synthetic Objective Vector";
 	public static final String INDEFINITE_TIME_LABEL = "Indefinite Optimizer Time";
 	public static final String FINITE_TIME_LABEL = "Finite Optimizer Time Limit (sec)";
@@ -14,6 +15,7 @@ public class GDBBConstants {
 	
 	public static final String NUM_KNOCKOUTS_DEFAULT = "1";
 	public static final String FINITE_TIME_DEFAULT = "300";
+	public static final String INF_REPLACE_DEFAULT = "1E6";
 	
 	public static final int GDBB_DIALOG_WIDTH = 400;
 	public static final int GDBB_DIALOG_HEIGHT = 280;
