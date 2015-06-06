@@ -4697,25 +4697,7 @@ public class GraphicalInterface extends JFrame {
 					if (Double.valueOf((String) reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)) < 0)  {
 						if (!replaceAllMode) {
 							setFindReplaceAlwaysOnTop(false);
-							Object[] options = {"    Yes    ", "    No    ",};
-							int choice = JOptionPane.showOptionDialog(null, 
-									GraphicalInterfaceConstants.LOWER_BOUND_ERROR_MESSAGE, 
-									GraphicalInterfaceConstants.LOWER_BOUND_ERROR_TITLE, 
-									JOptionPane.YES_NO_OPTION, 
-									JOptionPane.QUESTION_MESSAGE, 
-									null, options, options[0]);
-							// set lower bound to 0 and set new equation
-							if (choice == JOptionPane.YES_OPTION) {
-								reactionsTable.getModel().setValueAt("0.0", rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
-								reactionsTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[0], rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
-								updateReactionEquation(rowIndex, id, oldValue, newValue);
-								//updateReactionEquation(newValue, id, rowIndex, oldEquation, parser.getEquation());
-							}
-							// set old equation
-							if (choice == JOptionPane.NO_OPTION) {
-								reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
-								reactionUpdateValid = false;
-							}
+							reversibleEditLowerBoundCorrection(id, rowIndex, oldValue, "false", newValue, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 							setFindReplaceAlwaysOnTop(true);
 							// if in replace all mode, just set lower bound to 0 and set new equation
 						} else {
@@ -4726,6 +4708,7 @@ public class GraphicalInterface extends JFrame {
 					} else {
 						// lower bound >= 0, set new equation
 						updateReactionEquation(rowIndex, id, oldValue, newValue);
+						reactionsTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[0], rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
 					}
 				} 
 				maybeDisplaySuspiciousMetabMessage(statusBarRow());					
@@ -4754,21 +4737,25 @@ public class GraphicalInterface extends JFrame {
 					Double lowerBound = Double.valueOf((String) (reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));
 					// lower bound only set to 0 if < 0
 					if (lowerBound < 0) {
-						reactionsTable.getModel().setValueAt("0.0", rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+						String oldEquation = (String) (reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN));
+						reversibleEditLowerBoundCorrection(id, rowIndex, oldEquation, oldValue, newValue, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
+						//reactionsTable.getModel().setValueAt("0.0", rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+					} else {
+						updateEquationForReversibilityChange(id, rowIndex, newValue);
+//						if (LocalConfig.getInstance().getReactionEquationMap().get(id) != null) {
+//							// rewrite equations and update map
+//							SBMLReactionEquation equn = ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id));
+//							if (newValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_TRUE_VALUES[0])) {
+//								((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).setReversible(GraphicalInterfaceConstants.BOOLEAN_VALUES[1]);
+//							} else if (newValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_FALSE_VALUES[0])) {
+//								((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).setReversible(GraphicalInterfaceConstants.BOOLEAN_VALUES[0]);
+//							}
+//							((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).writeReactionEquation();
+//							reactionsTable.getModel().setValueAt(equn.equationAbbreviations, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
+//							reactionsTable.getModel().setValueAt(equn.equationNames, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
+//						}	
 					}
-				}
-				if (LocalConfig.getInstance().getReactionEquationMap().get(id) != null) {
-					// rewrite equations and update map
-					SBMLReactionEquation equn = ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id));
-					if (newValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_TRUE_VALUES[0])) {
-						((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).setReversible(GraphicalInterfaceConstants.BOOLEAN_VALUES[1]);
-					} else if (newValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_FALSE_VALUES[0])) {
-						((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).setReversible(GraphicalInterfaceConstants.BOOLEAN_VALUES[0]);
-					}
-					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).writeReactionEquation();
-					reactionsTable.getModel().setValueAt(equn.equationAbbreviations, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
-					reactionsTable.getModel().setValueAt(equn.equationNames, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
-				}				
+				}			
 			}
 		} else if (colIndex == GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN) {
 			if (LocalConfig.getInstance().getReactionAbbreviationIdMap().containsKey(newValue)) {
@@ -4843,9 +4830,6 @@ public class GraphicalInterface extends JFrame {
 					String reversible = reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN).toString();
 					if (!validator.lowerBoundReversibleValid(lowerBound, upperBound, reversible)) {
 						setFindReplaceAlwaysOnTop(false);
-						// set cell to old value to account for frame close button (x button). 
-						// prevents negative value from remaining in cell
-						reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
 						Object[] options = {"    Yes    ", "    No    ",};
 						int choice = JOptionPane.showOptionDialog(null, 
 								GraphicalInterfaceConstants.LOWER_BOUND_ERROR_MESSAGE, 
@@ -4857,6 +4841,10 @@ public class GraphicalInterface extends JFrame {
 							reactionsTable.getModel().setValueAt("0.0", rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
 						}
 						if (choice == JOptionPane.NO_OPTION) {
+							reactionUpdateValid = false;
+							reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+						}
+						if (choice == JOptionPane.CLOSED_OPTION) {
 							reactionUpdateValid = false;
 							reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
 						}
@@ -4917,6 +4905,69 @@ public class GraphicalInterface extends JFrame {
 		} else {
 			// action for remaining columns
 			reactionsTable.getModel().setValueAt(newValue, rowIndex, colIndex);
+		}
+	}
+	
+	/**
+	 * If reaction set to reversible = false either by editing reaction equation, reversible column
+	 * or using Reaction Editor, if lower bound is negative, error message displayed. Choices:
+	 * Yes sets lower bound to 0, No and X button set reversible to true and set lower bound
+	 * to old value.
+	 */
+	public void reversibleEditLowerBoundCorrection(int id, int rowIndex, String oldValue, String oldReversibleValue, String newValue, int columnIndex) {
+		Object[] options = {"    Yes    ", "    No    ",};
+		int choice = JOptionPane.showOptionDialog(null, 
+				GraphicalInterfaceConstants.LOWER_BOUND_ERROR_MESSAGE, 
+				GraphicalInterfaceConstants.LOWER_BOUND_ERROR_TITLE, 
+				JOptionPane.YES_NO_OPTION, 
+				JOptionPane.QUESTION_MESSAGE, 
+				null, options, options[0]);
+		// set lower bound to 0 and set new equation
+		if (choice == JOptionPane.YES_OPTION) {
+			reactionsTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
+			//formulaBar.setText(newValue);
+			reactionsTable.getModel().setValueAt("0.0", rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+			reactionsTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[0], rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
+			if (columnIndex == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+				updateReactionEquation(rowIndex, id, oldValue, newValue);
+			} else if (columnIndex == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
+				updateEquationForReversibilityChange(id, rowIndex, newValue);
+			}
+		}
+		// set old equation
+		if (choice == JOptionPane.NO_OPTION) {
+			reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
+			reactionsTable.getModel().setValueAt(oldReversibleValue, rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
+			//formulaBar.setText(oldValue);
+			reactionUpdateValid = false;
+		}
+		// set old equation
+		if (choice == JOptionPane.CLOSED_OPTION) {
+			reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
+			reactionsTable.getModel().setValueAt(oldReversibleValue, rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
+			//formulaBar.setText(oldValue);
+			reactionUpdateValid = false;
+		}
+	}
+	
+	/**
+	 * Updates Reaction Equation display and Reaction equation Map
+	 * @param id
+	 * @param rowIndex
+	 * @param newValue
+	 */
+	public void updateEquationForReversibilityChange(int id, int rowIndex, String newValue) {
+		if (LocalConfig.getInstance().getReactionEquationMap().get(id) != null) {
+			// rewrite equations and update map
+			SBMLReactionEquation equn = ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id));
+			if (newValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_TRUE_VALUES[0])) {
+				((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).setReversible(GraphicalInterfaceConstants.BOOLEAN_VALUES[1]);
+			} else if (newValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_FALSE_VALUES[0])) {
+				((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).setReversible(GraphicalInterfaceConstants.BOOLEAN_VALUES[0]);
+			}
+			((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).writeReactionEquation();
+			reactionsTable.getModel().setValueAt(equn.equationAbbreviations, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
+			reactionsTable.getModel().setValueAt(equn.equationNames, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 		}
 	}
 	
