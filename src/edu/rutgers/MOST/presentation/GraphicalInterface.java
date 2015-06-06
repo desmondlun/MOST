@@ -4751,7 +4751,11 @@ public class GraphicalInterface extends JFrame {
 			maybeUpdateBooleanValue(oldValue, newValue, rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
 			if (reactionUpdateValid) {
 				if (newValue.toLowerCase().startsWith(GraphicalInterfaceConstants.VALID_FALSE_VALUES[0])) {
-					reactionsTable.getModel().setValueAt("0.0", rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+					Double lowerBound = Double.valueOf((String) (reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));
+					// lower bound only set to 0 if < 0
+					if (lowerBound < 0) {
+						reactionsTable.getModel().setValueAt("0.0", rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+					}
 				}
 				if (LocalConfig.getInstance().getReactionEquationMap().get(id) != null) {
 					// rewrite equations and update map
@@ -4839,6 +4843,9 @@ public class GraphicalInterface extends JFrame {
 					String reversible = reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN).toString();
 					if (!validator.lowerBoundReversibleValid(lowerBound, upperBound, reversible)) {
 						setFindReplaceAlwaysOnTop(false);
+						// set cell to old value to account for frame close button (x button). 
+						// prevents negative value from remaining in cell
+						reactionsTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
 						Object[] options = {"    Yes    ", "    No    ",};
 						int choice = JOptionPane.showOptionDialog(null, 
 								GraphicalInterfaceConstants.LOWER_BOUND_ERROR_MESSAGE, 
