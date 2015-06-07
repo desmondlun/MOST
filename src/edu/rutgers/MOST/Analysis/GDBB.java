@@ -385,6 +385,17 @@ public class GDBB extends Thread {
 	{
 		try
 		{
+			// set the +-infinite values to their replacements from GDBBDialog
+			setDesc( "Reformating infinite valued constraints" );
+			double infReplace = Double.valueOf( GraphicalInterface.getGdbbDialog().getInfReplace() );
+			for( SBMLReaction r : this.model.getReactions() )
+			{
+				if( Double.isInfinite( r.getLowerBound() ) )
+					r.setLowerBound( -infReplace );
+				if( Double.isInfinite( r.getUpperBound() ) )
+					r.setUpperBound( infReplace );
+			}
+			
 			setDesc( "Preparing the metabolic network..." );
 			// perform the model reduction
 			GDBBModel m = this.model;
