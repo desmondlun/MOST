@@ -79,6 +79,33 @@ public abstract class Ipopt
 	/** Use FORTRAN index style for iRow and jCol vectors */
 	public final static int FORTRAN_STYLE = 1;
 
+	/** The possible parameter names: should be kept in sync with Ipopt parameters */
+	public final static String KEY_TOL = "tol";
+	public final static String KEY_COMPL_INF_TOL = "compl_inf_tol"; 
+	public final static String KEY_DUAL_INF_TOL = "dual_inf_tol";
+	public final static String KEY_CONSTR_VIOL_TOL = "constr_viol_tol";
+	public final static String KEY_ACCEPTABLE_TOL = "acceptable_tol"; 
+	public final static String KEY_ACCEPTABLE_COMPL_INF_TOL = "acceptable_compl_inf_tol";
+	public final static String KEY_ACCEPTABLE_CONSTR_VIOL_TOL = "acceptable_constr_viol_tol";
+	public final static String KEY_ACCEPTABLE_DUAL_INF_TOL= "acceptable_dual_inf_tol"; 
+	public final static String KEY_BARRIER_TOL_FACTOR = "barrier_tol_factor";
+	public final static String KEY_OBJ_SCALING_FACTOR = "obj_scaling_factor";
+	public final static String KEY_BOUND_RELAX_FACTOR = "bound_relax_factor"; 
+	public final static String KEY_MAX_ITER = "max_iter";
+	public final static String KEY_LIMITED_MEMORY_MAX_HISTORY = "limited_memory_max_history";
+	public final static String KEY_FILE_PRINT_LEVEL = "file_print_level";
+	public final static String KEY_PRINT_LEVEL = "print_level";
+	public final static String KEY_MU_STRATEGY = "mu_strategy";
+	public final static String KEY_OUTPUT_FILE = "output_file";
+	public final static String KEY_DERIVATIVE_TEST_TOL = "derivative_test_tol";
+	public final static String KEY_DERIVATIVE_TEST = "derivative_test";
+	public final static String KEY_DERIVATIVE_TEST_PRINT_ALL = "derivative_test_print_all";
+	public final static String KEY_PRINT_USER_OPTIONS = "print_user_options";
+	public final static String KEY_LINEAR_SOLVER = "linear_solver";
+	
+	/** The hessian approximation, set to "limited-memory" if no hessian is available */
+	public final static String KEY_HESSIAN_APPROXIMATION = "hessian_approximation";
+
 	/** The possible Ipopt status return codes: should be kept in sync with Ipopt return codes */
 	public final static int SOLVE_SUCCEEDED = 0;
 	public final static int ACCEPTABLE_LEVEL = 1;
