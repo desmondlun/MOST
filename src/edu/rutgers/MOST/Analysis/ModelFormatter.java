@@ -86,6 +86,16 @@ public class ModelFormatter
 					pb.setVisible( true );
 				}
 				double fluxBound = parser.getValue();
+				if( parser.getParserError() != null )
+				{
+					pb.setVisible( false );
+					if( !this.promptExceptionMessage( parser.getParserError() ) )
+					{
+						no_continue = true;
+						throw parser.getParserError();
+					}
+					pb.setVisible( true );
+				}
 				matchCount += parser.getMatchCount();
 				reaction.setLowerBound( reaction.getLowerBound() >= 0.0 ? 0.0 : -fluxBound );
 				reaction.setUpperBound( reaction.getUpperBound() <= 0.0 ? 0.0 : fluxBound  );
@@ -161,6 +171,16 @@ public class ModelFormatter
 					pb.setVisible( true );
 				}
 				Double parse_expr = new Double( parser.getValue() );
+				if( parser.getParserError() != null )
+				{
+					pb.setVisible( false );
+					if( !this.promptExceptionMessage( parser.getParserError() ) )
+					{
+						no_continue = true;
+						throw parser.getParserError();
+					}
+					pb.setVisible( true );
+				}
 				matchCount += parser.getMatchCount();
 									
 				if( parse_expr.isInfinite() )

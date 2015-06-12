@@ -104,32 +104,40 @@ public class ModelParser
 	}
 	public Double getValue() throws Exception
 	{
-		while( !byteCode.isEmpty() )
+		try
 		{
-			switch( byteCode.firstElement() )
+			while( !byteCode.isEmpty() )
 			{
-			case "push":
-				stack.add( values.firstElement() );
-				values.remove( 0 );
-				break;
-			case "and":
-				stack.set( stack.size() - 2, Math.min( stack.get( stack.size() - 2 ), stack.get( stack.size() - 1 ) ) );
-				stack.remove( stack.size() - 1 );
-				break;
-			case "or":
-				stack.set( stack.size() - 2, stack.get( stack.size() - 2 ) +  stack.get( stack.size() - 1 ) );
-				stack.remove( stack.size() - 1 );
-				break;
-		
-				default:
-					throw new Exception( formatErrorMsg( "Unsupported operation \""
-							+ byteCode.firstElement() + " \"" ) );
+				switch( byteCode.firstElement() )
+				{
+				case "push":
+					stack.add( values.firstElement() );
+					values.remove( 0 );
+					break;
+				case "and":
+					stack.set( stack.size() - 2, Math.min( stack.get( stack.size() - 2 ), stack.get( stack.size() - 1 ) ) );
+					stack.remove( stack.size() - 1 );
+					break;
+				case "or":
+					stack.set( stack.size() - 2, stack.get( stack.size() - 2 ) +  stack.get( stack.size() - 1 ) );
+					stack.remove( stack.size() - 1 );
+					break;
+			
+					default:
+						throw new Exception( formatErrorMsg( "Unsupported operation \""
+								+ byteCode.firstElement() + " \"" ) );
+				}
+				byteCode.remove( 0 );
 			}
-			byteCode.remove( 0 );
+			if( stack.size() != 1 )
+				throw new Exception( "Interpretor getValue() error - stack size" );
+			return stack.firstElement();
 		}
-		if( stack.size() != 1 )
-			throw new Exception( "Interpretor getValue() error - stack size" );
-		return stack.firstElement();
+		catch( Exception e )
+		{
+			this.parserError = e;
+			return 0.0;
+		}
 	}
 	public int getMatchCount()
 	{
