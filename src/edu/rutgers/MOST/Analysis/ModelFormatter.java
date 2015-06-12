@@ -60,10 +60,12 @@ public class ModelFormatter
 				expressionLevels.put( keyval[0], val );
 			}
 			
+			String oldPBMsg = pb.progressBar.getString();
 			int matchCount = 0;
 			for( SBMLReaction reaction : model.getReactions() )
 			{
-				ModelParser parser = new ModelParser( reaction.getGeneAssociation(), expressionLevels )
+				pb.progressBar.setString( "Parsing gene association data: " + reaction.getReactionName() );
+				ModelParser parser = new ModelParser( reaction, expressionLevels )
 				{
 					@Override
 					protected Double substitute( String token )
@@ -75,11 +77,13 @@ public class ModelFormatter
 				
 				if( parser.getParserError() != null )
 				{
+					pb.setVisible( false );
 					if( !this.promptExceptionMessage( parser.getParserError() ) )
 					{
 						no_continue = true;
 						throw parser.getParserError();
 					}
+					pb.setVisible( true );
 				}
 				double fluxBound = parser.getValue();
 				matchCount += parser.getMatchCount();
@@ -87,6 +91,7 @@ public class ModelFormatter
 				reaction.setUpperBound( reaction.getUpperBound() <= 0.0 ? 0.0 : fluxBound  );
 				gene_expr.add( fluxBound );
 			}
+			pb.progressBar.setString( oldPBMsg );
 			model.setReactions( model.getReactions() );
 			
 			if( matchCount == 0 )
@@ -132,9 +137,11 @@ public class ModelFormatter
 			}
 			
 			int matchCount = 0;
+			String oldPBMsg = pb.progressBar.getString();
 			for( SBMLReaction reaction : model.getReactions() )
 			{
-				ModelParser parser = new ModelParser( reaction.getGeneAssociation(), expressionLevels )
+				pb.progressBar.setString( "Parsing gene association data: " + reaction.getReactionName() );
+				ModelParser parser = new ModelParser( reaction, expressionLevels )
 				{
 					@Override
 					protected Double substitute( String token )
@@ -145,11 +152,13 @@ public class ModelFormatter
 				};
 				if( parser.getParserError() != null )
 				{
+					pb.setVisible( false );
 					if( !this.promptExceptionMessage( parser.getParserError() ) )
 					{
 						no_continue = true;
 						throw parser.getParserError();
 					}
+					pb.setVisible( true );
 				}
 				Double parse_expr = new Double( parser.getValue() );
 				matchCount += parser.getMatchCount();
@@ -159,7 +168,7 @@ public class ModelFormatter
 				else
 					gene_expr.add( parse_expr );
 			}
-			
+			pb.progressBar.setString( oldPBMsg );
 			model.setReactions( model.getReactions() );
 			if( matchCount == 0 )
 				throw new Exception( "No gene association matches" );

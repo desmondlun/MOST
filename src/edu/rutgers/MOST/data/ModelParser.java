@@ -80,17 +80,20 @@ public class ModelParser
 	private Vector< Double > stack = new Vector< Double >();
 	private int matchCount;
 	private Exception parserError = null;
+	private SBMLReaction currentReaction = null;
 	
-	public ModelParser( String expression, Map< String, Double > data ) throws Exception
+	public ModelParser( SBMLReaction reaction, Map< String, Double > data ) throws Exception
 	{
-		lexer = new Lexicon( expression );
+		this.currentReaction = reaction;
+		lexer = new Lexicon( reaction.getGeneAssociation() );
 		this.data = data;
 		matchCount = 0;
+
 		try
 		{
 			parseExpression();
 			if( !lexer.getToken().equals( "" ) )
-				throw new Exception( "Parser Error: \"" + lexer.getToken() + "\" unexpected" );
+				throw new Exception( formatErrorMsg( lexer.getToken() + "\" unexpected" ) );
 		}
 		catch( Exception parserError)
 		{
@@ -117,8 +120,8 @@ public class ModelParser
 				break;
 		
 				default:
-					throw new Exception( "Unsupportd operation \""
-							+ byteCode.firstElement() + " \"" );
+					throw new Exception( formatErrorMsg( "Unsupported operation \""
+							+ byteCode.firstElement() + " \"" ) );
 			}
 			byteCode.remove( 0 );
 		}
@@ -194,11 +197,11 @@ public class ModelParser
 	private void parseParenthesis() throws Exception
 	{
 		if( !lexer.getToken().equals( "(" ) )
-			throw new Exception( "Parser error: \"(\" expected" );
+			throw new Exception( formatErrorMsg( "\"(\" expected" ) );
 		lexer.advance();
 		parseExpression();
 		if( !lexer.getToken().equals( ")" ) )
-			throw new Exception( "Parser error: \")\" expected" );
+			throw new Exception( formatErrorMsg( "\")\" expected" ) );
 		lexer.advance();
 	}
 
@@ -206,5 +209,12 @@ public class ModelParser
 	{
 		System.out.println( "Token \"" + token + "\" not in database, replacing val with zero" );
 		return 0.0;
+	}
+	private String formatErrorMsg( String errMsg )
+	{
+		return "Parser Error: " + errMsg + "\n"
+			+ "unsorted reaction id: " + (this.currentReaction.getId() + 1) + "\n"
+			+ "Reaction name: " + this.currentReaction.getReactionName()
+			+ "Reaction abbrev: " + this.currentReaction.getReactionAbbreviation();
 	}
 }
