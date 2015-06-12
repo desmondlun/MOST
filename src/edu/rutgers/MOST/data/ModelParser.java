@@ -89,6 +89,8 @@ public class ModelParser
 		try
 		{
 			parseExpression();
+			if( !lexer.getToken().equals( "" ) )
+				throw new Exception( "Parser Error: \"" + lexer.getToken() + "\" unexpected" );
 		}
 		catch( Exception parserError)
 		{
@@ -192,11 +194,11 @@ public class ModelParser
 	private void parseParenthesis() throws Exception
 	{
 		if( !lexer.getToken().equals( "(" ) )
-			throw new Exception( "\"(\" expected" );
+			throw new Exception( "Parser error: \"(\" expected" );
 		lexer.advance();
 		parseExpression();
 		if( !lexer.getToken().equals( ")" ) )
-			throw new Exception( "Parser error: missing \")\"" );
+			throw new Exception( "Parser error: \")\" expected" );
 		lexer.advance();
 	}
 
