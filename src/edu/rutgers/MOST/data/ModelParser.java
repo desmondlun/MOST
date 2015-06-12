@@ -79,13 +79,21 @@ public class ModelParser
 	private Vector< Double > values = new Vector< Double >();
 	private Vector< Double > stack = new Vector< Double >();
 	private int matchCount;
+	private Exception parserError = null;
 	
 	public ModelParser( String expression, Map< String, Double > data ) throws Exception
 	{
 		lexer = new Lexicon( expression );
 		this.data = data;
 		matchCount = 0;
-		parseExpression();
+		try
+		{
+			parseExpression();
+		}
+		catch( Exception parserError)
+		{
+			this.parserError = parserError;
+		}
 	}
 	public Double getValue() throws Exception
 	{
@@ -119,6 +127,10 @@ public class ModelParser
 	public int getMatchCount()
 	{
 		return matchCount;
+	}
+	public Exception getParserError()
+	{
+		return parserError;
 	}
 	
 	private void parseExpression() throws Exception

@@ -28,8 +28,9 @@ public class ModelFormatter
 				JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE );
 	}
 	public Vector< Double > formatFluxBoundsfromGeneExpressionData( File file, Model model, SimpleProgressBar pb ) throws Exception
-	{		
+	{
 		Vector< Double > gene_expr = new Vector< Double >();
+		boolean no_continue = false;
 		if( file == null || !file.exists() )
 		{
 			throw new FileNotFoundException( "Improper file format" );
@@ -71,6 +72,15 @@ public class ModelFormatter
 						return Double.POSITIVE_INFINITY;
 					}
 				};
+				
+				if( parser.getParserError() != null )
+				{
+					if( !this.promptExceptionMessage( parser.getParserError() ) )
+					{
+						no_continue = true;
+						throw parser.getParserError();
+					}
+				}
 				double fluxBound = parser.getValue();
 				matchCount += parser.getMatchCount();
 				reaction.setLowerBound( reaction.getLowerBound() >= 0.0 ? 0.0 : -fluxBound );
@@ -85,7 +95,7 @@ public class ModelFormatter
 		catch ( Exception e )
 		{
 			pb.dispose();
-			if( !promptExceptionMessage( e ) )
+			if( no_continue || !promptExceptionMessage( e ) )
 				throw e;
 		}
 		return gene_expr;
@@ -93,6 +103,7 @@ public class ModelFormatter
 	Vector< Double > parseGeneExpressionDataSPOT( File file, Model model, boolean originalSPOT, SimpleProgressBar pb ) throws Exception
 	{
 		Vector< Double > gene_expr = new Vector< Double >();
+		boolean no_continue = false;
 		if( file == null || !file.exists() )
 			throw new FileNotFoundException( "Improper file format" );
 		try
@@ -132,6 +143,14 @@ public class ModelFormatter
 						return Double.POSITIVE_INFINITY;
 					}
 				};
+				if( parser.getParserError() != null )
+				{
+					if( !this.promptExceptionMessage( parser.getParserError() ) )
+					{
+						no_continue = true;
+						throw parser.getParserError();
+					}
+				}
 				Double parse_expr = new Double( parser.getValue() );
 				matchCount += parser.getMatchCount();
 									
@@ -148,7 +167,7 @@ public class ModelFormatter
 		catch ( Exception e )
 		{
 			pb.dispose();
-			if( !promptExceptionMessage( e ) );
+			if( no_continue || !promptExceptionMessage( e ) );
 				throw e;
 		}
 		return gene_expr;
