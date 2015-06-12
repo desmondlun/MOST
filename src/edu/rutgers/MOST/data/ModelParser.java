@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
+
 public class ModelParser
 {
 	private class Lexicon
@@ -213,8 +215,9 @@ public class ModelParser
 	private String formatErrorMsg( String errMsg )
 	{
 		return "Parser Error: " + errMsg + "\n"
+			+ "Please check the " + GraphicalInterfaceConstants.GENE_ASSOCIATION_COLUMN_NAME + " column \n"
 			+ "unsorted reaction id: " + (this.currentReaction.getId() + 1) + "\n"
-			+ "Reaction name: " + this.currentReaction.getReactionName()
+			+ "Reaction name: " + this.currentReaction.getReactionName() + "\n"
 			+ "Reaction abbrev: " + this.currentReaction.getReactionAbbreviation();
 	}
 }
