@@ -280,16 +280,7 @@ public class TextReactionsModelReader {
 						reacRow.add(GraphicalInterfaceConstants.REVERSIBLE_DEFAULT);
 					}
 					
-					if (LocalConfig.getInstance().getReversibleColumnIndex() > -1) {
-						String str = dataArray[LocalConfig.getInstance().getReversibleColumnIndex()];
-						if ( str.equals("false") || str.equals("FALSE") || str.equals("0") || str.equals("0.0") ) {
-							reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[0];
-						} else if ( str.equals("true") || str.equals("TRUE") || str.equals("1") || str.equals("1.0") ) {
-							reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
-						} 
-					} else {
-						//reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[0];
-					}
+					//reversible alread set by reactionParser
 					
 					if (LocalConfig.getInstance().getLowerBoundColumnIndex() > -1) {
 						// if value in csv is numeric, use the value, else if reversible, set value as negative
