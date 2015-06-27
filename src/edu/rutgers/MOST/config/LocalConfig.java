@@ -112,7 +112,7 @@ public class LocalConfig {
 	public ArrayList<Integer> getParticipatingReactions() {
 		return participatingReactions;
 	}  
-	
+
 	// list used when exiting program. If items remain in list at exit, user prompted
 	// to save these files
 	private ArrayList<String> optimizationFilesList;
