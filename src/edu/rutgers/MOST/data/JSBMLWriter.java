@@ -148,7 +148,7 @@ public class JSBMLWriter implements TreeModelListener{
 			boolean cancel = false;
 			while (!done) {
 				//... Open a file dialog.
-				int option = chooser.showOpenDialog(output); 
+				int option = chooser.showSaveDialog(output); 
 				if(option == JFileChooser.CANCEL_OPTION) {
 					cancel = true;
 					done = true;
