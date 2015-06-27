@@ -72,7 +72,7 @@ public abstract class Ipopt
 	/** The default DLL name of the native implementation (without any platform dependent prefixes or suffixes) */
 	public static final String DLLNAME = "jipopt";
 	/** The relative path where the native DLL is found */
-	public static final String DLLPATH = "lib/win32";
+	public static final String DLLPATH = "lib/mac";
 
 	/** Use C index style for iRow and jCol vectors */
 	public final static int C_STYLE = 0;
@@ -175,7 +175,7 @@ public abstract class Ipopt
 	public Ipopt(String path, String DLL)
 	{
 		// Loads the library
-		File file = new File(path, System.mapLibraryName(DLL));
+		File file = new File(path, "lib" + DLL + ".so");
 		System.load(file.getAbsolutePath());
 	}
 
