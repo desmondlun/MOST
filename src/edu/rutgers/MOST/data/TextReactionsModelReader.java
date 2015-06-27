@@ -50,13 +50,11 @@ public class TextReactionsModelReader {
 		ArrayList<String> columnNamesFromFile = new ArrayList<String>();
 		
 		String[] dataArray = null;
-
+		
 		//use fileReader to read first line to get headers
-		BufferedReader CSVFile;
 		try {
-			CSVFile = new BufferedReader(new FileReader(file));
-			String dataRow = CSVFile.readLine();
-			dataArray = dataRow.split(",");				
+			CSVReader csv_reader = new CSVReader( new FileReader( file ) );
+			dataArray = csv_reader.readNext();	
 
 			//add all column names to list			
 			for (int h = 0; h < dataArray.length; h++) { 
@@ -76,8 +74,7 @@ public class TextReactionsModelReader {
 
 			if (row > 0) {
 				for (int i = 0; i < row; i++) {
-					dataRow = CSVFile.readLine();
-					dataArray = dataRow.split(",");								
+					dataArray = csv_reader.readNext();							
 					columnNamesFromFile.clear();
 					//add all column names to list			
 					for (int h = 0; h < dataArray.length; h++) { 
@@ -95,8 +92,7 @@ public class TextReactionsModelReader {
 					} 
 				}				
 			}
-
-			CSVFile.close();
+			csv_reader.close();
 
 		} catch (FileNotFoundException e1) {
 			JOptionPane.showMessageDialog(null,                
@@ -357,7 +353,6 @@ public class TextReactionsModelReader {
 						proteinClass = dataArray[LocalConfig.getInstance().getProteinClassColumnIndex()];						 							
 					} 
 					reacRow.add(proteinClass);
-					
 					if (LocalConfig.getInstance().getReactionsMetaColumnIndexList().size() > 0) {
 						for (int m = 0; m < LocalConfig.getInstance().getReactionsMetaColumnIndexList().size(); m++) {
 							reacRow.add(dataArray[LocalConfig.getInstance().getReactionsMetaColumnIndexList().get(m)]);
