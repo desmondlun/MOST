@@ -19,7 +19,15 @@ public class ReactionsTableCellRenderer extends DefaultTableCellRenderer{
 			Object obj, boolean isSelected, boolean hasFocus, int row, int column) {
 		Component cell = super.getTableCellRendererComponent(
 				table, obj, isSelected, hasFocus, row, column);
+		String tooltip = "";
 		int viewRow = table.convertRowIndexToModel(row);
+		int id = Integer.valueOf(table.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN).toString());	
+		if (LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().contains(id)) {
+			tooltip += GraphicalInterfaceConstants.INVALIID_LOWER_BOUND_REVERSIBLE_COMBINATION_TOOLTIP;
+		} 
+		if (LocalConfig.getInstance().getInvalidEquationReversibleCombinations().contains(id)) {
+			tooltip += GraphicalInterfaceConstants.INVALIID_EQUATION_REVERSIBLE_COMBINATION_TOOLTIP;
+		} 
 		if (isSelected) {
 			//cell.setBackground(new Color(180, 216, 231));
 		}
@@ -37,13 +45,13 @@ public class ReactionsTableCellRenderer extends DefaultTableCellRenderer{
 			if (fm.stringWidth(cellText) > availableWidth) {
 				((javax.swing.JLabel) cell).setToolTipText(table.getModel().getValueAt(viewRow, column).toString()); 
 				if (LocalConfig.getInstance().getInvalidReactions().contains(table.getModel().getValueAt(viewRow, column).toString())) {
-					((javax.swing.JLabel) cell).setToolTipText("Error: invalid syntax : " + table.getModel().getValueAt(viewRow, column).toString()); 
+					((javax.swing.JLabel) cell).setToolTipText("Error: invalid syntax : " + tooltip + table.getModel().getValueAt(viewRow, column).toString()); 
 				}
 			} else if (LocalConfig.getInstance().getInvalidReactions().contains(table.getModel().getValueAt(viewRow, column).toString())
 					&&  column == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
-				((javax.swing.JLabel) cell).setToolTipText("Error: invalid syntax");
+				((javax.swing.JLabel) cell).setToolTipText("Error: invalid syntax" + tooltip);
 			} else {
-				((javax.swing.JLabel) cell).setToolTipText(null);
+				((javax.swing.JLabel) cell).setToolTipText(tooltip);
 			}
 		}
 

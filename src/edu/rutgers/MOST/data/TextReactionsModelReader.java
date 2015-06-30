@@ -274,23 +274,27 @@ public class TextReactionsModelReader {
 						}
 						reacRow.add(reactionEqunAbbr);
 						reacRow.add(reactionEqunAbbr);
-						reacRow.add(GraphicalInterfaceConstants.REVERSIBLE_DEFAULT);
+						reversible = GraphicalInterfaceConstants.REVERSIBLE_DEFAULT;
+						//reacRow.add(GraphicalInterfaceConstants.REVERSIBLE_DEFAULT);
 					}
 					
 					// read value in reversible column if exists, if not equal to value from
 					// reaction equation, add to list for use in highlighting invalid combination.
 					String reversibleFromFile = reversible;
 					if (LocalConfig.getInstance().getReversibleColumnIndex() > -1) {
+						System.out.println(dataArray[LocalConfig.getInstance().getReversibleColumnIndex()]);
 						if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("false") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("FALSE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0.0") == 0) {
 							reversibleFromFile = GraphicalInterfaceConstants.BOOLEAN_VALUES[0];
 						} else if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("true") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("TRUE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1.0") == 0) {
 							reversibleFromFile = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
 						} 
+						System.out.println(reversibleFromFile);
 						if (!reversible.equals(reversibleFromFile)) {
 							LocalConfig.getInstance().getInvalidEquationReversibleCombinations().add(id);
 						}
+						reversible = reversibleFromFile;
 					} 
-					
+					reacRow.add(reversible);
 					
 					if (LocalConfig.getInstance().getLowerBoundColumnIndex() > -1) {
 						// if value in csv is numeric, use the value, else if reversible, set value as negative
@@ -455,7 +459,9 @@ public class TextReactionsModelReader {
 		equn.writeReactionEquation();
 		reacRow.add(equn.equationAbbreviations);
 		reacRow.add(equn.equationNames);
-		reacRow.add(equn.getReversible());
+		// reversible now set from Reversible column, not equation,
+		// please do not uncommment
+		//reacRow.add(equn.getReversible());
 		LocalConfig.getInstance().getReactionEquationMap().put(id, equn);
 		
 	}
