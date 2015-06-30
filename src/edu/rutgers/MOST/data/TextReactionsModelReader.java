@@ -277,7 +277,20 @@ public class TextReactionsModelReader {
 						reacRow.add(GraphicalInterfaceConstants.REVERSIBLE_DEFAULT);
 					}
 					
-					//reversible alread set by reactionParser
+					// read value in reversible column if exists, if not equal to value from
+					// reaction equation, add to list for use in highlighting invalid combination.
+					String reversibleFromFile = reversible;
+					if (LocalConfig.getInstance().getReversibleColumnIndex() > -1) {
+						if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("false") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("FALSE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0.0") == 0) {
+							reversibleFromFile = GraphicalInterfaceConstants.BOOLEAN_VALUES[0];
+						} else if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("true") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("TRUE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1.0") == 0) {
+							reversibleFromFile = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
+						} 
+						if (!reversible.equals(reversibleFromFile)) {
+							LocalConfig.getInstance().getInvalidEquationReversibleCombinations().add(id);
+						}
+					} 
+					
 					
 					if (LocalConfig.getInstance().getLowerBoundColumnIndex() > -1) {
 						// if value in csv is numeric, use the value, else if reversible, set value as negative
@@ -296,27 +309,33 @@ public class TextReactionsModelReader {
 							}
 						}
 					} 
-
+					
 					// error messaging: exception handling to outline precisely where any 'error' of
 					// interest can be in code. Easy hop by clicking on stack-trace
-					try
-					{
-						// reversible = false
-						// CSV-Override: if LB < 0 and reaction.isNotReversible, 
-						//               then use LB and set reaction.reversibility to True
-						if (lowerBound < 0.0 && reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) 
-						{
-	//						System.out.println("lb " + lowerBound);
-	//						System.out.println(reversible);
-							//lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
-							reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
-							if( GraphicalInterfaceConstants.DEBUG_MODE )
-								throw new Exception( "flux bound non-conforming" );
-						}
-					}
-					catch( Exception e )
-					{
-						e.printStackTrace();
+//					try
+//					{
+//						// reversible = false
+//						// CSV-Override: if LB < 0 and reaction.isNotReversible, 
+//						//               then use LB and set reaction.reversibility to True
+//						if (lowerBound < 0.0 && reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) 
+//						{
+//	//						System.out.println("lb " + lowerBound);
+//	//						System.out.println(reversible);
+//							//lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT;
+//							reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
+//							if( GraphicalInterfaceConstants.DEBUG_MODE )
+//								throw new Exception( "flux bound non-conforming" );
+//						}
+//					}
+//					catch( Exception e )
+//					{
+//						e.printStackTrace();
+//					}
+					
+					// instead of printing error message, if lower bound < 0 and reversible = false, the
+					// reaction will be highlighted
+					if (lowerBound < 0.0 && reversible.equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[0])) {
+						LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().add(id);
 					}
 					
 					reacRow.add(Double.toString(lowerBound));
