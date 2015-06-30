@@ -280,6 +280,31 @@ public class LocalConfig {
 		this.suspiciousMetabolites = suspiciousMetabolites;
 	}
 	
+	// ids of reactions where reversible = false and lower bound < 0
+	private ArrayList<Integer> invalidLowerBoundReversibleCombinations = new ArrayList<Integer>();
+	
+	public ArrayList< Integer > getInvalidLowerBoundReversibleCombinations() {
+		return invalidLowerBoundReversibleCombinations;
+	}
+
+	public void setInvalidLowerBoundReversibleCombinations(
+		ArrayList<Integer> invalidLowerBoundReversibleCombinations) {
+		this.invalidLowerBoundReversibleCombinations = invalidLowerBoundReversibleCombinations;
+	}
+	
+	// ids of reactions where value in Reversible column does not match arrow in equation
+	private ArrayList<Integer> invalidEquationReversibleCombinations = new ArrayList<Integer>();
+
+	public ArrayList<Integer> getInvalidEquationReversibleCombinations()
+	{
+		return invalidEquationReversibleCombinations;
+	}
+
+	public void setInvalidEquationReversibleCombinations(
+		ArrayList<Integer> invalidEquationReversibleCombinations) {
+		this.invalidEquationReversibleCombinations = invalidEquationReversibleCombinations;
+	}
+
 	public boolean hasMetabolitesFile;
 	public boolean hasReactionsFile;
 	

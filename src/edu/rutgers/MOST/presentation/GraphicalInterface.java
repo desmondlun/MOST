@@ -1286,6 +1286,10 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().setMetaboliteUsedMap(metaboliteUsedMap);			
 		ArrayList<Integer> suspiciousMetabolites = new ArrayList<Integer>();
 		LocalConfig.getInstance().setSuspiciousMetabolites(suspiciousMetabolites);
+		ArrayList<Integer> invalidLowerBoundReversibleCombinations = new ArrayList<Integer>();
+		LocalConfig.getInstance().setInvalidLowerBoundReversibleCombinations(invalidLowerBoundReversibleCombinations);
+		ArrayList<Integer> invalidEquationReversibleCombinations = new ArrayList<Integer>();
+		LocalConfig.getInstance().setInvalidEquationReversibleCombinations(invalidEquationReversibleCombinations);
 		ArrayList<Integer> unusedList = new ArrayList<Integer>();
 		LocalConfig.getInstance().setUnusedList(unusedList);
 
