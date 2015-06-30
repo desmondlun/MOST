@@ -141,6 +141,8 @@ public class TextReactionsModelReader {
 		Utilities u = new Utilities();
 		LocalConfig.getInstance().getMetaboliteUsedMap().clear();
 		LocalConfig.getInstance().getSuspiciousMetabolites().clear();
+		LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().clear();
+		LocalConfig.getInstance().getInvalidEquationReversibleCombinations().clear();
 		LocalConfig.getInstance().getReactionAbbreviationIdMap().clear();
 		
 		DefaultTableModel reacTableModel = new DefaultTableModel();
