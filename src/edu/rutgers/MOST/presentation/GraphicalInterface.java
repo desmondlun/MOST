@@ -6071,7 +6071,36 @@ public class GraphicalInterface extends JFrame {
 		}
 	};
 
-	ColorHighlighter participating = new ColorHighlighter(participatingPredicate, Color.GREEN, null);
+	ColorHighlighter participating = new ColorHighlighter(participatingPredicate, 
+		GraphicalInterfaceConstants.PARTICIPATING_REACTION_COLOR, null);
+	
+	HighlightPredicate invalidEquationReversibleCombinationPredicate = new HighlightPredicate() {
+		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
+			int viewRow = reactionsTable.convertRowIndexToModel(adapter.row);
+			int id = Integer.valueOf(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN).toString());					
+			if (LocalConfig.getInstance().getInvalidEquationReversibleCombinations().contains(id)) {									
+				return true;
+			}					
+			return false;
+		}
+	};
+	
+	ColorHighlighter invalidEquationReversibleCombination = new ColorHighlighter(invalidEquationReversibleCombinationPredicate, 
+		GraphicalInterfaceConstants.REVERSIBLE_EQUATION_WARNING_COLOR, null);
+	
+	HighlightPredicate invalidLowerBoundReversibleCombinationPredicate = new HighlightPredicate() {
+		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
+			int viewRow = reactionsTable.convertRowIndexToModel(adapter.row);
+			int id = Integer.valueOf(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN).toString());					
+			if (LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().contains(id)) {									
+				return true;
+			}					
+			return false;
+		}
+	};
+	
+	ColorHighlighter invalidLowerBoundReversibleCombination = new ColorHighlighter(invalidLowerBoundReversibleCombinationPredicate, 
+		GraphicalInterfaceConstants.LOWER_BOUND_REVERSIBLE_WARNING_COLOR, null);
 	
 	HighlightPredicate invalidReactionPredicate = new HighlightPredicate() {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
@@ -6083,7 +6112,8 @@ public class GraphicalInterface extends JFrame {
 		}
 	};
 	
-	ColorHighlighter invalidReaction = new ColorHighlighter(invalidReactionPredicate, Color.RED, null);
+	ColorHighlighter invalidReaction = new ColorHighlighter(invalidReactionPredicate, 
+		GraphicalInterfaceConstants.INVALID_REACTION_COLOR, null);
 	
 	HighlightPredicate nonEditablePredicate = new HighlightPredicate() {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
@@ -6117,6 +6147,8 @@ public class GraphicalInterface extends JFrame {
 		reactionsTable.getColumnExt(GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[GraphicalInterfaceConstants.SYNTHETIC_OBJECTIVE_COLUMN]).setComparator(numberComparator);
 
 		reactionsTable.addHighlighter(participating);
+		reactionsTable.addHighlighter(invalidEquationReversibleCombination);
+		reactionsTable.addHighlighter(invalidLowerBoundReversibleCombination);
 		reactionsTable.addHighlighter(reactionsSelectedArea);
 		reactionsTable.addHighlighter(reactionFindAll);
 		reactionsTable.addHighlighter(invalidReaction);
@@ -6472,7 +6504,8 @@ public class GraphicalInterface extends JFrame {
 		}
 	};
 
-	ColorHighlighter suspicious = new ColorHighlighter(suspiciousPredicate, Color.ORANGE, null);
+	ColorHighlighter suspicious = new ColorHighlighter(suspiciousPredicate, 
+		GraphicalInterfaceConstants.SUSPICIOUS_METABOLITE_WARNING_COLOR, null);
 
 	HighlightPredicate unusedPredicate = new HighlightPredicate() {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
@@ -6486,7 +6519,8 @@ public class GraphicalInterface extends JFrame {
 		}
 	};
 
-	ColorHighlighter unused = new ColorHighlighter(unusedPredicate, Color.YELLOW, null);
+	ColorHighlighter unused = new ColorHighlighter(unusedPredicate, 
+		GraphicalInterfaceConstants.UNUSED_METABOLITE_WARNING_COLOR, null);
 
 	HighlightPredicate metabolitesSelectedAreaPredicate = new HighlightPredicate() {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
@@ -6504,7 +6538,8 @@ public class GraphicalInterface extends JFrame {
 		}
 	};
 
-	ColorHighlighter metabolitesSelectedArea = new ColorHighlighter(metabolitesSelectedAreaPredicate, GraphicalInterfaceConstants.SELECTED_AREA_COLOR, null);
+	ColorHighlighter metabolitesSelectedArea = new ColorHighlighter(metabolitesSelectedAreaPredicate, 
+		GraphicalInterfaceConstants.SELECTED_AREA_COLOR, null);
 
 	HighlightPredicate metaboliteFindAllPredicate = new HighlightPredicate() {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
@@ -6527,7 +6562,8 @@ public class GraphicalInterface extends JFrame {
 		}
 	};
 
-	ColorHighlighter metaboliteFindAll = new ColorHighlighter(metaboliteFindAllPredicate, GraphicalInterfaceConstants.FIND_ALL_COLOR, null);
+	ColorHighlighter metaboliteFindAll = new ColorHighlighter(metaboliteFindAllPredicate, 
+		GraphicalInterfaceConstants.FIND_ALL_COLOR, null);
 
 	HighlightPredicate nonEditableMetabPredicate = new HighlightPredicate() {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
@@ -6538,7 +6574,8 @@ public class GraphicalInterface extends JFrame {
 		}
 	};
 
-	ColorHighlighter nonEditableMetab = new ColorHighlighter(nonEditableMetabPredicate, null, GraphicalInterfaceConstants.NONEDITABLE_COLOR);
+	ColorHighlighter nonEditableMetab = new ColorHighlighter(nonEditableMetabPredicate, null, 
+		GraphicalInterfaceConstants.NONEDITABLE_COLOR);
 	
 	public void setMetabolitesTableLayout() {
 		metabolitesTable.getSelectionModel().addListSelectionListener(new MetabolitesRowListener());

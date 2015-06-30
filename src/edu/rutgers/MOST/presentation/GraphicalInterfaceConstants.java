@@ -419,16 +419,31 @@ public class GraphicalInterfaceConstants
 	// resized to 16x16 in Photoshop
 	public static final String FIND_ICON_IMAGE_PATH = "etc/toolbarIcons/Search1.png";
 
-	public static final Color FIND_ALL_COLOR = new Color( 140, 160, 200 );
+	// this shade of gray matches color when labeled components are grayed out
+	public static final Color GRAYED_LABEL_COLOR = new Color( 150, 150, 150 );
+	
+	// colors used for both tables
+	public static final Color FIND_ALL_COLOR = new Color( 140, 160, 200 ); // bluish
 	// public static final Color FIND_ALL_COLOR = new Color(190,205,225);
-	public static final Color SELECTED_AREA_COLOR = new Color( 190, 205, 225 );
+	public static final Color SELECTED_AREA_COLOR = new Color( 190, 205, 225 ); // bluish
 	// Visual clue to indicate table cell is not editable
 	public static final Color NONEDITABLE_COLOR = Color.GRAY;
 	// Gray was not obvious enough visual clue to indicate formula bar is not
 	// editable
 	public static final Color FORMULA_BAR_NONEDITABLE_COLOR = Color.LIGHT_GRAY;
-	// this shade of gray matches color when labeled components are grayed out
-	public static final Color GRAYED_LABEL_COLOR = new Color( 150, 150, 150 );
+	
+	// reaction table highlight colors
+	// lower bound < 0 reversible = false
+	public static final Color LOWER_BOUND_REVERSIBLE_WARNING_COLOR = Color.ORANGE;
+	// reversible column value does not match equation arrow
+	public static final Color REVERSIBLE_EQUATION_WARNING_COLOR = Color.YELLOW;
+	public static final Color PARTICIPATING_REACTION_COLOR = Color.GREEN;
+	// reaction not valid for ReactionParser - example - type "a" only
+	public static final Color INVALID_REACTION_COLOR = Color.RED;
+	
+	// metabolites table highlight colors
+	public static final Color SUSPICIOUS_METABOLITE_WARNING_COLOR = Color.ORANGE;
+	public static final Color UNUSED_METABOLITE_WARNING_COLOR = Color.YELLOW;
 
 	// directories used for writing log files
 	// The suffix must be used as there are bugs in getting the application data
