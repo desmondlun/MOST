@@ -438,12 +438,16 @@ public class GraphicalInterfaceConstants
 	// reversible column value does not match equation arrow
 	public static final Color REVERSIBLE_EQUATION_WARNING_COLOR = Color.YELLOW;
 	public static final Color PARTICIPATING_REACTION_COLOR = Color.GREEN;
-	// reaction not valid for ReactionParser - example - type "a" only
+	// reaction equation not valid for ReactionParser - example - type "a" only
+	// in reaction equation abbreviation column
 	public static final Color INVALID_REACTION_COLOR = Color.RED;
 	
 	// metabolites table highlight colors
 	public static final Color SUSPICIOUS_METABOLITE_WARNING_COLOR = Color.ORANGE;
 	public static final Color UNUSED_METABOLITE_WARNING_COLOR = Color.YELLOW;
+	
+	public static final String INVALIID_EQUATION_REVERSIBLE_COMBINATION_TOOLTIP = "Value in Reversible column does not agree with arrow in reaction equation. ";
+	public static final String INVALIID_LOWER_BOUND_REVERSIBLE_COMBINATION_TOOLTIP = "Lower Bound must be >= 0 for irreversible reaction. ";
 
 	// directories used for writing log files
 	// The suffix must be used as there are bugs in getting the application data
