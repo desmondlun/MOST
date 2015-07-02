@@ -448,6 +448,12 @@ public class GraphicalInterfaceConstants
 	
 	public static final String INVALIID_EQUATION_REVERSIBLE_COMBINATION_TOOLTIP = "Value in Reversible column does not agree with arrow in reaction equation. ";
 	public static final String INVALIID_LOWER_BOUND_REVERSIBLE_COMBINATION_TOOLTIP = "Lower Bound must be >= 0 for irreversible reaction. ";
+	
+	public static final String STATUS_BAR_PREFIX = "Model contains ";
+	public static final String SUSPICIOUS_METABOLITES_STATUS_BAR_MESSAGE = "suspicious metabolites";
+	public static final String INVALID_REACTION_EQUATION_STATUS_BAR_MESSAGE = "invalid equations";
+	public static final String INVALIID_LOWER_BOUND_REVERSIBLE_COMBINATION_STATUS_BAR_MESSAGE = "invalid lower bounds";
+	public static final String INVALIID_EQUATION_REVERSIBLE_COMBINATION_STATUS_BAR_MESSAGE = "incompatible reversible values";
 
 	// directories used for writing log files
 	// The suffix must be used as there are bugs in getting the application data
