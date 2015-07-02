@@ -4694,6 +4694,11 @@ public class GraphicalInterface extends JFrame {
 				// if reaction is reversible, no need to check lower bound
 				if (newValue.contains("<") || (newValue.contains("=") && !newValue.contains(">"))) {										
 					updateReactionEquation(rowIndex, id, oldValue, newValue);
+					// lower bound reversible error will be fixed changing reversible to true
+					if (LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().contains(id)) {
+						LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().remove(LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().indexOf(id));
+					}
+					maybeDisplayStatusBarMessage(statusBarRow());
 					// check if lower bound is >= 0 if reversible = false
 				} else if (newValue.contains("-->") || newValue.contains("->") || newValue.contains("=>")) {
 					parser.reactionList(newValue.trim());
@@ -4715,6 +4720,10 @@ public class GraphicalInterface extends JFrame {
 						reactionsTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[0], rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
 					}
 				} 
+				// if reaction is edited, it is not possible to put in an incorrect value
+				if (LocalConfig.getInstance().getInvalidEquationReversibleCombinations().contains(id)) {
+					LocalConfig.getInstance().getInvalidEquationReversibleCombinations().remove(LocalConfig.getInstance().getInvalidEquationReversibleCombinations().indexOf(id));
+				}
 				maybeDisplayStatusBarMessage(statusBarRow());					
 			}
 		// this column is not editable, but code below is still necessary for replace
@@ -4759,7 +4768,15 @@ public class GraphicalInterface extends JFrame {
 //							reactionsTable.getModel().setValueAt(equn.equationNames, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 //						}	
 					}
-				}			
+				}
+				// if reversible is edited, it is not possible to put in an incorrect equation arrow, or lower bound
+				if (LocalConfig.getInstance().getInvalidEquationReversibleCombinations().contains(id)) {
+					LocalConfig.getInstance().getInvalidEquationReversibleCombinations().remove(LocalConfig.getInstance().getInvalidEquationReversibleCombinations().indexOf(id));
+				}
+				if (LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().contains(id)) {
+					LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().remove(LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().indexOf(id));
+				}
+				maybeDisplayStatusBarMessage(statusBarRow());
 			}
 		} else if (colIndex == GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN) {
 			if (LocalConfig.getInstance().getReactionAbbreviationIdMap().containsKey(newValue)) {
@@ -4873,6 +4890,13 @@ public class GraphicalInterface extends JFrame {
 					} else {
 						reactionsTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
 					}
+					// changing lower bound to >= 0 will always fix this error
+					if (lowerBound >= 0) {
+						if (LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().contains(id)) {
+							LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().remove(LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().indexOf(id));
+						}
+						maybeDisplayStatusBarMessage(statusBarRow());
+					}
 				}
 				if (colIndex == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN) { 
 					Double lowerBound = Double.valueOf((String) (reactionsTable.getModel().getValueAt(rowIndex, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));
@@ -4952,6 +4976,11 @@ public class GraphicalInterface extends JFrame {
 			//formulaBar.setText(oldValue);
 			reactionUpdateValid = false;
 		}
+		// lower bound reversible error will be fixed by this method
+		if (LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().contains(id)) {
+			LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().remove(LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().indexOf(id));
+		}
+		maybeDisplayStatusBarMessage(statusBarRow());
 	}
 	
 	/**
@@ -4971,7 +5000,7 @@ public class GraphicalInterface extends JFrame {
 			}
 			((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).writeReactionEquation();
 			reactionsTable.getModel().setValueAt(equn.equationAbbreviations, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
-			reactionsTable.getModel().setValueAt(equn.equationNames, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
+			reactionsTable.getModel().setValueAt(equn.equationNames, rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);	
 		}
 	}
 	
