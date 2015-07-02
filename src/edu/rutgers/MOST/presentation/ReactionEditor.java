@@ -163,11 +163,20 @@ public class ReactionEditor extends JFrame {
 		int id = Integer.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN));
 		String reactionEquation = ((String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN));
 		
-		if (((String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN)).compareTo("true") == 0) {
+		// get reversibile from equation, not reversible column since they may not agree.
+		// if user editing equation, the arrow in the equation will update reversible column
+		ReactionParser parser = new ReactionParser();
+		String reversibility = ReactionParser.getEquation().getReversible();
+		if (reversibility.compareTo("true") == 0) {
 			setArrowString("<==>");
 		} else {
 			setArrowString("-->");
 		}
+//		if (((String) GraphicalInterface.reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REVERSIBLE_COLUMN)).compareTo("true") == 0) {
+//			setArrowString("<==>");
+//		} else {
+//			setArrowString("-->");
+//		}
 
 		/*************************************************************************/
 		//create Box layout
@@ -450,7 +459,10 @@ public class ReactionEditor extends JFrame {
 		//falseButton.setMnemonic(KeyEvent.VK_F);//bug - clears first reactant in reactionEquation
 		falseButton.setEnabled(true); 
 
-		if (((String) GraphicalInterface.reactionsTable.getModel().getValueAt(GraphicalInterface.getCurrentReactionsRow(), GraphicalInterfaceConstants.REVERSIBLE_COLUMN)).compareTo("true") == 0) {
+		// get reversibile from equation, not reversible column since they may not agree.
+		// if user editing equation, the arrow in the equation will update reversible column
+		if (reversibility.compareTo("true") == 0) {
+		//if (((String) GraphicalInterface.reactionsTable.getModel().getValueAt(GraphicalInterface.getCurrentReactionsRow(), GraphicalInterfaceConstants.REVERSIBLE_COLUMN)).compareTo("true") == 0) {
 			trueButton.setSelected(true);
 		} else {
 			falseButton.setSelected(true);
@@ -509,7 +521,7 @@ public class ReactionEditor extends JFrame {
 
 		ArrayList<SBMLReactant> reactants = new ArrayList<SBMLReactant>();
 		ArrayList<SBMLProduct> products = new ArrayList<SBMLProduct>();
-		ReactionParser parser = new ReactionParser();
+		//ReactionParser parser = new ReactionParser();
 		if (reactionEquation != null && parser.isValid(reactionEquation)) {
 			// TODO: determine if needed
 			setOldReaction(reactionEquation);
