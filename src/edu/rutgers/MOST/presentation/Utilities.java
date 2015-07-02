@@ -16,6 +16,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
 
+import edu.rutgers.MOST.config.LocalConfig;
+
 /**
  * Class contains commonly used functions and eliminate redundancy of code.
  *
@@ -224,6 +226,70 @@ public class Utilities {
 				destination.close();
 			}
 		}
+	}
+	
+	public String csvLoadErrorMessage() {
+		String message = GraphicalInterfaceConstants.STATUS_BAR_PREFIX;
+		boolean itemAdded = false;
+		if (LocalConfig.getInstance().getInvalidReactions().size() > 0) {
+			if (itemAdded) {
+				message += ", " + GraphicalInterfaceConstants.INVALID_REACTION_EQUATION_STATUS_BAR_MESSAGE;
+			} else {
+				message += GraphicalInterfaceConstants.INVALID_REACTION_EQUATION_STATUS_BAR_MESSAGE;
+				itemAdded = true;
+			}
+		}
+		if (LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().size() > 0) {
+			if (itemAdded) {
+				message += ", " + GraphicalInterfaceConstants.INVALIID_LOWER_BOUND_REVERSIBLE_COMBINATION_STATUS_BAR_MESSAGE;
+			} else {
+				message += GraphicalInterfaceConstants.INVALIID_LOWER_BOUND_REVERSIBLE_COMBINATION_STATUS_BAR_MESSAGE;
+				itemAdded = true;
+			}
+		}
+		if (LocalConfig.getInstance().getInvalidEquationReversibleCombinations().size() > 0) {
+			if (itemAdded) {
+				message += ", " + GraphicalInterfaceConstants.INVALIID_EQUATION_REVERSIBLE_COMBINATION_STATUS_BAR_MESSAGE;
+			} else {
+				message += GraphicalInterfaceConstants.INVALIID_EQUATION_REVERSIBLE_COMBINATION_STATUS_BAR_MESSAGE;
+				itemAdded = true;
+			}
+		}
+		return message += ".";
+	}
+	
+	public String statusBarMessage() {
+		String message = GraphicalInterfaceConstants.STATUS_BAR_PREFIX;
+		boolean itemAdded = false;
+		if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
+			message += GraphicalInterfaceConstants.SUSPICIOUS_METABOLITES_STATUS_BAR_MESSAGE;
+			itemAdded = true;
+		}
+		if (LocalConfig.getInstance().getInvalidReactions().size() > 0) {
+			if (itemAdded) {
+				message += ", " + GraphicalInterfaceConstants.INVALID_REACTION_EQUATION_STATUS_BAR_MESSAGE;
+			} else {
+				message += GraphicalInterfaceConstants.INVALID_REACTION_EQUATION_STATUS_BAR_MESSAGE;
+				itemAdded = true;
+			}
+		}
+		if (LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().size() > 0) {
+			if (itemAdded) {
+				message += ", " + GraphicalInterfaceConstants.INVALIID_LOWER_BOUND_REVERSIBLE_COMBINATION_STATUS_BAR_MESSAGE;
+			} else {
+				message += GraphicalInterfaceConstants.INVALIID_LOWER_BOUND_REVERSIBLE_COMBINATION_STATUS_BAR_MESSAGE;
+				itemAdded = true;
+			}
+		}
+		if (LocalConfig.getInstance().getInvalidEquationReversibleCombinations().size() > 0) {
+			if (itemAdded) {
+				message += ", " + GraphicalInterfaceConstants.INVALIID_EQUATION_REVERSIBLE_COMBINATION_STATUS_BAR_MESSAGE;
+			} else {
+				message += GraphicalInterfaceConstants.INVALIID_EQUATION_REVERSIBLE_COMBINATION_STATUS_BAR_MESSAGE;
+				itemAdded = true;
+			}
+		}
+		return message += ".";
 	}
 	
 }

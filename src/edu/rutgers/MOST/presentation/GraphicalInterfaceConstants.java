@@ -364,12 +364,13 @@ public class GraphicalInterfaceConstants
 	public static final String ABOUT_LICENSE_URL = "http://most.ccib.rutgers.edu/help.html#about";
 
 	public static final String SUSPICIOUS_METABOLITES_TITLE = "Suspicious Metabolites Warning";
+	public static final String SUSPICIOUS_METABOLITES_ADDITIONAL_WARNINGS_PREFIX = "Additional Warnings: ";
 	public static final String SUSPICIOUS_METABOLITES_MESSAGE = "Model contains suspicious metabolites. "
 		+ "This is usually due to invalid spacing in reaction equations. Click URL below for more information.";
 	public static final String SUSPICIOUS_METABOLITES_LINK = "<HTML><FONT color=\"#000099\"><U>More Information</U></FONT></HTML>";
 	public static final String SUSPICIOUS_METABOLITES_URL = "http://most.ccib.rutgers.edu/edit_menu.html#suspicious";
 	public static final int SUSPICIOUS_METABOLITES_DIALOG_WIDTH = 360;
-	public static final int SUSPICIOUS_METABOLITES_DIALOG_HEIGHT = 180;
+	public static final int SUSPICIOUS_METABOLITES_DIALOG_HEIGHT = 240;
 
 	public static final String URL_NOT_FOUND_TITLE = "URL Not Found";
 	public static final String URL_NOT_FOUND_MESSAGE = "URL may not exist. Check internet connection.";

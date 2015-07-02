@@ -23,7 +23,8 @@ public class SuspiciousMetabolitesDialog extends JDialog {
 	//http://stackoverflow.com/questions/14737810/jlabel-show-longer-text-as-multiple-lines
 	// html can be used to make multi line label.
 	public static JLabel messageLabel = new JLabel("<html>"+ GraphicalInterfaceConstants.SUSPICIOUS_METABOLITES_MESSAGE + "</html>");
-	public static JButton messageButton = new JButton();	
+	public static JButton messageButton = new JButton();
+	public JLabel additionalMessageLabel = new JLabel();
 	public static JButton okButton = new JButton("OK");	
 	
 	public SuspiciousMetabolitesDialog() {
@@ -35,6 +36,7 @@ public class SuspiciousMetabolitesDialog extends JDialog {
 		   	    
 		Box hbMessageLabel = Box.createHorizontalBox();
 		Box hbLink = Box.createHorizontalBox();
+		Box hbAdditionalMessageLabel = Box.createHorizontalBox();
 		Box hbButton = Box.createHorizontalBox();
 		
 		messageLabel.setSize(new Dimension(150, 10));
@@ -82,6 +84,18 @@ public class SuspiciousMetabolitesDialog extends JDialog {
 	    
 	    hbLink.add(linkPanel);
 	    
+	    additionalMessageLabel.setSize(new Dimension(150, 10));
+		//top, left, bottom. right
+	    additionalMessageLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
+	    additionalMessageLabel.setAlignmentX(CENTER_ALIGNMENT);
+		
+		JPanel additionalMessageLabelPanel = new JPanel();
+		additionalMessageLabelPanel.setLayout(new BoxLayout(additionalMessageLabelPanel, BoxLayout.X_AXIS));
+		additionalMessageLabelPanel.add(additionalMessageLabel);
+		additionalMessageLabelPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+
+		hbAdditionalMessageLabel.add(additionalMessageLabelPanel);
+	    
 	    JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 		buttonPanel.add(okButton);
@@ -91,6 +105,7 @@ public class SuspiciousMetabolitesDialog extends JDialog {
 	    
 		vb.add(hbMessageLabel);
 		vb.add(hbLink);
+		vb.add(hbAdditionalMessageLabel);
 		vb.add(hbButton);
 
 		add(vb);

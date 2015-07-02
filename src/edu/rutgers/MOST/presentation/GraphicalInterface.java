@@ -3909,9 +3909,22 @@ public class GraphicalInterface extends JFrame {
 				LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), TextReactionsModelReader.getMetabolitesTableModel());
 				setUpTables();
 				setEnableAnalysisMenuItems( true );
+				Utilities u = new Utilities();
+				String message = u.csvLoadErrorMessage();
 				if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
 					setUrlString(GraphicalInterfaceConstants.SUSPICIOUS_METABOLITES_URL);
+					getSuspiciousMetabolitesDialog().additionalMessageLabel.setText("<html>" + 
+					GraphicalInterfaceConstants.SUSPICIOUS_METABOLITES_ADDITIONAL_WARNINGS_PREFIX + message + "</html>");
 					getSuspiciousMetabolitesDialog().setVisible(true);
+				} else {
+					// only show message if items have been added to string
+					// must account for period at end of message 
+					if (message.length() > GraphicalInterfaceConstants.STATUS_BAR_PREFIX.length() + 1) {
+						JOptionPane.showMessageDialog(null,                
+							message,                
+							"Warning",                                
+							JOptionPane.WARNING_MESSAGE);
+					}
 				}
 			}			
 		}
@@ -11523,39 +11536,10 @@ public class GraphicalInterface extends JFrame {
 	}
 	
 	public void maybeDisplayStatusBarMessage(String row) {
-		String message = GraphicalInterfaceConstants.STATUS_BAR_PREFIX;
-		boolean itemAdded = false;
-		if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
-			message += GraphicalInterfaceConstants.SUSPICIOUS_METABOLITES_STATUS_BAR_MESSAGE;
-			itemAdded = true;
-		}
-		if (LocalConfig.getInstance().getInvalidReactions().size() > 0) {
-			if (itemAdded) {
-				message += ", " + GraphicalInterfaceConstants.INVALID_REACTION_EQUATION_STATUS_BAR_MESSAGE;
-			} else {
-				message += GraphicalInterfaceConstants.INVALID_REACTION_EQUATION_STATUS_BAR_MESSAGE;
-				itemAdded = true;
-			}
-		}
-		if (LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().size() > 0) {
-			if (itemAdded) {
-				message += ", " + GraphicalInterfaceConstants.INVALIID_LOWER_BOUND_REVERSIBLE_COMBINATION_STATUS_BAR_MESSAGE;
-			} else {
-				message += GraphicalInterfaceConstants.INVALIID_LOWER_BOUND_REVERSIBLE_COMBINATION_STATUS_BAR_MESSAGE;
-				itemAdded = true;
-			}
-		}
-		if (LocalConfig.getInstance().getInvalidEquationReversibleCombinations().size() > 0) {
-			if (itemAdded) {
-				message += ", " + GraphicalInterfaceConstants.INVALIID_EQUATION_REVERSIBLE_COMBINATION_STATUS_BAR_MESSAGE;
-			} else {
-				message += GraphicalInterfaceConstants.INVALIID_EQUATION_REVERSIBLE_COMBINATION_STATUS_BAR_MESSAGE;
-				itemAdded = true;
-			}
-		}
-		message += ".";
+		Utilities u = new Utilities();
+		String message = u.statusBarMessage();
 		try {
-			if (isRoot && itemAdded) {
+			if (isRoot && message.length() > GraphicalInterfaceConstants.STATUS_BAR_PREFIX.length() + 1) {
 				setLoadErrorMessage(message);
 				// selected row default at row 1 (index 0)
 				statusBar.setText("Row " + row + "                   " + getLoadErrorMessage());
