@@ -282,13 +282,13 @@ public class TextReactionsModelReader {
 					// reaction equation, add to list for use in highlighting invalid combination.
 					String reversibleFromFile = reversible;
 					if (LocalConfig.getInstance().getReversibleColumnIndex() > -1) {
-						System.out.println(dataArray[LocalConfig.getInstance().getReversibleColumnIndex()]);
+						//System.out.println(dataArray[LocalConfig.getInstance().getReversibleColumnIndex()]);
 						if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("false") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("FALSE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("0.0") == 0) {
 							reversibleFromFile = GraphicalInterfaceConstants.BOOLEAN_VALUES[0];
 						} else if (dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("true") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("TRUE") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1") == 0 || dataArray[LocalConfig.getInstance().getReversibleColumnIndex()].compareTo("1.0") == 0) {
 							reversibleFromFile = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
 						} 
-						System.out.println(reversibleFromFile);
+						//System.out.println(reversibleFromFile);
 						if (!reversible.equals(reversibleFromFile)) {
 							LocalConfig.getInstance().getInvalidEquationReversibleCombinations().add(id);
 						}

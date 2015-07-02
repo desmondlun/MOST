@@ -2151,7 +2151,7 @@ public class GraphicalInterface extends JFrame {
 				copyMetabolitesTableModels(newMetabolitesModel); 
 				setUndoNewCollections(undoItem);
 				setUpMetabolitesUndo(undoItem);	
-				maybeDisplaySuspiciousMetabMessage(statusBarRow());
+				maybeDisplayStatusBarMessage(statusBarRow());
 				int numMetabRows = metabolitesTable.getRowCount();
 				int maxId = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(numMetabRows - 1, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
 				LocalConfig.getInstance().setMaxMetabolite(numMetabRows);
@@ -3359,7 +3359,7 @@ public class GraphicalInterface extends JFrame {
 				String metaboliteRow = Integer.toString((metabolitesTable.getSelectedRow() + 1));
 				if (tabIndex == 0 && reactionsTable.getSelectedRow() > - 1) {
 					selectedCellChanged = true;
-					maybeDisplaySuspiciousMetabMessage(reactionRow);
+					maybeDisplayStatusBarMessage(reactionRow);
 					// prevents invisible id column from setting id in formulaBar for find events
 					if (reactionsTable.getSelectedRow() > -1 && reactionsTable.getSelectedColumn() > 0) {
 						// this code just sets value in formula bar to match value in selected cell
@@ -3375,7 +3375,7 @@ public class GraphicalInterface extends JFrame {
 					enableOrDisableReactionsItems();
 				} else if (tabIndex == 1 && metabolitesTable.getSelectedRow() > - 1) {
 					selectedCellChanged = true;
-					maybeDisplaySuspiciousMetabMessage(metaboliteRow);				
+					maybeDisplayStatusBarMessage(metaboliteRow);				
 					if (metabolitesTable.getSelectedRow() > -1 && metabolitesTable.getSelectedColumn() > 0) {
 						int viewRow = metabolitesTable.convertRowIndexToModel(metabolitesTable.getSelectedRow());
 						formulaBar.setText((String) metabolitesTable.getModel().getValueAt(viewRow, metabolitesTable.getSelectedColumn())); 
@@ -3383,7 +3383,7 @@ public class GraphicalInterface extends JFrame {
 					}
 					enableOrDisableMetabolitesItems();
 				} else {
-					maybeDisplaySuspiciousMetabMessage(statusBarRow());
+					maybeDisplayStatusBarMessage(statusBarRow());
 					formulaBar.setText("");
 				}
 			}
@@ -4715,7 +4715,7 @@ public class GraphicalInterface extends JFrame {
 						reactionsTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[0], rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
 					}
 				} 
-				maybeDisplaySuspiciousMetabMessage(statusBarRow());					
+				maybeDisplayStatusBarMessage(statusBarRow());					
 			}
 		// this column is not editable, but code below is still necessary for replace
 		} else if (colIndex == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
@@ -5500,7 +5500,7 @@ public class GraphicalInterface extends JFrame {
 			highlightUnusedMetabolitesItem.setEnabled(false);
 			deleteUnusedItem.setEnabled(false);
 		}
-		maybeDisplaySuspiciousMetabMessage(statusBarRow());	
+		maybeDisplayStatusBarMessage(statusBarRow());	
 
 		if (getMetabolitesSortColumnIndex() >= 0) {
 			metabolitesTable.setSortOrder(getMetabolitesSortColumnIndex(), getMetabolitesSortOrder());
@@ -5526,7 +5526,7 @@ public class GraphicalInterface extends JFrame {
 			setReactionsSortColumnIndex(0);
 			setReactionsSortOrder(SortOrder.ASCENDING);
 		}	
-		maybeDisplaySuspiciousMetabMessage(statusBarRow());	
+		maybeDisplayStatusBarMessage(statusBarRow());	
 		// create list of visible columns when loading table, so tabbing, copy, paste
 		// and other functions account for visibility of fva columns
 		ArrayList<Integer> visibleReactionsColumns = new ArrayList<Integer>();
@@ -5571,7 +5571,7 @@ public class GraphicalInterface extends JFrame {
 		createUnusedMetabolitesList();
 		enableMenuItems();
 		setUpCellSelectionMode();		
-		maybeDisplaySuspiciousMetabMessage(statusBarRow());
+		maybeDisplayStatusBarMessage(statusBarRow());
 		if (saveEnabled) {
 			enableSaveItems(true);
 		}
@@ -5886,7 +5886,7 @@ public class GraphicalInterface extends JFrame {
 				editorMenu.setEnabled(true);
 			}
 			String reactionRow = Integer.toString((reactionsTable.getSelectedRow() + 1));
-			maybeDisplaySuspiciousMetabMessage(reactionRow);
+			maybeDisplayStatusBarMessage(reactionRow);
 			if (reactionsTable.getRowCount() > 0 && reactionsTable.getSelectedRow() > -1 && tabbedPane.getSelectedIndex() == 0) {
 				enableOrDisableReactionsItems();
 				// if any cell selected any existing find all highlighting is unhighlighted
@@ -5937,7 +5937,7 @@ public class GraphicalInterface extends JFrame {
 			}
 			if (reactionsTable.getSelectedRow() > -1 && reactionsTable.getSelectedColumn() > -1 && tabbedPane.getSelectedIndex() == 0) {
 				String reactionRow = Integer.toString((reactionsTable.getSelectedRow() + 1));
-				maybeDisplaySuspiciousMetabMessage(reactionRow);
+				maybeDisplayStatusBarMessage(reactionRow);
 				enableOrDisableReactionsItems();
 				// if any cell selected any existing find all highlighting is unhighlighted
 				reactionsFindAll = false;
@@ -6078,8 +6078,11 @@ public class GraphicalInterface extends JFrame {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
 			int viewRow = reactionsTable.convertRowIndexToModel(adapter.row);
 			int id = Integer.valueOf(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN).toString());					
-			if (LocalConfig.getInstance().getInvalidEquationReversibleCombinations().contains(id)) {									
-				return true;
+			if (LocalConfig.getInstance().getInvalidEquationReversibleCombinations().contains(id)) {
+				if (adapter.column == GraphicalInterfaceConstants.REVERSIBLE_COLUMN ||
+					adapter.column == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN) {
+					return true;
+				}
 			}					
 			return false;
 		}
@@ -6092,8 +6095,11 @@ public class GraphicalInterface extends JFrame {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
 			int viewRow = reactionsTable.convertRowIndexToModel(adapter.row);
 			int id = Integer.valueOf(reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN).toString());					
-			if (LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().contains(id)) {									
-				return true;
+			if (LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().contains(id)) {
+				if (adapter.column == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN ||
+					adapter.column == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
+					return true;
+				}
 			}					
 			return false;
 		}
@@ -6366,7 +6372,7 @@ public class GraphicalInterface extends JFrame {
 				}
 			}
 			String metaboliteRow = Integer.toString((metabolitesTable.getSelectedRow() + 1));
-			maybeDisplaySuspiciousMetabMessage(metaboliteRow);
+			maybeDisplayStatusBarMessage(metaboliteRow);
 			if (metabolitesTable.getRowCount() > 0 && metabolitesTable.getSelectedRow() > -1 && tabbedPane.getSelectedIndex() == 1) {
 				enableOrDisableMetabolitesItems();
 				// if any cell selected any existing find all highlighting is unhighlighted
@@ -6417,7 +6423,7 @@ public class GraphicalInterface extends JFrame {
 			}
 			if (metabolitesTable.getSelectedRow() > -1 && metabolitesTable.getSelectedColumn() > -1 && tabbedPane.getSelectedIndex() == 1) {
 				String metaboliteRow = Integer.toString((metabolitesTable.getSelectedRow() + 1));
-				maybeDisplaySuspiciousMetabMessage(metaboliteRow);
+				maybeDisplayStatusBarMessage(metaboliteRow);
 				enableOrDisableMetabolitesItems();
 				// if any cell selected any existing find all highlighting is unhighlighted
 				reactionsFindAll = false;
@@ -7094,7 +7100,7 @@ public class GraphicalInterface extends JFrame {
 			} else {
 				formulaBar.setText(oldValue);
 			}
-			maybeDisplaySuspiciousMetabMessage(statusBarRow());	
+			maybeDisplayStatusBarMessage(statusBarRow());	
 			if (okToClose) {
 				reactionEditor.setVisible(false);
 				reactionEditor.dispose();
@@ -8360,7 +8366,7 @@ public class GraphicalInterface extends JFrame {
 		ignoreSuspiciousMenu.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				LocalConfig.getInstance().getSuspiciousMetabolites().remove(LocalConfig.getInstance().getSuspiciousMetabolites().indexOf(id));
-				maybeDisplaySuspiciousMetabMessage(statusBarRow());
+				maybeDisplayStatusBarMessage(statusBarRow());
 			}
 		});
 		
@@ -11393,7 +11399,7 @@ public class GraphicalInterface extends JFrame {
 				highlightUnusedMetabolitesItem.setEnabled(true);
 				deleteUnusedItem.setEnabled(true);
 			}
-			maybeDisplaySuspiciousMetabMessage(statusBarRow());	
+			maybeDisplayStatusBarMessage(statusBarRow());	
 			// since we are still testing the new behavior where clicking the Analysis menu
 			// selects the original model in the tree, these items should remain until
 			// it is determined that the new behavior is acceptable.
@@ -11482,10 +11488,41 @@ public class GraphicalInterface extends JFrame {
 		aboutBox.setEnabled( expr );
 	}
 	
-	public void maybeDisplaySuspiciousMetabMessage(String row) {
+	public void maybeDisplayStatusBarMessage(String row) {
+		String message = GraphicalInterfaceConstants.STATUS_BAR_PREFIX;
+		boolean itemAdded = false;
+		if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
+			message += GraphicalInterfaceConstants.SUSPICIOUS_METABOLITES_STATUS_BAR_MESSAGE;
+			itemAdded = true;
+		}
+		if (LocalConfig.getInstance().getInvalidReactions().size() > 0) {
+			if (itemAdded) {
+				message += ", " + GraphicalInterfaceConstants.INVALID_REACTION_EQUATION_STATUS_BAR_MESSAGE;
+			} else {
+				message += GraphicalInterfaceConstants.INVALID_REACTION_EQUATION_STATUS_BAR_MESSAGE;
+				itemAdded = true;
+			}
+		}
+		if (LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().size() > 0) {
+			if (itemAdded) {
+				message += ", " + GraphicalInterfaceConstants.INVALIID_LOWER_BOUND_REVERSIBLE_COMBINATION_STATUS_BAR_MESSAGE;
+			} else {
+				message += GraphicalInterfaceConstants.INVALIID_LOWER_BOUND_REVERSIBLE_COMBINATION_STATUS_BAR_MESSAGE;
+				itemAdded = true;
+			}
+		}
+		if (LocalConfig.getInstance().getInvalidEquationReversibleCombinations().size() > 0) {
+			if (itemAdded) {
+				message += ", " + GraphicalInterfaceConstants.INVALIID_EQUATION_REVERSIBLE_COMBINATION_STATUS_BAR_MESSAGE;
+			} else {
+				message += GraphicalInterfaceConstants.INVALIID_EQUATION_REVERSIBLE_COMBINATION_STATUS_BAR_MESSAGE;
+				itemAdded = true;
+			}
+		}
+		message += ".";
 		try {
-			if (isRoot && LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
-				setLoadErrorMessage("Model contains suspicious metabolites.");
+			if (isRoot && itemAdded) {
+				setLoadErrorMessage(message);
 				// selected row default at row 1 (index 0)
 				statusBar.setText("Row " + row + "                   " + getLoadErrorMessage());
 				findSuspiciousItem.setEnabled(true);

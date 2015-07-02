@@ -22,11 +22,15 @@ public class ReactionsTableCellRenderer extends DefaultTableCellRenderer{
 		String tooltip = "";
 		int viewRow = table.convertRowIndexToModel(row);
 		int id = Integer.valueOf(table.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN).toString());	
+		// repeatedly checking these lists may be too intensive, hence boolean values used
+		// and list checked once
+		boolean lowerBoundWarning = false;
+		boolean reversibleWarning = false;
 		if (LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().contains(id)) {
-			tooltip += GraphicalInterfaceConstants.INVALIID_LOWER_BOUND_REVERSIBLE_COMBINATION_TOOLTIP;
+			lowerBoundWarning = true;
 		} 
 		if (LocalConfig.getInstance().getInvalidEquationReversibleCombinations().contains(id)) {
-			tooltip += GraphicalInterfaceConstants.INVALIID_EQUATION_REVERSIBLE_COMBINATION_TOOLTIP;
+			reversibleWarning = true;
 		} 
 		if (isSelected) {
 			//cell.setBackground(new Color(180, 216, 231));
@@ -41,6 +45,14 @@ public class ReactionsTableCellRenderer extends DefaultTableCellRenderer{
 		
 		if (table.getModel().getValueAt(viewRow, column) != null) {
 			String cellText = table.getModel().getValueAt(viewRow, column).toString();
+			if (lowerBoundWarning && (column == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN ||
+				column == GraphicalInterfaceConstants.REVERSIBLE_COLUMN)) {
+				tooltip += GraphicalInterfaceConstants.INVALIID_LOWER_BOUND_REVERSIBLE_COMBINATION_TOOLTIP;
+			}
+			if (reversibleWarning && (column == GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN ||
+				column == GraphicalInterfaceConstants.REVERSIBLE_COLUMN)) {
+				tooltip += GraphicalInterfaceConstants.INVALIID_EQUATION_REVERSIBLE_COMBINATION_TOOLTIP;
+			}	
 
 			if (fm.stringWidth(cellText) > availableWidth) {
 				((javax.swing.JLabel) cell).setToolTipText(table.getModel().getValueAt(viewRow, column).toString()); 
