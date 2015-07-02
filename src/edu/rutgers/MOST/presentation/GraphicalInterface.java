@@ -7289,7 +7289,8 @@ public class GraphicalInterface extends JFrame {
 				&& isRoot) {
 			pasteMenu.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					reactionsPaste();										
+					reactionsPaste();
+					maybeDisplayStatusBarMessage(statusBarRow());
 				}
 			});
 		} else {
@@ -7790,6 +7791,7 @@ public class GraphicalInterface extends JFrame {
 				}
 			} 	
 		}
+		maybeDisplayStatusBarMessage(statusBarRow());
 	}
 
 	// i is the loop counter index
@@ -7942,6 +7944,12 @@ public class GraphicalInterface extends JFrame {
 						setReplaceAllError(GraphicalInterfaceConstants.LOWER_BOUND_REPLACE_ALL_ERROR);
 						return false;						
 					}
+					// lower bound >= 0 always fixes lower bound reversible = false error
+					if (lowerBound >= 0) {
+						if (LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().contains(id)) {
+							LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().remove(LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().indexOf(id));
+						}
+					}
 				} else if (columnIndex == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN && getSelectionMode() != 2) {				
 					Double lowerBound = Double.valueOf((String) (reactionsTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));
 					Double upperBound = Double.valueOf(value);
@@ -7967,17 +7975,33 @@ public class GraphicalInterface extends JFrame {
 				return false;
 			}
 		} else if (columnIndex == GraphicalInterfaceConstants.REVERSIBLE_COLUMN) {
-			// TODO: get equation object after setting value and update to this value
 			if (value.compareTo("true") == 0 || value.compareTo("false") == 0) {
 				if (LocalConfig.getInstance().getReactionEquationMap().get(id) != null) {
 					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).setReversible(value);
 					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).writeReactionEquation();
+					System.out.println("a " + ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).equationAbbreviations);
+					System.out.println("n " + ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).equationNames);
 					reactionsTable.setValueAt(((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).equationAbbreviations, row, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 					reactionsTable.setValueAt(((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).equationNames, row, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 				}	
+				if (value.compareTo("true") == 0) {
+					// reversible = true always fixes lower bound reversible = false error
+					if (LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().contains(id)) {
+						LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().remove(LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().indexOf(id));
+					}
+				}
 				if (value.compareTo("false") == 0) {
 					// do we need to show a prompt?
 					reactionsTable.setValueAt("0.0", row, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN);
+					// this also fixes lower bound reversible = false error, but if prompt is added,
+					// will need to redo this, hence the redundancy
+					if (LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().contains(id)) {
+						LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().remove(LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().indexOf(id));
+					}
+				}
+				// rewriting equation will fix this error
+				if (LocalConfig.getInstance().getInvalidEquationReversibleCombinations().contains(id)) {
+					LocalConfig.getInstance().getInvalidEquationReversibleCombinations().remove(LocalConfig.getInstance().getInvalidEquationReversibleCombinations().indexOf(id));
 				}
 				return true;
 			} else {
@@ -8002,6 +8026,10 @@ public class GraphicalInterface extends JFrame {
 				}					
 			} else {
 				updateReactionEquation(viewRow, id, oldEqun, value);
+				// rewriting equation will fix this error
+				if (LocalConfig.getInstance().getInvalidEquationReversibleCombinations().contains(id)) {
+					LocalConfig.getInstance().getInvalidEquationReversibleCombinations().remove(LocalConfig.getInstance().getInvalidEquationReversibleCombinations().indexOf(id));
+				}
 				return true;
 			}				
 		} 
@@ -11535,10 +11563,16 @@ public class GraphicalInterface extends JFrame {
 		aboutBox.setEnabled( expr );
 	}
 	
+	/**
+	 * Updates status bar message for row number and displays warning messages.
+	 * @param row
+	 */
 	public void maybeDisplayStatusBarMessage(String row) {
 		Utilities u = new Utilities();
 		String message = u.statusBarMessage();
 		try {
+			// if message length > prefix length + period (.) length, then there must be
+			// a message to display
 			if (isRoot && message.length() > GraphicalInterfaceConstants.STATUS_BAR_PREFIX.length() + 1) {
 				setLoadErrorMessage(message);
 				// selected row default at row 1 (index 0)
@@ -11553,6 +11587,10 @@ public class GraphicalInterface extends JFrame {
 		}		
 	}
 	
+	/**
+	 * Gets selected row to be displayed in status bar.
+	 * @return
+	 */
 	public String statusBarRow() {
 		String row = "1";
 		if (tabbedPane.getSelectedIndex() == 0) {
