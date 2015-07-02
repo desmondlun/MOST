@@ -367,7 +367,7 @@ public class GraphicalInterfaceConstants
 	public static final String SUSPICIOUS_METABOLITES_MESSAGE = "Model contains suspicious metabolites. "
 		+ "This is usually due to invalid spacing in reaction equations. Click URL below for more information.";
 	public static final String SUSPICIOUS_METABOLITES_LINK = "<HTML><FONT color=\"#000099\"><U>More Information</U></FONT></HTML>";
-	public static final String SUSPICIOUS_METABOLITES_URL = "http://most.ccib.rutgers.edu/Edit_Menu.html#suspicious";
+	public static final String SUSPICIOUS_METABOLITES_URL = "http://most.ccib.rutgers.edu/edit_menu.html#suspicious";
 	public static final int SUSPICIOUS_METABOLITES_DIALOG_WIDTH = 360;
 	public static final int SUSPICIOUS_METABOLITES_DIALOG_HEIGHT = 180;
 
