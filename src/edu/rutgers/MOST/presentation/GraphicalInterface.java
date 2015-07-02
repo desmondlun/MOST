@@ -4720,6 +4720,11 @@ public class GraphicalInterface extends JFrame {
 						reactionsTable.getModel().setValueAt(GraphicalInterfaceConstants.BOOLEAN_VALUES[0], rowIndex, GraphicalInterfaceConstants.REVERSIBLE_COLUMN);
 					}
 				} 
+				// if new reaction is valid and old reaction was invalid, remove old
+				// reaction from invalid reaction list
+				if (LocalConfig.getInstance().getInvalidReactions().contains(oldValue)) {
+					LocalConfig.getInstance().getInvalidReactions().remove(LocalConfig.getInstance().getInvalidReactions().indexOf(oldValue));
+				}
 				// if reaction is edited, it is not possible to put in an incorrect value
 				if (LocalConfig.getInstance().getInvalidEquationReversibleCombinations().contains(id)) {
 					LocalConfig.getInstance().getInvalidEquationReversibleCombinations().remove(LocalConfig.getInstance().getInvalidEquationReversibleCombinations().indexOf(id));
