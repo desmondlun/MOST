@@ -370,6 +370,7 @@ public class JSBMLWriter implements TreeModelListener{
 				// if metabolite name column or metabolite abbreviation contain a value, add to model
 				if ((curMeta.getMetaboliteName() != null && curMeta.getMetaboliteName().trim().length() > 0) ||
 						(curMeta.getMetaboliteAbbreviation() != null && curMeta.getMetaboliteAbbreviation().trim().length() > 0)) {
+					// creates abbreviation for metabolite where name is not blank and abbreviation is blank
 					if (curMeta.getMetaboliteAbbreviation() == null || curMeta.getMetaboliteAbbreviation().trim().length() == 0) {
 						//curMeta.setMetaboliteAbbreviation(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + "_" + blankMetabAbbrCount);
 						curMeta.setMetaboliteAbbreviation(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + blankMetabAbbrCount);
