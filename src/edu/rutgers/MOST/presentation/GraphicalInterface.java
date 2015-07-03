@@ -32,6 +32,7 @@ import edu.rutgers.MOST.Analysis.SPOT;
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.ConfigProperties;
 import edu.rutgers.MOST.data.GDBBModel;
+import edu.rutgers.MOST.data.JSBMLValidator;
 import edu.rutgers.MOST.data.JSBMLWriter;
 import edu.rutgers.MOST.data.MetaboliteFactory;
 import edu.rutgers.MOST.data.MetaboliteUndoItem;
@@ -4068,9 +4069,22 @@ public class GraphicalInterface extends JFrame {
 		exit = true;
 	}
 	
+	/**
+	 * Check for situation where metabolite names such as "M_a" and "a" both exist and
+	 * would both end up with the same save name "M_a". Rename metabolites where this
+	 * occurs as "M_a_1"... Rewrite reaction equation where this occurs.
+	 */
+	public void rewriteModelForSBMLSave() {
+		Utilities u = new Utilities();
+		JSBMLValidator validator = new JSBMLValidator();
+		renameDuplicateMetaboliteAbbreviations(validator, u);
+		renameDuplicateReactionAbbreviations(validator, u);
+	}
+	
 	public void saveAsSBML() {
 		saveFile = true;
 		saveSBML = true;
+		rewriteModelForSBMLSave();
 		try {
 			JSBMLWriter jWrite = new JSBMLWriter();
 			if (saveOptFile) {
@@ -4399,6 +4413,68 @@ public class GraphicalInterface extends JFrame {
 					saveReactionsTextFile(path, filename);
 					LocalConfig.getInstance().reactionsTableChanged = false;
 				}			                  	  
+			}
+		}
+	}
+	
+	/**
+	 * Rename duplicate metabolite abbreviations where situation such as "M_a" and "a" exist.
+	 * Also requires rewriting reaction equations when renaming metabolites
+	 * @param validator
+	 * @param u
+	 */
+	public void renameDuplicateMetaboliteAbbreviations(JSBMLValidator validator, Utilities u) {
+		ArrayList<String> metabSaveNames = new ArrayList<String>();
+		MetaboliteFactory f = new MetaboliteFactory("SBML");
+		for (int m = 0; m < metabolitesTable.getRowCount(); m++) {
+			String abbr = (String)metabolitesTable.getModel().getValueAt(m, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+			String name = (String)metabolitesTable.getModel().getValueAt(m, GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN);
+			int id = Integer.valueOf((String)metabolitesTable.getModel().getValueAt(m, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
+			// no need to consider empty cells. already autonamed in JSBMLWriter
+			if (abbr != null && abbr.length() > 0) {
+				String validAbbr = validator.makeValidID(abbr);
+				if (metabSaveNames.contains(validAbbr)) {
+					// get participating reactions to be rewritten
+					ArrayList<Integer> participatingReactionIds = f.participatingReactions(abbr);
+					// make valid name
+					String newName = u.uniqueSaveName(validAbbr, metabSaveNames);
+					metabSaveNames.add(newName);
+					updateMetabolitesCellById(newName, id, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+					// rewrite reaction equation with new name
+					for (int k = 0; k < participatingReactionIds.size(); k++) {
+						rewriteReactions(id, abbr, name, 
+							newName, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+					}
+				} else {
+					metabSaveNames.add(validAbbr);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Rename duplicate reaction abbreviations where situation such as "R_a" and "a" exist
+	 * @param validator
+	 * @param u
+	 */
+	public void renameDuplicateReactionAbbreviations(JSBMLValidator validator, Utilities u) {
+		ReactionFactory rf = new ReactionFactory("SBML");
+		Vector<SBMLReaction> reactions = rf.getAllReactions();
+		ArrayList<String> reacSaveNames = new ArrayList<String>();
+		for (int j = 0; j < reactions.size(); j++) {
+			int reacId = reactions.get(j).getId();
+			String reacAbbr = reactions.get(j).getReactionAbbreviation();
+			// no need to consider empty cells. already autonamed in JSBMLWriter
+			if (reacAbbr != null && reacAbbr.length() > 0) {
+				String validReacAbbr = validator.makeValidReactionID(reacAbbr);
+				if (reacSaveNames.contains(validReacAbbr)) {
+					// make valid name
+					String newName = u.uniqueSaveName(validReacAbbr, reacSaveNames);
+					reacSaveNames.add(newName);
+					updateReactionsCellById(newName, reacId, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
+				} else {
+					reacSaveNames.add(validReacAbbr);
+				}
 			}
 		}
 	}

@@ -289,6 +289,7 @@ public class GraphicalInterfaceConstants
 	public static final String DUPLICATE_METABOLITE_PASTE_MESSAGE = "Duplicate Metabolites. Names Will Be Appended With '[1]', '[2]', etc.";
 
 	public static final String DUPLICATE_SUFFIX = "[1]";
+	public static final String DUPLICATE_SBML_SUFFIX = "_1";
 
 	// duplicate metabolite
 	public static final String DUPLICATE_REACTION_TITLE = "Duplicate Reaction";

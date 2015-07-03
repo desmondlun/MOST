@@ -186,6 +186,21 @@ public class Utilities {
 	}
 	
 	/**
+	 * Appends suffix to duplicate abbreviations 
+	 * These fields are keys in SBML and must be unique.
+	 * @param value
+	 * @param abbreviationIdMap
+	 * @return
+	 */
+	public String uniqueSaveName(String value, ArrayList<String> list) {
+		String duplicateSuffix = GraphicalInterfaceConstants.DUPLICATE_SBML_SUFFIX;
+		while (list.contains(value)) {
+			value += duplicateSuffix;
+		}
+		return value;
+	}
+	
+	/**
 	 * Returns next available letter (to upper case) to be used as mnemonic
 	 * from parameter name and list of used mnemonics.
 	 * @param usedMnemonics
