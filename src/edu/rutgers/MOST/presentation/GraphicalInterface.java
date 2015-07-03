@@ -5709,7 +5709,9 @@ public class GraphicalInterface extends JFrame {
 		gdbbProcessed = false;
 	}
 
-	public void clearConfigLists() {	
+	public void clearConfigLists() {
+		LocalConfig.getInstance().getInvalidEquationReversibleCombinations().clear();
+		LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().clear();
 		LocalConfig.getInstance().getInvalidReactions().clear();
 		LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().clear();
 		LocalConfig.getInstance().getMetaboliteIdNameMap().clear();
@@ -7979,8 +7981,10 @@ public class GraphicalInterface extends JFrame {
 				if (LocalConfig.getInstance().getReactionEquationMap().get(id) != null) {
 					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).setReversible(value);
 					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).writeReactionEquation();
-					System.out.println("a " + ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).equationAbbreviations);
-					System.out.println("n " + ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).equationNames);
+//					System.out.println(((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).equationAbbreviations);
+//					System.out.println(((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).equationNames);
+					// TODO: fix bug here where even though the values print out correctly, the reaction names column
+					// is not updated correctly
 					reactionsTable.setValueAt(((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).equationAbbreviations, row, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
 					reactionsTable.setValueAt(((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).equationNames, row, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 				}	
@@ -11867,6 +11871,16 @@ public class GraphicalInterface extends JFrame {
 				saveSBML = false;
 				progressBar.progress.setIndeterminate(false);
 				enableLoadItems();
+				Utilities u = new Utilities();
+				String message = u.sbmlLoadMessage();
+				// only show message if items have been added to string
+				// must account for period at end of message 
+				if (message.length() > GraphicalInterfaceConstants.STATUS_BAR_PREFIX.length() + 1) {
+					JOptionPane.showMessageDialog(null,                
+						message,                
+						"Warning",                                
+						JOptionPane.WARNING_MESSAGE);
+				}
 			}
 		}
 	}
