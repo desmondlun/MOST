@@ -258,6 +258,14 @@ public class Utilities {
 		return message += ".";
 	}
 	
+	public String sbmlLoadMessage() {
+		String message = GraphicalInterfaceConstants.STATUS_BAR_PREFIX;
+		if (LocalConfig.getInstance().getInvalidLowerBoundReversibleCombinations().size() > 0) {
+			message += GraphicalInterfaceConstants.INVALIID_LOWER_BOUND_REVERSIBLE_COMBINATION_STATUS_BAR_MESSAGE;
+		}
+		return message += ".";
+	}
+	
 	public String statusBarMessage() {
 		String message = GraphicalInterfaceConstants.STATUS_BAR_PREFIX;
 		boolean itemAdded = false;
