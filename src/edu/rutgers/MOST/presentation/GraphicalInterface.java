@@ -3914,8 +3914,10 @@ public class GraphicalInterface extends JFrame {
 				String message = u.csvLoadErrorMessage();
 				if (LocalConfig.getInstance().getSuspiciousMetabolites().size() > 0) {
 					setUrlString(GraphicalInterfaceConstants.SUSPICIOUS_METABOLITES_URL);
-					getSuspiciousMetabolitesDialog().additionalMessageLabel.setText("<html>" + 
-					GraphicalInterfaceConstants.SUSPICIOUS_METABOLITES_ADDITIONAL_WARNINGS_PREFIX + message + "</html>");
+					if (message.length() > GraphicalInterfaceConstants.STATUS_BAR_PREFIX.length() + 1) {
+						getSuspiciousMetabolitesDialog().additionalMessageLabel.setText("<html>" + 
+							GraphicalInterfaceConstants.SUSPICIOUS_METABOLITES_ADDITIONAL_WARNINGS_PREFIX + message + "</html>");
+					}
 					getSuspiciousMetabolitesDialog().setVisible(true);
 				} else {
 					// only show message if items have been added to string
