@@ -371,6 +371,7 @@ public class JSBMLWriter implements TreeModelListener{
 				if ((curMeta.getMetaboliteName() != null && curMeta.getMetaboliteName().trim().length() > 0) ||
 						(curMeta.getMetaboliteAbbreviation() != null && curMeta.getMetaboliteAbbreviation().trim().length() > 0)) {
 					// creates abbreviation for metabolite where name is not blank and abbreviation is blank
+					// these blank metabolites are now rewritten before this code is run so this should never occur
 					if (curMeta.getMetaboliteAbbreviation() == null || curMeta.getMetaboliteAbbreviation().trim().length() == 0) {
 						//curMeta.setMetaboliteAbbreviation(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + "_" + blankMetabAbbrCount);
 						curMeta.setMetaboliteAbbreviation(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + blankMetabAbbrCount);
@@ -502,6 +503,7 @@ public class JSBMLWriter implements TreeModelListener{
 				// if reaction abbreviation is empty, it will be named "R_" + number
 				if (curReact.getReactionEqunAbbr() != null && curReact.getReactionEqunAbbr().trim().length() > 0) {
 					//SBMLReaction curReact = (SBMLReaction) rFactory.getReactionById(i);
+					// these blank reactions are now rewritten before this code is run so this should never occur
 					if (curReact.getReactionAbbreviation() == null || curReact.getReactionAbbreviation().trim().length() == 0) {
 						//curReact.setReactionAbbreviation(SBMLConstants.REACTION_ABBREVIATION_PREFIX + "_" + blankReacAbbrCount);
 						curReact.setReactionAbbreviation(SBMLConstants.REACTION_ABBREVIATION_PREFIX + blankReacAbbrCount);
