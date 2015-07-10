@@ -12,7 +12,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 
 import layout.TableLayout;

@@ -42,6 +42,7 @@ import edu.rutgers.MOST.data.ObjectCloner;
 import edu.rutgers.MOST.data.ReactionEquationUpdater;
 import edu.rutgers.MOST.data.ReactionFactory;
 import edu.rutgers.MOST.data.ReactionUndoItem;
+import edu.rutgers.MOST.data.SBMLConstants;
 import edu.rutgers.MOST.data.SBMLModelReader;
 import edu.rutgers.MOST.data.SBMLProduct;
 import edu.rutgers.MOST.data.SBMLReactant;
@@ -4428,18 +4429,19 @@ public class GraphicalInterface extends JFrame {
 	public void renameDuplicateMetaboliteAbbreviations(JSBMLValidator validator, Utilities u) {
 		ArrayList<String> metabSaveNames = new ArrayList<String>();
 		MetaboliteFactory f = new MetaboliteFactory("SBML");
+		int blankMetabAbbrCount = 1;
 		for (int m = 0; m < metabolitesTable.getRowCount(); m++) {
 			String abbr = (String)metabolitesTable.getModel().getValueAt(m, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 			String name = (String)metabolitesTable.getModel().getValueAt(m, GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN);
 			int id = Integer.valueOf((String)metabolitesTable.getModel().getValueAt(m, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
-			// no need to consider empty cells. already autonamed in JSBMLWriter
+			String newName = abbr;
 			if (abbr != null && abbr.length() > 0) {
 				String validAbbr = validator.makeValidID(abbr);
 				if (metabSaveNames.contains(validAbbr)) {
 					// get participating reactions to be rewritten
 					ArrayList<Integer> participatingReactionIds = f.participatingReactions(abbr);
 					// make valid name
-					String newName = u.uniqueSaveName(validAbbr, metabSaveNames);
+					newName = u.uniqueSaveName(validAbbr, metabSaveNames);
 					metabSaveNames.add(newName);
 					updateMetabolitesCellById(newName, id, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 					// rewrite reaction equation with new name
@@ -4448,8 +4450,19 @@ public class GraphicalInterface extends JFrame {
 							newName, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 					}
 				} else {
-					metabSaveNames.add(validAbbr);
+					newName = validAbbr;
+					metabSaveNames.add(newName);
 				}
+			} else {
+				String generatedName = SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + blankMetabAbbrCount;
+				blankMetabAbbrCount += 1;
+				newName = u.uniqueSaveName(generatedName, metabSaveNames);
+				metabSaveNames.add(newName);
+				updateMetabolitesCellById(newName, id, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+			}
+			if (!abbr.equals(newName)) {
+				System.out.println("abbr " + abbr);
+				System.out.println(newName);
 			}
 		}
 	}
@@ -4463,20 +4476,32 @@ public class GraphicalInterface extends JFrame {
 		ReactionFactory rf = new ReactionFactory("SBML");
 		Vector<SBMLReaction> reactions = rf.getAllReactions();
 		ArrayList<String> reacSaveNames = new ArrayList<String>();
+		int blankReacAbbrCount = 1;
 		for (int j = 0; j < reactions.size(); j++) {
 			int reacId = reactions.get(j).getId();
 			String reacAbbr = reactions.get(j).getReactionAbbreviation();
-			// no need to consider empty cells. already autonamed in JSBMLWriter
+			String newName = reacAbbr;
 			if (reacAbbr != null && reacAbbr.length() > 0) {
 				String validReacAbbr = validator.makeValidReactionID(reacAbbr);
 				if (reacSaveNames.contains(validReacAbbr)) {
 					// make valid name
-					String newName = u.uniqueSaveName(validReacAbbr, reacSaveNames);
+					newName = u.uniqueSaveName(validReacAbbr, reacSaveNames);
 					reacSaveNames.add(newName);
 					updateReactionsCellById(newName, reacId, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
 				} else {
-					reacSaveNames.add(validReacAbbr);
+					newName = validReacAbbr;
+					reacSaveNames.add(newName);
 				}
+			} else {
+				String generatedName = SBMLConstants.REACTION_ABBREVIATION_PREFIX + blankReacAbbrCount;
+				blankReacAbbrCount += 1;
+				newName = u.uniqueSaveName(generatedName, reacSaveNames);
+				reacSaveNames.add(newName);
+				updateReactionsCellById(newName, reacId, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
+			}
+			if (!reacAbbr.equals(newName)) {
+				System.out.println("r abbr " + reacAbbr);
+				System.out.println(newName);
 			}
 		}
 	}
