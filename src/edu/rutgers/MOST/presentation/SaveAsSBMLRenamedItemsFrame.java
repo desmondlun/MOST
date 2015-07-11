@@ -13,6 +13,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
 import layout.TableLayout;
 
@@ -67,7 +68,7 @@ public class SaveAsSBMLRenamedItemsFrame extends JFrame
 		double border = 10;
 		double size[][] =
 		{{border, TableLayout.FILL, border},  // Columns
-			{border, 0.20, 20, TableLayout.FILL, border}}; // Rows  
+			{border, 0.10, 20, TableLayout.FILL, border}}; // Rows  
 
 		setLayout (new TableLayout(size)); 
 
@@ -84,6 +85,9 @@ public class SaveAsSBMLRenamedItemsFrame extends JFrame
 
 		reactionsRenamedTable.setModel(reactionsRenamedModel);
 		metabolitesRenamedTable.setModel(metabolitesRenamedModel);
+		
+		setTableLayout(reactionsRenamedTable);
+		setTableLayout(metabolitesRenamedTable);
 	}
 
 	public static DefaultTableModel createTableModel(String[] columnNamesArray) {
@@ -99,6 +103,21 @@ public class SaveAsSBMLRenamedItemsFrame extends JFrame
 		
 		return model; 
 		
+	}
+	
+	public void setTableLayout(JXTable table) {
+		GenericTableCellRenderer renderer = new GenericTableCellRenderer();
+		int r = table.getModel().getColumnCount();
+		for (int i = 0; i < r; i++) {
+			TableColumn column = table.getColumnModel().getColumn(i);
+			column.setCellRenderer(renderer);
+			if (i==0) {
+				column.setPreferredWidth(50);
+				column.setMaxWidth(50);
+			} else {
+				column.setPreferredWidth(GraphicalInterfaceConstants.REACTION_ABBREVIATION_WIDTH);
+			}
+		}
 	}
 	
 	public static void main(String[] args) {
