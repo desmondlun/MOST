@@ -12039,6 +12039,8 @@ public class GraphicalInterface extends JFrame {
 					getSaveAsSBMLRenamedItemsFrame().setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 					getSaveAsSBMLRenamedItemsFrame().reactionsRenamedTable.setModel(reactionsRenamedModel);
 					getSaveAsSBMLRenamedItemsFrame().metabolitesRenamedTable.setModel(metabolitesRenamedModel);
+					getSaveAsSBMLRenamedItemsFrame().setTableLayout(getSaveAsSBMLRenamedItemsFrame().reactionsRenamedTable);
+					getSaveAsSBMLRenamedItemsFrame().setTableLayout(getSaveAsSBMLRenamedItemsFrame().metabolitesRenamedTable);
 					getSaveAsSBMLRenamedItemsFrame().setSize(600, 400);
 					getSaveAsSBMLRenamedItemsFrame().setResizable(false);
 					getSaveAsSBMLRenamedItemsFrame().setLocationRelativeTo(null);
