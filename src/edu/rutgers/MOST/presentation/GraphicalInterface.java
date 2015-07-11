@@ -474,6 +474,19 @@ public class GraphicalInterface extends JFrame {
 	public static ReactionEditor getReactionEditor() {
 		return reactionEditor;
 	}
+	
+	private static SaveAsSBMLRenamedItemsFrame saveAsSBMLRenamedItemsFrame;
+
+	public static SaveAsSBMLRenamedItemsFrame getSaveAsSBMLRenamedItemsFrame()
+	{
+		return saveAsSBMLRenamedItemsFrame;
+	}
+
+	public static void setSaveAsSBMLRenamedItemsFrame(
+		SaveAsSBMLRenamedItemsFrame saveAsSBMLRenamedItemsFrame )
+	{
+		GraphicalInterface.saveAsSBMLRenamedItemsFrame = saveAsSBMLRenamedItemsFrame;
+	}
 
 	private static SuspiciousMetabolitesDialog suspiciousMetabolitesDialog = new SuspiciousMetabolitesDialog();
 
@@ -5760,6 +5773,9 @@ public class GraphicalInterface extends JFrame {
 			formulaBar.setText((String) reactionsTable.getModel().getValueAt(0, 1));  
 		} catch (Throwable t) {
 			
+		}
+		if (getSaveAsSBMLRenamedItemsFrame() != null) {
+			getSaveAsSBMLRenamedItemsFrame().dispose();
 		}
 	}
 	
@@ -12018,15 +12034,18 @@ public class GraphicalInterface extends JFrame {
 				}
 				if (renamed) {
 					SaveAsSBMLRenamedItemsFrame frame = new SaveAsSBMLRenamedItemsFrame();
-			    	
-					frame.setIconImages(icons);
-					frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-					frame.reactionsRenamedTable.setModel(reactionsRenamedModel);
-					frame.metabolitesRenamedTable.setModel(metabolitesRenamedModel);
-					frame.setSize(500, 300);
-					frame.setLocationRelativeTo(null);
-					frame.setVisible(true);
+					setSaveAsSBMLRenamedItemsFrame(frame);
+					getSaveAsSBMLRenamedItemsFrame().setIconImages(icons);
+					getSaveAsSBMLRenamedItemsFrame().setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+					getSaveAsSBMLRenamedItemsFrame().reactionsRenamedTable.setModel(reactionsRenamedModel);
+					getSaveAsSBMLRenamedItemsFrame().metabolitesRenamedTable.setModel(metabolitesRenamedModel);
+					getSaveAsSBMLRenamedItemsFrame().setSize(600, 400);
+					getSaveAsSBMLRenamedItemsFrame().setResizable(false);
+					getSaveAsSBMLRenamedItemsFrame().setLocationRelativeTo(null);
+					getSaveAsSBMLRenamedItemsFrame().setVisible(true);
 				}
+				reactionsRenamedModel = createTableModel(SBMLConstants.REACTIONS_RENAMED_COLUMN_NAMES);
+				metabolitesRenamedModel = createTableModel(SBMLConstants.METABOLITES_RENAMED_COLUMN_NAMES);
 			}
 		}
 	}
