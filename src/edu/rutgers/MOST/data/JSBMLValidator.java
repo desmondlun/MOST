@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class JSBMLValidator {
 
-	public String makeValidID(String mAbrv) {
+	public String makeValidID(String mAbrv) {		
 		//mAbrv = replaceInvalidSBMLIdCharacters(mAbrv);
 		if (mAbrv.contains("[") && mAbrv.contains("]")) {
 			mAbrv = mAbrv.replace("[","_");
@@ -23,6 +23,7 @@ public class JSBMLValidator {
 				break;
 			}
 		}
+		
 		if (!valid) {
 			mAbrv = SBMLConstants.METABOLITE_ABBREVIATION_PREFIX + mAbrv;
 		}

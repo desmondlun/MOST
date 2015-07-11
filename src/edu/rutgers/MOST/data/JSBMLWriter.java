@@ -418,6 +418,8 @@ public class JSBMLWriter implements TreeModelListener{
 				String mAbrv = cur.getMetaboliteAbbreviation();
 				
 				JSBMLValidator validator = new JSBMLValidator();
+				// this should not be necessary since the model is being rewritten 
+				// before the writer is called
 				mAbrv = validator.makeValidID(mAbrv);
 				
 				String mName = validator.replaceInvalidSBMLCharacters(cur.getMetaboliteName());
@@ -625,6 +627,8 @@ public class JSBMLWriter implements TreeModelListener{
 						
 				//law.addDeclaredNamespace("FLUX_VALUE", "http://www.w3.org/1998/Math/MathML");
 				
+				// this should not be necessary since the model is being rewritten 
+				// before the writer is called
 				String validId = validator.makeValidReactionID(id);
 				if (!abbrList.contains(validId)) {
 					abbrList.add(validId);

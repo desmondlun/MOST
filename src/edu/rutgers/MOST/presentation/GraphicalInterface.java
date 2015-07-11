@@ -1024,6 +1024,9 @@ public class GraphicalInterface extends JFrame {
 	public Integer selectedMetabolitesRowEndIndex;
 	public Integer selectedMetabolitesColumnStartIndex;
 	public Integer selectedMetabolitesColumnEndIndex;
+	
+	DefaultTableModel reactionsRenamedModel;
+	DefaultTableModel metabolitesRenamedModel;
 
 	public GraphicalInterface() {		
 		// make this true only when troubleshooting, false for actual use
@@ -1535,7 +1538,7 @@ public class GraphicalInterface extends JFrame {
 
 		/**************************************************************************/
 		// end set up output popout
-		/**************************************************************************/		
+		/**************************************************************************/	
 
 		/**************************************************************************/
 		// create menu bar
@@ -4427,6 +4430,11 @@ public class GraphicalInterface extends JFrame {
 	 * @param u
 	 */
 	public void renameDuplicateMetaboliteAbbreviations(JSBMLValidator validator, Utilities u) {
+		metabolitesRenamedModel = createTableModel(SBMLConstants.METABOLITES_RENAMED_COLUMN_NAMES);
+		Map<String, Object> metabolitesIdRowMap = new HashMap<String, Object>();
+		for (int i = 0; i < metabolitesTable.getRowCount(); i++) {
+			metabolitesIdRowMap.put((String) metabolitesTable.getModel().getValueAt(i, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN), i);
+		}
 		ArrayList<String> metabSaveNames = new ArrayList<String>();
 		MetaboliteFactory f = new MetaboliteFactory("SBML");
 		int blankMetabAbbrCount = 1;
@@ -4461,8 +4469,13 @@ public class GraphicalInterface extends JFrame {
 				updateMetabolitesCellById(newName, id, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 			}
 			if (!abbr.equals(newName)) {
-				System.out.println("abbr " + abbr);
-				System.out.println(newName);
+				int row = (int) metabolitesIdRowMap.get(Integer.toString(id));
+				int rowNum = row + 1;
+				Vector<String> metabRow = new Vector<String>();
+				metabRow.addElement(Integer.toString(rowNum));
+				metabRow.addElement(abbr);
+				metabRow.addElement(newName);
+				metabolitesRenamedModel.addRow(metabRow);
 			}
 		}
 	}
@@ -4473,6 +4486,11 @@ public class GraphicalInterface extends JFrame {
 	 * @param u
 	 */
 	public void renameDuplicateReactionAbbreviations(JSBMLValidator validator, Utilities u) {
+		reactionsRenamedModel = createTableModel(SBMLConstants.REACTIONS_RENAMED_COLUMN_NAMES);
+		Map<String, Object> reactionsIdRowMap = new HashMap<String, Object>();
+		for (int i = 0; i < reactionsTable.getRowCount(); i++) {
+			reactionsIdRowMap.put((String) reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTIONS_ID_COLUMN), i);
+		}
 		ReactionFactory rf = new ReactionFactory("SBML");
 		Vector<SBMLReaction> reactions = rf.getAllReactions();
 		ArrayList<String> reacSaveNames = new ArrayList<String>();
@@ -4500,8 +4518,13 @@ public class GraphicalInterface extends JFrame {
 				updateReactionsCellById(newName, reacId, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN);
 			}
 			if (!reacAbbr.equals(newName)) {
-				System.out.println("r abbr " + reacAbbr);
-				System.out.println(newName);
+				int row = (int) reactionsIdRowMap.get(Integer.toString(reacId));
+				int rowNum = row + 1;
+				Vector<String> reacRow = new Vector<String>();
+				reacRow.addElement(Integer.toString(rowNum));
+				reacRow.addElement(reacAbbr);
+				reacRow.addElement(newName);
+				reactionsRenamedModel.addRow(reacRow);
 			}
 		}
 	}
@@ -5699,6 +5722,8 @@ public class GraphicalInterface extends JFrame {
 	 * This method is called whenever a model is loaded to reset the GUI to default conditions.
 	 */
 	public void setUpTables() {
+		setReactionsSortOrder(SortOrder.ASCENDING);
+		setMetabolitesSortOrder(SortOrder.ASCENDING);
 		setTitle(GraphicalInterfaceConstants.TITLE + " - " + LocalConfig.getInstance().getModelName());				
 		if (saveFile) {
 			DynamicTreePanel.getTreePanel().setNodeSelected(0);
@@ -11984,6 +12009,24 @@ public class GraphicalInterface extends JFrame {
 						"Warning",                                
 						JOptionPane.WARNING_MESSAGE);
 				}
+				boolean renamed = false;
+				if (metabolitesRenamedModel != null && metabolitesRenamedModel.getRowCount() > 0) {
+					renamed = true;
+				}
+				if (reactionsRenamedModel != null && reactionsRenamedModel.getRowCount() > 0) {
+					renamed = true;
+				}
+				if (renamed) {
+					SaveAsSBMLRenamedItemsFrame frame = new SaveAsSBMLRenamedItemsFrame();
+			    	
+					frame.setIconImages(icons);
+					frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+					frame.reactionsRenamedTable.setModel(reactionsRenamedModel);
+					frame.metabolitesRenamedTable.setModel(metabolitesRenamedModel);
+					frame.setSize(500, 300);
+					frame.setLocationRelativeTo(null);
+					frame.setVisible(true);
+				}
 			}
 		}
 	}
@@ -12125,6 +12168,21 @@ public class GraphicalInterface extends JFrame {
 		@Override public void actionPerformed(ActionEvent e) {
 			openURL();	
 		}
+	}
+	
+	public static DefaultTableModel createTableModel(String[] columnNamesArray) {
+		DefaultTableModel model = new DefaultTableModel();
+		Vector<String> columnNames = new Vector<String>();
+		for (int c = 0; c < columnNamesArray.length; c++) {
+			columnNames.add(columnNamesArray[c]);
+		}
+		
+		for (int i = 0; i < columnNames.size(); i++) {
+			model.addColumn(columnNames.get(i));
+		}		
+		
+		return model; 
+		
 	}
 	
 	public void openURL() {

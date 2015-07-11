@@ -18,17 +18,19 @@ import layout.TableLayout;
 
 import org.jdesktop.swingx.JXTable;
 
+import edu.rutgers.MOST.data.SBMLConstants;
+
 public class SaveAsSBMLRenamedItemsFrame extends JFrame
 {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public static JXTable reactionsTable = new JXTable();
-	public static JXTable metabolitesTable = new JXTable();
+	public JXTable reactionsRenamedTable = new JXTable();
+	public JXTable metabolitesRenamedTable = new JXTable();
 	
-	private DefaultTableModel reactionsRenamedModel = new DefaultTableModel();
-	private DefaultTableModel metabolitesRenamedModel = new DefaultTableModel();
+	public DefaultTableModel reactionsRenamedModel = new DefaultTableModel();
+	public DefaultTableModel metabolitesRenamedModel = new DefaultTableModel();
 	
 	public SaveAsSBMLRenamedItemsFrame() {
 		setTitle("MOST");
@@ -40,40 +42,25 @@ public class SaveAsSBMLRenamedItemsFrame extends JFrame
 
 		setJMenuBar(menuBar);
 		
-		int id = 0;
-		for (int i = 0; i < 100; i++) {
-			Vector<String> row = new Vector<String>();
-			row.addElement(Integer.toString(id));
-			row.addElement("");
-			row.addElement("");
-			reactionsRenamedModel.addRow(row);
-			id += 1;
-		}
-		reactionsTable.setModel(reactionsRenamedModel);
+		// from http://www.java2s.com/Tutorial/Java/0240__Swing/thelastcolumnismovedtothefirstposition.htm
+		// columns cannot be rearranged by dragging
+		reactionsRenamedTable.getTableHeader().setReorderingAllowed(false); 
+		metabolitesRenamedTable.getTableHeader().setReorderingAllowed(false); 
 		
 		/************************************************************************/
 		//set frame layout 
 		/************************************************************************/
-		//set tabs south (bottom) = 3
-//		JTabbedPane tabbedPane = new JTabbedPane(3); 
-//		JScrollPane scrollPaneReac = new JScrollPane(reactionsTable);
-//		tabbedPane.addTab("Reactions", scrollPaneReac);
-//		tabbedPane.setMnemonicAt(0, KeyEvent.VK_R);
-//
-//		JScrollPane scrollPaneMetab = new JScrollPane(metabolitesTable);
-//		tabbedPane.addTab("Metabolites", scrollPaneMetab);
-//		tabbedPane.setMnemonicAt(1, KeyEvent.VK_B);
-		
+
 		JLabel label = new JLabel("<html>The following Reactions and Metabolites have been renamed"
 			+ " to fulfill the SBML Standards.</html>");
 
 		//set tabs south (bottom) = 3
 		JTabbedPane tabbedPane = new JTabbedPane(3); 
-		JScrollPane scrollPaneReac = new JScrollPane(reactionsTable);
+		JScrollPane scrollPaneReac = new JScrollPane(reactionsRenamedTable);
 		tabbedPane.addTab("Reactions", scrollPaneReac);
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_R);
 
-		JScrollPane scrollPaneMetab = new JScrollPane(metabolitesTable);
+		JScrollPane scrollPaneMetab = new JScrollPane(metabolitesRenamedTable);
 		tabbedPane.addTab("Metabolites", scrollPaneMetab);
 		tabbedPane.setMnemonicAt(1, KeyEvent.VK_B);
 
@@ -88,7 +75,30 @@ public class SaveAsSBMLRenamedItemsFrame extends JFrame
 		add (tabbedPane, "1, 3, 1, 1"); // Right
 
 		setBackground(Color.lightGray);
+			
+		// set empty table models in case only metabolites or reactions renamed to
+		// prevent loading a table with a null model. model set in GraphicalInterface
+		// if any renaming occurs.
+		reactionsRenamedModel = createTableModel(SBMLConstants.REACTIONS_RENAMED_COLUMN_NAMES);
+		metabolitesRenamedModel = createTableModel(SBMLConstants.METABOLITES_RENAMED_COLUMN_NAMES);
 
+		reactionsRenamedTable.setModel(reactionsRenamedModel);
+		metabolitesRenamedTable.setModel(metabolitesRenamedModel);
+	}
+
+	public static DefaultTableModel createTableModel(String[] columnNamesArray) {
+		DefaultTableModel model = new DefaultTableModel();
+		Vector<String> columnNames = new Vector<String>();
+		for (int c = 0; c < columnNamesArray.length; c++) {
+			columnNames.add(columnNamesArray[c]);
+		}
+		
+		for (int i = 0; i < columnNames.size(); i++) {
+			model.addColumn(columnNames.get(i));
+		}		
+		
+		return model; 
+		
 	}
 	
 	public static void main(String[] args) {
