@@ -396,7 +396,7 @@ public class ReactionFactory {
 		//e.printStackTrace();
 		StringWriter errors = new StringWriter();
 		e.printStackTrace( new PrintWriter( errors ) );
-		dialog.setErrorMessage( errors.toString() );
+		dialog.setErrorMessage(  "<html><p>" + errors.toString() + "</p></html>" );
 		// centers dialog
 		dialog.setLocationRelativeTo(null);
 		dialog.setModal(true);

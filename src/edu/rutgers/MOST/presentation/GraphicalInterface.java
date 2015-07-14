@@ -3557,7 +3557,10 @@ public class GraphicalInterface extends JFrame {
 								JOptionPane.ERROR_MESSAGE);
 						//e.printStackTrace();
 					} catch (IOException e) {
-						e.printStackTrace();
+						StringWriter errors = new StringWriter();
+						e.printStackTrace(new PrintWriter(errors));
+						u.showResizableDialog( "Error", "Error", "<html><p>" + errors.toString() + "</p></html>" );
+						//e.printStackTrace();
 					} finally {
 						try {
 							if (writer != null) {
@@ -3596,8 +3599,11 @@ public class GraphicalInterface extends JFrame {
 				Utilities.copyFile(f, copy);
 				Utilities.delete(f.getPath());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				StringWriter errors = new StringWriter();
+				e.printStackTrace(new PrintWriter(errors));
+				Utilities u = new Utilities();
+				u.showResizableDialog( "Error", "Error", "<html><p>" + errors.toString() + "</p></html>" );
+				//e.printStackTrace();
 			}
 		}
 	}
@@ -4146,11 +4152,15 @@ public class GraphicalInterface extends JFrame {
 				} 
 			}		
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null,                
-					"Unable to Write File.",                
-					"Error",                                
-					JOptionPane.ERROR_MESSAGE);
+//			JOptionPane.showMessageDialog(null,                
+//					"Unable to Write File.",                
+//					"Error",                                
+//					JOptionPane.ERROR_MESSAGE);
 			//e.printStackTrace();
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			Utilities u = new Utilities();
+			u.showResizableDialog("Error", "Unable to Write File.", "<html><p>" + errors.toString() + "</p></html>");
 		}	
 	}
 	
@@ -11529,7 +11539,7 @@ public class GraphicalInterface extends JFrame {
 						unusedList.add(id); 
 					} catch (Throwable t) {
 						Utilities u = new Utilities();
-						u.showResizableDialog("Error", "Error", "errorMessage");
+						u.showResizableDialog("Error", "Error", "Error");
 					}								
 				}
 			}
@@ -12337,10 +12347,10 @@ public class GraphicalInterface extends JFrame {
 //	            System.out.format("%s=%s%n", envName, env.get(envName));
 //	        }
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
-			dialog.setErrorMessage(errors.toString());
+			dialog.setErrorMessage( "<html><p>" + errors.toString() + "</p></html>" );
 			dialog.setVisible(true);
 		}		
 	}
