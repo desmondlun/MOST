@@ -25,7 +25,7 @@ public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 		//except.printStackTrace();
 		StringWriter errors = new StringWriter();
 		thrown.printStackTrace( new PrintWriter( errors ) );
-		dialog.setErrorMessage( errors.toString() );
+		dialog.setErrorMessage( "<html><p>" + errors.toString() + "</p></html>" );
 		// centers dialog
 		dialog.setLocationRelativeTo(null);
 		dialog.setModal(true);

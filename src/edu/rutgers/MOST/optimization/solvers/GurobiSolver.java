@@ -82,7 +82,7 @@ public abstract class GurobiSolver implements MILSolver
 				{
 					StringWriter errors = new StringWriter();
 					e.printStackTrace( new PrintWriter( errors ) );
-					dialog.setErrorMessage( errors.toString() + "</p></html>" );
+					dialog.setErrorMessage( "<html><p>" + errors.toString() + "</p></html>" );
 					// centers dialog
 					dialog.setLocationRelativeTo(null);
 					dialog.setModal(true);

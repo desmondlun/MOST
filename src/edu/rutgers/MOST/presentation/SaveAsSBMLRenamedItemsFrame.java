@@ -2,14 +2,19 @@ package edu.rutgers.MOST.presentation;
 
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.table.DefaultTableModel;
@@ -32,6 +37,8 @@ public class SaveAsSBMLRenamedItemsFrame extends JFrame
 	
 	public DefaultTableModel reactionsRenamedModel = new DefaultTableModel();
 	public DefaultTableModel metabolitesRenamedModel = new DefaultTableModel();
+	
+	public JButton okButton = new JButton("OK");
 	
 	public SaveAsSBMLRenamedItemsFrame() {
 		setTitle("MOST");
@@ -64,16 +71,21 @@ public class SaveAsSBMLRenamedItemsFrame extends JFrame
 		JScrollPane scrollPaneMetab = new JScrollPane(metabolitesRenamedTable);
 		tabbedPane.addTab("Metabolites", scrollPaneMetab);
 		tabbedPane.setMnemonicAt(1, KeyEvent.VK_B);
+		
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.add(okButton);
+		buttonPanel.setBorder(BorderFactory.createEmptyBorder(0,0,20,0));
 
 		double border = 10;
 		double size[][] =
 		{{border, TableLayout.FILL, border},  // Columns
-			{border, 0.10, 20, TableLayout.FILL, border}}; // Rows  
+			{border, 0.10, 20, TableLayout.FILL, 10, 0.15, border}}; // Rows  
 
 		setLayout (new TableLayout(size)); 
 
 		add (label, "1, 1, 1, 1"); // Top
 		add (tabbedPane, "1, 3, 1, 1"); // Right
+		add (buttonPanel, "1, 5, 1, 1");
 
 		setBackground(Color.lightGray);
 			
@@ -88,6 +100,15 @@ public class SaveAsSBMLRenamedItemsFrame extends JFrame
 		
 		setTableLayout(reactionsRenamedTable);
 		setTableLayout(metabolitesRenamedTable);
+		
+		ActionListener okButtonActionListener = new ActionListener() {
+			public void actionPerformed(ActionEvent prodActionEvent) {
+				setVisible(false);
+				dispose();
+			}
+		};
+		
+		okButton.addActionListener(okButtonActionListener);
 	}
 
 	public static DefaultTableModel createTableModel(String[] columnNamesArray) {
@@ -129,7 +150,7 @@ public class SaveAsSBMLRenamedItemsFrame extends JFrame
     	
 		frame.setIconImages(icons);
 		frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		frame.setSize(500, 300);
+		frame.setSize(500, 340);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
     }
