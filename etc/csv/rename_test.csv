@@ -1,0 +1,8 @@
+Abbreviation,Name,Reaction,Reversible,Lower bound,Upper bound,Objective, 
+R_a,,M_a + a = b + M_b,1,0,1000,0,
+a,,c + M_c_1 + M_c_1_1 = d_1_1_1 + M_d_1_1,1,-1000,1000,0,
+b,,e + e_1 + M_e + M_e_!_1 =,1,-1000,1000,0,
+R_b,,e_1_1 =,1,-1000,1000,0,
+R_c_1,,e_1_1_1_1 + M_e_1_1 =,1,-1000,1000,0,
+c_1,,a_1_1_1 =,1,-1000,1000,0,
+R_c,,b = c_1,1,-1000,1000,0,

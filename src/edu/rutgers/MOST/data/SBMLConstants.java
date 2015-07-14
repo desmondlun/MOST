@@ -1,7 +1,5 @@
 package edu.rutgers.MOST.data;
 
-import java.util.Arrays;
-
 public class SBMLConstants {
 		
 	public static final String MIN_FLUX_NOTES_NAME = "MINIMUM_FLUX";
@@ -63,4 +61,11 @@ public class SBMLConstants {
 	public static final String[] METABOLITES_RENAMED_COLUMN_NAMES = {
 		"Row", "Old Abbreviation", "New Abbreviation" 
 		 };
+	
+	public static final String RENAMED_ABBREVIATIONS_WARNING_TITLE = "Renamed Abbreviations Warning";
+	public static final String RENAMED_PREFIX = "The following Reactions and Metabolites";
+	public static final String RENAMED_REACTIONS_PREFIX = "The following Reactions";
+	public static final String RENAMED_METABOLITES_PREFIX = "The following Metabolites";
+	public static final String RENAMED_MESSAGE_SUFFIX = " have been renamed"
+			+ " to fulfill the SBML Standards.";
 }

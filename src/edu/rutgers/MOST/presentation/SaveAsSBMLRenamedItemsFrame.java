@@ -31,17 +31,34 @@ public class SaveAsSBMLRenamedItemsFrame extends JFrame
 	/**
 	 * 
 	 */
+	
+	public JLabel label = new JLabel();
+	
 	private static final long serialVersionUID = 1L;
 	public JXTable reactionsRenamedTable = new JXTable();
 	public JXTable metabolitesRenamedTable = new JXTable();
+	
+	public JTabbedPane tabbedPane = new JTabbedPane(3);
 	
 	public DefaultTableModel reactionsRenamedModel = new DefaultTableModel();
 	public DefaultTableModel metabolitesRenamedModel = new DefaultTableModel();
 	
 	public JButton okButton = new JButton("OK");
 	
+	private String message;
+	
+	public String getMessage()
+	{
+		return message;
+	}
+
+	public void setMessage( String message )
+	{
+		this.message = message;
+	}
+
 	public SaveAsSBMLRenamedItemsFrame() {
-		setTitle("MOST");
+		setTitle(GraphicalInterfaceConstants.TITLE + " - " + SBMLConstants.RENAMED_ABBREVIATIONS_WARNING_TITLE);
 
 		/**************************************************************************/
 		//MenuBar
@@ -59,11 +76,8 @@ public class SaveAsSBMLRenamedItemsFrame extends JFrame
 		//set frame layout 
 		/************************************************************************/
 
-		JLabel label = new JLabel("<html>The following Reactions and Metabolites have been renamed"
-			+ " to fulfill the SBML Standards.</html>");
-
 		//set tabs south (bottom) = 3
-		JTabbedPane tabbedPane = new JTabbedPane(3); 
+		//JTabbedPane tabbedPane = new JTabbedPane(3); 
 		JScrollPane scrollPaneReac = new JScrollPane(reactionsRenamedTable);
 		tabbedPane.addTab("Reactions", scrollPaneReac);
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_R);

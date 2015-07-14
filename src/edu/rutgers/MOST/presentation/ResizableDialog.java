@@ -60,7 +60,6 @@ public class ResizableDialog extends JDialog
 		this.errorMessage = errorMessage;
 	}
 
-    
     private final JMenuItem copyItem = new JMenuItem("Copy");
 	private final JMenuItem selectAllItem = new JMenuItem("Select All");
 
@@ -262,7 +261,7 @@ public class ResizableDialog extends JDialog
 		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
 		icons.add(new ImageIcon("etc/most32.jpg").getImage());
     	
-		ResizableDialog r = new ResizableDialog("Error", "Error message", "<html><p>test <a href=" + "http://www.google.com" + ">google</a></html>");
+		ResizableDialog r = new ResizableDialog("Error", "Error message", "<html><p>test <a href=" + "http://www.google.com" + ">google</a></p></html>");
 		//ResizableDialog r = new ResizableDialog("Error", "Error message", "Testing\nTesting\nTesting\nTesting");
     	
     	r.setIconImages(icons);
