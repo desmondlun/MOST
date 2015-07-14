@@ -89,7 +89,7 @@ public class SBMLMetabolite implements ModelMetabolite {
 		this.setCompartment((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.COMPARTMENT_COLUMN));
 		this.setBoundary((String) GraphicalInterface.metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.BOUNDARY_COLUMN));
 		for (int i = 0; i < LocalConfig.getInstance().getMetabolitesMetaColumnNames().size(); i++) {
-			// Strange non-reproducible error: 
+			// Strange non-reproducible error when saving as SBML: 
 			// java.lang.ArrayIndexOutOfBoundsException: 6 >= 6 at java.util.Vector.elementAt(Unknown Source)
 			// at javax.swing.table.DefaultTableModel.getValueAt(Unknown Source) at edu.rutgers.MOST.data.SBMLMetabolite.loadByRow(SBMLMetabolite.java:92)...
 			// This error may not show up one time then show next time for same exact model being saved.
