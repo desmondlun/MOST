@@ -11538,8 +11538,8 @@ public class GraphicalInterface extends JFrame {
 						int id = (Integer) idMap.get(idList.get(i));
 						unusedList.add(id); 
 					} catch (Throwable t) {
-						Utilities u = new Utilities();
-						u.showResizableDialog("Error", "Error", "Error");
+//						Utilities u = new Utilities();
+//						u.showResizableDialog("Error", "Error", "Error");
 					}								
 				}
 			}
@@ -12035,14 +12035,25 @@ public class GraphicalInterface extends JFrame {
 						"Warning",                                
 						JOptionPane.WARNING_MESSAGE);
 				}
-				boolean renamed = false;
+				//boolean renamed = false;
+				boolean renamedMetabolites = false;
+				boolean renamedReactions = false;
+				String warningMessage = "";
 				if (metabolitesRenamedModel != null && metabolitesRenamedModel.getRowCount() > 0) {
-					renamed = true;
+					//renamed = true;
+					renamedMetabolites = true;
+					warningMessage = SBMLConstants.RENAMED_METABOLITES_PREFIX;
 				}
 				if (reactionsRenamedModel != null && reactionsRenamedModel.getRowCount() > 0) {
-					renamed = true;
-				}
-				if (renamed) {
+					//renamed = true;
+					renamedReactions = true;
+					if (renamedMetabolites) {
+						warningMessage = SBMLConstants.RENAMED_PREFIX;
+					} else {
+						warningMessage = SBMLConstants.RENAMED_REACTIONS_PREFIX;
+					}
+				} 
+				if (renamedMetabolites || renamedReactions) {
 					SaveAsSBMLRenamedItemsFrame frame = new SaveAsSBMLRenamedItemsFrame();
 					setSaveAsSBMLRenamedItemsFrame(frame);
 					getSaveAsSBMLRenamedItemsFrame().setIconImages(icons);
@@ -12051,6 +12062,14 @@ public class GraphicalInterface extends JFrame {
 					getSaveAsSBMLRenamedItemsFrame().metabolitesRenamedTable.setModel(metabolitesRenamedModel);
 					getSaveAsSBMLRenamedItemsFrame().setTableLayout(getSaveAsSBMLRenamedItemsFrame().reactionsRenamedTable);
 					getSaveAsSBMLRenamedItemsFrame().setTableLayout(getSaveAsSBMLRenamedItemsFrame().metabolitesRenamedTable);
+					if (!renamedReactions) {
+						getSaveAsSBMLRenamedItemsFrame().tabbedPane.setSelectedIndex( 1 );
+						getSaveAsSBMLRenamedItemsFrame().tabbedPane.setEnabled(false);
+					}
+					if (!renamedMetabolites) {
+						getSaveAsSBMLRenamedItemsFrame().tabbedPane.setEnabled(false);
+					}
+					getSaveAsSBMLRenamedItemsFrame().label.setText(warningMessage + SBMLConstants.RENAMED_MESSAGE_SUFFIX);
 					getSaveAsSBMLRenamedItemsFrame().setSize(600, 400);
 					getSaveAsSBMLRenamedItemsFrame().setResizable(false);
 					getSaveAsSBMLRenamedItemsFrame().setLocationRelativeTo(null);
