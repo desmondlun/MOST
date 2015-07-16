@@ -7226,9 +7226,16 @@ public class GraphicalInterface extends JFrame {
 	}
 
 	private void cancelCellEditing() {
-		CellEditor ce = reactionsTable.getCellEditor();
-		if (ce != null) {
-			ce.cancelCellEditing();
+		if (tabbedPane.getSelectedIndex() == 0) {
+			CellEditor ce = reactionsTable.getCellEditor();
+			if (ce != null) {
+				ce.cancelCellEditing();
+			}
+		} else if (tabbedPane.getSelectedIndex() == 1) {
+			CellEditor ce = metabolitesTable.getCellEditor();
+			if (ce != null) {
+				ce.cancelCellEditing();
+			}
 		}
 	}
 

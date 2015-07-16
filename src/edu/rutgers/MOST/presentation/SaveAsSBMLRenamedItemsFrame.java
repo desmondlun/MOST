@@ -2,21 +2,31 @@ package edu.rutgers.MOST.presentation;
 
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.CellEditor;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
@@ -71,6 +81,20 @@ public class SaveAsSBMLRenamedItemsFrame extends JFrame
 		// columns cannot be rearranged by dragging
 		reactionsRenamedTable.getTableHeader().setReorderingAllowed(false); 
 		metabolitesRenamedTable.getTableHeader().setReorderingAllowed(false); 
+		
+		reactionsRenamedTable.setColumnSelectionAllowed(false);
+		reactionsRenamedTable.setRowSelectionAllowed(false); 
+		reactionsRenamedTable.setCellSelectionEnabled(true);
+		
+		ReactionsPopupListener reactionsPopupListener = new ReactionsPopupListener();
+		reactionsRenamedTable.addMouseListener(reactionsPopupListener);
+		
+		metabolitesRenamedTable.setColumnSelectionAllowed(false);
+		metabolitesRenamedTable.setRowSelectionAllowed(false); 
+		metabolitesRenamedTable.setCellSelectionEnabled(true);
+		
+		MetabolitesPopupListener metabolitesPopupListener = new MetabolitesPopupListener();
+		metabolitesRenamedTable.addMouseListener(metabolitesPopupListener);
 		
 		/************************************************************************/
 		//set frame layout 
@@ -154,6 +178,138 @@ public class SaveAsSBMLRenamedItemsFrame extends JFrame
 			}
 		}
 	}
+	
+	// from http://docs.oracle.com/javase/tutorial/uiswing/components/menu.html
+	public class ReactionsPopupListener extends MouseAdapter {
+
+		public void maybeShowPopup(MouseEvent e) {
+			if (e.isPopupTrigger() && reactionsRenamedTable.isEnabled()) {
+				Point p = new Point(e.getX(), e.getY());
+				int col = reactionsRenamedTable.columnAtPoint(p);
+				int row = reactionsRenamedTable.rowAtPoint(p);
+				// translate table index to model index
+				//int mcol = reactionsTable.getColumn(reactionsTable.getColumnName(col)).getModelIndex();
+
+				if (row >= 0 && row < reactionsRenamedTable.getRowCount()) {
+					cancelCellEditing();            
+					JPopupMenu contextMenu = createContextMenu(reactionsRenamedTable, row, col);
+					if (contextMenu != null
+						&& contextMenu.getComponentCount() > 0) {
+						contextMenu.show(reactionsRenamedTable, p.x, p.y);
+					}
+				}
+			}
+		}
+
+		public void mousePressed(MouseEvent e) {
+			maybeShowPopup(e);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			maybeShowPopup(e);
+		}
+	}
+	
+	public class MetabolitesPopupListener extends MouseAdapter {
+
+		public void maybeShowPopup(MouseEvent e) {
+			if (e.isPopupTrigger() && metabolitesRenamedTable.isEnabled()) {
+				Point p = new Point(e.getX(), e.getY());
+				int col = metabolitesRenamedTable.columnAtPoint(p);
+				int row = metabolitesRenamedTable.rowAtPoint(p);
+				// translate table index to model index
+				//int mcol = reactionsTable.getColumn(reactionsTable.getColumnName(col)).getModelIndex();
+
+				if (row >= 0 && row < metabolitesRenamedTable.getRowCount()) {
+					cancelCellEditing();            
+					JPopupMenu contextMenu = createContextMenu(metabolitesRenamedTable, row, col);
+					if (contextMenu != null
+						&& contextMenu.getComponentCount() > 0) {
+						contextMenu.show(metabolitesRenamedTable, p.x, p.y);
+					}
+				}
+			}
+		}
+
+		public void mousePressed(MouseEvent e) {
+			maybeShowPopup(e);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			maybeShowPopup(e);
+		}
+	}
+
+	private void cancelCellEditing() {
+		if (tabbedPane.getSelectedIndex() == 0) {
+			CellEditor ce = reactionsRenamedTable.getCellEditor();
+			if (ce != null) {
+				ce.cancelCellEditing();
+			}
+		} else if (tabbedPane.getSelectedIndex() == 1) {
+			CellEditor ce = metabolitesRenamedTable.getCellEditor();
+			if (ce != null) {
+				ce.cancelCellEditing();
+			}
+		}
+	}
+
+	private JPopupMenu createContextMenu(final JXTable table, final int rowIndex,
+		final int columnIndex) {
+		JPopupMenu contextMenu = new JPopupMenu();
+
+		JMenuItem copyMenu = new JMenuItem("Copy");
+		copyMenu.setAccelerator(KeyStroke.getKeyStroke(
+			KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+		copyMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				tableCopy(table);
+			}
+		});
+		contextMenu.add(copyMenu);
+
+		return contextMenu;
+	}
+
+	public void tableCopy(JXTable table) {
+		int numCols=table.getSelectedColumnCount(); 
+		int numRows=table.getSelectedRowCount(); 
+		int[] rowsSelected=table.getSelectedRows(); 
+		int[] colsSelected=table.getSelectedColumns(); 
+		try {
+			if (numRows!=rowsSelected[rowsSelected.length-1]-rowsSelected[0]+1 || numRows!=rowsSelected.length || 
+				numCols!=colsSelected[colsSelected.length-1]-colsSelected[0]+1 || numCols!=colsSelected.length) {
+
+				JOptionPane.showMessageDialog(null, "Invalid Copy Selection", "Invalid Copy Selection", JOptionPane.ERROR_MESSAGE);
+				return; 
+			} 
+		} catch (Throwable t) {
+
+		}		
+		StringBuffer excelStr=new StringBuffer(); 
+		for (int i=0; i<numRows; i++) { 
+			for (int j=0; j<numCols; j++) { 
+				try {
+					excelStr.append(escape(table.getValueAt(rowsSelected[i], colsSelected[j]))); 
+				} catch (Throwable t) {
+
+				}						
+				if (j<numCols-1) {
+					//System.out.println("t");
+					excelStr.append("\t"); 
+				} 
+			} 
+			//System.out.println("n");
+			excelStr.append("\n"); 
+		} 
+
+		StringSelection sel  = new StringSelection(excelStr.toString()); 
+		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, sel);
+	}
+
+	private String escape(Object cell) { 
+		return cell.toString().replace("\n", " ").replace("\t", " "); 
+	} 
 	
 	public static void main(String[] args) {
     	final ArrayList<Image> icons = new ArrayList<Image>(); 

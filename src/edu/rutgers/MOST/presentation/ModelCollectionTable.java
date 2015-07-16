@@ -126,7 +126,12 @@ class ModelCollectionTable
 		
 		table.setRowHeight(20);
 		table.setColumnSelectionAllowed(false);
+		// If desired to have single cell selection, change setRowSelectionAllowed
+		// to false, and uncomment the line table.setCellSelectionEnabled(true);
+		// Since selection determines which file to load, it may be confusing
+		// to only have a single cell selected
 		table.setRowSelectionAllowed(true); 
+		//table.setCellSelectionEnabled(true);
 		table.getSelectionModel().addListSelectionListener(new RowListener());
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
 		// The code below allows multiple cells to be selectable, but also allows for
@@ -406,8 +411,6 @@ class ModelCollectionTable
 		StringSelection sel  = new StringSelection(excelStr.toString()); 
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, sel);
 	}
-	
-	
 	
 	private String escape(Object cell) { 
 		return cell.toString().replace("\n", " ").replace("\t", " "); 
