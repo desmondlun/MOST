@@ -38,10 +38,10 @@ public class FBA extends Analysis
 		try
 		{
 			JCheckBox FVACheckBox = new JCheckBox( "Run FVA analysis" );
-			JCheckBox minEucBox = new JCheckBox( "Run Euclidean norm minimization" );
-			Object[] params = { "Select optional analysis along FBA", FVACheckBox, minEucBox };
+			JCheckBox minEucBox = new JCheckBox( "Minimize Euclidean norm" );
+			Object[] params = { "Select optional analysis", FVACheckBox, minEucBox };
 	 		int selectedOption = JOptionPane.showConfirmDialog( null, 
-	 				params, "FVA analysis", 
+	 				params, "FBA options", 
 	 				JOptionPane.OK_CANCEL_OPTION );
 	 		
 	 		if( JOptionPane.CANCEL_OPTION == selectedOption || JOptionPane.CLOSED_OPTION == selectedOption ) {
