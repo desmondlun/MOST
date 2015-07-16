@@ -37,3 +37,28 @@ DYLIBS
 ====
 
 Should you have problems with bundling the dependencies when building from sources (both GLPK-Java or JIpopt), you can use the attached mac dylib bundler library to resolve install names for the dynamic library loader. However, it's adviced not to do this, and instead to compile all libraries with the gcc -install-name option (see: https://developer.apple.com/library/mac/documentation/DeveloperTools/Conceptual/DynamicLibraries/100-Articles/RunpathDependentLibraries.html) to instruct the dynamic loader to use a relative path to create portable binaries that resolve dependencies using relative pathnames. However, should there be any problems witht his, install_name_tool and otool are both useful tools to resolve dependency issues. In addition, a dynamic bundler library is also provided for your convenience. Simply run 'make' to build the binaries. A readme is also provided for your convenience.
+
+===
+APP
+===
+
+To create an app file, first make sure to build the runnable JAR (the class withthe entry function should be edu.rutgers.MOST.presentation.GraphicalInterface).
+A folder named 'MOST.app' should be created and within it, a single folder named 'Contents' should be placed inside. Within this folder, a file called 'info.plist' should contain the information necessary for the OS to properly issue the commands to start up the application as well as display the application icons.
+This can be re-used from previous versions of MOST. It contains the information necessary for the OS to properly issue commands and display the app icons (see: https://developer.apple.com/library/ios/documentation/General/Reference/InfoPlistKeyReference/Introduction/Introduction.html) The icons must be in .icns format (converters are available online) within [MOST.app/Contents/Resources]. The base directory [MOST.app/Contents/MacOS] should be the base directory for which MOST.jar should be placed. This should have the same hierarchy as the working tree for the development environment, containing only the necessary files necessary for distribution (such as ModelCollection.csv, lib folder, and etc folder).
+A bash file named 'MOST' should be sufficient to issue the commands to start MOST:
+--
+#!/bin/bash
+cd "{$0%/*}"
+java -jar MOST.jar
+---
+place the bash file in the same directory as the runnable jar file. MOST should now be able to run as normal.
+
+===
+DMG
+===
+
+
+There are several tools available online that provide functionality to package the application to DMG file format. DropDMG is one such useful library that can also provide a professional look for installation. It can be found here:
+http://c-command.com/dropdmg/
+
+Make sure to use a compression method using DEFLATE compression algorithm or better, as the compression will significantly reduce the file size for clients when downloading.
