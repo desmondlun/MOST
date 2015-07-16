@@ -1,6 +1,6 @@
 *.class
 
-
+.DS_Store
 bin/log4j.properties
 log4j.log.1
 .classpath
