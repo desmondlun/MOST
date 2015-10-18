@@ -119,6 +119,7 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 		t.start();
 	}
 	
+	@SuppressWarnings( "unused" )
 	public GLPKSolver()
 	{
 		String dependsFolder = "lib/";
@@ -135,13 +136,17 @@ public abstract class GLPKSolver implements Solver, LinearSolver, MILSolver, Glp
 		try
 		{
 			addLibraryPath( dependsFolder );
-			@SuppressWarnings( "unused" )
-			int x = GLPKConstants.GLP_JAVA_A_X;
+			System.loadLibrary( "glpk" );
+			System.loadLibrary( "glpk_java" );
+			int x = GLPKConstants.GLP_JAVA_A_CAP;
+			GLPK.glp_delete_prob( GLPK.glp_create_prob() );
+			System.out.println( getName() );
 		}
 		catch ( UnsatisfiedLinkError | Exception except )
 		{
+			System.out.println( except.toString() );
 			processStackTrace( new Exception(
-					"The dynamic link library for GLPK 4.53 for Java could not be "
+					"The dynamic link library for GLPK for Java could not be "
 							+ "loaded from "
 							+ Paths.get( dependsFolder ).toAbsolutePath()
 									.toString() ) );

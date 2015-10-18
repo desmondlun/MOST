@@ -47,7 +47,6 @@ public class ModelCompressor
 			throw new Exception( "AbortFlag" );
 	}
 	
-	@SuppressWarnings( "resource" )
 	public static void compareCSV( String file1, String file2, String delim )
 	{
 		BufferedReader brMost = null;
