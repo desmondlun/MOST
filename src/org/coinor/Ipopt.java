@@ -72,7 +72,7 @@ public abstract class Ipopt
 	/** The default DLL name of the native implementation (without any platform dependent prefixes or suffixes) */
 	public static final String DLLNAME = "jipopt";
 	/** The relative path where the native DLL is found */
-	public static final String DLLPATH = "lib/mac";
+	public static final String DLLPATH = "lib/linux";
 
 	/** Use C index style for iRow and jCol vectors */
 	public final static int C_STYLE = 0;
