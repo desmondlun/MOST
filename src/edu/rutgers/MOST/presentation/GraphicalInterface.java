@@ -1097,7 +1097,6 @@ public class GraphicalInterface extends JFrame {
 									ReactionFactory rFactory = new ReactionFactory("SBML");
 								    rFactory.setFluxes(getGdbbFluxesMap().get(nodeInfo.getSolutionName()), GraphicalInterfaceConstants.FLUX_VALUE_COLUMN,
 								    		LocalConfig.getInstance().getReactionsTableModelMap().get(solutionName));
-									//System.out.println(LocalConfig.getInstance().getGdbbKnockoutsMap().get(nodeInfo.getSolutionName()));
 									rFactory.updateKnockouts(LocalConfig.getInstance().getGdbbKnockoutsMap().get(nodeInfo.getSolutionName()));
 								}								
 								loadOutputPane(u.createLogFileName(databaseName + ".log"));
@@ -5310,9 +5309,6 @@ public class GraphicalInterface extends JFrame {
 			reactionsTable.getModel().setValueAt("", rowIndex, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 			LocalConfig.getInstance().getReactionEquationMap().remove(reactionId);
 		}
-//		System.out.println("upd equn " + LocalConfig.getInstance().getReactionEquationMap());
-//		System.out.println("upd equn id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
-//		System.out.println("upd equn used " + LocalConfig.getInstance().getMetaboliteUsedMap());	
 	}
 	
 	public void maybeAddMetabolite(String species) {
@@ -5575,7 +5571,6 @@ public class GraphicalInterface extends JFrame {
 		} else if (colIndex == GraphicalInterfaceConstants.COMPARTMENT_COLUMN) {
 			rewriteReactionEquationNames(id, metabAbbrev, newValue);
 			LocalConfig.getInstance().getMetaboliteIdCompartmentMap().put(new Integer(id), newValue); 
-			//System.out.println(LocalConfig.getInstance().getMetaboliteIdCompartmentMap());
 		} else {
 			// action for remaining columns
 			metabolitesTable.getModel().setValueAt(newValue, rowIndex, colIndex);
@@ -7022,7 +7017,7 @@ public class GraphicalInterface extends JFrame {
 		JPopupMenu reactionsHeaderContextMenu = new JPopupMenu();
 
 		JMenuItem deleteColumnMenu = new JMenuItem("Delete Column");
-		if (columnIndex > GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length - 1) {
+		if (columnIndex > GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length - 1 && isRoot) {
 			deleteColumnMenu.setEnabled(true);
 		} else {
 			deleteColumnMenu.setEnabled(false);
@@ -7092,7 +7087,7 @@ public class GraphicalInterface extends JFrame {
 
 		JMenuItem deleteColumnMenu = new JMenuItem("Delete Column");
 		//core columns cannot be deleted - abbreviation and boundary
-		if (columnIndex > GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length - 1) {
+		if (columnIndex > GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length - 1 && isRoot) {
 			deleteColumnMenu.setEnabled(true);
 		} else {
 			deleteColumnMenu.setEnabled(false);
@@ -7551,12 +7546,7 @@ public class GraphicalInterface extends JFrame {
 							}
 							LocalConfig.getInstance().getReactionEquationMap().remove(id);
 						}
-						
-//						System.out.println("del " + LocalConfig.getInstance().getReactionEquationMap());
-//						System.out.println("del id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
-//						System.out.println("del used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 					}
-					//System.out.println(deleteIds);
 					ReactionUndoItem undoItem = createReactionUndoItem("", "", startRow, reactionsTable.getSelectedColumn(), deleteIds.get(0), UndoConstants.DELETE_ROW, UndoConstants.REACTION_UNDO_ITEM_TYPE);
 					undoItem.setOldMetaboliteUsedMap(oldMetaboliteUsedMap);
 					undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumReactionTablesCopied());
@@ -7651,7 +7641,6 @@ public class GraphicalInterface extends JFrame {
 		} 
 		
 		setClipboardContents(sbf.toString());
-		//System.out.println(sbf.toString());
 	}
 
 	public void reactionsCopy() {
@@ -7685,7 +7674,6 @@ public class GraphicalInterface extends JFrame {
 
 							}
 							if (j<numCols-1) {
-								//System.out.println("t");
 								excelStr.append("\t"); 
 							} 
 						}
@@ -7715,12 +7703,10 @@ public class GraphicalInterface extends JFrame {
 
 							}	
 							if (j<numCols-1) {
-								//System.out.println("t");
 								excelStr.append("\t"); 
 							} 
 						}				
 					} 
-					//System.out.println("n");
 					excelStr.append("\n"); 
 				}
 				StringSelection sel  = new StringSelection(excelStr.toString()); 
@@ -7817,7 +7803,6 @@ public class GraphicalInterface extends JFrame {
 				int startRow =reactionsTable.getSelectedRows()[0]; 
 				int startCol =reactionsTable.getSelectedColumns()[0];
 				int numSelectedRows = reactionsTable.getSelectedRowCount();
-				//System.out.println(pasteColumnList());
 				ArrayList<Integer> colList = pasteColumnList();
 				String pasteString = ""; 
 				try { 
@@ -7884,7 +7869,6 @@ public class GraphicalInterface extends JFrame {
 								// paste blank value over cell value if not blank
 								if (q < quotient) {
 									for (int j = 0; j < colList.size(); j++) {
-//									for (int j=0 ; j < numberOfClipboardColumns(); j++) {
 										if (startCol + cells.length > reactionsTable.getColumnCount()) {
 											showPasteOutOfRangeError();				
 										} else {
@@ -7953,9 +7937,6 @@ public class GraphicalInterface extends JFrame {
 					if (pasteIds.size() > 0) {
 						scrollToLocation(reactionsTable, getRowFromReactionsId(Integer.valueOf(pasteIds.get(0))), startCol);
 					}
-//					System.out.println("paste " + LocalConfig.getInstance().getReactionEquationMap());
-//					System.out.println("paste id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
-//					System.out.println("paste used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 				}
 			} 	
 		}
@@ -7970,7 +7951,6 @@ public class GraphicalInterface extends JFrame {
 				showPasteOutOfRangeError();			
 			} else {
 				for (int j = 0; j < colList.size(); j++) {
-//				for (int j=0 ; j < numberOfClipboardColumns(); j++) { 
 					if (j < cells.length) {
 						updateReactionsCellIfPasteValid(cells[j], pasteRows.get(startIndex + i), colList.get(j));
 					} else {
@@ -8080,7 +8060,6 @@ public class GraphicalInterface extends JFrame {
 		} else {
 			validPaste = false;
 		}	
-		//System.out.println(LocalConfig.getInstance().getReactionAbbreviationIdMap());
 	}
 
 	public boolean isReactionsEntryValid(int row, int columnIndex, String value) {
@@ -8147,8 +8126,6 @@ public class GraphicalInterface extends JFrame {
 				if (LocalConfig.getInstance().getReactionEquationMap().get(id) != null) {
 					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).setReversible(value);
 					((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).writeReactionEquation();
-//					System.out.println(((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).equationAbbreviations);
-//					System.out.println(((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).equationNames);
 					// TODO: fix bug here where even though the values print out correctly, the reaction names column
 					// is not updated correctly
 					reactionsTable.setValueAt(((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id)).equationAbbreviations, row, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
@@ -8253,9 +8230,6 @@ public class GraphicalInterface extends JFrame {
 				deleteReactionsPasteUndoItem();
 			}
 		}
-//		System.out.println("clear " + LocalConfig.getInstance().getReactionEquationMap());
-//		System.out.println("clear id " + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
-//		System.out.println("clear used " + LocalConfig.getInstance().getMetaboliteUsedMap());
 	}
 	
 	/**************************************************************************/
@@ -8337,9 +8311,6 @@ public class GraphicalInterface extends JFrame {
 
 	public void updateMetaboliteMaps(int id, String metabAbbrev, String metabName, String newName, int columnIndex) {
 		if (columnIndex == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN ) {
-//			System.out.println("bef" + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
-//			System.out.println("bef" + LocalConfig.getInstance().getMetaboliteIdNameMap());
-//			System.out.println("bef" + LocalConfig.getInstance().getMetaboliteUsedMap());
 			LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().remove(metabAbbrev);	
 			LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().put(newName, id);
 			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev)) {
@@ -8347,9 +8318,6 @@ public class GraphicalInterface extends JFrame {
 				LocalConfig.getInstance().getMetaboliteUsedMap().remove(metabAbbrev);
 				LocalConfig.getInstance().getMetaboliteUsedMap().put(newName, value);
 			}			
-//			System.out.println("aft" + LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
-//			System.out.println("aft" + LocalConfig.getInstance().getMetaboliteIdNameMap());
-//			System.out.println("aft" + LocalConfig.getInstance().getMetaboliteUsedMap());
 		} else if (columnIndex == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
 			LocalConfig.getInstance().getMetaboliteIdNameMap().remove(id);	
 			LocalConfig.getInstance().getMetaboliteIdNameMap().put(id, metabName);
@@ -8792,7 +8760,6 @@ public class GraphicalInterface extends JFrame {
 			sbf.append("\n"); 
 		}  
 		setClipboardContents(sbf.toString());
-		//System.out.println(sbf.toString());
 	}
 
 	public void metabolitesCopy() {
@@ -8825,7 +8792,6 @@ public class GraphicalInterface extends JFrame {
 
 						}
 						if (j<numCols-1) {
-							//System.out.println("t");
 							excelStr.append("\t"); 
 						} 
 					}
@@ -8846,11 +8812,9 @@ public class GraphicalInterface extends JFrame {
 
 						}						
 						if (j<numCols-1) {
-							//System.out.println("t");
 							excelStr.append("\t"); 
 						} 
 					} 
-					//System.out.println("n");
 					excelStr.append("\n"); 
 				} 
 
