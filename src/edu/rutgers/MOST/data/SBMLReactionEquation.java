@@ -14,6 +14,8 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 	public String equationAbbreviations;
 	public String equationNames;
 	private ArrayList<String> compartmentList;
+	private ArrayList<String> compartmentReactantsList;
+	private ArrayList<String> compartmentProductsList;
 
 	public ArrayList<SBMLReactant> getReactants() {
 		return reactants;
@@ -63,6 +65,23 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 
 	public void setCompartmentList(ArrayList<String> compartmentList) {
 		this.compartmentList = compartmentList;
+	}
+	
+	public ArrayList<String> getCompartmentReactantsList() {
+		return compartmentReactantsList;
+	}
+
+	public void setCompartmentReactantsList(
+			ArrayList<String> compartmentReactantsList) {
+		this.compartmentReactantsList = compartmentReactantsList;
+	}
+
+	public ArrayList<String> getCompartmentProductsList() {
+		return compartmentProductsList;
+	}
+
+	public void setCompartmentProductsList(ArrayList<String> compartmentProductsList) {
+		this.compartmentProductsList = compartmentProductsList;
 	}
 
 	public void writeReactionEquation() {
@@ -207,6 +226,9 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 		+ ", irreversibleArrow=" + irreversibleArrow
 		+ ", reactants=" + reactantsString
 		+ ", products=" + productsString
+		+ ", compartmentList=" + compartmentList
+		+ ", compartmentReactantsList=" + compartmentReactantsList
+		+ ", compartmentProductsList=" + compartmentProductsList
 		+ ", equationAbbreviations=" + equationAbbreviations
 		+ ", equationNames=" + equationNames + "]\n";
 	}

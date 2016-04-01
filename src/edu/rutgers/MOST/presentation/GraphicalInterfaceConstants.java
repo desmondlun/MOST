@@ -64,6 +64,34 @@ public class GraphicalInterfaceConstants
 
 	private static java.util.List< String > metabolitesList = Arrays
 		.asList( METABOLITES_COLUMN_NAMES );
+	
+	public static final String METABOLITE_KEGG_ID_COLUMN_NAME = "KEGG ID";
+	public static final String REACTION_KEGG_ID_COLUMN_NAME = "KEGG ID";
+	public static final String CHEBI_ID_COLUMN_NAME = "CHEBI ID";
+	public static final String EC_NUMBER_COLUMN_NAME = "EC Number";
+	
+	public static final String REACTIONS_COLUMNS_IDENTIFIER = "reactions";
+	public static final String METABOLITES_COLUMNS_IDENTIFIER = "metabolites";
+	
+	public static final String[] REACTIONS_IDENTIFIER_COLUMN_NAMES = 
+		{ 
+			REACTION_ABBREVIATION_COLUMN_NAME,
+			REACTION_NAME_COLUMN_NAME,
+			GENE_ASSOCIATION_COLUMN_NAME, 
+			PROTEIN_ASSOCIATION_COLUMN_NAME,
+			SUBSYSTEM_COLUMN_NAME, 
+			PROTEIN_CLASS_COLUMN_NAME
+		};
+	
+	public static java.util.List<String> reactionsIdentifiersList = Arrays.asList(REACTIONS_IDENTIFIER_COLUMN_NAMES);
+	
+	public static final String[] METABOLITES_IDENTIFIER_COLUMN_NAMES = 
+		{ 
+			METABOLITE_ABBREVIATION_COLUMN_NAME,
+			METABOLITE_NAME_COLUMN_NAME
+		};
+	
+	public static java.util.List<String> metabolitesIdentifiersList = Arrays.asList(METABOLITES_IDENTIFIER_COLUMN_NAMES);
 
 	// reactions table column numbers and associated widths
 	public static final int DEFAULT_WIDTH = 90; // columns with no assigned

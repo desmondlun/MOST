@@ -9,6 +9,7 @@ import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
 
 import edu.rutgers.MOST.data.ModelReactionEquation;
+import edu.rutgers.MOST.data.SBMLCompartment;
 
 public class LocalConfig {	
 
@@ -835,6 +836,38 @@ public class LocalConfig {
 
 	public void setShowFVAColumnsList(ArrayList<String> showFVAColumnsList) {
 		this.showFVAColumnsList = showFVAColumnsList;
+	}
+	
+	// sbml file read - list from beginning of sbml file
+	private ArrayList<SBMLCompartment> listOfCompartments;
+
+	public ArrayList<SBMLCompartment> getListOfCompartments() {
+		return listOfCompartments;
+	}
+
+	public void setListOfCompartments(ArrayList<SBMLCompartment> listOfCompartments) {
+		this.listOfCompartments = listOfCompartments;
+	}
+	
+	private ArrayList<ArrayList<String>> listOfCompartmentLists;
+
+	public ArrayList<ArrayList<String>> getListOfCompartmentLists() {
+		return listOfCompartmentLists;
+	}
+
+	public void setListOfCompartmentLists(
+			ArrayList<ArrayList<String>> listOfCompartmentLists) {
+		this.listOfCompartmentLists = listOfCompartmentLists;
+	}
+	
+	private String keggReactionIdColumnName;
+	
+	public String getKeggReactionIdColumnName() {
+		return keggReactionIdColumnName;
+	}
+
+	public void setKeggReactionIdColumnName(String keggReactionIdColumnName) {
+		this.keggReactionIdColumnName = keggReactionIdColumnName;
 	}
 
 }
