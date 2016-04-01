@@ -134,7 +134,7 @@ public class GraphicalInterface extends JFrame {
 		private static final long serialVersionUID = 1L;
 
 		public boolean isCellEditable(int row, int column){	    	   
-			if (!isRoot || analysisRunning) {	
+			if (!isRoot || analysisRunning || timerRunning) {	
 				return false;					
 			}
 			if (column == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
@@ -164,7 +164,7 @@ public class GraphicalInterface extends JFrame {
 		private static final long serialVersionUID = 1L;
 
 		public boolean isCellEditable(int row, int column){	    	   
-			if (!isRoot || analysisRunning) {	
+			if (!isRoot || analysisRunning || timerRunning) {	
 				return false;					
 			}
 			return true;  
@@ -296,6 +296,7 @@ public class GraphicalInterface extends JFrame {
 	
 	public boolean fluxesSet;
 	public static boolean analysisRunning;
+	public static boolean timerRunning;
 
 	/*****************************************************************************/
 	// end boolean values
@@ -1053,6 +1054,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().fvaColumnsVisible = false;
 		LocalConfig.getInstance().fvaDone = true;
 		analysisRunning = false;
+		timerRunning = false;
 		
 		enableSaveItems(false);
 		// setEnableAnalysisMenuItems( false );
@@ -3726,6 +3728,7 @@ public class GraphicalInterface extends JFrame {
 						disableLoadItems();
 
 						timer.start();
+						timerRunning = true;
 
 						task = new Task();
 						task.execute();
@@ -4005,6 +4008,7 @@ public class GraphicalInterface extends JFrame {
 					progressBar.progress.setIndeterminate(true);
 
 					timer.start();
+					timerRunning = true;
 
 					task = new Task();
 					task.execute();
@@ -4145,6 +4149,8 @@ public class GraphicalInterface extends JFrame {
 					progressBar.progress.setIndeterminate(true);
 
 					timer.start();
+					timerRunning = true;
+					
 					task = new Task();
 					task.execute();
 					saveEnabled = true;
@@ -6179,7 +6185,7 @@ public class GraphicalInterface extends JFrame {
 			formulaBarPasteItem.setEnabled(false);
 			pastebutton.setEnabled(false);
 		} else {
-			if (isRoot && !analysisRunning) {
+			if (isRoot && !analysisRunning && !timerRunning) {
 				formulaBar.setForeground(Color.BLACK);
 				formulaBar.setEditable(true);
 				formulaBarPasteItem.setEnabled(true);
@@ -6327,7 +6333,7 @@ public class GraphicalInterface extends JFrame {
 	HighlightPredicate nonEditablePredicate = new HighlightPredicate() {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
 			if (adapter.column == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN ||
-					!isRoot || analysisRunning) {									
+					!isRoot || analysisRunning || timerRunning) {									
 				return true;
 			} 
 			return false;
@@ -6658,7 +6664,7 @@ public class GraphicalInterface extends JFrame {
 	// disables items if table is non-editable
 	public void enableOrDisableMetabolitesItems() {
 		if (metabolitesTable.getSelectedRow() > -1 && metabolitesTable.getSelectedColumn() > 0) {
-			if (isRoot && !analysisRunning) {
+			if (isRoot && !analysisRunning && !timerRunning) {
 				formulaBar.setForeground(Color.BLACK);
 				formulaBar.setEditable(true);
 				formulaBarPasteItem.setEnabled(true);
@@ -6776,7 +6782,7 @@ public class GraphicalInterface extends JFrame {
 
 	HighlightPredicate nonEditableMetabPredicate = new HighlightPredicate() {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
-			if (!isRoot || analysisRunning) {									
+			if (!isRoot || analysisRunning || timerRunning) {									
 				return true;
 			}						
 			return false;
@@ -12026,6 +12032,7 @@ public class GraphicalInterface extends JFrame {
 				setUpTables();
 				progressBar.setVisible(false);		
 				timer.stop();
+				timerRunning = false;
 				// This appears redundant, but is the only way to not have an extra progress bar on screen
 				progressBar.setVisible(false);
 				//progressBar.progress.setIndeterminate(true);
