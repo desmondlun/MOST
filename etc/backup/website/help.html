@@ -39,7 +39,8 @@ A{text-decoration:none}
 
 	<p><font size=2><a href="#overview">Overview </a></font></p>
 	<ul><li><font size=2><a href="#sort">Sorting Tables</a></font></li>
-	<li><font size=2><a href="#sort">Formula Bar</a></font></li></ul>
+	<li><font size=2><a href="#formula">Formula Bar</a></font></li>
+	<li><font size=2><a href="#rename">Renaming Metabolites</a></font></li></ul>
 
 	<p><font size=2><a href="installing_most.html">Installing MOST</a></font></p>
 	<ul><li><font size=2><a href="installing_most.html#req">Requirements</a></font></li>
@@ -107,7 +108,6 @@ A{text-decoration:none}
 	<li><font size=2><a href="context_menu.html#copy">Copy/Paste</a></font></li>
 	<li><font size=2><a href="context_menu.html#clear">Clear Contents</a></font></li>
 	<li><font size=2><a href="context_menu.html#delrow">Delete Row(s)</a></font></li>
-	<li><font size=2><a href="context_menu.html#rename">Rename</a></font></li>
 	<li><font size=2><a href="context_menu.html#highpar">Highlight Participating Reactions</a></font></li>
 	<li><font size=2><a href="context_menu.html#unhighpar">Un-Highlight Participating Reactions</a></font></li>
 	<li><font size=2><a href="context_menu.html#reac">Reaction Editor</a></font></li></ul>
@@ -184,10 +184,22 @@ A{text-decoration:none}
 	<a href="context_menu.html#popout">"Pop Out"</a>. 
 	The results of analyses in spreadsheets and in the console can be saved.</blockquote>
 
-	<blockquote><a name="overview">The</a> <a href="context_menu.html#formula">Formula Bar</a> 
+	<blockquote><a name="formula">The</a> <a href="context_menu.html#formula">Formula Bar</a> 
 	can be used for editing text in table cells. 
 	Text can also be pasted into the formula bar. In cases where text cannot be pasted directly into table cells due
 	to the text being the wrong  "flavor", pasting into the formula bar will work.</blockquote>
+	
+	<br>
+	
+	<p><a name="rename">  Renaming Metabolites:</a></p>
+	
+	<blockquote>If a metabolite abbreviation or name is changed and the metabolite participates in
+	one or more reactions, all reactions that contain the metabolite 
+	will be updated for the new name. A warning will be displayed before these updates are made.
+	Click "OK" to rename metabolite and update reactions, otherwise click "Cancel".</blockquote>
+
+	<p align="center"><a href="images/rename1.jpg" target="_blank">
+	<img src ="images/rename1.jpg" alt="Image - Rename 1" border="0" height="90%" width="90%"></a></p>
 
 	</td>
 	</table>
