@@ -227,6 +227,16 @@ public class LocalConfig {
 	public void setMaxReactionId(Integer maxReactionId) {
 		this.maxReactionId = maxReactionId;
 	}
+	
+	private Integer maxCompartmentId;
+
+	public Integer getMaxCompartmentId() {
+		return maxCompartmentId;
+	}
+
+	public void setMaxCompartmentId(Integer maxCompartmentId) {
+		this.maxCompartmentId = maxCompartmentId;
+	}
 
 	private Map<Object, ModelReactionEquation> reactionEquationMap;
 

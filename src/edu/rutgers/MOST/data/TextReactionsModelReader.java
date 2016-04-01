@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
@@ -414,6 +415,10 @@ public class TextReactionsModelReader {
 		SBMLReactionEquation equn = new SBMLReactionEquation();	
 		ArrayList<SBMLReactant> reactants = new ArrayList<SBMLReactant>();
 		ArrayList<SBMLProduct> products = new ArrayList<SBMLProduct>();
+		ArrayList<String> compartmentList = new ArrayList<String>();
+		ArrayList<String> compartmentReactantsList = new ArrayList<String>();
+		ArrayList<String> compartmentProductsList = new ArrayList<String>();
+		ArrayList<ArrayList<String>> listOfCompartmentLists = new ArrayList<ArrayList<String>>();
 		ReactionParser parser = new ReactionParser();
 		for (int i = 0; i < equation.getReactants().size(); i++){
 			maybeAddSpecies(equation.getReactants().get(i).getMetaboliteAbbreviation(), equation, "reactant", i);
@@ -426,6 +431,14 @@ public class TextReactionsModelReader {
 					equation.getReactants().get(i).setCompartment(LocalConfig.getInstance().getMetaboliteIdCompartmentMap().get(metabId));
 				}		
 				reactants.add(equation.getReactants().get(i));
+				if (LocalConfig.getInstance().getMetaboliteIdCompartmentMap().containsKey(metabId)) {
+					if (!compartmentList.contains(LocalConfig.getInstance().getMetaboliteIdCompartmentMap().get(metabId))) {
+						compartmentList.add(LocalConfig.getInstance().getMetaboliteIdCompartmentMap().get(metabId));
+					}
+					if (!compartmentReactantsList.contains(LocalConfig.getInstance().getMetaboliteIdCompartmentMap().get(metabId))) {
+						compartmentReactantsList.add(LocalConfig.getInstance().getMetaboliteIdCompartmentMap().get(metabId));
+					}
+				}
 				if (parser.isSuspicious(equation.getReactants().get(i).getMetaboliteAbbreviation())) {
 					if (!LocalConfig.getInstance().getSuspiciousMetabolites().contains(metabId)) {
 						LocalConfig.getInstance().getSuspiciousMetabolites().add(metabId);
@@ -444,6 +457,14 @@ public class TextReactionsModelReader {
 					equation.getProducts().get(i).setCompartment(LocalConfig.getInstance().getMetaboliteIdCompartmentMap().get(metabId));
 				}				
 				products.add(equation.getProducts().get(i));
+				if (LocalConfig.getInstance().getMetaboliteIdCompartmentMap().containsKey(metabId)) {
+					if (!compartmentList.contains(LocalConfig.getInstance().getMetaboliteIdCompartmentMap().get(metabId))) {
+						compartmentList.add(LocalConfig.getInstance().getMetaboliteIdCompartmentMap().get(metabId));
+					}
+					if (!compartmentProductsList.contains(LocalConfig.getInstance().getMetaboliteIdCompartmentMap().get(metabId))) {
+						compartmentProductsList.add(LocalConfig.getInstance().getMetaboliteIdCompartmentMap().get(metabId));
+					}
+				}
 				if (parser.isSuspicious(equation.getProducts().get(i).getMetaboliteAbbreviation())) {
 					if (!LocalConfig.getInstance().getSuspiciousMetabolites().contains(metabId)) {
 						LocalConfig.getInstance().getSuspiciousMetabolites().add(metabId);
@@ -457,11 +478,18 @@ public class TextReactionsModelReader {
 		equn.setReversibleArrow(equation.getReversibleArrow());
 		equn.setIrreversibleArrow(equation.getIrreversibleArrow());
 		equn.writeReactionEquation();
+		equn.setCompartmentList(compartmentList);
+        if (compartmentList.size()> 1) {
+        	Collections.sort(compartmentList);
+        	if (!listOfCompartmentLists.contains(compartmentList)) {
+        		listOfCompartmentLists.add(compartmentList);
+        	}
+        }
+        LocalConfig.getInstance().setListOfCompartmentLists(listOfCompartmentLists);
+        equn.setCompartmentReactantsList(compartmentReactantsList);
+        equn.setCompartmentProductsList(compartmentProductsList);
 		reacRow.add(equn.equationAbbreviations);
 		reacRow.add(equn.equationNames);
-		// reversible now set from Reversible column, not equation,
-		// please do not uncommment
-		//reacRow.add(equn.getReversible());
 		LocalConfig.getInstance().getReactionEquationMap().put(id, equn);
 		
 	}

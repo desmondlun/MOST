@@ -33,6 +33,7 @@ public class TextMetabolitesModelReader {
 
 	public static Map<Object, String> metaboliteIdNameMap = new HashMap<Object, String>();
 	public static Map<Object, String> metaboliteIdCompartmentMap = new HashMap<Object, String>();
+	private ArrayList<String> compartments = new ArrayList<String>();
 	
 	public ArrayList<String> columnNamesFromFile(File file, int row) {
 		ArrayList<String> columnNamesFromFile = new ArrayList<String>();
@@ -209,10 +210,11 @@ public class TextMetabolitesModelReader {
 					
 					if (LocalConfig.getInstance().getCompartmentColumnIndex() > -1) {
 						compartment = dataArray[LocalConfig.getInstance().getCompartmentColumnIndex()];	
-						metaboliteIdCompartmentMap.put(new Integer(id), dataArray[LocalConfig.getInstance().getCompartmentColumnIndex()]);
-					} else {
-						metaboliteIdCompartmentMap.put(new Integer(id), "");
-					}
+						metaboliteIdCompartmentMap.put(new Integer(id), compartment);
+						if (!compartments.contains(compartment)) {
+							compartments.add(compartment);
+						}
+					}	
 					metabRow.add(compartment);
 					if (LocalConfig.getInstance().getBoundaryColumnIndex() > -1) {									
 						if (dataArray[LocalConfig.getInstance().getBoundaryColumnIndex()].compareTo("false") == 0 || dataArray[LocalConfig.getInstance().getBoundaryColumnIndex()].compareTo("FALSE") == 0 || dataArray[LocalConfig.getInstance().getBoundaryColumnIndex()].compareTo("0") == 0 || dataArray[LocalConfig.getInstance().getBoundaryColumnIndex()].compareTo("0.0") == 0) {
@@ -234,6 +236,14 @@ public class TextMetabolitesModelReader {
 					id += 1;
 				}				
 			}
+			ArrayList<SBMLCompartment> listOfCompartments = new ArrayList<SBMLCompartment>();
+			for (int c = 0; c < compartments.size(); c++) {
+				SBMLCompartment comp = new SBMLCompartment();
+				comp.setId(compartments.get(c));
+				//comp.setName(compartments.get(c));
+				listOfCompartments.add(comp);
+			}
+			LocalConfig.getInstance().setListOfCompartments(listOfCompartments);
 		} catch (FileNotFoundException e) {
 			JOptionPane.showMessageDialog(null,                
 					"File Not Found Error.",                

@@ -12,6 +12,7 @@ public class GraphicalInterfaceConstants
 
 	public static final int BLANK_METABOLITE_ROW_COUNT = 2000;
 	public static final int BLANK_REACTION_ROW_COUNT = 2000;
+	public static final int BLANK_COMPARTMENT_ROW_COUNT = 20;
 
 	public static final String REACTION_ID_COLUMN_NAME = "ID";
 	public static final String KNOCKOUT_COLUMN_NAME = "KO";
@@ -324,6 +325,10 @@ public class GraphicalInterfaceConstants
 	public static final String DUPLICATE_REACTION_MESSAGE = "Duplicate Reaction. Rename as ";
 	public static final String DUPLICATE_REACTION_PASTE_MESSAGE = "Duplicate Reactions. Names Will Be Appended With '[1]', '[2]', etc.";
 
+	public static final String COMPARTMENT_RENAME_TITLE = "Rename Compartment?";
+	public static final String COMPARTMENT_RENAME_MESSAGE_PREFIX = "Renaming '";
+	public static final String COMPARTMENT_RENAME_MESSAGE_SUFFIX = "' will result in changing one or more metabolites and reactions. Are you sure you want to do this?";
+
 	// invalid reactions
 	public static final String INVALID_REACTIONS_ENTRY_ERROR_TITLE = "Invalid Reaction";
 	public static final String INVALID_REACTIONS_ENTRY_ERROR_MESSAGE = "Invalid Reaction Format. This is probably a result of incorrect spacing.\nFor example, a -> b is valid, a->b is not valid.";
@@ -344,6 +349,8 @@ public class GraphicalInterfaceConstants
 	public static final String UPPER_BOUND_PASTE_ERROR = "Upper bound must be greater than or equal to lower bound.";
 	public static final String INVALID_PASTE_BOOLEAN_VALUE = "Boolean Value Error";
 	public static final String PASTE_OUT_OF_RANGE_ERROR = "Paste area out of range";
+	public static final String INVALID_PASTE_COMPARTMENT_VALUE_TITLE = "Invalid Entry";
+    public static final String INVALID_PASTE_COMPARTMENT_VALUE = "Compartment Abbreviation Cannot Be Blank";
 
 	// clear error
 	public static final String CLEAR_ERROR_MESSAGE = "One or more cells selected require a value and cannot be cleared.";
@@ -378,9 +385,9 @@ public class GraphicalInterfaceConstants
 	public static final String DELETE_ASSOCIATED_FILES = "Delete Associated log Files?";
 
 	// tab names
-	public static final String DEFAULT_METABOLITE_TABLE_TAB_NAME = "Metabolites";
-
 	public static final String DEFAULT_REACTION_TABLE_TAB_NAME = " Reactions ";
+	public static final String DEFAULT_METABOLITE_TABLE_TAB_NAME = "Metabolites";
+	public static final String DEFAULT_COMPARTMENT_TABLE_TAB_NAME = "Compartments";
 
 	// help
 	public static final String HELP_TOPICS_URL = "http://most.ccib.rutgers.edu/help.html";
