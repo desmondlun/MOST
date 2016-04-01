@@ -516,7 +516,14 @@ public class ReactionUndoItem implements UndoItem {
 		if (columnIndex < GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length) {
 			columnName = GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES[columnIndex];
 		} else {
-			columnName = metaColumnNames.get(columnIndex - GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length);
+			// there is a bug that is decrementing the column index that has not been found. this
+			// only affects the text of undo items
+			try {
+				columnName = metaColumnNames.get(columnIndex - GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length);
+			} catch (Throwable t) {
+				columnName = metaColumnNames.get(columnIndex - (GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length + 1));
+				//columnName = metaColumnNames.get(metaColumnNames.size() - 1);
+			}
 		}
 		return columnName;
 	}
