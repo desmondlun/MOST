@@ -274,7 +274,6 @@ public class GraphicalInterface extends JFrame {
 	public static boolean reactionCancelLoad;
 	public static boolean isRoot;
 	public static boolean openFileChooser;
-	public static boolean showMetaboliteRenameInterface;
 	public static boolean addMetabolite;
 	public boolean enterPressed;
 	public boolean reactionsUndo;
@@ -403,16 +402,6 @@ public class GraphicalInterface extends JFrame {
 	public static void setMetaboliteColumnNameInterface(
 			MetaboliteColumnNameInterface metaboliteColumnNameInterface) {
 		GraphicalInterface.metaboliteColumnNameInterface = metaboliteColumnNameInterface;
-	}
-
-	private static MetaboliteRenameInterface metaboliteRenameInterface;
-
-	public void setMetaboliteRenameInterface(MetaboliteRenameInterface metaboliteRenameInterface) {
-		GraphicalInterface.metaboliteRenameInterface = metaboliteRenameInterface;
-	}
-
-	public static MetaboliteRenameInterface getMetaboliteRenameInterface() {
-		return metaboliteRenameInterface;
 	}
 
 	private static ModelCollectionTable modelCollectionTable;
@@ -5448,7 +5437,6 @@ public class GraphicalInterface extends JFrame {
 					&& !LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(newValue)) {
 				if (newValue != null && newValue.toString().trim().length() > 0) {					
 					if (!newValue.equals(oldValue)) {
-						showMetaboliteRenameInterface = false;
 						showRenameMessage(oldValue);
 						if (renameMetabolite) {					
 							rewriteReactions(id, oldValue, metabName, newValue, colIndex);
@@ -5481,9 +5469,23 @@ public class GraphicalInterface extends JFrame {
 						null, options, options[0]);
 				if (choice == JOptionPane.YES_OPTION) {
 					newValue = newValue + u.duplicateSuffix(newValue, LocalConfig.getInstance().getMetaboliteAbbreviationIdMap());
-					metabolitesTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
-					LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().put(newValue, id);
-					LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().remove(oldValue);
+					if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(oldValue)) {
+						showRenameMessage(oldValue);
+						if (renameMetabolite) {					
+							metabolitesTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+							LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().put(newValue, id);
+							LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().remove(oldValue);
+							rewriteReactions(id, oldValue, metabName, newValue, colIndex);
+							updateMetaboliteMaps(id, oldValue, metabName, newValue, colIndex);
+						} else {
+							metaboliteUpdateValid = false;
+							metabolitesTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+						}
+					} else {
+						metabolitesTable.getModel().setValueAt(newValue, rowIndex, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+						LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().put(newValue, id);
+						LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().remove(oldValue);
+					}
 				}
 				if (choice == JOptionPane.NO_OPTION) {
 					metaboliteUpdateValid = false;
@@ -5515,7 +5517,6 @@ public class GraphicalInterface extends JFrame {
 		} else if (colIndex == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
 			if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev)) {
 				if (!newValue.equals(oldValue)) {
-					showMetaboliteRenameInterface = false;
 					showRenameMessage(oldValue);
 					if (renameMetabolite) {	
 						rewriteReactions(id, metabAbbrev, oldValue, newValue, colIndex);
@@ -5579,7 +5580,6 @@ public class GraphicalInterface extends JFrame {
 			// action for remaining columns
 			metabolitesTable.getModel().setValueAt(newValue, rowIndex, colIndex);
 		}
-		showMetaboliteRenameInterface = true;
 	}
 
 	public void updateMetaboliteCollections(int rowIndex, int metaboliteId) {
@@ -5846,7 +5846,6 @@ public class GraphicalInterface extends JFrame {
 		duplicatePromptShown = false;
 		reactionsTableEditable = true;
 		renameMetabolite = false;
-		showMetaboliteRenameInterface = true;
 		exit = true;
 		reactionCancelLoad = false;
 		isRoot = true;
@@ -8329,26 +8328,11 @@ public class GraphicalInterface extends JFrame {
 				JOptionPane.QUESTION_MESSAGE, 
 				null, options, options[0]);
 		if (choice == JOptionPane.YES_OPTION) {
-			renameMetabolite = true;
-			if (showMetaboliteRenameInterface) {
-				showMetaboliteRenameInterface();
-			}			
+			renameMetabolite = true;			
 		}
 		if (choice == JOptionPane.NO_OPTION) {
 
 		}
-	}
-
-	public void showMetaboliteRenameInterface() {
-		MetaboliteRenameInterface metaboliteRenameInterface = new MetaboliteRenameInterface();
-		setMetaboliteRenameInterface(metaboliteRenameInterface);
-		metaboliteRenameInterface.setTitle(GraphicalInterfaceConstants.RENAME_METABOLITE_INTERFACE_TITLE);
-		metaboliteRenameInterface.setIconImages(icons);
-		metaboliteRenameInterface.setSize(350, 160);
-		metaboliteRenameInterface.setResizable(false);
-		metaboliteRenameInterface.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		metaboliteRenameInterface.setLocationRelativeTo(null);
-		metaboliteRenameInterface.setVisible(true);
 	}
 
 	public void updateMetaboliteMaps(int id, String metabAbbrev, String metabName, String newName, int columnIndex) {
@@ -8451,103 +8435,11 @@ public class GraphicalInterface extends JFrame {
 	private JPopupMenu createMetaboliteAbbreviationContextMenu(final int rowIndex,
 			final int columnIndex) {
 		JPopupMenu contextMenu = createMetabolitesContextMenu(rowIndex, columnIndex);
-		contextMenu.addSeparator();
 
 		final int viewRow = metabolitesTable.convertRowIndexToModel(rowIndex);
 		final int id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));		
 		final String metabAbbrev = (String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);	
 		final String metabName = (String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN);
-
-		JMenuItem renameMenu = new JMenuItem("Rename");
-		if (isRoot) {
-			renameMenu.setEnabled(true);
-		} else {
-			renameMenu.setEnabled(false);
-		}
-		if (columnIndex == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
-			if (metabAbbrev == null || metabAbbrev.length() == 0) {
-				renameMenu.setEnabled(false);
-			}
-		} else if (columnIndex == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
-			if (metabName == null || metabName.length() == 0) {
-				renameMenu.setEnabled(false);
-			}
-		}
-		contextMenu.add(renameMenu);
-
-		renameMenu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				duplicatePromptShown = false;
-				if (LocalConfig.getInstance().getMetaboliteUsedMap().containsKey(metabAbbrev)) {
-					String toBeRenamed = "";
-					if (columnIndex == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
-						toBeRenamed = metabAbbrev;
-					} else if (columnIndex == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
-						toBeRenamed = metabName;
-					}
-					showRenameMessage(toBeRenamed);
-					// not necessary to use the interface to rename an unused or duplicate
-					// metabolite but for consistency, when rename item clicked, interface
-					// is displayed and functional. another option would be to disable the
-					// menu item if these conditions are true but that may be confusing
-				} else {
-					showMetaboliteRenameInterface();
-				}
-			}
-		});
-
-		ActionListener metabRenameOKButtonActionListener = new ActionListener() {
-			public void actionPerformed(ActionEvent prodActionEvent) {
-				String newName = "";
-				metaboliteRenameInterface.setNewName(MetaboliteRenameInterface.textField.getText());
-				if (metaboliteRenameInterface.getNewName() != null && metaboliteRenameInterface.getNewName().length() > 0) {
-					newName = metaboliteRenameInterface.getNewName();
-					// check if duplicate metabolite
-					if (LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().containsKey(newName) && 
-							columnIndex == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {							
-						if (!duplicatePromptShown) {
-							JOptionPane.showMessageDialog(null,                
-									"Duplicate Metabolite.",                
-									"Duplicate Metabolite",                                
-									JOptionPane.ERROR_MESSAGE);
-						}
-						duplicatePromptShown = true;
-					} else {
-						Object idValue = LocalConfig.getInstance().getMetaboliteAbbreviationIdMap().get(metabAbbrev);
-						MetaboliteUndoItem undoItem = null;
-						if (columnIndex == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
-							undoItem = createMetaboliteUndoItem(metabAbbrev, newName, metabolitesTable.getSelectedRow(), 
-									GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN, (Integer) idValue, UndoConstants.RENAME_METABOLITE, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
-						} else if (columnIndex == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
-							undoItem = createMetaboliteUndoItem(metabName, newName, metabolitesTable.getSelectedRow(), 
-									GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN, (Integer) idValue, UndoConstants.RENAME_METABOLITE, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
-						}
-						// this only prevents a null pointer exception, lists updated in undo item
-						setUndoOldCollections(undoItem);
-						if (renameMetabolite) {
-							rewriteReactions(id, metabAbbrev, metabName, newName, columnIndex);
-							updateMetaboliteMaps(id, metabAbbrev, metabName, newName, columnIndex);
-							if (columnIndex == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
-								metabolitesTable.getModel().setValueAt(newName, viewRow, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
-							} else if (columnIndex == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
-								metabolitesTable.getModel().setValueAt(newName, viewRow, GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN);
-							}
-						}
-						MetaboliteRenameInterface.textField.setText("");
-						metaboliteRenameInterface.setVisible(false);
-						metaboliteRenameInterface.dispose();
-						if (undoItem != null) {
-							setUndoNewCollections(undoItem);
-							setUpMetabolitesUndo(undoItem);
-						}	
-					}						
-				}
-			}
-		};
-		
-		MetaboliteRenameInterface.okButton.addActionListener(metabRenameOKButtonActionListener);
-
-		contextMenu.addSeparator();
 
 		final JMenuItem participatingReactionsMenu = new JMenuItem("Highlight Participating Reactions");
 		if (columnIndex == GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) {
