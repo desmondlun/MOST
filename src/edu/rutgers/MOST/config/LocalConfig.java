@@ -879,5 +879,100 @@ public class LocalConfig {
 	public void setKeggReactionIdColumnName(String keggReactionIdColumnName) {
 		this.keggReactionIdColumnName = keggReactionIdColumnName;
 	}
+	
+	// identifier column indices
+	private int keggMetaboliteIdColumn;
+
+	public int getKeggMetaboliteIdColumn() {
+		return keggMetaboliteIdColumn;
+	}
+
+	public void setKeggMetaboliteIdColumn(int keggMetaboliteIdColumn) {
+		this.keggMetaboliteIdColumn = keggMetaboliteIdColumn;
+	}
+
+	private int chebiIdColumn;
+
+	public int getChebiIdColumn() {
+		return chebiIdColumn;
+	}
+
+	public void setChebiIdColumn(int chebiIdColumn) {
+		this.chebiIdColumn = chebiIdColumn;
+	}
+
+	private int ecNumberColumn;
+
+	public int getEcNumberColumn() {
+		return ecNumberColumn;
+	}
+
+	public void setEcNumberColumn(int ecNumberColumn) {
+		this.ecNumberColumn = ecNumberColumn;
+	}
+
+	private int keggReactionIdColumn;
+
+	public int getKeggReactionIdColumn() {
+		return keggReactionIdColumn;
+	}
+
+	public void setKeggReactionIdColumn(int keggReactionIdColumn) {
+		this.keggReactionIdColumn = keggReactionIdColumn;
+	}
+	
+	// Visualization options
+	private boolean graphMissingMetabolitesSelected;
+	private boolean scaleEdgeThicknessSelected;
+	private boolean ignoreProtonSelected;
+	private boolean ignoreWaterSelected;
+	private boolean showVisualizationReportSelected;
+
+	public boolean isGraphMissingMetabolitesSelected() {
+		return graphMissingMetabolitesSelected;
+	}
+
+	public void setGraphMissingMetabolitesSelected(
+		boolean graphMissingMetabolitesSelected) {
+		this.graphMissingMetabolitesSelected = graphMissingMetabolitesSelected;
+	}
+
+	public boolean isScaleEdgeThicknessSelected() {
+		return scaleEdgeThicknessSelected;
+	}
+
+	public void setScaleEdgeThicknessSelected(boolean scaleEdgeThicknessSelected) {
+		this.scaleEdgeThicknessSelected = scaleEdgeThicknessSelected;
+	}
+
+	public boolean isIgnoreProtonSelected() {
+		return ignoreProtonSelected;
+	}
+
+	public void setIgnoreProtonSelected(boolean ignoreProtonSelected) {
+		this.ignoreProtonSelected = ignoreProtonSelected;
+	}
+
+	public boolean isIgnoreWaterSelected() {
+		return ignoreWaterSelected;
+	}
+
+	public boolean isShowVisualizationReportSelected() {
+		return showVisualizationReportSelected;
+	}
+
+	public void setShowVisualizationReportSelected(
+		boolean showVisualizationReportSelected) {
+		this.showVisualizationReportSelected = showVisualizationReportSelected;
+	}
+
+	public void setIgnoreWaterSelected(boolean ignoreWaterSelected) {
+		this.ignoreWaterSelected = ignoreWaterSelected;
+	}
+	
+	// visualizations find
+	public boolean visualizationsFindFieldChanged;
+	public boolean visualizationsFindFocusLost;
+	public boolean visualizationsFindFocusGained;
 
 }

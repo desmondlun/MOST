@@ -44,8 +44,7 @@ public class GraphicalInterfaceConstants
 		GENE_ASSOCIATION_COLUMN_NAME, PROTEIN_ASSOCIATION_COLUMN_NAME,
 		SUBSYSTEM_COLUMN_NAME, PROTEIN_CLASS_COLUMN_NAME };
 
-	private static java.util.List< String > reactionsList = Arrays
-		.asList( REACTIONS_COLUMN_NAMES );
+	public static java.util.List<String> reactionsList = Arrays.asList(REACTIONS_COLUMN_NAMES);
 
 	public static final String KNOCKOUT_TOOLTIP = "Knockout";
 	public static final String MIN_FLUX_TOOLTIP = "Minimum Flux Value";
@@ -63,8 +62,7 @@ public class GraphicalInterfaceConstants
 		METABOLITE_NAME_COLUMN_NAME, CHARGE_COLUMN_NAME,
 		COMPARTMENT_COLUMN_NAME, BOUNDARY_CONDITION_COLUMN_NAME };
 
-	private static java.util.List< String > metabolitesList = Arrays
-		.asList( METABOLITES_COLUMN_NAMES );
+	public static java.util.List<String> metabolitesList = Arrays.asList(METABOLITES_COLUMN_NAMES);
 	
 	public static final String METABOLITE_KEGG_ID_COLUMN_NAME = "KEGG ID";
 	public static final String REACTION_KEGG_ID_COLUMN_NAME = "KEGG ID";
@@ -266,6 +264,22 @@ public class GraphicalInterfaceConstants
 		"class" };
 
 	public static final String[] REACTIONS_COLUMN_IGNORE_LIST = { "Reaction Equation (Metabolite Name)" };
+	
+	public static final String[] EC_NUMBER_COLUMN_NAMES = 
+	{"EC", "EC Number", "EC. Number", "E.C. Number"
+	};
+
+	public static final String[] KEGG_ID_REACTIONS_COLUMN_NAMES = 
+	{"KEGG", "Kegg"
+	};
+
+	public static final String[] KEGG_ID_METABOLITES_COLUMN_NAMES = 
+	{"KEGG", "Kegg"
+	};
+
+	public static final String[] CHEBI_ID_METABOLITES_COLUMN_NAMES = 
+	{"CHEBI", "Chebi"
+	};
 
 	// messages box titles and messages
 	// general

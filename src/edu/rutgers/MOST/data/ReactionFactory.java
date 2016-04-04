@@ -82,6 +82,7 @@ public class ReactionFactory {
 					reaction.setReactionAbbreviation((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN));
 					reaction.setReactionName((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTION_NAME_COLUMN));
 					reaction.setReactionEqunAbbr((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN));
+					reaction.setReactionEqunNames((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN));
 					reaction.setReversible((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.REVERSIBLE_COLUMN));				
 					reaction.setLowerBound(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN)));
 					reaction.setUpperBound(Double.valueOf((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN)));
@@ -91,6 +92,18 @@ public class ReactionFactory {
 					reaction.setProteinAssociation((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.PROTEIN_ASSOCIATION_COLUMN));
 					reaction.setSubsystem((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.SUBSYSTEM_COLUMN));
 					reaction.setProteinClass((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, GraphicalInterfaceConstants.PROTEIN_CLASS_COLUMN));
+					if (LocalConfig.getInstance().getEcNumberColumn() > -1) {
+						reaction.setEcNumber((String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, LocalConfig.getInstance().getEcNumberColumn()));
+					}
+					if (LocalConfig.getInstance().getKeggReactionIdColumn() > -1) {
+						try {
+							// accounts for models where KEGG ids start with "r"
+							String keggId = (String) GraphicalInterface.reactionsTable.getModel().getValueAt(i, LocalConfig.getInstance().getKeggReactionIdColumn());
+							reaction.setKeggReactionId(keggId.toUpperCase());
+						} catch (Exception e) {
+							
+						}
+					}
 					reactions.add(reaction);
 					reactionsIdPositionMap.put(reaction.getId(), count);
 					count += 1;
@@ -123,6 +136,7 @@ public class ReactionFactory {
 				tmodel.setValueAt( reaction.getReactionAbbreviation(), i, GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN );
 				tmodel.setValueAt( reaction.getReactionName(), i, GraphicalInterfaceConstants.REACTION_NAME_COLUMN );
 				tmodel.setValueAt( reaction.getReactionEqunAbbr(), i, GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN );
+				tmodel.setValueAt( reaction.getReactionEqunNames(), i, GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN );
 				tmodel.setValueAt( reaction.getReversible(), i, GraphicalInterfaceConstants.REVERSIBLE_COLUMN );
 				tmodel.setValueAt( Double.toString( reaction.getLowerBound() ), i, GraphicalInterfaceConstants.LOWER_BOUND_COLUMN );
 				tmodel.setValueAt( Double.toString( reaction.getUpperBound() ), i, GraphicalInterfaceConstants.UPPER_BOUND_COLUMN );
@@ -391,7 +405,86 @@ public class ReactionFactory {
 	public void setColumnName(String columnName) {
 		ReactionFactory.columnName = columnName;
 	}
-	
+
+	// get index of column with EC numbers
+	public Integer locateECColumnColumn() {
+		int index = -1;
+		for (int i = 0; i < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); i++) {
+			for (int j = 0; j < GraphicalInterfaceConstants.EC_NUMBER_COLUMN_NAMES.length; j++) {
+				if (LocalConfig.getInstance().getReactionsMetaColumnNames().get(i).equals(GraphicalInterfaceConstants.EC_NUMBER_COLUMN_NAMES[j])) {
+					index = GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length + i;
+				}
+			}
+		}
+		if (index == -1) {
+			index = GraphicalInterfaceConstants.PROTEIN_CLASS_COLUMN;
+		}
+
+		return index;
+	}
+
+	// get index of column with Kegg Id
+	public Integer locateKeggIdColumn() {
+		int index = -1;
+		for (int i = 0; i < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); i++) {
+			for (int j = 0; j < GraphicalInterfaceConstants.KEGG_ID_REACTIONS_COLUMN_NAMES.length; j++) {
+				if (LocalConfig.getInstance().getReactionsMetaColumnNames().get(i).contains(GraphicalInterfaceConstants.KEGG_ID_REACTIONS_COLUMN_NAMES[j])) {
+					index = GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length + i;
+				}
+			}
+		}
+
+		return index;
+	}
+
+	public Vector<SBMLReaction> getReactionsByCompartment(String comp) {
+		Vector<SBMLReaction> reactions = getAllReactions();
+		Vector<SBMLReaction> reactionsByCompartment = new Vector<SBMLReaction>();
+		for (int i = 0; i < reactions.size(); i++) {
+			SBMLReactionEquation equn = (SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(reactions.get(i).getId());
+			if (equn.getCompartmentList().size() == 1 && equn.getCompartmentList().contains(comp)) {
+				//System.out.println(equn.getCompartmentList());
+				reactionsByCompartment.add(reactions.get(i));
+			}
+		}
+		//System.out.println(reactionsByCompartment);
+		return reactionsByCompartment;
+	}
+
+	public Vector<SBMLReaction> getTransportReactionsByCompartments(String comp1, String comp2) {
+		Vector<SBMLReaction> reactions = getAllReactions();
+		Vector<SBMLReaction> transportReactionsByCompartments = new Vector<SBMLReaction>();
+		for (int i = 0; i < reactions.size(); i++) {
+			SBMLReactionEquation equn = (SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(reactions.get(i).getId());
+			if (equn.getCompartmentList().contains(comp1) && equn.getCompartmentList().contains(comp2)) {
+				//System.out.println(equn.getCompartmentList());
+				transportReactionsByCompartments.add(reactions.get(i));
+			}
+		}
+		//System.out.println(transportReactionsByCompartments);
+		return transportReactionsByCompartments;
+	}
+
+	/**
+	 * This condition only appears to occur in bacteria for a few reactions
+	 * @param comp1
+	 * @param comp2
+	 * @return
+	 */
+	public Vector<SBMLReaction> getTransportReactionsByThreeCompartments(String comp1, String comp2, String comp3) {
+		Vector<SBMLReaction> reactions = getAllReactions();
+		Vector<SBMLReaction> transportReactionsByCompartments = new Vector<SBMLReaction>();
+		for (int i = 0; i < reactions.size(); i++) {
+			SBMLReactionEquation equn = (SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(reactions.get(i).getId());
+			if (equn.getCompartmentList().contains(comp1) && equn.getCompartmentList().contains(comp2) && equn.getCompartmentList().contains(comp3)) {
+				//System.out.println(equn.getCompartmentList());
+				transportReactionsByCompartments.add(reactions.get(i));
+			}
+		}
+		//System.out.println(transportReactionsByCompartments);
+		return transportReactionsByCompartments;
+	}
+
 	private void processStackTrace( Exception e ) {
 		//e.printStackTrace();
 		StringWriter errors = new StringWriter();

@@ -671,10 +671,19 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem editorMenu = new JMenuItem("Launch Reaction Editor");
 	public final JMenuItem unsortReacMenuItem = new JMenuItem("Unsort Reactions Table");
 	public final JMenuItem unsortMetabMenuItem = new JMenuItem("Unsort Metabolites Table");
+	public final JMenuItem visualizeMenu = new JMenuItem("Visualize Compartment");
+	public final JMenuItem showVisualizationReportMenu = new JMenuItem("Show Visualization Report");
+	public final JMenuItem locateKeggMetaboliteIdColumnMenu = new JMenuItem("Locate KEGG Metabolite Id Column");
+	public final JMenuItem locateChebiIdColumnMenu = new JMenuItem("Locate CHEBI Id Column");
+	public final JMenuItem locateECNumberColumnMenu = new JMenuItem("Locate EC Number Column");
+	public final JMenuItem locateKeggReactionIdColumnMenu = new JMenuItem("Locate KEGG Reaction Id Column");
+	public final JMenuItem setFluxLevelsMenu = new JMenuItem("Set Edge Flux Levels");
+	public final JMenuItem resetFluxLevelsMenu = new JMenuItem("Reset Edge Flux Levels to Default");
 	public final JMenuItem setUpSolver = new JMenuItem("Select Solvers");
 	public final JMenuItem gurobiParametersItem = new JMenuItem(GurobiParameters.GUROBI_PARAMETERS_MENU_ITEM);
 	public final JMenuItem glpkParametersItem = new JMenuItem( GLPKParameters.GLPK_PARAMETERS_MENU_ITEM );
 	public final JMenuItem ipOptParametersItem = new JMenuItem( IPoptParameters.IPOPT_PARAMETERS_MENU_ITEM );
+	public final JMenuItem visualizationOptionsItem = new JMenuItem(VisualizationOptionsConstants.VISUALIZATION_OPTIONS_MENU_ITEM_NAME);
 	
 	public final JMenuItem formulaBarCutItem = new JMenuItem("Cut");
 	public final JMenuItem formulaBarCopyItem = new JMenuItem("Copy");
@@ -2136,74 +2145,196 @@ public class GraphicalInterface extends JFrame {
 				return true;
 			}
         });
-        
-		//Edit menu
-		JMenu editMenu = new JMenu("Edit");
-		editMenu.setMnemonic(KeyEvent.VK_E);
 
-		editMenu.add(highlightUnusedMetabolitesItem);
-		highlightUnusedMetabolitesItem.setMnemonic(KeyEvent.VK_H);
+        //Visualization menu
+        JMenu visualizationMenu = new JMenu("Visualization");
+        visualizationMenu.setMnemonic(KeyEvent.VK_V);    
 
-		highlightUnusedMetabolitesItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {
-				if (LocalConfig.getInstance().getUnusedList().size() > 0) {
-					highlightUnusedMetabolitesItem.setEnabled(true);
-				}
-				tabbedPane.setSelectedIndex(1);
-				boolean state = highlightUnusedMetabolitesItem.getState();
-				if (state == true) {
-					highlightUnusedMetabolites = true;
-				} else {
-					highlightUnusedMetabolites = false;
-				}
-				metabolitesTable.repaint();
-			}
-		});
+        visualizationMenu.add(visualizeMenu);
+        visualizeMenu.setMnemonic(KeyEvent.VK_V);
 
-		editMenu.add(deleteUnusedItem);
-		deleteUnusedItem.setMnemonic(KeyEvent.VK_D);		
+        visualizeMenu.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent ae) {
+//        		LocalConfig.getInstance().setVisualizationsProgress(0);
+//        		visualizeMenuProcesses();
+        	}
+        });
 
-		deleteUnusedItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ae) {				
-				tabbedPane.setSelectedIndex(1);
-				// copy model so old model can be restored if paste not valid
-				DefaultTableModel oldMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());	
-				copyMetabolitesTableModels(oldMetabolitesModel); 
-				MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn(), 0, UndoConstants.DELETE_UNUSED, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
-				undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
-				setUndoOldCollections(undoItem);
-				
-				createUnusedMetabolitesList();
-				
-				for (int i = 0; i < LocalConfig.getInstance().getUnusedList().size(); i++) {
-					deleteMetabolitesRowById(LocalConfig.getInstance().getUnusedList().get(i));
-					if (LocalConfig.getInstance().getSuspiciousMetabolites().contains(LocalConfig.getInstance().getUnusedList().get(i))) {
-						LocalConfig.getInstance().getSuspiciousMetabolites().remove(LocalConfig.getInstance().getSuspiciousMetabolites().indexOf(LocalConfig.getInstance().getUnusedList().get(i)));
-					}
-				}	
-				DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
-				for (int j = metabolitesTable.getRowCount() - 1; j >=0; j--) {
-					if (metabolitesTable.getModel().getValueAt(j, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) == null ||
-							((String) metabolitesTable.getModel().getValueAt(j, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN)).trim().length() == 0) {
-						model.removeRow(j);
-					}
-				}
-				highlightUnusedMetabolites = false;
-				highlightUnusedMetabolitesItem.setState(false);
-				formulaBar.setText("");				
-				LocalConfig.getInstance().getUnusedList().clear();
-				DefaultTableModel newMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());			
-				setUpMetabolitesTable(newMetabolitesModel);
-				copyMetabolitesTableModels(newMetabolitesModel); 
-				setUndoNewCollections(undoItem);
-				setUpMetabolitesUndo(undoItem);	
-				maybeDisplayStatusBarMessage(statusBarRow());
-				int numMetabRows = metabolitesTable.getRowCount();
-				int maxId = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(numMetabRows - 1, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
-				LocalConfig.getInstance().setMaxMetabolite(numMetabRows);
-				LocalConfig.getInstance().setMaxMetaboliteId(maxId + 1);	
-			}
-		});   
+        visualizationMenu.add(showVisualizationReportMenu);
+        showVisualizationReportMenu.setMnemonic(KeyEvent.VK_Z);
+
+//        if (isVisualizing && getVisualizationPopout() == null) {
+//        	showVisualizationReportMenu.setEnabled(true);
+//        } else {
+//        	showVisualizationReportMenu.setEnabled(false);
+//        }
+
+        showVisualizationReportMenu.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent ae) {
+//        		createVisualizationReport();
+//        		showVisualizationReportMenu.setEnabled(false);
+        	}
+        });
+
+        visualizationMenu.addSeparator();
+
+        visualizationMenu.add(locateKeggMetaboliteIdColumnMenu);
+        locateKeggMetaboliteIdColumnMenu.setMnemonic(KeyEvent.VK_M);
+
+        locateKeggMetaboliteIdColumnMenu.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent ae) {
+        		int index = LocalConfig.getInstance().getKeggMetaboliteIdColumn();
+        		if (index == -1) {
+        			MetaboliteFactory f = new MetaboliteFactory("SBML");
+        			index = f.locateKeggIdColumn();
+        		}
+        		showIdentifierColumnNameDialog(GraphicalInterfaceConstants.METABOLITES_COLUMNS_IDENTIFIER,
+        			"Locate KEGG Metabolite Id Column",
+        			GraphicalInterfaceConstants.METABOLITE_KEGG_ID_COLUMN_NAME,
+        			index);
+        	}
+        });
+
+        visualizationMenu.add(locateChebiIdColumnMenu);
+        locateChebiIdColumnMenu.setMnemonic(KeyEvent.VK_C);
+
+        locateChebiIdColumnMenu.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent ae) {
+        		int index = LocalConfig.getInstance().getChebiIdColumn();
+        		if (index == -1) {
+        			MetaboliteFactory f = new MetaboliteFactory("SBML");
+        			index = f.locateChebiIdColumn();
+        		}
+        		showIdentifierColumnNameDialog(GraphicalInterfaceConstants.METABOLITES_COLUMNS_IDENTIFIER,
+        			"Locate CHEBI Id Column",
+        			GraphicalInterfaceConstants.CHEBI_ID_COLUMN_NAME,
+        			index);
+        	}
+        });
+
+        visualizationMenu.add(locateECNumberColumnMenu);
+        locateECNumberColumnMenu.setMnemonic(KeyEvent.VK_E);
+
+        locateECNumberColumnMenu.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent ae) {
+        		int index = LocalConfig.getInstance().getEcNumberColumn();
+        		if (index == -1) {
+        			ReactionFactory f = new ReactionFactory("SBML");
+        			index = f.locateECColumnColumn();
+        		}
+        		showIdentifierColumnNameDialog(GraphicalInterfaceConstants.REACTIONS_COLUMNS_IDENTIFIER,
+        			"Locate EC Number Column",
+        			GraphicalInterfaceConstants.EC_NUMBER_COLUMN_NAME, 
+        			index);
+        	}
+        });
+
+        visualizationMenu.add(locateKeggReactionIdColumnMenu);
+        locateKeggReactionIdColumnMenu.setMnemonic(KeyEvent.VK_R);
+
+        locateKeggReactionIdColumnMenu.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent ae) {
+        		int index = LocalConfig.getInstance().getKeggReactionIdColumn();
+        		if (index == -1) {
+        			ReactionFactory f = new ReactionFactory("SBML");
+        			index = f.locateKeggIdColumn();
+        		}
+        		showIdentifierColumnNameDialog(GraphicalInterfaceConstants.REACTIONS_COLUMNS_IDENTIFIER,
+        			"Locate KEGG Reaction Id Column",
+        			GraphicalInterfaceConstants.METABOLITE_KEGG_ID_COLUMN_NAME,
+        			index);
+        	}
+        });
+
+        visualizationMenu.addSeparator();
+
+        visualizationMenu.add(setFluxLevelsMenu);
+        setFluxLevelsMenu.setMnemonic(KeyEvent.VK_F);
+
+        setFluxLevelsMenu.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent ae) {
+        		//createFluxLevelsDialog();
+        	}
+        });
+
+        visualizationMenu.add(resetFluxLevelsMenu);
+        resetFluxLevelsMenu.setMnemonic(KeyEvent.VK_D);
+
+        resetFluxLevelsMenu.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent ae) {
+        		//LocalConfig.getInstance().setFluxLevelsSet(false);
+        	}
+        });
+
+        menuBar.add(visualizationMenu);
+
+        //Edit menu
+        JMenu editMenu = new JMenu("Edit");
+        editMenu.setMnemonic(KeyEvent.VK_E);
+
+        editMenu.add(highlightUnusedMetabolitesItem);
+        highlightUnusedMetabolitesItem.setMnemonic(KeyEvent.VK_H);
+
+        highlightUnusedMetabolitesItem.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent ae) {
+        		if (LocalConfig.getInstance().getUnusedList().size() > 0) {
+        			highlightUnusedMetabolitesItem.setEnabled(true);
+        		}
+        		tabbedPane.setSelectedIndex(1);
+        		boolean state = highlightUnusedMetabolitesItem.getState();
+        		if (state == true) {
+        			highlightUnusedMetabolites = true;
+        		} else {
+        			highlightUnusedMetabolites = false;
+        		}
+        		metabolitesTable.repaint();
+        	}
+        });
+
+        editMenu.add(deleteUnusedItem);
+        deleteUnusedItem.setMnemonic(KeyEvent.VK_D);		
+
+        deleteUnusedItem.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent ae) {				
+        		tabbedPane.setSelectedIndex(1);
+        		// copy model so old model can be restored if paste not valid
+        		DefaultTableModel oldMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());	
+        		copyMetabolitesTableModels(oldMetabolitesModel); 
+        		MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn(), 0, UndoConstants.DELETE_UNUSED, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
+        		undoItem.setTableCopyIndex(LocalConfig.getInstance().getNumMetabolitesTableCopied());
+        		setUndoOldCollections(undoItem);
+
+        		createUnusedMetabolitesList();
+
+        		for (int i = 0; i < LocalConfig.getInstance().getUnusedList().size(); i++) {
+        			deleteMetabolitesRowById(LocalConfig.getInstance().getUnusedList().get(i));
+        			if (LocalConfig.getInstance().getSuspiciousMetabolites().contains(LocalConfig.getInstance().getUnusedList().get(i))) {
+        				LocalConfig.getInstance().getSuspiciousMetabolites().remove(LocalConfig.getInstance().getSuspiciousMetabolites().indexOf(LocalConfig.getInstance().getUnusedList().get(i)));
+        			}
+        		}	
+        		DefaultTableModel model = (DefaultTableModel) metabolitesTable.getModel();
+        		for (int j = metabolitesTable.getRowCount() - 1; j >=0; j--) {
+        			if (metabolitesTable.getModel().getValueAt(j, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN) == null ||
+        				((String) metabolitesTable.getModel().getValueAt(j, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN)).trim().length() == 0) {
+        				model.removeRow(j);
+        			}
+        		}
+        		highlightUnusedMetabolites = false;
+        		highlightUnusedMetabolitesItem.setState(false);
+        		formulaBar.setText("");				
+        		LocalConfig.getInstance().getUnusedList().clear();
+        		DefaultTableModel newMetabolitesModel = copyMetabolitesTableModel((DefaultTableModel) metabolitesTable.getModel());			
+        		setUpMetabolitesTable(newMetabolitesModel);
+        		copyMetabolitesTableModels(newMetabolitesModel); 
+        		setUndoNewCollections(undoItem);
+        		setUpMetabolitesUndo(undoItem);	
+        		maybeDisplayStatusBarMessage(statusBarRow());
+        		int numMetabRows = metabolitesTable.getRowCount();
+        		int maxId = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(numMetabRows - 1, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));
+        		LocalConfig.getInstance().setMaxMetabolite(numMetabRows);
+        		LocalConfig.getInstance().setMaxMetaboliteId(maxId + 1);	
+        	}
+        });   
 
 		editMenu.add(findSuspiciousItem);
 		findSuspiciousItem.setMnemonic(KeyEvent.VK_S);
@@ -2878,6 +3009,27 @@ public class GraphicalInterface extends JFrame {
 			}
 		} );
 		
+		optionsMenu.addSeparator();
+		
+		optionsMenu.add(visualizationOptionsItem);
+		visualizationOptionsItem.setMnemonic(KeyEvent.VK_V);
+		visualizationOptionsItem.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed( ActionEvent evt )
+			{
+				VisualizationOptionsDialog d = new VisualizationOptionsDialog();
+				
+				d.setIconImages(icons);
+		    	d.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		    	d.pack();
+		    	d.setLocationRelativeTo(null);
+		    	d.setModal(true);
+		    	d.setVisible(true);
+			}
+		} );
+		
+		menuBar.add(optionsMenu);
 		
 		menuBar.add(optionsMenu);
 
@@ -12002,7 +12154,9 @@ public class GraphicalInterface extends JFrame {
 	    gurobiParametersItem.setEnabled(true);
 		glpkParametersItem.setEnabled(true);
 		ipOptParametersItem.setEnabled(true);
+		visualizationOptionsItem.setEnabled(true);
 		enableMenuItems();
+		enableVisualizationItems(true);
 	}
 	
 	// grays out load items so user cannot load a model while a model is loading.
@@ -12021,7 +12175,9 @@ public class GraphicalInterface extends JFrame {
 	    gurobiParametersItem.setEnabled(false);
 		glpkParametersItem.setEnabled(false);
 		ipOptParametersItem.setEnabled(false);
+		visualizationOptionsItem.setEnabled(false);
 		disableMenuItems();
+		enableVisualizationItems(false);
 	}
 
 	// enables menu items when main file is selected in analysis pane
@@ -12089,6 +12245,16 @@ public class GraphicalInterface extends JFrame {
 		disableOptionComponent(redoSplitButton, redoLabel, redoGrayedLabel);
 		undoItem.setEnabled(false);
 		redoItem.setEnabled(false);
+	}
+	
+	public void enableVisualizationItems(boolean state) {
+		visualizeMenu.setEnabled(state);
+		locateKeggMetaboliteIdColumnMenu.setEnabled(state);
+		locateChebiIdColumnMenu.setEnabled(state);
+		locateECNumberColumnMenu.setEnabled(state);
+		locateKeggReactionIdColumnMenu.setEnabled(state);
+		setFluxLevelsMenu.setEnabled(state);
+		resetFluxLevelsMenu.setEnabled(state);
 	}
 	
 	/**
@@ -12732,6 +12898,63 @@ public class GraphicalInterface extends JFrame {
 			LocalConfig.getInstance().fvaColumnsVisible = false;
 		}
 	}
+	
+	/********************************************************************************************/
+	// visualization methods
+	/********************************************************************************************/
+	
+	public void showIdentifierColumnNameDialog(String type, String title, String columnType, int selectedIndex) {
+		if (selectedIndex > -1) {
+			if (type.equals(GraphicalInterfaceConstants.METABOLITES_COLUMNS_IDENTIFIER)) {
+				if (selectedIndex >= GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length) {
+					selectedIndex -= GraphicalInterfaceConstants.METABOLITES_COLUMN_NAMES.length;
+				} else {
+					String name = GraphicalInterfaceConstants.metabolitesList.get(selectedIndex);
+					if (GraphicalInterfaceConstants.metabolitesIdentifiersList.contains(name)) {
+						selectedIndex = GraphicalInterfaceConstants.metabolitesIdentifiersList.indexOf(name) +
+								LocalConfig.getInstance().getMetabolitesMetaColumnNames().size();
+					} else {
+						selectedIndex = -1;
+					}
+				}
+			} else if (type.equals(GraphicalInterfaceConstants.REACTIONS_COLUMNS_IDENTIFIER)) {
+				if (selectedIndex >= GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length) {
+					selectedIndex -= GraphicalInterfaceConstants.REACTIONS_COLUMN_NAMES.length;
+				} else {
+					String name = GraphicalInterfaceConstants.reactionsList.get(selectedIndex);
+					if (GraphicalInterfaceConstants.reactionsIdentifiersList.contains(name)) {
+						selectedIndex = GraphicalInterfaceConstants.reactionsIdentifiersList.indexOf(name) +
+								LocalConfig.getInstance().getReactionsMetaColumnNames().size();
+					} else {
+						selectedIndex = -1;
+					}
+				}
+			}
+		}
+		IdentifierColumnNameDialog frame = new IdentifierColumnNameDialog(type, title, columnType, selectedIndex);
+
+		frame.setIconImages(icons);
+		//frame.setSize(550, 270);
+		frame.pack();
+		frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+	}
+	
+	public void resetIdentifierColumns() {
+		int keggMetaboliteIdColumn = -1;
+		LocalConfig.getInstance().setKeggMetaboliteIdColumn(keggMetaboliteIdColumn);
+		int chebiIdColumn = -1;
+		LocalConfig.getInstance().setChebiIdColumn(chebiIdColumn);
+		int ecNumberColumn = -1;
+		LocalConfig.getInstance().setEcNumberColumn(ecNumberColumn);
+		int keggReactionIdColumn = -1;
+		LocalConfig.getInstance().setKeggReactionIdColumn(keggReactionIdColumn);
+	}
+	
+	/********************************************************************************************/
+	// end visualization methods
+	/********************************************************************************************/
 	
 	public static void main(String[] args) {
 	//public static void main(String[] args) throws Exception {

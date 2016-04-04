@@ -14,6 +14,8 @@ public class SBMLMetabolite implements ModelMetabolite {
 	private String compartment;
 	private String charge;	
 	private String boundary;
+	private String keggId;
+	private String chebiId;
 	private ArrayList<String> metaValues;
 
 	public Integer getId() {
@@ -62,6 +64,22 @@ public class SBMLMetabolite implements ModelMetabolite {
 	
 	public void setBoundary(String boundary) {
 		this.boundary = boundary;
+	}
+	
+	public String getKeggId() {
+		return keggId;
+	}
+
+	public void setKeggId(String keggId) {
+		this.keggId = keggId;
+	}
+
+	public String getChebiId() {
+		return chebiId;
+	}
+
+	public void setChebiId(String chebiId) {
+		this.chebiId = chebiId;
 	}
 
 	public ArrayList<String> getMetaValues() {
@@ -117,7 +135,10 @@ public class SBMLMetabolite implements ModelMetabolite {
 		+ ", metaboliteName=" + metaboliteName
 		+ ", compartment=" + compartment
 		+ ", charge=" + charge
-		+ ", boundary=" + boundary + "]";
+		+ ", boundary=" + boundary
+		+ ", keggId=" + keggId
+		+ ", chebiId=" + chebiId
+		+ ", metaValues=" + metaValues + "]";
 	}
 
 	public static void main(String[] args) {
