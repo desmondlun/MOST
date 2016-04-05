@@ -429,6 +429,9 @@ public class GraphicalInterfaceConstants
 	public static final String[] REVERSIBLE_ARROWS = { "<==> ", "<=> ", "= " };
 
 	public static final String[] NOT_REVERSIBLE_ARROWS = { "=> ", "--> ", "-> " };
+	
+	public static final String HTML_REVERSIBLE_ARROW = "&lt;==&gt; ";
+    public static final String HTML_NOT_REVERSIBLE_ARROW = "--&gt; ";
 
 	public static final int PROGRESS_BAR_WIDTH = 175;
 	public static final int PROGRESS_BAR_HEIGHT = 38;

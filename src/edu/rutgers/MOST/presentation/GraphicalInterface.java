@@ -31,16 +31,25 @@ import edu.rutgers.MOST.Analysis.GDBB;
 import edu.rutgers.MOST.Analysis.SPOT;
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.ConfigProperties;
+import edu.rutgers.MOST.data.ECNumberMapCreator;
 import edu.rutgers.MOST.data.GDBBModel;
 import edu.rutgers.MOST.data.JSBMLValidator;
 import edu.rutgers.MOST.data.JSBMLWriter;
+import edu.rutgers.MOST.data.KEGGIdReactionMapCreator;
+import edu.rutgers.MOST.data.MetabolicPathway;
 import edu.rutgers.MOST.data.MetaboliteFactory;
+import edu.rutgers.MOST.data.MetaboliteSupplementaryMaterialReader;
 import edu.rutgers.MOST.data.MetaboliteUndoItem;
+import edu.rutgers.MOST.data.MetaboliteVisualizationDataProcessor;
 import edu.rutgers.MOST.data.Model;
+import edu.rutgers.MOST.data.ModelKeggEquationMapCreator;
 import edu.rutgers.MOST.data.ModelReactionEquation;
 import edu.rutgers.MOST.data.ObjectCloner;
+import edu.rutgers.MOST.data.PathwayFilesReader;
+import edu.rutgers.MOST.data.PathwayMetaboliteData;
 import edu.rutgers.MOST.data.ReactionEquationUpdater;
 import edu.rutgers.MOST.data.ReactionFactory;
+import edu.rutgers.MOST.data.ReactionSupplementaryMaterialReader;
 import edu.rutgers.MOST.data.ReactionUndoItem;
 import edu.rutgers.MOST.data.SBMLCompartment;
 import edu.rutgers.MOST.data.SBMLConstants;
@@ -57,7 +66,10 @@ import edu.rutgers.MOST.data.TextMetabolitesModelReader;
 import edu.rutgers.MOST.data.TextMetabolitesWriter;
 import edu.rutgers.MOST.data.TextReactionsModelReader;
 import edu.rutgers.MOST.data.TextReactionsWriter;
+import edu.rutgers.MOST.data.TransportReactionCategorizer;
+import edu.rutgers.MOST.data.TransportReactionsByCompartments;
 import edu.rutgers.MOST.data.UndoConstants;
+import edu.rutgers.MOST.data.VisualizationDataProcessor;
 import edu.rutgers.MOST.logic.ReactionParser;
 import edu.rutgers.MOST.optimization.solvers.GurobiSolver;
 
@@ -1503,6 +1515,62 @@ public class GraphicalInterface extends JFrame {
 
 		ArrayList<Integer> addedMetabolites = new ArrayList<Integer>();
 		LocalConfig.getInstance().setAddedMetabolites(addedMetabolites);
+		
+		// visualizations 
+		// pathway files read
+		Map<String, MetabolicPathway> metabolicPathways = new HashMap<String, MetabolicPathway>();
+		LocalConfig.getInstance().setMetabolicPathways(metabolicPathways);
+		Map<String, String> metaboliteNameAbbrMap = new HashMap<String, String>();
+		LocalConfig.getInstance().setMetaboliteNameAbbrMap(metaboliteNameAbbrMap);
+		Map<String, PathwayMetaboliteData> metaboliteNameDataMap = new HashMap<String, PathwayMetaboliteData>(); 
+		LocalConfig.getInstance().setMetaboliteNameDataMap(metaboliteNameDataMap);
+		Map<Object, String> metaboliteIdCompartmentMap = new HashMap<Object, String>();
+		LocalConfig.getInstance().setMetaboliteIdCompartmentMap(metaboliteIdCompartmentMap);
+		//				Map<String, String> substitutedMetabolitesMap = new HashMap<String, String>();
+		//				LocalConfig.getInstance().setSubstitutedMetabolitesMap(substitutedMetabolitesMap);
+		ArrayList<TransportReactionsByCompartments> transportReactionsByCompartmentsList = new ArrayList<TransportReactionsByCompartments>();
+		LocalConfig.getInstance().setTransportReactionsByCompartmentsList(transportReactionsByCompartmentsList);
+
+		// sbml read
+		Map<String, ArrayList<String>> keggIdCompartmentMap = new HashMap<String, ArrayList<String>>();
+		LocalConfig.getInstance().setKeggIdCompartmentMap(keggIdCompartmentMap);
+		Map<String, ArrayList<SBMLMetabolite>> keggIdMetaboliteMap = new HashMap<String, ArrayList<SBMLMetabolite>>();
+		LocalConfig.getInstance().setKeggIdMetaboliteMap(keggIdMetaboliteMap);
+		Map<String, String> metaboliteIdKeggIdMap = new HashMap<String, String>();
+		LocalConfig.getInstance().setMetaboliteIdKeggIdMap(metaboliteIdKeggIdMap);
+		ArrayList<ArrayList<String>> listOfCompartmentLists = new ArrayList<ArrayList<String>>();
+		LocalConfig.getInstance().setListOfCompartmentLists(listOfCompartmentLists);
+
+		Map<String, ArrayList<SBMLReaction>> ecNumberReactionMap = new HashMap<String, ArrayList<SBMLReaction>>();
+		LocalConfig.getInstance().setEcNumberReactionMap(ecNumberReactionMap);
+		Map<String, ArrayList<SBMLReaction>> keggIdReactionMap = new HashMap<String, ArrayList<SBMLReaction>>();
+		LocalConfig.getInstance().setKeggIdReactionMap(keggIdReactionMap);
+
+		// categorize reactions
+		//				ArrayList<Integer> cytosolIds = new ArrayList<Integer>();
+		//				LocalConfig.getInstance().setCytosolIds(cytosolIds);
+		//				ArrayList<Integer> cytosolExtraOrganismIds = new ArrayList<Integer>();
+		//				LocalConfig.getInstance().setCytosolExtraOrganismIds(cytosolExtraOrganismIds);
+		//				ArrayList<Integer> cytosolPeriplasmIds = new ArrayList<Integer>();
+		//				LocalConfig.getInstance().setCytosolPeriplasmIds(cytosolPeriplasmIds);
+		//				ArrayList<Integer> periplasmExtraOrganismIds = new ArrayList<Integer>();
+		//				LocalConfig.getInstance().setPeriplasmExtraOrganismIds(periplasmExtraOrganismIds);
+		ArrayList<Integer> externalReactionIds = new ArrayList<Integer>();
+		LocalConfig.getInstance().setExternalReactionIds(externalReactionIds);
+		ArrayList<Integer> unplottedReactionIds = new ArrayList<Integer>();
+		LocalConfig.getInstance().setUnplottedReactionIds(unplottedReactionIds);
+		ArrayList<Integer> noTransportReactionIds = new ArrayList<Integer>();
+		LocalConfig.getInstance().setNoTransportReactionIds(noTransportReactionIds);
+		ArrayList<Integer> identifierIds = new ArrayList<Integer>();
+		LocalConfig.getInstance().setIdentifierIds(identifierIds);
+		ArrayList<Integer> noIdentifierIds = new ArrayList<Integer>();
+		LocalConfig.getInstance().setNoIdentifierIds(noIdentifierIds);
+		Map<String, String> sideSpeciesTransportMetaboliteKeggIdMap = new HashMap<String, String>();
+		LocalConfig.getInstance().setSideSpeciesTransportMetaboliteKeggIdMap(sideSpeciesTransportMetaboliteKeggIdMap);
+
+		LocalConfig.getInstance().setKeggReactionIdColumnName("");
+
+		pathwayFilesRead = false;
 
 		DynamicTreePanel.getTreePanel().deleteItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
@@ -6269,7 +6337,8 @@ public class GraphicalInterface extends JFrame {
 		// enables or disables menu items depending on if there are unused items present
 		createUnusedMetabolitesList();
 		enableMenuItems();
-		setUpCellSelectionMode();		
+		setUpCellSelectionMode();
+		resetIdentifierColumns();
 		maybeDisplayStatusBarMessage(statusBarRow());
 		if (saveEnabled) {
 			enableSaveItems(true);
@@ -6690,7 +6759,7 @@ public class GraphicalInterface extends JFrame {
 			formulaBarPasteItem.setEnabled(false);
 			pastebutton.setEnabled(false);
 		} else {
-			if (isRoot && !analysisRunning && !timerRunning) {
+			if (isRoot && !analysisRunning && !timerRunning && !isVisualizing) {
 				formulaBar.setForeground(Color.BLACK);
 				formulaBar.setEditable(true);
 				formulaBarPasteItem.setEnabled(true);
@@ -7169,7 +7238,7 @@ public class GraphicalInterface extends JFrame {
 	// disables items if table is non-editable
 	public void enableOrDisableMetabolitesItems() {
 		if (metabolitesTable.getSelectedRow() > -1 && metabolitesTable.getSelectedColumn() > 0) {
-			if (isRoot && !analysisRunning && !timerRunning) {
+			if (isRoot && !analysisRunning && !timerRunning && !isVisualizing) {
 				formulaBar.setForeground(Color.BLACK);
 				formulaBar.setEditable(true);
 				formulaBarPasteItem.setEnabled(true);
@@ -7287,7 +7356,7 @@ public class GraphicalInterface extends JFrame {
 
 	HighlightPredicate nonEditableMetabPredicate = new HighlightPredicate() {
 		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
-			if (!isRoot || analysisRunning || timerRunning) {									
+			if (!isRoot || analysisRunning || timerRunning || isVisualizing) {									
 				return true;
 			}						
 			return false;

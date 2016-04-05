@@ -17,6 +17,8 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
 
 import edu.rutgers.MOST.config.LocalConfig;
+import edu.rutgers.MOST.data.SBMLConstants;
+import edu.rutgers.MOST.data.SBMLReaction;
 
 /**
  * Class contains commonly used functions and eliminate redundancy of code.
@@ -313,6 +315,98 @@ public class Utilities {
 			}
 		}
 		return message += ".";
+	}
+	
+	/*********************************************************************************/
+	// metabolite abbreviation processing methods
+	/*********************************************************************************/
+	
+	public String maybeRemovePrefixAndSuffix(String metabAbbr) {
+		String abbr = "";
+		abbr = maybeRemovePrefix(metabAbbr);
+		abbr = maybeRemoveCompartmentSuffix(abbr);
+		return abbr;
+	}
+	
+	public String maybeRemovePrefix(String metabAbbr) {
+		String abbr = metabAbbr;
+		if (hasMetabolitePrefix(metabAbbr)) {
+			abbr = metabAbbr.substring(2, metabAbbr.length());
+		}
+		return abbr;
+		
+	}
+	
+	public String maybeRemoveCompartmentSuffix(String metabAbbr) {
+		String abbr = metabAbbr;
+		// check if metabolite ends with "_x"
+		if (hasCompartmentSuffix(metabAbbr)) {
+			abbr = metabAbbr.substring(0, metabAbbr.length() - 2);
+		}
+		return abbr;
+	}
+	
+	public boolean hasMetabolitePrefix(String metabAbbr) {
+		for (int i = 0; i < SBMLConstants.METABOLITE_ABBREVIATION_PREFIXES.length; i++) {
+			if (metabAbbr.startsWith(SBMLConstants.METABOLITE_ABBREVIATION_PREFIXES[i])) {
+				return true;
+			}
+		}
+		
+		return false;
+		
+	}
+	
+	public boolean hasCompartmentSuffix(String metabAbbr) {
+		if (metabAbbr.length() > 2) {
+			String ch = metabAbbr.substring(metabAbbr.length() - 2, metabAbbr.length() - 1);
+			if (ch.equals("_")) {
+				return true;
+			}
+		}
+		
+		return false;
+		
+	}
+	
+	/**
+	 * Make comma separated from ArrayList
+	 * @param list
+	 * @return
+	 */
+	public String makeCommaSeparatedList(ArrayList<String> list) {
+		String name = "";
+		if (list.size() > 0) {
+			name = list.get(0);
+			if (list.size() > 1) {
+				for (int k = 1; k < list.size(); k++) {
+					name += ", " + list.get(k);
+				}
+			}
+		}
+		
+		return name; 
+	}
+	
+	public String formattedString(SBMLReaction reaction) {
+		String formattedOutput = "";
+		String abbr = reaction.getReactionAbbreviation();
+		if (abbr.length() > 11) {
+			abbr = abbr.substring(0, 11) + "...";
+		}
+		String name = reaction.getReactionName();
+		if (name.length() > 36) {
+			name = name.substring(0, 36) + "...";
+		}
+		String eqAbbr = reaction.getReactionEqunAbbr();
+		if (eqAbbr.length() > 46) {
+			eqAbbr = eqAbbr.substring(0, 46) + "...";
+		}
+		String eqNames = reaction.getReactionEqunNames();
+		formattedOutput = String.format("%1$-15s %2$-40s %3$-50s %4$-100s", abbr, name, eqAbbr, eqNames);
+		
+		return formattedOutput;
+		
 	}
 	
 }
