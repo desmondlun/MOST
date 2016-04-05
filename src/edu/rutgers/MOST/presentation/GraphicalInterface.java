@@ -1546,15 +1546,6 @@ public class GraphicalInterface extends JFrame {
 		Map<String, ArrayList<SBMLReaction>> keggIdReactionMap = new HashMap<String, ArrayList<SBMLReaction>>();
 		LocalConfig.getInstance().setKeggIdReactionMap(keggIdReactionMap);
 
-		// categorize reactions
-		//				ArrayList<Integer> cytosolIds = new ArrayList<Integer>();
-		//				LocalConfig.getInstance().setCytosolIds(cytosolIds);
-		//				ArrayList<Integer> cytosolExtraOrganismIds = new ArrayList<Integer>();
-		//				LocalConfig.getInstance().setCytosolExtraOrganismIds(cytosolExtraOrganismIds);
-		//				ArrayList<Integer> cytosolPeriplasmIds = new ArrayList<Integer>();
-		//				LocalConfig.getInstance().setCytosolPeriplasmIds(cytosolPeriplasmIds);
-		//				ArrayList<Integer> periplasmExtraOrganismIds = new ArrayList<Integer>();
-		//				LocalConfig.getInstance().setPeriplasmExtraOrganismIds(periplasmExtraOrganismIds);
 		ArrayList<Integer> externalReactionIds = new ArrayList<Integer>();
 		LocalConfig.getInstance().setExternalReactionIds(externalReactionIds);
 		ArrayList<Integer> unplottedReactionIds = new ArrayList<Integer>();
