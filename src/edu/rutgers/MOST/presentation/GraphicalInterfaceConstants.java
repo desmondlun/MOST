@@ -432,6 +432,8 @@ public class GraphicalInterfaceConstants
 
 	public static final int PROGRESS_BAR_WIDTH = 175;
 	public static final int PROGRESS_BAR_HEIGHT = 38;
+	public static final String PROGRESS_BAR_TEXT = "Loading...";
+    public static final String VISUALIZATION_PROGRESS_BAR_TEXT = "Processing...";
 
 	public static final int UNDO_MAX_VISIBLE_ROWS = 10;
 	public static final double UNDO_VISIBILITY_FRACTION = 0.1;

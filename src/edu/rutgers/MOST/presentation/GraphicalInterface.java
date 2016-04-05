@@ -136,7 +136,7 @@ public class GraphicalInterface extends JFrame {
 		private static final long serialVersionUID = 1L;
 
 		public boolean isCellEditable(int row, int column){	    	   
-			if (!isRoot || analysisRunning || timerRunning) {	
+			if (!isRoot || analysisRunning || timerRunning || isVisualizing) {	
 				return false;					
 			}
 			if (column == GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN) {
@@ -166,7 +166,7 @@ public class GraphicalInterface extends JFrame {
 		private static final long serialVersionUID = 1L;
 
 		public boolean isCellEditable(int row, int column){	    	   
-			if (!isRoot || analysisRunning || timerRunning) {	
+			if (!isRoot || analysisRunning || timerRunning || isVisualizing) {	
 				return false;					
 			}
 			return true;  
@@ -193,7 +193,7 @@ public class GraphicalInterface extends JFrame {
 		private static final long serialVersionUID = 1L;
 
 		public boolean isCellEditable(int row, int column){	    	   
-			if (!isRoot || analysisRunning || timerRunning) {	
+			if (!isRoot || analysisRunning || timerRunning || isVisualizing) {	
 				return false;					
 			}
 			return true;  
@@ -242,8 +242,11 @@ public class GraphicalInterface extends JFrame {
 	static protected Runnable solutionListener = null;
 	
 	private Task task;	
-	public final static ProgressBar progressBar = new ProgressBar();	
+	//private VisualizeTask visualizeTask;
+	public final static ProgressBar progressBar = new ProgressBar();
+	public final static ProgressBar visualizeProgressBar = new ProgressBar();
 	javax.swing.Timer timer = new javax.swing.Timer(100, new TimeListener());
+	//javax.swing.Timer visualizeTimer = new javax.swing.Timer(100, new VisualizeTimeListener());
 
 	/*****************************************************************************/
 	// boolean values
@@ -325,6 +328,10 @@ public class GraphicalInterface extends JFrame {
 	public boolean fluxesSet;
 	public static boolean analysisRunning;
 	public static boolean timerRunning;
+	
+	// visualization
+	public boolean pathwayFilesRead;
+	public static boolean isVisualizing;
 
 	/*****************************************************************************/
 	// end boolean values
@@ -365,6 +372,16 @@ public class GraphicalInterface extends JFrame {
 			AddReactionRowsDialog addReactionRowsDialog) {
 		GraphicalInterface.addReactionRowsDialog = addReactionRowsDialog;
 	}
+	
+	private static CompartmentNameDialog compNameDialog;
+
+	public static CompartmentNameDialog getCompNameDialog() {
+		return compNameDialog;
+	}
+
+	public static void setCompNameDialog(CompartmentNameDialog compNameDialog) {
+		GraphicalInterface.compNameDialog = compNameDialog;
+	}
 
 	private static CSVLoadInterface csvLoadInterface;
 	
@@ -394,6 +411,16 @@ public class GraphicalInterface extends JFrame {
 
 	public static FindReplaceDialog getFindReplaceDialog() {
 		return findReplaceDialog;
+	}
+	
+	private static FluxLevelsDialog fluxLevelsDialog;
+
+	public static FluxLevelsDialog getFluxLevelsDialog() {
+		return fluxLevelsDialog;
+	}
+
+	public static void setFluxLevelsDialog(FluxLevelsDialog fluxLevelsDialog) {
+		GraphicalInterface.fluxLevelsDialog = fluxLevelsDialog;
 	}
 	
 	private static GDBBDialog gdbbDialog;
@@ -461,6 +488,16 @@ public class GraphicalInterface extends JFrame {
 
 	public static OutputPopout getPopout() {
 		return popout;
+	}
+	
+	private static OutputPopout visualizationPopout;
+
+	public static OutputPopout getVisualizationPopout() {
+		return visualizationPopout;
+	}
+
+	public static void setVisualizationPopout(OutputPopout visualizationPopout) {
+		GraphicalInterface.visualizationPopout = visualizationPopout;
 	}
 
 	private static ReactionColAddRenameInterface reactionColAddRenameInterface;
@@ -642,6 +679,8 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem loadSBMLItem = new JMenuItem("Load SBML");
 	public final JMenuItem loadCSVItem = new JMenuItem("Load CSV");
 	public final JMenuItem loadExistingItem = new JMenuItem(GraphicalInterfaceConstants.LOAD_FROM_MODEL_COLLECTION_TABLE_TITLE);
+	public final JMenuItem loadMetabSuppDataItem = new JMenuItem("Load Metabolites Supplementary Data");
+	public final JMenuItem loadReacSuppDataItem = new JMenuItem("Load Reactions Supplementary Data");
 	public final JMenuItem saveItem = new JMenuItem("Save");
 	public final JMenuItem saveSBMLItem = new JMenuItem("Save As SBML");
 	public final JMenuItem saveCSVItem = new JMenuItem("Save As CSV");
@@ -1085,6 +1124,8 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().fvaDone = true;
 		analysisRunning = false;
 		timerRunning = false;
+		isVisualizing = false;
+		LocalConfig.getInstance().setFluxLevelsSet(false);
 		
 		enableSaveItems(false);
 		// setEnableAnalysisMenuItems( false );
@@ -1187,15 +1228,26 @@ public class GraphicalInterface extends JFrame {
 		setIconsList(icons);
 
 		LocalConfig.getInstance().setProgress(0);
+		LocalConfig.getInstance().setVisualizationsProgress(0);
 		progressBar.pack();
 		progressBar.setIconImages(icons);
 		progressBar.setSize(GraphicalInterfaceConstants.PROGRESS_BAR_WIDTH, GraphicalInterfaceConstants.PROGRESS_BAR_HEIGHT);		
 		progressBar.setResizable(false);
-		progressBar.setTitle("Loading...");
+		progressBar.setTitle(GraphicalInterfaceConstants.PROGRESS_BAR_TEXT);
 		//progressBar.progress.setIndeterminate(true);
 		progressBar.setLocationRelativeTo(null);
 		progressBar.setVisible(false);
 		progressBar.setAlwaysOnTop(true);
+		
+		visualizeProgressBar.pack();
+		visualizeProgressBar.setIconImages(icons);
+		visualizeProgressBar.setSize(GraphicalInterfaceConstants.PROGRESS_BAR_WIDTH, GraphicalInterfaceConstants.PROGRESS_BAR_HEIGHT);		
+		visualizeProgressBar.setResizable(false);
+		visualizeProgressBar.setTitle(GraphicalInterfaceConstants.VISUALIZATION_PROGRESS_BAR_TEXT);
+		//visualizeProgressBar.progress.setIndeterminate(true);
+		visualizeProgressBar.setLocationRelativeTo(null);
+		visualizeProgressBar.setVisible(false);
+		visualizeProgressBar.setAlwaysOnTop(true);
 		
 		compartmentsTableUpdater = new CompartmentsTableUpdater();
 
@@ -1313,8 +1365,10 @@ public class GraphicalInterface extends JFrame {
 		});
 
 		setBooleanDefaults();
+		setVisualizationOptionsDefaults();
 		setSortDefault();
 		setUpCellSelectionMode();
+		resetIdentifierColumns();
 		setFileType(GraphicalInterfaceConstants.DEFAULT_FILE_TYPE);
 		// TODO: need to account for adding metabolites when creating model in blank gui
 		LocalConfig.getInstance().setMaxMetabolite(0);
@@ -7644,6 +7698,10 @@ public class GraphicalInterface extends JFrame {
 				undoItem.setNewMetaColumnNames(newMetaCol);
 				setNewUsedMap(undoItem);
 				setUpReactionsUndo(undoItem);
+				// find these columns after deletion since index may have changed
+				ReactionFactory r = new ReactionFactory("SBML");
+				LocalConfig.getInstance().setEcNumberColumn(r.locateECColumnColumn());
+				LocalConfig.getInstance().setKeggReactionIdColumn(r.locateKeggIdColumn());
 			}
 		});
 		reactionsHeaderContextMenu.add(deleteColumnMenu);	
@@ -7714,6 +7772,10 @@ public class GraphicalInterface extends JFrame {
 				undoItem.setNewMetaColumnNames(newMetaCol);
 				setUndoNewCollections(undoItem);				
 				setUpMetabolitesUndo(undoItem);
+				// find these columns since index may have changed
+				MetaboliteFactory f = new MetaboliteFactory("SBML");
+				LocalConfig.getInstance().setKeggMetaboliteIdColumn(f.locateKeggIdColumn());
+				LocalConfig.getInstance().setChebiIdColumn(f.locateChebiIdColumn());
 			}
 		});
 		metabolitesHeaderContextMenu.add(deleteColumnMenu);	
@@ -12902,6 +12964,18 @@ public class GraphicalInterface extends JFrame {
 	/********************************************************************************************/
 	// visualization methods
 	/********************************************************************************************/
+	
+	/**
+	 * Sets Visualization Options defaults on startup of Graphical Interface
+	 */
+	public void setVisualizationOptionsDefaults() {
+		// may eventually get this from a config file
+		LocalConfig.getInstance().setGraphMissingMetabolitesSelected(VisualizationOptionsConstants.GRAPH_MISSING_METABOLITES_DEFAULT);
+		LocalConfig.getInstance().setScaleEdgeThicknessSelected(VisualizationOptionsConstants.SCALE_EDGE_THICKNESS_DEFAULT);
+		LocalConfig.getInstance().setIgnoreProtonSelected(VisualizationOptionsConstants.IGNORE_PROTON_DEFAULT);
+		LocalConfig.getInstance().setIgnoreWaterSelected(VisualizationOptionsConstants.IGNORE_WATER_DEFAULT);
+		LocalConfig.getInstance().setShowVisualizationReportSelected(VisualizationOptionsConstants.SHOW_VISUALIZATION_REPORT_DEFAULT);
+	}
 	
 	public void showIdentifierColumnNameDialog(String type, String title, String columnType, int selectedIndex) {
 		if (selectedIndex > -1) {

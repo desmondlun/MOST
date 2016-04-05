@@ -74,6 +74,16 @@ public class LocalConfig {
 		return progress;
 	}
 	
+	private Integer visualizationsProgress;
+	
+    public Integer getVisualizationsProgress() {
+		return visualizationsProgress;
+	}
+
+	public void setVisualizationsProgress(Integer visualizationsProgress) {
+		this.visualizationsProgress = visualizationsProgress;
+	}
+	
     private ArrayList<String> invalidReactions = new ArrayList<String>();
 	
 	public ArrayList<String> getInvalidReactions() {
@@ -969,7 +979,48 @@ public class LocalConfig {
 	public void setIgnoreWaterSelected(boolean ignoreWaterSelected) {
 		this.ignoreWaterSelected = ignoreWaterSelected;
 	}
-	
+
+	// visualization flux values for edge thicknesses
+	private ArrayList<Double> fluxes = new ArrayList<Double>();
+
+	public ArrayList<Double> getFluxes() {
+		return fluxes;
+	}
+
+	public void setFluxes(ArrayList<Double> fluxes) {
+		this.fluxes = fluxes;
+	}
+
+	private double maxFlux;
+
+	public double getMaxFlux() {
+		return maxFlux;
+	}
+
+	public void setMaxFlux(double maxFlux) {
+		this.maxFlux = maxFlux;
+	}
+
+	private double secondaryMaxFlux;
+
+	public double getSecondaryMaxFlux() {
+		return secondaryMaxFlux;
+	}
+
+	public void setSecondaryMaxFlux(double secondaryMaxFlux) {
+		this.secondaryMaxFlux = secondaryMaxFlux;
+	}
+
+	private boolean isFluxLevelsSet;
+
+	public boolean isFluxLevelsSet() {
+		return isFluxLevelsSet;
+	}
+
+	public void setFluxLevelsSet(boolean isFluxLevelsSet) {
+		this.isFluxLevelsSet = isFluxLevelsSet;
+	}
+
 	// visualizations find
 	public boolean visualizationsFindFieldChanged;
 	public boolean visualizationsFindFocusLost;
