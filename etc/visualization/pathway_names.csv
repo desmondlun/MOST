@@ -1,0 +1,54 @@
+Pathway ID,Pathway KEGG Ids,Pathway Level,Pathway Level Position,Pathway Name,Metabolites
+0,79,0.7,-8.4,Inositol metabolism,C00137
+1,-1,3.7,-6.3,Nucleotide sugars,C00167
+2,20,10.5,-9.7,Purine biosynthesis,C03838|C04376
+3,38,10.5,-9.3,Histidine metabolism,C02739|C02741
+4,20,30.7,-11.4,Purines,C00147|C00242
+5,116,38,-11.75,Pterine biosynthesis,C00268|C00272
+6,48,12.2,-7.9,Aromatic amino acids,C00493|C03175
+7,32,32.2,-7.3,Lysine metabolism,C00047
+8,34,38.4,-7.4,beta-Lactam antibiotics,C06564
+9,103,41,-7.9,Butanol/butyrate fermentation,C06142|C00246
+10,3,6.7,-7.2,Pentose interconversions,C00181
+11,61,0.2,-1.4,Polysaccarides,C00317|C00718|C00760
+12,2,5.5,-3.1,Entner-Douderoff pathway,C04442
+13,-1,10.7,-1.1,Methane oxidation,C01438
+14,2,7.4,-0.8,Pentose cycle,C00279|C00281
+15,-1,12.4,-4.3,Amino sugars,C00645|C04257|C00357
+16,27,21.3,-3.025,Aspartate group of amino acids,C00049
+17,130,31.3,-4,Sulfur metabolism,C00094|C00059
+18,-1,17.25,-2,Anaplerotic reactions,C00149
+19,98,20,-0.3,Glyoxylate cycle,C00048
+20,119,28.35,-0.9,Porphyrins,C01024|C01051|C05766|C05768
+21,119,40.6,-0.6,Bile pigments,C00486
+22,0,10.5,0.5, -> Glycolysis,C00236|C00197
+23,0,10.5,0.6, <- Gluconeogenesis,C00236|C00197
+24,1,20.5,2.5,Citrate Cycle,C00149
+25,7,13.7,3.3,Fatty acid synthesis,C06423|C01571|C02679|C06424|C00249|C08362|C01530|C00712
+26,-1,25.2,1.4,Glutamate decarboxylation pathway,C00334|C03741
+27,98|104,27.3,2.3,Mesaconate pathway,C01732
+28,-1,10.6,4.9,Lipid metabolism,C00416|C00681|C01233
+29,105,0.95,5.55,One carbon pool,C00445
+30,23,41,6.6,Pyrimidines,C00380|C00178|C00106
+31,-1,27,6.9,Glutamate group of amino acids,C00148
+32,23,27.4,8.4,Pyrimidine biosynthesis,C00295|C01103
+33,20,21.7,8.8,Urea cycle,C00086
+34,-1,17.2,7.2,Ketone bodies,C00332
+35,8|9,14.1,8.6,Fatty acid oxidation,C06423|C01571|C02679|C06424|C00249|C08362|C01530|C00712
+36,126,13.8,9.25,Carotenoids,C05433
+37,-1,9,6.5,Phosphatides,C00641|C00416
+38,106,0.4,7.9,Methanogenesis,C01438
+39,-1,1.5,9.3,Branched chain amino acids,C00188|C00123|C00407|C00183
+40,16,18.1,10.4,Phytosterols,C05422
+41,16,17.1,12.1,Mycosterols,C01694|C05440
+42,16,24.85,9.7,Mineralocorticoids,C02140|C03205
+43,16,26,9.8,Gestagen,C00410
+44,16,24.8,12.1,Corticoids and Gestagens,C02140|C00410|C05485|C01953
+45,16|12,24.8,12.8,Zoosterols,C00187
+46,16,30.5,9.4,Glucocorticoids,C00735
+47,16,35.5,12.55,Estrogens,C05141|C00951|C00468
+48,16,33.8,12.55,Androgens,C00535|C00951
+49,13,41.8,14.8,Bile acids,C01921|C04483
+50,-1,12.5,14.6,Isoprenoids,C00129|C00341|C00448
+51,-1,11.7,-12.3,Calvin Cycle,C01182
+52,-1,14.15,-13.55, CO2 Pumping (C4 plants),C01182
