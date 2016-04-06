@@ -1,9 +1,12 @@
 package edu.rutgers.MOST.presentation;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
@@ -16,6 +19,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 public class FluxLevelsDialog extends JDialog {
 
@@ -37,13 +41,43 @@ public class FluxLevelsDialog extends JDialog {
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		//setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-		maxFluxField.setPreferredSize(new Dimension(120, 25));
-		maxFluxField.setMaximumSize(new Dimension(120, 25));
-		maxFluxField.setMinimumSize(new Dimension(120, 25));
+		maxFluxField.setPreferredSize(new Dimension(100, 25));
+		maxFluxField.setMaximumSize(new Dimension(100, 25));
+		maxFluxField.setMinimumSize(new Dimension(100, 25));
 		
-		secondaryMaxFluxField.setPreferredSize(new Dimension(120, 25));
-		secondaryMaxFluxField.setMaximumSize(new Dimension(120, 25));
-		secondaryMaxFluxField.setMinimumSize(new Dimension(120, 25));
+		secondaryMaxFluxField.setPreferredSize(new Dimension(100, 25));
+		secondaryMaxFluxField.setMaximumSize(new Dimension(100, 25));
+		secondaryMaxFluxField.setMinimumSize(new Dimension(100, 25));
+		
+		maxFluxField.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent e) {	
+				Component c = e.getComponent();
+				if (c instanceof JTextField) {
+		            ((JTextField)c).selectAll();
+		        }				
+			}
+
+			@Override
+			public void focusLost(FocusEvent arg0) {				
+			}
+		});
+		
+		secondaryMaxFluxField.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent e) {	
+				Component c = e.getComponent();
+				if (c instanceof JTextField) {
+		            ((JTextField)c).selectAll();
+		        }				
+			}
+
+			@Override
+			public void focusLost(FocusEvent arg0) {				
+			}
+		});
 		
 		//box layout
 		Box vb = Box.createVerticalBox();

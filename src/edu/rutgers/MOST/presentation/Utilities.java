@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -407,6 +408,31 @@ public class Utilities {
 		
 		return formattedOutput;
 		
+	}
+	
+	// based on http://examples.javacodegeeks.com/core-java/text/format-number-with-custom-numberformat
+	// based on http://helpdesk.objects.com.au/java/how-to-control-decimal-places-displayed-in-jtable-column
+	public String formattedNumber(String value) {
+		DecimalFormat formatter = new DecimalFormat("#.########");
+		DecimalFormat sciFormatter = new DecimalFormat("#.######E0");
+		try {
+			if (Math.abs(Double.valueOf((String) value)) != 0.0 && (Math.abs(Double.valueOf((String) value)) < GraphicalInterfaceConstants.MIN_DECIMAL_FORMAT || Math.abs(Double.valueOf((String) value)) > GraphicalInterfaceConstants.MAX_DECIMAL_FORMAT)) {
+				try {
+					value = sciFormatter.format((Number)Double.valueOf((String) value));
+				} catch (NumberFormatException nfe) {
+					
+				}
+			} else {
+				try {
+					value = formatter.format((Number)Double.valueOf((String) value));
+				} catch (NumberFormatException nfe) {
+					
+				}
+			}
+		} catch (NumberFormatException nfe) {
+			
+		}
+		return value;
 	}
 	
 }

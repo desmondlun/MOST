@@ -70,6 +70,7 @@ import edu.rutgers.MOST.data.TransportReactionCategorizer;
 import edu.rutgers.MOST.data.TransportReactionsByCompartments;
 import edu.rutgers.MOST.data.UndoConstants;
 import edu.rutgers.MOST.data.VisualizationDataProcessor;
+import edu.rutgers.MOST.data.VisualizationFluxesProcessor;
 import edu.rutgers.MOST.logic.ReactionParser;
 import edu.rutgers.MOST.optimization.solvers.GurobiSolver;
 
@@ -2377,7 +2378,25 @@ public class GraphicalInterface extends JFrame {
 
         setFluxLevelsMenu.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent ae) {
-        		//createFluxLevelsDialog();
+        		if (!LocalConfig.getInstance().isFluxLevelsSet()) {
+        			ArrayList<Double> fluxes = new ArrayList<Double>();
+        			double maxUpperBound = 0;
+        			ReactionFactory rf = new ReactionFactory("SBML");
+            		Vector<SBMLReaction> rxns = rf.getAllReactions();
+            		for (int i = 0; i < rxns.size(); i++) {
+            			SBMLReaction reaction = (SBMLReaction) rxns.get(i);
+            			fluxes.add(reaction.getFluxValue());
+            			if (reaction.getUpperBound() > maxUpperBound) {
+            				maxUpperBound = reaction.getUpperBound();
+            			}
+            		}
+            		VisualizationFluxesProcessor processor = new VisualizationFluxesProcessor();
+            		processor.setMaxFlux(maxUpperBound);
+        			processor.setFluxes(fluxes);
+        			processor.processFluxes();
+        		}
+        		
+        		createFluxLevelsDialog();
         	}
         });
 
@@ -2386,7 +2405,7 @@ public class GraphicalInterface extends JFrame {
 
         resetFluxLevelsMenu.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent ae) {
-        		//LocalConfig.getInstance().setFluxLevelsSet(false);
+        		LocalConfig.getInstance().setFluxLevelsSet(false);
         	}
         });
 
@@ -13099,10 +13118,15 @@ public class GraphicalInterface extends JFrame {
 	
 	public void createFluxLevelsDialog() {
 		FluxLevelsDialog frame = new FluxLevelsDialog();
-		if (LocalConfig.getInstance().isFluxLevelsSet()) {
-			frame.maxFluxField.setText(Double.toString(LocalConfig.getInstance().getMaxFlux()));
-			frame.secondaryMaxFluxField.setText(Double.toString(LocalConfig.getInstance().getSecondaryMaxFlux()));
-		}
+		String maxFlux = Double.toString(LocalConfig.getInstance().getMaxFlux());
+		String secondaryMaxFlux = Double.toString(LocalConfig.getInstance().getSecondaryMaxFlux());
+		Utilities u = new Utilities();
+		
+		maxFlux = u.formattedNumber(maxFlux);
+		secondaryMaxFlux = u.formattedNumber(secondaryMaxFlux);
+		
+		frame.maxFluxField.setText(maxFlux);
+		frame.secondaryMaxFluxField.setText(secondaryMaxFlux);
 		setFluxLevelsDialog(frame);
 		frame.setIconImages(icons);
 		//frame.setSize(550, 270);
