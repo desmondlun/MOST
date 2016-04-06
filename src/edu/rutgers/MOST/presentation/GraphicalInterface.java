@@ -13500,7 +13500,8 @@ public class GraphicalInterface extends JFrame {
 	public void createVisualizationReport() {
 		OutputPopout p = new OutputPopout();
 		p.setIconImages(icons);
-		p.setTitle(gi.getTitle());
+		p.setTitle(GraphicalInterfaceConstants.TITLE + " - " + "Visualization Report - " +
+			LocalConfig.getInstance().getModelName());
 		p.setLocationRelativeTo(null);
 		p.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		p.setOutputText(LocalConfig.getInstance().getVisualizationData().getReport());
