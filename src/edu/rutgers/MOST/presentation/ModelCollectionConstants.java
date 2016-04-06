@@ -12,7 +12,8 @@ public class ModelCollectionConstants {
 			"Organism Name",	
 			"Genes",	
 			"Reactions",	
-			"Metabolites",	
+			"Metabolites",
+			"Identifiers",
 			"Reference"
 		};
 	
@@ -37,6 +38,7 @@ public class ModelCollectionConstants {
 	public static final int GENES_COLUMN = visibleColumnsList.indexOf("Genes");
 	public static final int REACTIONS_COLUMN = visibleColumnsList.indexOf("Reactions");
 	public static final int METABOLITES_COLUMN = visibleColumnsList.indexOf("Metabolites");
+	public static final int IDENTIFIERS_COLUMN = visibleColumnsList.indexOf("Identifiers");
 	public static final int REFERENCE_COLUMN = visibleColumnsList.indexOf("Reference");
 	public static final int REFERENCE_WIDTH = 220; 
 	public static final int PATH_COLUMN = visibleColumnsList.size() + invisibleColumnsList.indexOf("Path");

@@ -254,11 +254,11 @@ public class GraphicalInterface extends JFrame {
 	static protected Runnable solutionListener = null;
 	
 	private Task task;	
-	//private VisualizeTask visualizeTask;
+	private VisualizeTask visualizeTask;
 	public final static ProgressBar progressBar = new ProgressBar();
 	public final static ProgressBar visualizeProgressBar = new ProgressBar();
 	javax.swing.Timer timer = new javax.swing.Timer(100, new TimeListener());
-	//javax.swing.Timer visualizeTimer = new javax.swing.Timer(100, new VisualizeTimeListener());
+	javax.swing.Timer visualizeTimer = new javax.swing.Timer(100, new VisualizeTimeListener());
 
 	/*****************************************************************************/
 	// boolean values
@@ -587,6 +587,16 @@ public class GraphicalInterface extends JFrame {
 
 	public void setUrlString(String urlString) {
 		this.urlString = urlString;
+	}
+	
+	private JFrame visualizationsPane;
+	
+	public JFrame getVisualizationsPane() {
+		return visualizationsPane;
+	}
+
+	public void setVisualizationsPane(JFrame visualizationsPane) {
+		this.visualizationsPane = visualizationsPane;
 	}
 
 	/*****************************************************************************/
@@ -1605,7 +1615,8 @@ public class GraphicalInterface extends JFrame {
 				OutputPopout popout = new OutputPopout();
 				popout.setIconImages(icons);
 				setPopout(popout);
-				popout.setSize(700, 400);
+				// size is set in class
+//				popout.setSize(700, 400);
 				popout.setLocationRelativeTo(null);
 				popout.addWindowListener(new WindowAdapter() {
 					public void windowClosing(WindowEvent evt) {
@@ -2268,24 +2279,24 @@ public class GraphicalInterface extends JFrame {
 
         visualizeMenu.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent ae) {
-//        		LocalConfig.getInstance().setVisualizationsProgress(0);
-//        		visualizeMenuProcesses();
+        		LocalConfig.getInstance().setVisualizationsProgress(0);
+        		visualizeMenuProcesses();
         	}
         });
 
         visualizationMenu.add(showVisualizationReportMenu);
         showVisualizationReportMenu.setMnemonic(KeyEvent.VK_Z);
 
-//        if (isVisualizing && getVisualizationPopout() == null) {
-//        	showVisualizationReportMenu.setEnabled(true);
-//        } else {
-//        	showVisualizationReportMenu.setEnabled(false);
-//        }
+        if (isVisualizing && getVisualizationPopout() == null) {
+        	showVisualizationReportMenu.setEnabled(true);
+        } else {
+        	showVisualizationReportMenu.setEnabled(false);
+        }
 
         showVisualizationReportMenu.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent ae) {
-//        		createVisualizationReport();
-//        		showVisualizationReportMenu.setEnabled(false);
+        		createVisualizationReport();
+        		showVisualizationReportMenu.setEnabled(false);
         	}
         });
 
@@ -6347,6 +6358,11 @@ public class GraphicalInterface extends JFrame {
 		}
 		if (getSaveAsSBMLRenamedItemsFrame() != null) {
 			getSaveAsSBMLRenamedItemsFrame().dispose();
+		}
+		if (getVisualizationsPane() != null) {
+			getVisualizationsPane().setVisible(false);
+			getVisualizationsPane().dispose();
+			visualizeMenu.setEnabled(true);
 		}
 	}
 	
@@ -12800,6 +12816,49 @@ public class GraphicalInterface extends JFrame {
 		getGdbbDialog().getCounterLabel().setText(GDBBConstants.PROCESSING);
 	}
 	
+	class VisualizeTask extends SwingWorker<Void, Void> {
+
+		@Override
+		public void done() {
+		}
+
+		@Override
+		protected Void doInBackground() throws Exception {
+			visualizeModelActions();
+			while (LocalConfig.getInstance().getVisualizationsProgress() < 100) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException ignore) {
+				}			
+			}
+			Thread.sleep( 1000 );
+			visualizeTimer.stop();
+			return null;
+		}
+	}
+	
+	class VisualizeTimeListener implements ActionListener {
+		public void actionPerformed(ActionEvent ae) {
+			visualizeProgressBar.setVisible(true);
+			if (LocalConfig.getInstance().getVisualizationsProgress() > 0) {
+				visualizeProgressBar.progress.setIndeterminate(false);
+			}	
+			visualizeProgressBar.progress.setValue(LocalConfig.getInstance().getVisualizationsProgress());
+			visualizeProgressBar.progress.repaint();
+			if (LocalConfig.getInstance().getVisualizationsProgress() == 100) {
+				visualizeProgressBar.setVisible(false);	
+				LocalConfig.getInstance().setVisualizationsProgress(0);
+				visualizeTimer.stop();
+				timerRunning = false;
+				// This appears redundant, but is the only way to not have an extra progress bar on screen
+				visualizeProgressBar.setVisible(false);
+				visualizeProgressBar.progress.setIndeterminate(false);
+				enableLoadItems();
+				createVisualizationsPane();
+			}
+		}
+	}
+	
 	/*******************************************************************************/
 	//end progressBar methods
 	/*******************************************************************************/
@@ -13021,10 +13080,188 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 	
-	/********************************************************************************************/
-	// visualization methods
-	/********************************************************************************************/
+	/******************************************************************************************/
+	// Visualization
+	/******************************************************************************************/
 	
+	class VisualizeAction implements ActionListener {
+		public void actionPerformed(ActionEvent ae) {
+			LocalConfig.getInstance().setVisualizationsProgress(0);
+			visualizeProgressBar.setVisible(true);
+			visualizeProgressBar.progress.setIndeterminate(true);
+			visualizeTimer.start();
+			timerRunning = true;
+			
+			visualizeTask = new VisualizeTask();
+			visualizeTask.execute();
+		}
+	}
+	
+	public void createFluxLevelsDialog() {
+		FluxLevelsDialog frame = new FluxLevelsDialog();
+		if (LocalConfig.getInstance().isFluxLevelsSet()) {
+			frame.maxFluxField.setText(Double.toString(LocalConfig.getInstance().getMaxFlux()));
+			frame.secondaryMaxFluxField.setText(Double.toString(LocalConfig.getInstance().getSecondaryMaxFlux()));
+		}
+		setFluxLevelsDialog(frame);
+		frame.setIconImages(icons);
+		//frame.setSize(550, 270);
+		frame.pack();
+		frame.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		frame.setLocationRelativeTo(null);
+		frame.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent evt) {
+				getFluxLevelsDialog().setVisible(false);
+				getFluxLevelsDialog().dispose();
+			}
+		});
+		frame.setAlwaysOnTop(true);
+		frame.setVisible(true);
+		frame.okButton.addActionListener(fluxLevelsOKActionListener);
+		frame.cancelButton.addActionListener(fluxLevelsCancelActionListener);
+	}
+	
+	ActionListener fluxLevelsOKActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			boolean valid = false;
+			EntryValidator validator = new EntryValidator();
+			if (!validator.isNumber(getFluxLevelsDialog().maxFluxField.getText())) {
+				getFluxLevelsDialog().setAlwaysOnTop(false);
+				JOptionPane.showMessageDialog(null,                
+						"Maximum Flux Entry is not a Number.",                
+						GraphicalInterfaceConstants.NUMERIC_VALUE_ERROR_TITLE,                                
+						JOptionPane.ERROR_MESSAGE);
+				getFluxLevelsDialog().setAlwaysOnTop(true);
+			} else if (!validator.isNumber(getFluxLevelsDialog().secondaryMaxFluxField.getText())) {
+				getFluxLevelsDialog().setAlwaysOnTop(false);
+				JOptionPane.showMessageDialog(null,                
+						"Secondary Maximum Flux Entry is not a Number.",                
+						GraphicalInterfaceConstants.NUMERIC_VALUE_ERROR_TITLE,                                
+						JOptionPane.ERROR_MESSAGE);
+				getFluxLevelsDialog().setAlwaysOnTop(true);
+			} else {
+				double maxFlux = Double.valueOf(getFluxLevelsDialog().maxFluxField.getText());
+				double secondaryMaxFlux = Double.valueOf(getFluxLevelsDialog().secondaryMaxFluxField.getText());		
+				if (maxFlux > 0 && secondaryMaxFlux > 0) {
+					if (maxFlux >= secondaryMaxFlux) {
+						LocalConfig.getInstance().setMaxFlux(maxFlux);
+						LocalConfig.getInstance().setSecondaryMaxFlux(secondaryMaxFlux);
+						valid = true;
+					} else {
+						getFluxLevelsDialog().setAlwaysOnTop(false);
+						JOptionPane.showMessageDialog(null,                
+								"Maximum Flux Must Be Greater Than or Equal to Secondary Maximum Flux.",                
+								"Invalid Entry",                                
+								JOptionPane.ERROR_MESSAGE);
+						getFluxLevelsDialog().setAlwaysOnTop(true);
+					}
+				} else {
+					getFluxLevelsDialog().setAlwaysOnTop(false);
+					JOptionPane.showMessageDialog(null,                
+							"Flux Values Must Be > 0.",                
+							"Invalid Entry",                                
+							JOptionPane.ERROR_MESSAGE);
+					getFluxLevelsDialog().setAlwaysOnTop(true);
+				}
+			}
+			if (valid) {
+				getFluxLevelsDialog().setVisible(false);
+				getFluxLevelsDialog().dispose();
+				LocalConfig.getInstance().setFluxLevelsSet(true);
+//				if (LocalConfig.getInstance().isFluxLevelsSet()) {
+//					System.out.println("mzx " + LocalConfig.getInstance().getMaxFlux());
+//					System.out.println("sec " + LocalConfig.getInstance().getSecondaryMaxFlux());
+//				}
+			}
+		}
+	};
+	
+	ActionListener fluxLevelsCancelActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			getFluxLevelsDialog().setVisible(false);
+			getFluxLevelsDialog().dispose();
+			enableLoadItems();
+			disableMenuItemsForFVA(false);
+		}
+	};
+	
+	/**
+	 * Compartment name from combo has compartment abbreviation and name present in string
+	 * to make selection more user-friendly. Name suffix needs to be removed to match user
+	 * selection with item from list of compartments.
+	 * @param combo
+	 * @return
+	 */
+	public String compNameFromCombo(JComboBox<String> combo) {
+		String abbr = "";
+		if (combo.getSelectedIndex() > -1) {
+			String item = (String) combo.getSelectedItem();
+			// " (compartment name) added to compartment abbreviation in combo box if name 
+			// exists. need to trim this off
+			if (item.contains("(")) {
+				item = item.substring(0, item.indexOf("(") - 1);
+			}
+			for (int i = 0; i < LocalConfig.getInstance().getListOfCompartments().size(); i++) {
+				if (LocalConfig.getInstance().getListOfCompartments().get(i).getId().equals(item)) {
+					abbr = LocalConfig.getInstance().getListOfCompartments().get(i).getId();
+				}
+			}
+//			for (int i = 0; i < LocalConfig.getInstance().getListOfCompartments().size(); i++) {
+//				if (LocalConfig.getInstance().getListOfCompartments().get(i).getName().equals((String) combo.getSelectedItem())) {
+//					abbr = LocalConfig.getInstance().getListOfCompartments().get(i).getId();
+//				}
+//			}
+		}
+		return abbr;
+	}
+	
+	public void createCompartmentNameDialog() {
+		// compartment list should always be > 0
+		if (LocalConfig.getInstance().getListOfCompartments().size() > 0) {
+			CompartmentNameDialog frame = new CompartmentNameDialog();
+			setCompNameDialog(frame);
+			frame.setIconImages(icons);
+			//frame.setSize(550, 270);
+			frame.pack();
+			frame.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+			frame.setLocationRelativeTo(null);
+			frame.addWindowListener(new WindowAdapter() {
+				public void windowClosing(WindowEvent evt) {
+					getCompNameDialog().setVisible(false);
+					getCompNameDialog().dispose();
+					enableLoadItems();
+					disableMenuItemsForFVA(false);
+				}
+			});
+			frame.setAlwaysOnTop(true);
+			frame.setVisible(true);
+			frame.okButton.addActionListener(compartmentNameAbbrOKActionListener);
+			frame.cancelButton.addActionListener(compartmentNameAbbrCancelActionListener);
+			disableLoadItems();
+			disableMenuItemsForFVA(true);
+		} else {
+			
+		}
+	}
+	
+	ActionListener compartmentNameAbbrOKActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			LocalConfig.getInstance().setSelectedCompartmentName(compNameFromCombo(getCompNameDialog().cbCompartmentName));
+			getCompNameDialog().setVisible(false);
+			getCompNameDialog().dispose();
+			processVisualizationsData();
+			visualizeModel();
+		}
+	};
+	
+	ActionListener compartmentNameAbbrCancelActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			getCompNameDialog().setVisible(false);
+			getCompNameDialog().dispose();
+			enableLoadItems();
+			disableMenuItemsForFVA(false);
+		}
+	};
 	/**
 	 * Sets Visualization Options defaults on startup of Graphical Interface
 	 */
@@ -13035,6 +13272,221 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().setIgnoreProtonSelected(VisualizationOptionsConstants.IGNORE_PROTON_DEFAULT);
 		LocalConfig.getInstance().setIgnoreWaterSelected(VisualizationOptionsConstants.IGNORE_WATER_DEFAULT);
 		LocalConfig.getInstance().setShowVisualizationReportSelected(VisualizationOptionsConstants.SHOW_VISUALIZATION_REPORT_DEFAULT);
+	}
+	
+	public void clearVisualizationCollections() {
+		// collections from PathwayFilesReader
+		LocalConfig.getInstance().getMetabolicPathways().clear();
+		LocalConfig.getInstance().getMetaboliteNameAbbrMap().clear();
+		LocalConfig.getInstance().getMetaboliteNameDataMap().clear();
+		// collections from MetaboliteVisualizationDataProcessor
+		LocalConfig.getInstance().getMetaboliteIdKeggIdMap().clear();
+		LocalConfig.getInstance().getKeggIdMetaboliteMap().clear();
+		LocalConfig.getInstance().getKeggIdCompartmentMap().clear();
+	}
+	
+	public void processVisualizationsData() {
+		clearVisualizationCollections();
+		PathwayFilesReader reader = new PathwayFilesReader();
+		// only read visualization csv files where data structure is not modified
+		// the first time visualize menu selected 
+		if (!pathwayFilesRead) {
+			reader.readOnceFiles();
+			pathwayFilesRead = true;
+		}
+		MetaboliteVisualizationDataProcessor p = new MetaboliteVisualizationDataProcessor();
+		p.processMetabolitesData();
+		
+		reader.readFiles();
+		
+		// create list of ids from model to keep track of which reactions are unplotted
+		TransportReactionCategorizer categorizer = new TransportReactionCategorizer();
+		categorizer.createUnplottedReactionsList();
+	}
+	
+	
+	// updates model correctly but locks up when visualizing
+	public void visualizeMenuProcesses() {
+		if (locateMetaboliteIdentifierColumn() ) {
+			int index = -1;
+			// check for blank compartment value
+			for (int k = 0; k < LocalConfig.getInstance().getListOfCompartments().size(); k++) {
+				if (LocalConfig.getInstance().getListOfCompartments().get(k).getId() == null ||
+						LocalConfig.getInstance().getListOfCompartments().get(k).getId().trim().length() == 0) {
+					index = k;
+				}
+			}
+			if (index > -1) {
+//			if (idMetabMap.size() > 0) {
+				String blankCompartmentId = "\"C_1\"";
+				// remove quotes
+				String blankCompartmentEntry = blankCompartmentId.substring(1, blankCompartmentId.length() - 1);
+				Object[] options = {"    Yes    ", "    No    ",};
+	    		int choice = JOptionPane.showOptionDialog(null, 
+	    				"Model Cannot Be Visualized With Blank Compartment Abbreviations. "
+	    				+ "Blank Compartment Abbreviations Will Be Renamed to " + blankCompartmentId,
+	    				"Blank Compartment Entries", 
+	    				JOptionPane.YES_NO_OPTION, 
+	    				JOptionPane.QUESTION_MESSAGE, 
+	    				null, options, options[0]);
+	    		
+	    		if (choice == JOptionPane.YES_OPTION) {
+	    			DefaultTableModel model = (DefaultTableModel) compartmentsTable.getModel();
+	    			int maxId = LocalConfig.getInstance().getMaxCompartmentId();
+	    			if (LocalConfig.getInstance().getListOfCompartments().size() > maxId) {
+	    				model.addRow(createCompartmentsRow(maxId));
+	    			}
+	    			model.setValueAt(blankCompartmentEntry, index, CompartmentsConstants.ABBREVIATION_COLUMN);
+	    			renameCompartmentsTableCompartment("", blankCompartmentEntry, index, false);
+	    			createCompartmentNameDialog();
+	    		}
+			} else {
+				createCompartmentNameDialog();
+			}
+		}
+	}
+	
+	public boolean locateMetaboliteIdentifierColumn() {
+		boolean found = false;
+		MetaboliteFactory f = new MetaboliteFactory("SBML");
+		String missingItem = "";
+		String missingData = "";
+		boolean showMissingItemMessage = true;
+		// if KEGG id not set by user, attempt to locate programmatically
+		if (LocalConfig.getInstance().getKeggMetaboliteIdColumn() == -1 || 
+				LocalConfig.getInstance().getChebiIdColumn() > -1) {
+			LocalConfig.getInstance().setKeggMetaboliteIdColumn(f.locateKeggIdColumn());
+			LocalConfig.getInstance().setChebiIdColumn(f.locateChebiIdColumn());
+		}
+		// if KEGG id or CHEBI id still not found, show prompt
+		if (LocalConfig.getInstance().getKeggMetaboliteIdColumn() > -1 || 
+				LocalConfig.getInstance().getChebiIdColumn() > -1) {
+			showMissingItemMessage = false;
+		} else {
+			missingItem = "KEGG Ids";
+			missingData = "metabolites";
+		}
+		
+		if (showMissingItemMessage) {
+			JOptionPane.showMessageDialog(null,                
+					"<html>No " + missingItem + " column present in the loaded model.<p><p>"
+							+ "MOST is unable to link " + missingData + " in model to "
+							+ missingData + " in the Visualizations database.<p><p>"
+							+ "Click Visualize --> Locate KEGG Id Column menu item to "
+							+ "locate KEGG Id column.", 
+							"Unable to Visualize Model",                             
+					JOptionPane.WARNING_MESSAGE);
+		} else {
+			found = true;
+		}
+		return found;
+	}
+	
+	public void categorizeTransportReactions() {
+		TransportReactionCategorizer categorizer = new TransportReactionCategorizer();
+		categorizer.categorizeTransportReactions();
+	}
+	
+	public void visualizeModel() {
+		visualizeTimer.start();
+		
+		visualizeTask = new VisualizeTask();
+		visualizeTask.execute();
+	}
+	
+	public void visualizeModelActions() {
+		isVisualizing = true;
+		ReactionFactory rf = new ReactionFactory("SBML");
+		if (LocalConfig.getInstance().getEcNumberColumn() == -1) {
+			LocalConfig.getInstance().setEcNumberColumn(rf.locateECColumnColumn());
+		}
+		Vector<SBMLReaction> rxns = null;
+//		Vector<SBMLReaction> membraneRxns = null;
+		if (LocalConfig.getInstance().getSelectedCompartmentName() != null && LocalConfig.getInstance().getSelectedCompartmentName().length() > 0) {
+			rxns = rf.getReactionsByCompartment(LocalConfig.getInstance().getSelectedCompartmentName());
+		} else {
+			rxns = rf.getAllReactions();
+		}
+		ECNumberMapCreator ecMapCreator = new ECNumberMapCreator();
+		Map<String, ArrayList<SBMLReaction>> ecNumberReactionMap = ecMapCreator.createEcNumberReactionMap(rxns);
+		LocalConfig.getInstance().setEcNumberReactionMap(ecNumberReactionMap);
+		// key = reaction id, value = PathwayReactionData (lists of KEGG ids of reactants and products)
+		ModelKeggEquationMapCreator modelKeggEquationMapCreator = new ModelKeggEquationMapCreator();
+		modelKeggEquationMapCreator.createKeggEquationMap();
+		categorizeTransportReactions();
+		KEGGIdReactionMapCreator keggIdReactionMapCreator = new KEGGIdReactionMapCreator();
+		Map<String, ArrayList<SBMLReaction>> keggIdReactionMap = keggIdReactionMapCreator.createKEGGIdReactionMap(rxns);
+		LocalConfig.getInstance().setKeggIdReactionMap(keggIdReactionMap);
+		ArrayList<Integer> noIdentifierIds = new ArrayList<Integer>();
+		for (int i = 0; i < LocalConfig.getInstance().getNoTransportReactionIds().size(); i++) {
+			if (!LocalConfig.getInstance().getIdentifierIds().contains(LocalConfig.getInstance().getNoTransportReactionIds().get(i))) {
+				noIdentifierIds.add(LocalConfig.getInstance().getNoTransportReactionIds().get(i));
+			}
+		}
+		LocalConfig.getInstance().setNoIdentifierIds(noIdentifierIds);
+		VisualizationDataProcessor vdp = new VisualizationDataProcessor();
+		vdp.processData(PathwaysFrameConstants.PATHWAYS_COMPONENT, rxns);
+	}
+	
+	public void createVisualizationsPane() {
+		// create a frome to hold the graph                                                                          
+        final JFrame frame = new JFrame(); 
+        setVisualizationsPane(frame);
+        frame.setIconImages(icons);
+        frame.setTitle(gi.getTitle());
+        final PathwaysFrame pf1 = new PathwaysFrame(PathwaysFrameConstants.PATHWAYS_COMPONENT);
+        frame.add(pf1);
+        frame.setSize(1300, 700);
+        frame.setMinimumSize(new Dimension(400, 300));
+        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent evt) {
+				if (pf1.getNodeInformationDialog() != null) {
+					pf1.getNodeInformationDialog().dispose();
+				}
+				frame.setVisible(false);
+				enableLoadItems();
+				disableMenuItemsForFVA(false);
+				enableVisualizationItems(true);
+				isVisualizing = false;
+				if (getVisualizationPopout() != null) {
+					getVisualizationPopout().dispose();
+				}
+				if (pf1.getVisualizationsFindDialog() != null) {
+					pf1.getVisualizationsFindDialog().dispose();
+				}
+				showVisualizationReportMenu.setEnabled(false);
+			}
+		});		
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+        enableVisualizationItems(false);
+        
+        try {
+            Thread.sleep(2000);                 //1000 milliseconds is one second.
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+        
+        if (LocalConfig.getInstance().isShowVisualizationReportSelected()) {
+        	createVisualizationReport();
+        }
+	}
+	
+	public void createVisualizationReport() {
+		OutputPopout p = new OutputPopout();
+		p.setIconImages(icons);
+		p.setTitle(gi.getTitle());
+		p.setLocationRelativeTo(null);
+		p.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		p.setOutputText(LocalConfig.getInstance().getVisualizationData().getReport());
+		setVisualizationPopout(p);
+		p.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent evt) {
+				getVisualizationPopout().dispose();
+				showVisualizationReportMenu.setEnabled(true);
+			}
+		});		
 	}
 	
 	public void showIdentifierColumnNameDialog(String type, String title, String columnType, int selectedIndex) {
@@ -13087,7 +13539,7 @@ public class GraphicalInterface extends JFrame {
 	}
 	
 	/********************************************************************************************/
-	// end visualization methods
+	// end Visualization
 	/********************************************************************************************/
 	
 	public static void main(String[] args) {

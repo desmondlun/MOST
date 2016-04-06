@@ -24,14 +24,16 @@ public class OutputPopout extends JFrame {
 	private final JMenuItem outputCopyItem = new JMenuItem("Copy");
 	private final JMenuItem outputSelectAllItem = new JMenuItem("Select All");
 	private String pathName;
+	private JScrollPane scrollingText;
 
 	public OutputPopout() {		
 		//... Create scrollable text area.
-		textArea = new JTextArea(30, 60);
+		textArea = new JTextArea(35, 150);
+		// need to use monospaced font for columns to line up in visualization report
+		textArea.setFont(new Font("Lucida Console", Font.PLAIN, 14));
 		textArea.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
-		//textArea.setFont(new Font("monospaced", Font.PLAIN, 14));
 		textArea.setEditable(false);
-		JScrollPane scrollingText = new JScrollPane(textArea);
+		scrollingText = new JScrollPane(textArea);
 
 		fileChooser.setFileFilter(new TextFileFilter());
 		
