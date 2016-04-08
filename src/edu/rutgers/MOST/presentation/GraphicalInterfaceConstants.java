@@ -569,6 +569,8 @@ public class GraphicalInterfaceConstants
 
 	// spaces for alignment
 	public static final String ROW_HEADER_TITLE = "   Row";
+	
+	public static final String DEFAULT_COMPARTMENT_ID = "C_1";
 
 	// since csv accepts anything, and sbml is much more stringent,
 	// the default if the save button is used when editing a blank
@@ -580,7 +582,7 @@ public class GraphicalInterfaceConstants
 	public static final String GDBB_PREFIX = "GDBB_";
 	
 	// output solver text
-	public static final boolean DEBUG_MODE = true;
+	public static final boolean DEBUG_MODE = false;
 	public static final boolean SOLVER_DEBUG_OUTPUT = DEBUG_MODE;
 
 }

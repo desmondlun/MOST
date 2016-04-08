@@ -70,6 +70,8 @@ public class SaveAsSBMLRenamedItemsFrame extends JFrame
 	public SaveAsSBMLRenamedItemsFrame() {
 		setTitle(GraphicalInterfaceConstants.TITLE + " - " + SBMLConstants.RENAMED_ABBREVIATIONS_WARNING_TITLE);
 
+		getRootPane().setDefaultButton(okButton);
+		
 		/**************************************************************************/
 		//MenuBar
 		/**************************************************************************/

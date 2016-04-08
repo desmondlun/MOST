@@ -29,6 +29,8 @@ public class AboutDialog extends JDialog {
 		// need to set up box layout
 		setTitle(GraphicalInterfaceConstants.ABOUT_BOX_TITLE);
 		
+		getRootPane().setDefaultButton(okButton);
+		
 		//box layout
 		Box vb = Box.createVerticalBox();
 		   	    

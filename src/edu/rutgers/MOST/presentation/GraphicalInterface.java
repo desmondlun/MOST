@@ -6200,13 +6200,6 @@ public class GraphicalInterface extends JFrame {
 				model.addRow(createCompartmentsRow(maxId));
 			}
 			setUpCompartmentsTable(model);
-//			MetaboliteUndoItem undoItem = createMetaboliteUndoItem("", "", row, col, id, UndoConstants.ADD_ROW, UndoConstants.METABOLITE_UNDO_ITEM_TYPE);
-//			setUndoOldCollections(undoItem);				
-//			int maxRow = compartmentsTable.getModel().getRowCount();
-//			int viewRow = compartmentsTable.convertRowIndexToView(maxRow - 1);
-//			setTableCellFocused(viewRow, 1, compartmentsTable);
-//			setUndoNewCollections(undoItem);
-//			setUpMetabolitesUndo(undoItem);
 			model.setValueAt(newValue, LocalConfig.getInstance().getListOfCompartments().size(), CompartmentsConstants.ABBREVIATION_COLUMN);
 			SBMLCompartment comp = new SBMLCompartment();
 			comp.setId(newValue);
@@ -13333,18 +13326,24 @@ public class GraphicalInterface extends JFrame {
 	public void visualizeMenuProcesses() {
 		if (locateMetaboliteIdentifierColumn() ) {
 			int index = -1;
+			ArrayList<String> compartments = new ArrayList<String>();
 			// check for blank compartment value
 			for (int k = 0; k < LocalConfig.getInstance().getListOfCompartments().size(); k++) {
 				if (LocalConfig.getInstance().getListOfCompartments().get(k).getId() == null ||
 						LocalConfig.getInstance().getListOfCompartments().get(k).getId().trim().length() == 0) {
 					index = k;
+				} else {
+					compartments.add(LocalConfig.getInstance().getListOfCompartments().get(k).getId().trim());
 				}
 			}
 			if (index > -1) {
-//			if (idMetabMap.size() > 0) {
-				String blankCompartmentId = "\"C_1\"";
+				String blankCompartmentId = GraphicalInterfaceConstants.DEFAULT_COMPARTMENT_ID;
+				if (compartments.contains(blankCompartmentId)) {
+					Utilities u = new Utilities();
+					blankCompartmentId = u.uniqueSaveName(blankCompartmentId, compartments);
+				}
 				// remove quotes
-				String blankCompartmentEntry = blankCompartmentId.substring(1, blankCompartmentId.length() - 1);
+				//String blankCompartmentEntry = blankCompartmentId.substring(1, blankCompartmentId.length() - 1);
 				Object[] options = {"    Yes    ", "    No    ",};
 	    		int choice = JOptionPane.showOptionDialog(null, 
 	    				"Model Cannot Be Visualized With Blank Compartment Abbreviations. "
@@ -13360,8 +13359,8 @@ public class GraphicalInterface extends JFrame {
 	    			if (LocalConfig.getInstance().getListOfCompartments().size() > maxId) {
 	    				model.addRow(createCompartmentsRow(maxId));
 	    			}
-	    			model.setValueAt(blankCompartmentEntry, index, CompartmentsConstants.ABBREVIATION_COLUMN);
-	    			renameCompartmentsTableCompartment("", blankCompartmentEntry, index, false);
+	    			model.setValueAt(blankCompartmentId, index, CompartmentsConstants.ABBREVIATION_COLUMN);
+	    			renameCompartmentsTableCompartment("", blankCompartmentId, index, false);
 	    			createCompartmentNameDialog();
 	    		}
 			} else {

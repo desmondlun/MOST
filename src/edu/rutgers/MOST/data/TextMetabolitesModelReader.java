@@ -209,7 +209,7 @@ public class TextMetabolitesModelReader {
 					}	
 					
 					if (LocalConfig.getInstance().getCompartmentColumnIndex() > -1) {
-						compartment = dataArray[LocalConfig.getInstance().getCompartmentColumnIndex()];	
+						compartment = dataArray[LocalConfig.getInstance().getCompartmentColumnIndex()].trim();	
 						metaboliteIdCompartmentMap.put(new Integer(id), compartment);
 						if (!compartments.contains(compartment)) {
 							compartments.add(compartment);
