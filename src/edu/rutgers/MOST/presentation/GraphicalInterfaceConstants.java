@@ -341,7 +341,8 @@ public class GraphicalInterfaceConstants
 
 	public static final String COMPARTMENT_RENAME_TITLE = "Rename Compartment?";
 	public static final String COMPARTMENT_RENAME_MESSAGE_PREFIX = "Renaming '";
-	public static final String COMPARTMENT_RENAME_MESSAGE_SUFFIX = "' will result in changing one or more metabolites and reactions. Are you sure you want to do this?";
+	public static final String COMPARTMENT_RENAME_MESSAGE_SUFFIX = "' will result in changing metabolites and reactions. "
+		+ "<p> This action is cannot be undone. Are you sure you want to do this?";
 
 	// invalid reactions
 	public static final String INVALID_REACTIONS_ENTRY_ERROR_TITLE = "Invalid Reaction";

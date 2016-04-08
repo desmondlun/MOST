@@ -62,10 +62,7 @@ public class CompartmentsTableUpdater {
 	public void updateTableByRow(JXTable table, int row) {
 		for (int i = 0; i < LocalConfig.getInstance().getListOfCompartments().size(); i++) {
 			if (LocalConfig.getInstance().getListOfCompartments().get(i).getId().equals(table.getModel().getValueAt(row, CompartmentsConstants.ABBREVIATION_COLUMN))) {
-//				LocalConfig.getInstance().getListOfCompartments().get(i).setName((String) table.getModel().getValueAt(tcl.getRow(), CompartmentsConstants.NAME_COLUMN));
-//				LocalConfig.getInstance().getListOfCompartments().get(i).setOutside((String) table.getModel().getValueAt(tcl.getRow(), CompartmentsConstants.OUTSIDE_COLUMN));
 				updateCompartment(table, LocalConfig.getInstance().getListOfCompartments().get(i), row);
-				System.out.println(LocalConfig.getInstance().getListOfCompartments().get(i));
 			}
 		}
 	}

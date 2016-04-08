@@ -249,7 +249,6 @@ public class MetaboliteUndoItem implements UndoItem {
 		} else if (this.undoType.equals(UndoConstants.RENAME_METABOLITE)) {
 			rewriteReactions("undo");
 			undoRename();
-			//rewriteReactions("undo");
 		} else if (this.undoType.equals(UndoConstants.DELETE_COLUMN)) {
 			undoDeleteColumn();
 			copyTableUndoAction();
@@ -281,7 +280,6 @@ public class MetaboliteUndoItem implements UndoItem {
 		} else if (this.undoType.equals(UndoConstants.RENAME_METABOLITE)) {
 			rewriteReactions("redo");
 			redoRename();
-			//rewriteReactions("redo");
 		} else if (this.undoType.equals(UndoConstants.DELETE_COLUMN)) {
 			redoDeleteColumn();
 			copyTableRedoAction();
@@ -479,6 +477,7 @@ public class MetaboliteUndoItem implements UndoItem {
 				}
 				equn.writeReactionEquation();
 				GraphicalInterface.updateReactionsCellById(equn.equationAbbreviations, participatingReactions.get(i), GraphicalInterfaceConstants.REACTION_EQUN_ABBR_COLUMN);
+				GraphicalInterface.updateReactionsCellById(equn.equationNames, participatingReactions.get(i), GraphicalInterfaceConstants.REACTION_EQUN_NAMES_COLUMN);
 			} else if (column == GraphicalInterfaceConstants.METABOLITE_NAME_COLUMN) {
 				for (int j = 0; j < equn.getReactants().size(); j++) {
 					if (equn.getReactants().get(j).getMetaboliteName().equals(oldReactant)) {

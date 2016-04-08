@@ -80,7 +80,6 @@ public class SBMLModelReader {
 			} 
 			listOfCompartments.add(comp);
 		}
-		//System.out.println(listOfCompartments);
 		LocalConfig.getInstance().setListOfCompartments(listOfCompartments);
 		
 		//ArrayList<String> compartmentsList = new ArrayList<String>();
@@ -207,8 +206,6 @@ public class SBMLModelReader {
 							}	
 						}
 					}
-					//System.out.println(metabolitesMetaColumnNames);
-
 				}
 				for (int n = 0; n < metabNoteItemList.size(); n++) {
 					if (metabNoteItemList.get(n).contains(":")) {
@@ -233,7 +230,6 @@ public class SBMLModelReader {
 						}
 					}
 				}
-				//System.out.println(metabolitesMetaColumnMap);
 			} 
 			metabRow.add(charge);	
 			metabRow.add(metabolites.get(i).getCompartment());
@@ -248,14 +244,8 @@ public class SBMLModelReader {
 			for (int m = 0; m < metabolitesMetaColumnNames.size(); m++) {
 				if (i == 0) {
 					metabTableModel.addColumn(metabolitesMetaColumnNames.get(m));
-					//System.out.println("add metab col " + metabolitesMetaColumnNames);
 				}
 				metabRow.add(metabolitesMetaColumnMap.get(metabolitesMetaColumnNames.get(m)));
-				/*
-				System.out.println(j);
-				System.out.println(reactionsMetaColumnNames2.get(m));
-				System.out.println(reactionsMetaColumnMap.get(reactionsMetaColumnNames2.get(m)));
-				*/
 			}	
 			
 			String keggId = "";
@@ -284,7 +274,6 @@ public class SBMLModelReader {
 					if (chebiId.endsWith("\"")) {
 						chebiId = chebiId.replace("\"", "");
 					}
-					//System.out.println(chebiId);
 				} 
 			}
 			metabKeggIds.add(keggId);
@@ -332,9 +321,7 @@ public class SBMLModelReader {
 				LocalConfig.getInstance().setProgress((j * ProgressConstants.REACTION_LOAD_PERCENT) / reactions.size() 
 						+ ProgressConstants.METABOLITE_LOAD_PERCENT + ProgressConstants.SBML_LOAD_PERCENT);		
 			}
-			
-			//System.out.println("j" + j);
-
+		
 			String fluxValue = GraphicalInterfaceConstants.FLUX_VALUE_DEFAULT_STRING;
 			String minFlux = GraphicalInterfaceConstants.MIN_FLUX_DEFAULT_STRING;
 			String maxFlux = GraphicalInterfaceConstants.MAX_FLUX_DEFAULT_STRING;
@@ -358,15 +345,12 @@ public class SBMLModelReader {
 				}				
 			}
 			reacRow.add(fluxValue);
-			//System.out.println("flux value " + fluxValue);
 			reacRow.add(minFlux);
 			reacRow.add(maxFlux);
 			
 			reacRow.add(reactions.get(j).getId());
 			reactionAbbreviationIdMap.put(reactions.get(j).getId(), new Integer(j));
-			//System.out.println("reac id " + reactions.get(j).getId());
 			reacRow.add(reactions.get(j).getName());
-			//System.out.println("name " + reactions.get(j).getName());
 
 			String reversible = "";
 			if (!reactions.get(j).getReversible()) {
@@ -377,7 +361,6 @@ public class SBMLModelReader {
 				// it will not be 0
 				lowerBound = GraphicalInterfaceConstants.LOWER_BOUND_DEFAULT_REVERSIBLE_STRING;
 			}
-			//System.out.println("reversible " + reversible);
 
 			SBMLReactionEquation equation = new SBMLReactionEquation();
 			ArrayList<SBMLReactant> equnReactants = new ArrayList<SBMLReactant>();
@@ -431,7 +414,6 @@ public class SBMLModelReader {
 				if (!compartmentReactantsList.contains(metaboliteIdCompartmentMap.get(id))) {
 					compartmentReactantsList.add(metaboliteIdCompartmentMap.get(id));
 				}
-				//System.out.println(reactant.toString());
 				equnReactants.add(reactant);
 			}
 
@@ -478,7 +460,6 @@ public class SBMLModelReader {
 				if (!compartmentProductsList.contains(metaboliteIdCompartmentMap.get(id))) {
 					compartmentProductsList.add(metaboliteIdCompartmentMap.get(id));
 				}
-				//System.out.println(product.toString());
 				equnProducts.add(product);
 			}
             equation.setReactants(equnReactants);
@@ -540,12 +521,8 @@ public class SBMLModelReader {
 			} 
 			
 			reacRow.add(lowerBound);
-			//System.out.println("lower bound " + lowerBound);
 			reacRow.add(upperBound);
-			//System.out.println("upper bound " + upperBound);
 			reacRow.add(biologicalObjective);
-			//System.out.println("biol obj " + biologicalObjective);
-			//reacRow.add(syntheticObjective);
 			
 			Map<String, String> reactionsMetaColumnMap = new HashMap<String, String>();
 			if (reactions.get(j).isSetNotes()) {
@@ -588,14 +565,12 @@ public class SBMLModelReader {
 
 				StringBuffer locusBfr = new StringBuffer();
 				if (j == 0) {
-					//System.out.println(noteItemList);
 					//set list of notes names to meta columns							
 					boolean genes = false;
 					for (int n = 0; n < noteItemList.size(); n++) {
 						if (noteItemList.get(n).contains(":")) {
 							//accounts for condition of multiple ":"
 							String columnName = noteItemList.get(n).substring(0, noteItemList.get(n).indexOf(":"));
-					        //System.out.println(columnName);
 							boolean contains = false;
 
 							if (columnName.compareTo("genes") == 0) {
@@ -680,7 +655,6 @@ public class SBMLModelReader {
 				if (locusBfrStr.length() > 1) {
 					locusBfrStr = locusBfrStr.substring(0, locusBfrStr.length() - 2);
 				}
-				//System.out.println(locusBfrStr);
 							
 				for (int n = 0; n < noteItemList.size(); n++) {
 					if (noteItemList.get(n).contains(":")) {
@@ -718,8 +692,6 @@ public class SBMLModelReader {
 							containsMaxFlux = true;
 						}
 						if (columnName.compareTo("LOCUS") == 0) {
-							//System.out.println(j);
-							//System.out.println(locusBfrStr);
 							reactionsMetaColumnMap.put("Genes", locusBfrStr);
 						} else {
 							if (reactionsMetaColumnNames.contains(columnName)) {
@@ -728,7 +700,6 @@ public class SBMLModelReader {
 						}					    
 					}					
 				}
-				//System.out.println(reactionsMetaColumnMap);
 			}
 			reacRow.add(syntheticObjective);
 			reacRow.add(geneAssociation);
@@ -749,18 +720,12 @@ public class SBMLModelReader {
 						reacTableModel.addColumn(SBMLConstants.LOCUS_COLUMN_DISPLAY_NAME);
 					}
 					reacRow.add(reactionsMetaColumnMap.get(SBMLConstants.LOCUS_COLUMN_DISPLAY_NAME));
-//					System.out.println(j);
-//					System.out.println(SBMLConstants.LOCUS_COLUMN_DISPLAY_NAME);
-//					System.out.println(reactionsMetaColumnMap.get(SBMLConstants.LOCUS_COLUMN_DISPLAY_NAME));
 				} else {
 					if (j == 0) {
 						reacTableModel.addColumn(reactionsMetaColumnNames2.get(m));
 						//System.out.println("add reac col " + reactionsMetaColumnNames2);
 					}
 					reacRow.add(reactionsMetaColumnMap.get(reactionsMetaColumnNames2.get(m)));
-//					System.out.println(j);
-//					System.out.println(reactionsMetaColumnNames2.get(m));
-//					System.out.println(reactionsMetaColumnMap.get(reactionsMetaColumnNames2.get(m)));
 				}
 			}	
 			
@@ -775,9 +740,7 @@ public class SBMLModelReader {
 						reacTableModel.addColumn(GraphicalInterfaceConstants.REACTION_KEGG_ID_COLUMN_NAME);
 						LocalConfig.getInstance().setKeggReactionIdColumnName(GraphicalInterfaceConstants.REACTION_KEGG_ID_COLUMN_NAME);
 					} 
-					//System.out.println(j);
 					keggId = reactions.get(j).getAnnotationString().substring(reactions.get(j).getAnnotationString().indexOf("kegg.reaction") + 14, reactions.get(j).getAnnotationString().indexOf("kegg.reaction") + 20);
-					//System.out.println(keggId);
 				}
 			}
 			reacKeggIds.add(keggId);
@@ -796,22 +759,15 @@ public class SBMLModelReader {
 		LocalConfig.getInstance().setMaxReactionId(reactions.size());
 		LocalConfig.getInstance().setReactionsMetaColumnNames(reactionsMetaColumnNames);
 		LocalConfig.getInstance().setMetaboliteAbbreviationIdMap(metaboliteAbbreviationIdMap);
-		//System.out.println(metaboliteNameIdMap);
 		LocalConfig.getInstance().setMetaboliteIdNameMap(metaboliteIdNameMap);
 		LocalConfig.getInstance().setMetaboliteIdCompartmentMap(metaboliteIdCompartmentMap);
-		//System.out.println(LocalConfig.getInstance().getMetaboliteIdCompartmentMap());
-		//System.out.println(LocalConfig.getInstance().getMetaboliteUsedMap());
 		LocalConfig.getInstance().setReactionEquationMap(reactionEquationMap);
-		//System.out.println(LocalConfig.getInstance().getReactionEquationMap());
 		LocalConfig.getInstance().setReactionAbbreviationIdMap(reactionAbbreviationIdMap);
-		//System.out.println(reactionAbbreviationIdMap);
 		LocalConfig.getInstance().setProgress(100);	
 		if (containsMinFlux && containsMaxFlux) {
 			LocalConfig.getInstance().getShowFVAColumnsList().add(LocalConfig.getInstance().getModelName());
 		}
-//		System.out.println(listOfCompartmentLists);
 		LocalConfig.getInstance().setListOfCompartmentLists(listOfCompartmentLists);
-		//System.out.println(LocalConfig.getInstance().getShowFVAColumnsList());
 		finished = true;
 		//System.out.println("Done");
 
