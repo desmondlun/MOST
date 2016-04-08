@@ -326,6 +326,11 @@ public class GraphicalInterfaceConstants
 	public static final String METABOLITE_RENAME_ERROR_TITLE = "Rename Error";
 	public static final String METABOLITE_RENAME_ERROR_MESSAGE = "Metabolite Abbreviation Cannot Be Blank if it Participates in Reactions";
 
+	public static final String COMPARTMENT_CHANGE_TITLE = "Compartment Warning";
+	public static final String COMPARTMENT_PASTE_TITLE = "Compartment Paste Warning";
+	public static final String COMPARTMENT_PASTE_MESSAGE = "<html><p>Changing a Compartment may result in updating one or more reactions" +
+	"<p>This action cannot be undone. Are you sure you want to do this?";
+	
 	// duplicate metabolite
 	public static final String DUPLICATE_METABOLITE_TITLE = "Duplicate Metabolite";
 	public static final String DUPLICATE_METABOLITE_MESSAGE = "Duplicate Metabolite. Rename as ";
@@ -357,6 +362,8 @@ public class GraphicalInterfaceConstants
 	public static final String LOWER_BOUND_REPLACE_ALL_ERROR = "Lower bound must be less than or equal to upper bound.";
 	public static final String UPPER_BOUND_REPLACE_ALL_ERROR = "Upper bound must be greater than or equal to lower bound.";
 	public static final String INVALID_REPLACE_ALL_BOOLEAN_VALUE = "Boolean Value Error. Must be \"True\" or \"False\"";
+	public static final String COMPARTMENT_REPLACE_ALL_MESSAGE = "Some of the values found are compartments and cannot be replaced. "
+    	+ "The Compartments Table can be used to rename a compartment.";
 
 	// paste errors
 	public static final String PASTE_AREA_ERROR = "Copy Area and Paste Area are different sizes.";
@@ -366,7 +373,7 @@ public class GraphicalInterfaceConstants
 	public static final String PASTE_OUT_OF_RANGE_ERROR = "Paste area out of range";
 	public static final String INVALID_PASTE_COMPARTMENT_VALUE_TITLE = "Invalid Entry";
     public static final String INVALID_PASTE_COMPARTMENT_VALUE = "Compartment Abbreviation Cannot Be Blank";
-
+    
 	// clear error
 	public static final String CLEAR_ERROR_MESSAGE = "One or more cells selected require a value and cannot be cleared.";
 
