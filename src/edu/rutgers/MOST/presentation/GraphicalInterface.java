@@ -345,6 +345,8 @@ public class GraphicalInterface extends JFrame {
 	// visualization
 	public boolean pathwayFilesRead;
 	public static boolean isVisualizing;
+	
+	public boolean compartmentUpdate;
 
 	/*****************************************************************************/
 	// end boolean values
@@ -5213,7 +5215,9 @@ public class GraphicalInterface extends JFrame {
 					setUndoNewCollections(undoItem);
 					setUpMetabolitesUndo(undoItem);
 				} else {
-					formulaBar.setText(mtcl.getOldValue());
+					if (!compartmentUpdate) {
+						formulaBar.setText(mtcl.getOldValue());
+					}
 				}
 			}			
 		}
@@ -6043,21 +6047,44 @@ public class GraphicalInterface extends JFrame {
 				}
 			}
 		} else if (colIndex == GraphicalInterfaceConstants.COMPARTMENT_COLUMN) {
+			compartmentUpdate = false;
 			if (newValue == null || newValue.trim().length() == 0) {
 				if (!replaceAllMode) {
 					setFindReplaceAlwaysOnTop(false);
 					JOptionPane.showMessageDialog(null,                
-							GraphicalInterfaceConstants.INVALID_PASTE_COMPARTMENT_VALUE,                
-							GraphicalInterfaceConstants.INVALID_PASTE_COMPARTMENT_VALUE_TITLE,                               
-							JOptionPane.ERROR_MESSAGE);
+						GraphicalInterfaceConstants.INVALID_PASTE_COMPARTMENT_VALUE,                
+						GraphicalInterfaceConstants.INVALID_PASTE_COMPARTMENT_VALUE_TITLE,                               
+						JOptionPane.ERROR_MESSAGE);
 					formulaBar.setText(getTableCellOldValue());
 					setFindReplaceAlwaysOnTop(true);
 				}				
 				metaboliteUpdateValid = false;
 				metabolitesTable.getModel().setValueAt(oldValue, rowIndex, colIndex);
 			} else {
-				metabolitesTable.getModel().setValueAt(newValue, rowIndex, colIndex);
-				updateMetabolitesCompartmentValue(id, metabAbbrev, oldValue, newValue);
+				Object[] options = {"    Yes    ", "    No    ",};
+				int choice = JOptionPane.showOptionDialog(null, 
+					GraphicalInterfaceConstants.COMPARTMENT_PASTE_MESSAGE, 
+					GraphicalInterfaceConstants.COMPARTMENT_CHANGE_TITLE, 
+					JOptionPane.YES_NO_OPTION, 
+					JOptionPane.QUESTION_MESSAGE, 
+					null, options, options[0]);
+				if (choice == JOptionPane.YES_OPTION) {
+					metaboliteUpdateValid = false;
+					metabolitesTable.getModel().setValueAt(newValue, rowIndex, colIndex);
+					updateMetabolitesCompartmentValue(id, metabAbbrev, oldValue, newValue);
+					LocalConfig.getInstance().metabolitesTableChanged = true;
+					compartmentUpdate = true;
+					enableSaveItems(true);
+					// fixes bug where entering value in formula bar in a sorted column and then
+					// hitting enter - old value (or value from somewhere else in row) set
+					formulaBar.setText(newValue);
+					scrollToLocation(metabolitesTable, metabolitesTable.getSelectedRow(), metabolitesTable.getSelectedColumn());
+					clearUndoItems();
+	    			resetUndo();
+				}
+				if (choice == JOptionPane.NO_OPTION || choice == JOptionPane.CANCEL_OPTION) {
+					metaboliteUpdateValid = false;
+				}
 			}
 		} else {
 			// action for remaining columns
@@ -6136,7 +6163,7 @@ public class GraphicalInterface extends JFrame {
     		if (showMessage) {
     			Object[] options = {"    Yes    ", "    No    ",};
         		int choice = JOptionPane.showOptionDialog(null, 
-        				GraphicalInterfaceConstants.COMPARTMENT_RENAME_MESSAGE_PREFIX + 
+        				"<html><p>" + GraphicalInterfaceConstants.COMPARTMENT_RENAME_MESSAGE_PREFIX + 
         				oldValue + GraphicalInterfaceConstants.COMPARTMENT_RENAME_MESSAGE_SUFFIX, 
         				GraphicalInterfaceConstants.COMPARTMENT_RENAME_TITLE, 
         				JOptionPane.YES_NO_OPTION, 
@@ -6144,10 +6171,11 @@ public class GraphicalInterface extends JFrame {
         				null, options, options[0]);
         		if (choice == JOptionPane.YES_OPTION) {
         			updateTablesForCompartmentRename(idMetabMap, oldValue, newValue, row);
+        			clearUndoItems();
+	    			resetUndo();
         		}
         		if (choice == JOptionPane.NO_OPTION) {
-        			int id = Integer.parseInt((String) (compartmentsTable.getModel().getValueAt(row, 0)));
-        			updateMetabolitesCellById(oldValue, id, GraphicalInterfaceConstants.COMPARTMENT_COLUMN);
+        			compartmentsTable.setValueAt(oldValue, row, CompartmentsConstants.ABBREVIATION_COLUMN);
         			compartmentsTableUpdater.updateTableByRow(compartmentsTable, row);
         		}		
     		} else {
@@ -6234,6 +6262,19 @@ public class GraphicalInterface extends JFrame {
 		}		
 		setBooleanDefaults();
 		clearConfigLists();	
+		showPrompt = true;
+		highlightUnusedMetabolites = false;
+		highlightUnusedMetabolitesItem.setState(false);
+		resetUndo();
+		// default selection mode cells only
+		setUpCellSelectionMode();
+		unsortReacMenuItem.setEnabled(false);
+		unsortMetabMenuItem.setEnabled(false);
+		LocalConfig.getInstance().setReactionsLocationsListCount(0);
+		LocalConfig.getInstance().setMetabolitesLocationsListCount(0);
+	}
+	
+	public void resetUndo() {
 		undoSplitButton.setToolTipText("Can't Undo (Ctrl+Z)");
 		redoSplitButton.setToolTipText("Can't Redo (Ctrl+Y)");
 		disableOptionComponent(undoSplitButton, undoLabel, undoGrayedLabel);
@@ -6242,17 +6283,8 @@ public class GraphicalInterface extends JFrame {
 		redoCount = 1;
 		LocalConfig.getInstance().setNumReactionTablesCopied(0);
 		LocalConfig.getInstance().setNumMetabolitesTableCopied(0);
-		showPrompt = true;
-		highlightUnusedMetabolites = false;
-		highlightUnusedMetabolitesItem.setState(false);
 		setReactionsSortColumnIndex(0);
 		setMetabolitesSortColumnIndex(0);
-		LocalConfig.getInstance().setReactionsLocationsListCount(0);
-		LocalConfig.getInstance().setMetabolitesLocationsListCount(0);		
-		// default selection mode cells only
-		setUpCellSelectionMode();
-		unsortReacMenuItem.setEnabled(false);
-		unsortMetabMenuItem.setEnabled(false);
 	}
 	
 	public void setUpCompartmentsTable(DefaultTableModel model) {
@@ -6449,6 +6481,7 @@ public class GraphicalInterface extends JFrame {
 		gdbbSelected = false;
 		gdbbRunning = false;
 		gdbbProcessed = false;
+		compartmentUpdate = false;
 	}
 
 	public void clearConfigLists() {
@@ -6472,7 +6505,14 @@ public class GraphicalInterface extends JFrame {
 		}		
 		LocalConfig.getInstance().getAddedMetabolites().clear();
 		LocalConfig.getInstance().getReactionEquationMap().clear();
-		LocalConfig.getInstance().getUndoItemMap().clear();
+		
+		clearUndoItems();
+		
+		LocalConfig.getInstance().setMaxMetabolite(0);
+		LocalConfig.getInstance().setMaxMetaboliteId(0);
+	}
+	
+	public void clearUndoItems() {
 		LocalConfig.getInstance().getUndoItemMap().clear();
 
 		// clear and reinitialize sort lists
@@ -6484,9 +6524,6 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().getMetabolitesSortColumns().add(0);
 		LocalConfig.getInstance().getMetabolitesSortOrderList().clear();
 		LocalConfig.getInstance().getMetabolitesSortOrderList().add(SortOrder.ASCENDING);
-		
-		LocalConfig.getInstance().setMaxMetabolite(0);
-		LocalConfig.getInstance().setMaxMetaboliteId(0);
 	}
 
 	public static DefaultTableModel copyMetabolitesTableModel(DefaultTableModel model) {
@@ -9895,7 +9932,19 @@ public class GraphicalInterface extends JFrame {
 			}
 		} else if (columnIndex == GraphicalInterfaceConstants.COMPARTMENT_COLUMN) {
 			if (value != null && value.trim().length() > 0) {
-				return true;
+				Object[] options = {"    Yes    ", "    No    ",};
+				int choice = JOptionPane.showOptionDialog(null, 
+					GraphicalInterfaceConstants.COMPARTMENT_PASTE_MESSAGE, 
+					GraphicalInterfaceConstants.COMPARTMENT_PASTE_TITLE, 
+					JOptionPane.YES_NO_OPTION, 
+					JOptionPane.QUESTION_MESSAGE, 
+					null, options, options[0]);
+				if (choice == JOptionPane.YES_OPTION) {
+					return true;
+				}
+				if (choice == JOptionPane.NO_OPTION || choice == JOptionPane.CANCEL_OPTION) {
+					return false;
+				}
 			} else {
 				setPasteError(GraphicalInterfaceConstants.INVALID_PASTE_COMPARTMENT_VALUE);
 				setReplaceAllError(GraphicalInterfaceConstants.INVALID_PASTE_COMPARTMENT_VALUE);
@@ -11921,6 +11970,7 @@ public class GraphicalInterface extends JFrame {
 
 	public void metabolitesReplace() {
 		metabolitesReplace = true;
+		compartmentUpdate = false;
 		int viewRow = metabolitesTable.convertRowIndexToModel(getMetabolitesReplaceLocation().get(0));
 		String oldValue = (String) metabolitesTable.getModel().getValueAt(viewRow, getMetabolitesReplaceLocation().get(1));
 		String newValue = replaceValue(oldValue, replaceLocation(oldValue));
@@ -11939,7 +11989,16 @@ public class GraphicalInterface extends JFrame {
 				setUndoNewCollections(undoItem);
 				setUpMetabolitesUndo(undoItem);
 			} else {
-				formulaBar.setText(oldValue);
+				if (compartmentUpdate) {
+					enableSaveItems(true);
+					LocalConfig.getInstance().metabolitesTableChanged = true;
+					scrollToLocation(metabolitesTable, getRowFromMetabolitesId(id), getMetabolitesReplaceLocation().get(1));
+					formulaBar.setText(newValue);
+					clearUndoItems();
+	    			resetUndo();
+				} else {
+					formulaBar.setText(oldValue);
+				}
 			}
 			setMetabolitesFindLocationsList(metabolitesLocationsList());
 			int count = LocalConfig.getInstance().getMetabolitesLocationsListCount();
@@ -12043,12 +12102,13 @@ public class GraphicalInterface extends JFrame {
 							metabolitesTable.getModel().setValueAt(replaceAllValue, viewRow, getMetabolitesFindLocationsList().get(i).get(1));
 						}
 					} else if (getMetabolitesFindLocationsList().get(i).get(1) == GraphicalInterfaceConstants.COMPARTMENT_COLUMN) {
-						if (isMetabolitesEntryValid(getMetabolitesFindLocationsList().get(i).get(1), replaceAllValue)) {
-							metabolitesTable.setValueAt(replaceAllValue, viewRow, getMetabolitesFindLocationsList().get(i).get(1));
-							updateMetabolitesCompartmentValue(id, metabAbbrev, oldValue, replaceAllValue);
-						} else {
+//						if (isMetabolitesEntryValid(getMetabolitesFindLocationsList().get(i).get(1), replaceAllValue)) {
+//							metabolitesTable.setValueAt(replaceAllValue, viewRow, getMetabolitesFindLocationsList().get(i).get(1));
+//							updateMetabolitesCompartmentValue(id, metabAbbrev, oldValue, replaceAllValue);
+//						} else {
+						setReplaceAllError(GraphicalInterfaceConstants.COMPARTMENT_REPLACE_ALL_MESSAGE);
 							validPaste = false;
-						}	
+//						}	
 					} else {
 						if (isMetabolitesEntryValid(getMetabolitesFindLocationsList().get(i).get(1), replaceAllValue)) {
 							metabolitesTable.setValueAt(replaceAllValue, viewRow, getMetabolitesFindLocationsList().get(i).get(1));			
@@ -13185,10 +13245,6 @@ public class GraphicalInterface extends JFrame {
 				getFluxLevelsDialog().setVisible(false);
 				getFluxLevelsDialog().dispose();
 				LocalConfig.getInstance().setFluxLevelsSet(true);
-//				if (LocalConfig.getInstance().isFluxLevelsSet()) {
-//					System.out.println("mzx " + LocalConfig.getInstance().getMaxFlux());
-//					System.out.println("sec " + LocalConfig.getInstance().getSecondaryMaxFlux());
-//				}
 			}
 		}
 	};
@@ -13346,8 +13402,9 @@ public class GraphicalInterface extends JFrame {
 				//String blankCompartmentEntry = blankCompartmentId.substring(1, blankCompartmentId.length() - 1);
 				Object[] options = {"    Yes    ", "    No    ",};
 	    		int choice = JOptionPane.showOptionDialog(null, 
-	    				"Model Cannot Be Visualized With Blank Compartment Abbreviations. "
-	    				+ "Blank Compartment Abbreviations Will Be Renamed to " + blankCompartmentId,
+	    				"<html><p>Model Cannot Be Visualized With Blank Compartment Abbreviations. "
+	    				+ "<p>Blank Compartment Abbreviations Will Be Renamed to " + blankCompartmentId +
+	    				". <p>This action cannot be undone.",
 	    				"Blank Compartment Entries", 
 	    				JOptionPane.YES_NO_OPTION, 
 	    				JOptionPane.QUESTION_MESSAGE, 
@@ -13361,6 +13418,8 @@ public class GraphicalInterface extends JFrame {
 	    			}
 	    			model.setValueAt(blankCompartmentId, index, CompartmentsConstants.ABBREVIATION_COLUMN);
 	    			renameCompartmentsTableCompartment("", blankCompartmentId, index, false);
+	    			clearUndoItems();
+	    			resetUndo();
 	    			createCompartmentNameDialog();
 	    		}
 			} else {
