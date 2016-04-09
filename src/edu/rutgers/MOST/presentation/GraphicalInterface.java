@@ -347,6 +347,9 @@ public class GraphicalInterface extends JFrame {
 	public static boolean isVisualizing;
 	
 	public boolean compartmentUpdate;
+	public boolean compartmentPasteMessageShown;
+	public boolean compartmentPasteChoice;
+	public boolean noErrorAfterCompartmentPaste;
 
 	/*****************************************************************************/
 	// end boolean values
@@ -3394,6 +3397,11 @@ public class GraphicalInterface extends JFrame {
 				if (isRoot) {
 					if (metabolitesTable.getSelectedRow() > -1 && metabolitesTable.getSelectedColumn() > 0) {
 						metabolitesPaste();
+						if (compartmentUpdate) {
+							clearUndoItems();
+			    			resetUndo();
+						}
+						compartmentUpdate = false;
 					}					
 				}
 			}
@@ -6482,6 +6490,9 @@ public class GraphicalInterface extends JFrame {
 		gdbbRunning = false;
 		gdbbProcessed = false;
 		compartmentUpdate = false;
+		compartmentPasteMessageShown = false;
+		compartmentPasteChoice = true;
+		noErrorAfterCompartmentPaste = false;
 	}
 
 	public void clearConfigLists() {
@@ -8694,9 +8705,9 @@ public class GraphicalInterface extends JFrame {
 				if (!validPaste) {
 					restoreOldReactionsSort();
 					JOptionPane.showMessageDialog(null,                
-							getPasteError(),                
-							"Paste Error",                                
-							JOptionPane.ERROR_MESSAGE);
+						getPasteError(),                
+						"Paste Error",                                
+						JOptionPane.ERROR_MESSAGE);
 					setUpReactionsTable(oldReactionsModel);
 					LocalConfig.getInstance().getReactionsTableModelMap().put(LocalConfig.getInstance().getModelName(), oldReactionsModel);
 					deleteReactionsPasteUndoItem();
@@ -9399,6 +9410,11 @@ public class GraphicalInterface extends JFrame {
 			pasteMenu.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					metabolitesPaste();
+					if (compartmentUpdate) {
+						clearUndoItems();
+		    			resetUndo();
+					}
+					compartmentUpdate = false;
 				}
 			});
 		} else {
@@ -9620,6 +9636,7 @@ public class GraphicalInterface extends JFrame {
 
 	public void metabolitesPaste() {
 		// columns can not be repeatedly pasted (at least for now)
+		compartmentPasteMessageShown = false;
 		if (metabolitesTable.getSelectedColumns().length > 1 && metabolitesTable.getSelectedColumns().length != numberOfClipboardColumns()) {
 			JOptionPane.showMessageDialog(null,                
 					GraphicalInterfaceConstants.PASTE_AREA_ERROR,                
@@ -9746,10 +9763,13 @@ public class GraphicalInterface extends JFrame {
 				// if paste not valid, set old model
 				if (!validPaste) {
 					restoreOldMetabolitesSort();
-					JOptionPane.showMessageDialog(null,                
+					if (!noErrorAfterCompartmentPaste) {
+						JOptionPane.showMessageDialog(null,                
 							getPasteError(),                
 							"Paste Error",                                
 							JOptionPane.ERROR_MESSAGE);
+					}
+					noErrorAfterCompartmentPaste = false;
 					setUpMetabolitesTable(oldMetabolitesModel);
 					LocalConfig.getInstance().getMetabolitesTableModelMap().put(LocalConfig.getInstance().getModelName(), oldMetabolitesModel);
 					deleteReactionsPasteUndoItem();
@@ -9820,6 +9840,7 @@ public class GraphicalInterface extends JFrame {
 	}
 	
 	public void updateMetabolitesCellIfPasteValid(String value, int row, int col) {
+		compartmentUpdate = false;
 		Utilities u = new Utilities();
 		int id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_ID_COLUMN));		
 		String metabAbbrev = (String) metabolitesTable.getModel().getValueAt(row, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
@@ -9899,6 +9920,7 @@ public class GraphicalInterface extends JFrame {
 			if (isMetabolitesEntryValid(GraphicalInterfaceConstants.COMPARTMENT_COLUMN, value)) {
 				metabolitesTable.setValueAt(value, row, col);
 				updateMetabolitesCompartmentValue(id, metabAbbrev, value, value); 
+				compartmentUpdate = true;
 			} else {
 				validPaste = false;
 			}
@@ -9932,18 +9954,26 @@ public class GraphicalInterface extends JFrame {
 			}
 		} else if (columnIndex == GraphicalInterfaceConstants.COMPARTMENT_COLUMN) {
 			if (value != null && value.trim().length() > 0) {
-				Object[] options = {"    Yes    ", "    No    ",};
-				int choice = JOptionPane.showOptionDialog(null, 
-					GraphicalInterfaceConstants.COMPARTMENT_PASTE_MESSAGE, 
-					GraphicalInterfaceConstants.COMPARTMENT_PASTE_TITLE, 
-					JOptionPane.YES_NO_OPTION, 
-					JOptionPane.QUESTION_MESSAGE, 
-					null, options, options[0]);
-				if (choice == JOptionPane.YES_OPTION) {
-					return true;
-				}
-				if (choice == JOptionPane.NO_OPTION || choice == JOptionPane.CANCEL_OPTION) {
-					return false;
+				if (!compartmentPasteMessageShown) {
+					compartmentPasteMessageShown = true;
+					Object[] options = {"    Yes    ", "    No    ",};
+					int choice = JOptionPane.showOptionDialog(null, 
+						GraphicalInterfaceConstants.COMPARTMENT_PASTE_MESSAGE, 
+						GraphicalInterfaceConstants.COMPARTMENT_PASTE_TITLE, 
+						JOptionPane.YES_NO_OPTION, 
+						JOptionPane.QUESTION_MESSAGE, 
+						null, options, options[0]);
+					if (choice == JOptionPane.YES_OPTION) {
+						compartmentPasteChoice = true;
+						return true;
+					}
+					if (choice == JOptionPane.NO_OPTION || choice == JOptionPane.CANCEL_OPTION) {
+						noErrorAfterCompartmentPaste = true;
+						compartmentPasteChoice = false;
+						return false;
+					}
+				} else {
+					return compartmentPasteChoice;
 				}
 			} else {
 				setPasteError(GraphicalInterfaceConstants.INVALID_PASTE_COMPARTMENT_VALUE);
@@ -11241,6 +11271,11 @@ public class GraphicalInterface extends JFrame {
 				reactionsPaste();
 			} else if (tabbedPane.getSelectedIndex() == 1) {
 				metabolitesPaste();
+				if (compartmentUpdate) {
+					clearUndoItems();
+	    			resetUndo();
+				}
+				compartmentUpdate = false;
 			}
 		}
 	};
