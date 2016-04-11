@@ -764,6 +764,8 @@ public class GraphicalInterface extends JFrame {
 
 	public final JMenuItem unhighlightParticipatingReactionsMenu = new JMenuItem("Un-Highlight Participating Reactions");
 	public final JMenuItem unhighlightMenu = new JMenuItem("Un-Highlight Participating Reactions");
+	
+	public final JMenuItem popOutItem = new JMenuItem("Pop Out");
 
 	/*****************************************************************************/
 	// end menu items
@@ -1614,21 +1616,19 @@ public class GraphicalInterface extends JFrame {
 			}
 		});
 		outputPopupMenu.addSeparator();
-		final JMenuItem popOutItem = new JMenuItem("Pop Out");
 		outputPopupMenu.add(popOutItem);
 		popOutItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) { 	
 				OutputPopout popout = new OutputPopout();
 				popout.setIconImages(icons);
+				popout.okButton.addActionListener(outputPopoutOkButtonActionListener);
 				setPopout(popout);
 				// size is set in class
 //				popout.setSize(700, 400);
 				popout.setLocationRelativeTo(null);
 				popout.addWindowListener(new WindowAdapter() {
 					public void windowClosing(WindowEvent evt) {
-						getPopout().setVisible(false);
-						getPopout().dispose();
-						popOutItem.setEnabled(true);
+						outputPopoutCloseAction();
 					}
 				});	
 				popOutItem.setEnabled(false);
@@ -13051,6 +13051,18 @@ public class GraphicalInterface extends JFrame {
 	// end Solver Set Up methods
 	/******************************************************************************/
 	
+	public void outputPopoutCloseAction() {
+		getPopout().setVisible(false);
+		getPopout().dispose();
+		popOutItem.setEnabled(true);
+	}
+	
+	ActionListener outputPopoutOkButtonActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			outputPopoutCloseAction();
+		}
+	}; 
+	
 	public Integer getRowFromReactionsId(int id) {
 		int viewRow = 0;
 		for (int j = 0; j < reactionsTable.getRowCount(); j++) {
@@ -13590,8 +13602,20 @@ public class GraphicalInterface extends JFrame {
         }
 	}
 	
+	public void visualizationPopoutCloseAction() {
+		getVisualizationPopout().dispose();
+		showVisualizationReportMenu.setEnabled(true);
+	}
+	
+	ActionListener visualizationPopoutOkButtonActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			visualizationPopoutCloseAction();
+		}
+	}; 
+	
 	public void createVisualizationReport() {
 		OutputPopout p = new OutputPopout();
+		p.okButton.addActionListener(visualizationPopoutOkButtonActionListener);
 		p.setIconImages(icons);
 		p.setTitle(GraphicalInterfaceConstants.TITLE + " - " + "Visualization Report - " +
 			LocalConfig.getInstance().getModelName());
@@ -13601,8 +13625,7 @@ public class GraphicalInterface extends JFrame {
 		setVisualizationPopout(p);
 		p.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent evt) {
-				getVisualizationPopout().dispose();
-				showVisualizationReportMenu.setEnabled(true);
+				visualizationPopoutCloseAction();
 			}
 		});		
 	}

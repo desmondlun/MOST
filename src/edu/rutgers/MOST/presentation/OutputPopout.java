@@ -25,6 +25,7 @@ public class OutputPopout extends JFrame {
 	private final JMenuItem outputSelectAllItem = new JMenuItem("Select All");
 	private String pathName;
 	private JScrollPane scrollingText;
+	public JButton okButton = new JButton("  OK  ");
 
 	public OutputPopout() {		
 		//... Create scrollable text area.
@@ -40,6 +41,12 @@ public class OutputPopout extends JFrame {
 		JPanel content = new JPanel();
 		content.setLayout(new BorderLayout());
 		content.add(scrollingText, BorderLayout.CENTER);
+		
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.add(okButton);
+		content.add(buttonPanel, BorderLayout.SOUTH);
+		
+		getRootPane().setDefaultButton(okButton);
 
 		JMenuBar menuBar = new JMenuBar();
 		JMenu fileMenu = menuBar.add(new JMenu("File"));
