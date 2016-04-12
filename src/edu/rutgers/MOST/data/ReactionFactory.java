@@ -407,7 +407,7 @@ public class ReactionFactory {
 	}
 
 	// get index of column with EC numbers
-	public Integer locateECColumnColumn() {
+	public Integer locateECColumn() {
 		int index = -1;
 		for (int i = 0; i < LocalConfig.getInstance().getReactionsMetaColumnNames().size(); i++) {
 			for (int j = 0; j < GraphicalInterfaceConstants.EC_NUMBER_COLUMN_NAMES.length; j++) {

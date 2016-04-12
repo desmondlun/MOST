@@ -2355,7 +2355,7 @@ public class GraphicalInterface extends JFrame {
         		int index = LocalConfig.getInstance().getEcNumberColumn();
         		if (index == -1) {
         			ReactionFactory f = new ReactionFactory("SBML");
-        			index = f.locateECColumnColumn();
+        			index = f.locateECColumn();
         		}
         		showIdentifierColumnNameDialog(GraphicalInterfaceConstants.REACTIONS_COLUMNS_IDENTIFIER,
         			"Locate EC Number Column",
@@ -4987,10 +4987,15 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().getReactionsTableModelMap().put(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME, blankReacModel);
 		DefaultTableModel blankMetabModel = createBlankMetabolitesTableModel();
 		setUpMetabolitesTable(blankMetabModel);
+		DefaultTableModel blankCompModel = createBlankCompartmentsTableModel();
+		setUpCompartmentsTable(blankCompModel);
 		LocalConfig.getInstance().getMetabolitesTableModelMap().put(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME, blankMetabModel);
 		LocalConfig.getInstance().setModelName(GraphicalInterfaceConstants.DEFAULT_MODEL_NAME);
 		setUpTables();
 		setEnableAnalysisMenuItems( true );
+		LocalConfig.getInstance().getMetabolitesMetaColumnNames().clear();
+		LocalConfig.getInstance().getReactionsMetaColumnNames().clear();
+		resetIdentifierColumns();
 	}
 
 	class SBMLFileFilter extends javax.swing.filechooser.FileFilter {
@@ -7841,7 +7846,7 @@ public class GraphicalInterface extends JFrame {
 				setUpReactionsUndo(undoItem);
 				// find these columns after deletion since index may have changed
 				ReactionFactory r = new ReactionFactory("SBML");
-				LocalConfig.getInstance().setEcNumberColumn(r.locateECColumnColumn());
+				LocalConfig.getInstance().setEcNumberColumn(r.locateECColumn());
 				LocalConfig.getInstance().setKeggReactionIdColumn(r.locateKeggIdColumn());
 			}
 		});
@@ -13487,8 +13492,8 @@ public class GraphicalInterface extends JFrame {
 		String missingData = "";
 		boolean showMissingItemMessage = true;
 		// if KEGG id not set by user, attempt to locate programmatically
-		if (LocalConfig.getInstance().getKeggMetaboliteIdColumn() == -1 || 
-				LocalConfig.getInstance().getChebiIdColumn() > -1) {
+		if (LocalConfig.getInstance().getKeggMetaboliteIdColumn() == -1 && 
+				LocalConfig.getInstance().getChebiIdColumn() == -1) {
 			LocalConfig.getInstance().setKeggMetaboliteIdColumn(f.locateKeggIdColumn());
 			LocalConfig.getInstance().setChebiIdColumn(f.locateChebiIdColumn());
 		}
@@ -13533,7 +13538,7 @@ public class GraphicalInterface extends JFrame {
 		isVisualizing = true;
 		ReactionFactory rf = new ReactionFactory("SBML");
 		if (LocalConfig.getInstance().getEcNumberColumn() == -1) {
-			LocalConfig.getInstance().setEcNumberColumn(rf.locateECColumnColumn());
+			LocalConfig.getInstance().setEcNumberColumn(rf.locateECColumn());
 		}
 		Vector<SBMLReaction> rxns = null;
 //		Vector<SBMLReaction> membraneRxns = null;
@@ -13684,14 +13689,10 @@ public class GraphicalInterface extends JFrame {
 	}
 	
 	public void resetIdentifierColumns() {
-		int keggMetaboliteIdColumn = -1;
-		LocalConfig.getInstance().setKeggMetaboliteIdColumn(keggMetaboliteIdColumn);
-		int chebiIdColumn = -1;
-		LocalConfig.getInstance().setChebiIdColumn(chebiIdColumn);
-		int ecNumberColumn = -1;
-		LocalConfig.getInstance().setEcNumberColumn(ecNumberColumn);
-		int keggReactionIdColumn = -1;
-		LocalConfig.getInstance().setKeggReactionIdColumn(keggReactionIdColumn);
+		LocalConfig.getInstance().setKeggMetaboliteIdColumn(-1);
+		LocalConfig.getInstance().setChebiIdColumn(-1);
+		LocalConfig.getInstance().setEcNumberColumn(-1);
+		LocalConfig.getInstance().setKeggReactionIdColumn(-1);
 	}
 	
 	/********************************************************************************************/
