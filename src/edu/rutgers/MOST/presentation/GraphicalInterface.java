@@ -13492,18 +13492,19 @@ public class GraphicalInterface extends JFrame {
 				LocalConfig.getInstance().getChebiIdColumn() > -1) {
 			showMissingItemMessage = false;
 		} else {
-			missingItem = "KEGG Ids";
+			missingItem = "KEGG Ids or CHEBI Ids";
 			missingData = "metabolites";
 		}
 		
 		if (showMissingItemMessage) {
 			JOptionPane.showMessageDialog(null,                
-					"<html>No " + missingItem + " column present in the loaded model.<p><p>"
+					"<html>No " + missingItem + " columns present in the loaded model.<p><p>"
 							+ "MOST is unable to link " + missingData + " in model to "
 							+ missingData + " in the Visualizations database.<p><p>"
 							+ "Click Visualize --> Locate KEGG Id Column menu item to "
-							+ "locate KEGG Id column.", 
-							"Unable to Visualize Model",                             
+							+ "locate KEGG Id column or <p>Click Visualize --> Locate CHEBI Id "
+							+ "Column to locate CHEBI Id column.", 
+							"No Identifier Column - Unable to Visualize Model",                             
 					JOptionPane.WARNING_MESSAGE);
 		} else {
 			found = true;
