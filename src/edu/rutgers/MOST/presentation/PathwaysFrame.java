@@ -171,7 +171,7 @@ public class PathwaysFrame extends JApplet {
 	String compartmentLabel = "Model Name: " + LocalConfig.getInstance().getModelName();
 
 	//   	private double layoutScale;
-	private double viewScale = PathwaysFrameConstants.START_SCALING_FACTOR;
+	public double viewScale = PathwaysFrameConstants.START_SCALING_FACTOR;
 
 	private final JMenuItem saveGraphSVGItem = new JMenuItem("Save Graph As SVG");
 	private final JMenuItem saveWindowPNGItem = new JMenuItem("Save Window As PNG");
@@ -229,34 +229,39 @@ public class PathwaysFrame extends JApplet {
 		setLayout(new BorderLayout());
 		//final ScalingControl scaler = new CrossoverScalingControl();
 
-		// get visualization data from processor
-		VisualizationData visualizationData = LocalConfig.getInstance().getVisualizationData();
-		nodeNamePositionMap = visualizationData.getNodeNamePositionMap();
-		nodeNameList = visualizationData.getNodeNameList();
-		reactionMap = visualizationData.getReactionMap();
-		reactionList = visualizationData.getReactionList();
-		borderList = visualizationData.getBorderList();
-		noBorderList = visualizationData.getNoBorderList();
-		pathwayNames = visualizationData.getPathwayNames();
-		mainMetabolites = visualizationData.getMainMetabolites();
-		smallMainMetabolites = visualizationData.getSmallMainMetabolites();
-		sideMetabolites = visualizationData.getSideMetabolites();
-		cofactors = visualizationData.getCofactors();
-		reactions = visualizationData.getReactions();
-		fluxMap = visualizationData.getFluxMap();
-		colorMap = visualizationData.getColorMap();
-		koReactions = visualizationData.getKoReactions();
-		foundMetabolitesList = visualizationData.getFoundMetabolitesList();
-		foundReactionsList = visualizationData.getFoundReactionsList();
-		foundPathwayNamesList = visualizationData.getFoundPathwayNamesList();
-		iconMap = visualizationData.getIconMap();
-		plottedIds = visualizationData.getPlottedIds();
-		oldNameNewNameMap = visualizationData.getOldNameNewNameMap();
-		metaboliteAbbrPositionsMap = visualizationData.getMetaboliteAbbrPositionsMap();
-		keggMetaboliteIdPositionsMap = visualizationData.getKeggMetaboliteIdPositionsMap();
-		ecNumberPositionsMap = visualizationData.getEcNumberPositionsMap();
-		keggReactionIdPositionsMap = visualizationData.getKeggReactionIdPositionsMap();
-		reactionAbbrPositionsMap = visualizationData.getReactionAbbrPositionsMap();
+		try {
+			updateCollections();
+			// get visualization data from processor
+//			VisualizationData visualizationData = LocalConfig.getInstance().getVisualizationData();
+//			nodeNamePositionMap = visualizationData.getNodeNamePositionMap();
+//			nodeNameList = visualizationData.getNodeNameList();
+//			reactionMap = visualizationData.getReactionMap();
+//			reactionList = visualizationData.getReactionList();
+//			borderList = visualizationData.getBorderList();
+//			noBorderList = visualizationData.getNoBorderList();
+//			pathwayNames = visualizationData.getPathwayNames();
+//			mainMetabolites = visualizationData.getMainMetabolites();
+//			smallMainMetabolites = visualizationData.getSmallMainMetabolites();
+//			sideMetabolites = visualizationData.getSideMetabolites();
+//			cofactors = visualizationData.getCofactors();
+//			reactions = visualizationData.getReactions();
+//			fluxMap = visualizationData.getFluxMap();
+//			colorMap = visualizationData.getColorMap();
+//			koReactions = visualizationData.getKoReactions();
+//			foundMetabolitesList = visualizationData.getFoundMetabolitesList();
+//			foundReactionsList = visualizationData.getFoundReactionsList();
+//			foundPathwayNamesList = visualizationData.getFoundPathwayNamesList();
+//			iconMap = visualizationData.getIconMap();
+//			plottedIds = visualizationData.getPlottedIds();
+//			oldNameNewNameMap = visualizationData.getOldNameNewNameMap();
+//			metaboliteAbbrPositionsMap = visualizationData.getMetaboliteAbbrPositionsMap();
+//			keggMetaboliteIdPositionsMap = visualizationData.getKeggMetaboliteIdPositionsMap();
+//			ecNumberPositionsMap = visualizationData.getEcNumberPositionsMap();
+//			keggReactionIdPositionsMap = visualizationData.getKeggReactionIdPositionsMap();
+//			reactionAbbrPositionsMap = visualizationData.getReactionAbbrPositionsMap();
+		} catch (Exception e) {
+			
+		}
 		
 		transformItem.setState(false);
 
@@ -1898,6 +1903,172 @@ public class PathwaysFrame extends JApplet {
 		public int compare(String a, String b) {
 			return Float.valueOf(a.toString()).compareTo(Float.valueOf(b.toString()));
 		}
+	}
+	
+	public void regraph() {
+		graph = new SparseMultigraph<String, Number>();
+		createVertices();
+		createEdges(); 
+		LocalConfig.getInstance().setVisualizationsProgress(100);
+
+		Dimension layoutSize = new Dimension(PathwaysFrameConstants.GRAPH_WIDTH, PathwaysFrameConstants.GRAPH_HEIGHT);                                                             
+
+		Layout<String,Number> layout = new StaticLayout<String,Number>(graph,                                        
+				new ChainedTransformer(new Transformer[]{                                                            
+						new MetabTransformer(nodeNamePositionMap),                                                                    
+						new PixelTransformer(new Dimension(PathwaysFrameConstants.GRAPH_WIDTH, PathwaysFrameConstants.GRAPH_HEIGHT))                                         
+				}));                                                                                                 
+
+		layout.setSize(layoutSize);   
+		vv =  new VisualizationViewer<String,Number>(layout,                                                         
+				new Dimension(PathwaysFrameConstants.GRAPH_WINDOW_WIDTH, 
+						PathwaysFrameConstants.GRAPH_WINDOW_HEIGHT));   
+
+		//final ScalingControl scaler = new CrossoverScalingControl();
+
+		Point2D.Float p = new Point2D.Float(0.f, 0.f);
+		scaler.scale(vv, PathwaysFrameConstants.START_SCALING_FACTOR, p);
+		//scaler.scale(vv, PathwaysFrameConstants.START_SCALING_FACTOR, vv.getCenter());
+
+		vv.setBackground(Color.white);
+
+		// based on code from http://stackoverflow.com/questions/21657249/mouse-events-on-vertex-of-jung-graph
+		vv.addGraphMouseListener(new GraphMouseListener() {
+
+			@Override
+			public void graphClicked(final Object arg0, MouseEvent me) {
+				// TODO Auto-generated method stub
+				if (me.getButton() == MouseEvent.BUTTON3) {
+					final VisualizationViewer<String,String> vv =(VisualizationViewer<String,String>)me.getSource();
+					//			        final Point2D p = me.getPoint();
+					JPopupMenu popup = new JPopupMenu();
+					JMenuItem nodeInformationMenu = new JMenuItem("View Node Information");
+					nodeInformationMenu.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent ae) {
+							createNodeInformationDialog(arg0);
+						}
+					});
+					popup.add(nodeInformationMenu);
+					popup.show(vv, me.getX(), me.getY());
+				}
+				if (me.getButton() == MouseEvent.BUTTON1 && me.getClickCount() == 2) {
+					createNodeInformationDialog(arg0);
+				}
+				me.consume();
+			}
+
+			@Override
+			public void graphPressed(Object arg0, MouseEvent me) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void graphReleased(Object arg0, MouseEvent me) {
+				// TODO Auto-generated method stub
+
+			}
+
+		});          
+
+		final VertexIconShapeTransformer<String> vertexImageShapeFunction =                                                                           
+				new VertexIconShapeTransformer<String>(new EllipseVertexShapeTransformer<String>());                                                      
+
+		final DefaultVertexIconTransformer<String> vertexIconFunction =                                                                               
+				new DefaultVertexIconTransformer<String>(); 
+
+		createIconMap();
+		vertexImageShapeFunction.setIconMap(iconMap);                                                                                                 
+		vertexIconFunction.setIconMap(iconMap);                                                                                                       
+
+		vv.getRenderContext().setVertexShapeTransformer(vertexImageShapeFunction);                                                                    
+		vv.getRenderContext().setVertexIconTransformer(vertexIconFunction); 
+
+		// this class will provide both label drawing and vertex shapes
+		//VertexLabelAsShapeRenderer<String,Number> vlasr = new VertexLabelAsShapeRenderer<String,Number>(vv.getRenderContext());
+
+		vv.addPreRenderPaintable(new VisualizationViewer.Paintable(){                                            
+			public void paint(Graphics g) {                                                                      
+				Graphics2D g2d = (Graphics2D)g;                                                                  
+				AffineTransform oldXform = g2d.getTransform();                                                   
+				AffineTransform lat =                                                                            
+						vv.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT).getTransform();
+				AffineTransform vat =                                                                            
+						vv.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.VIEW).getTransform();  
+				AffineTransform at = new AffineTransform();                                                      
+				at.concatenate(g2d.getTransform());                                                              
+				at.concatenate(vat);                                                                             
+				at.concatenate(lat);                                                                             
+				g2d.setTransform(at);                                                                                                                       
+				g2d.setTransform(oldXform);                                                                      
+			}                                                                                                    
+			public boolean useTransform() { return false; }                                                      
+		});  
+
+		ewcs = new EdgeWeightStrokeFunction<Number>(edge_weight);
+		arrowTransformer = new DirectionalEdgeArrowTransformer();
+
+		// vary colors
+		vv.getRenderContext().setEdgeDrawPaintTransformer(colorTransformer);
+
+		// vary edge thicknesses
+		vv.getRenderContext().setEdgeStrokeTransformer(ewcs);
+
+		// all arrows same
+		vv.getRenderContext().setEdgeArrowTransformer(arrowTransformer);
+		vv.getRenderContext().setArrowFillPaintTransformer(colorTransformer);
+		vv.getRenderContext().setArrowDrawPaintTransformer(colorTransformer);
+
+		// Tooltips can be set programmatically
+		// based on http://stackoverflow.com/questions/31940238/settooltip-in-jung-for-several-vertices
+		vv.setVertexToolTipTransformer(new Transformer<String,String>() {                                              
+			public String transform(String v) {
+				return nodeName(v);                                                    
+			}});                                
+		// no tooltips on edges
+		vv.setEdgeToolTipTransformer(new Transformer<Number,String>() {                                              
+			public String transform(Number edge) {
+				return "";
+				//return "E"+graph.getEndpoints(edge).toString();                                                      
+			}});                                                                                                     
+
+		vv.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<String,Number>());
+
+		final GraphZoomScrollPane panel = new GraphZoomScrollPane(vv);
+		add(panel);
+		final AbstractModalGraphMouse graphMouse = new DefaultModalGraphMouse(); 
+		graphMouse.setMode(ModalGraphMouse.Mode.TRANSFORMING);
+		vv.setGraphMouse(graphMouse); 
+	}
+	
+	public void updateCollections() {
+		VisualizationData visualizationData = LocalConfig.getInstance().getVisualizationData();
+		nodeNamePositionMap = visualizationData.getNodeNamePositionMap();
+		nodeNameList = visualizationData.getNodeNameList();
+		reactionMap = visualizationData.getReactionMap();
+		reactionList = visualizationData.getReactionList();
+		borderList = visualizationData.getBorderList();
+		noBorderList = visualizationData.getNoBorderList();
+		pathwayNames = visualizationData.getPathwayNames();
+		mainMetabolites = visualizationData.getMainMetabolites();
+		smallMainMetabolites = visualizationData.getSmallMainMetabolites();
+		sideMetabolites = visualizationData.getSideMetabolites();
+		cofactors = visualizationData.getCofactors();
+		reactions = visualizationData.getReactions();
+		fluxMap = visualizationData.getFluxMap();
+		colorMap = visualizationData.getColorMap();
+		koReactions = visualizationData.getKoReactions();
+		foundMetabolitesList = visualizationData.getFoundMetabolitesList();
+		foundReactionsList = visualizationData.getFoundReactionsList();
+		foundPathwayNamesList = visualizationData.getFoundPathwayNamesList();
+		iconMap = visualizationData.getIconMap();
+		plottedIds = visualizationData.getPlottedIds();
+		oldNameNewNameMap = visualizationData.getOldNameNewNameMap();
+		metaboliteAbbrPositionsMap = visualizationData.getMetaboliteAbbrPositionsMap();
+		keggMetaboliteIdPositionsMap = visualizationData.getKeggMetaboliteIdPositionsMap();
+		ecNumberPositionsMap = visualizationData.getEcNumberPositionsMap();
+		keggReactionIdPositionsMap = visualizationData.getKeggReactionIdPositionsMap();
+		reactionAbbrPositionsMap = visualizationData.getReactionAbbrPositionsMap();
 	}
 
 	public static void main(String[] args) {                                                                         

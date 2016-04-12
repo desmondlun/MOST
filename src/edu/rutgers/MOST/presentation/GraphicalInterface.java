@@ -38,7 +38,6 @@ import edu.rutgers.MOST.data.JSBMLWriter;
 import edu.rutgers.MOST.data.KEGGIdReactionMapCreator;
 import edu.rutgers.MOST.data.MetabolicPathway;
 import edu.rutgers.MOST.data.MetaboliteFactory;
-import edu.rutgers.MOST.data.MetaboliteSupplementaryMaterialReader;
 import edu.rutgers.MOST.data.MetaboliteUndoItem;
 import edu.rutgers.MOST.data.MetaboliteVisualizationDataProcessor;
 import edu.rutgers.MOST.data.Model;
@@ -49,7 +48,6 @@ import edu.rutgers.MOST.data.PathwayFilesReader;
 import edu.rutgers.MOST.data.PathwayMetaboliteData;
 import edu.rutgers.MOST.data.ReactionEquationUpdater;
 import edu.rutgers.MOST.data.ReactionFactory;
-import edu.rutgers.MOST.data.ReactionSupplementaryMaterialReader;
 import edu.rutgers.MOST.data.ReactionUndoItem;
 import edu.rutgers.MOST.data.SBMLCompartment;
 import edu.rutgers.MOST.data.SBMLConstants;
@@ -69,6 +67,7 @@ import edu.rutgers.MOST.data.TextReactionsWriter;
 import edu.rutgers.MOST.data.TransportReactionCategorizer;
 import edu.rutgers.MOST.data.TransportReactionsByCompartments;
 import edu.rutgers.MOST.data.UndoConstants;
+import edu.rutgers.MOST.data.VisualizationData;
 import edu.rutgers.MOST.data.VisualizationDataProcessor;
 import edu.rutgers.MOST.data.VisualizationFluxesProcessor;
 import edu.rutgers.MOST.logic.ReactionParser;
@@ -1140,6 +1139,8 @@ public class GraphicalInterface extends JFrame {
 	
 	DefaultTableModel reactionsRenamedModel;
 	DefaultTableModel metabolitesRenamedModel;
+	
+	PathwaysFrame pf1 = new PathwaysFrame(PathwaysFrameConstants.PATHWAYS_COMPONENT);
 
 	public GraphicalInterface() {		
 		// make this true only when troubleshooting, false for actual use
@@ -1149,6 +1150,10 @@ public class GraphicalInterface extends JFrame {
 		gi = this;
 
 		isRoot = true;
+		
+		pf1.stop();
+		VisualizationData visualizationData = new VisualizationData();
+		LocalConfig.getInstance().setVisualizationData( visualizationData );
 		
 		LocalConfig.getInstance().fvaColumnsVisible = false;
 		LocalConfig.getInstance().fvaDone = true;
@@ -13564,7 +13569,14 @@ public class GraphicalInterface extends JFrame {
         setVisualizationsPane(frame);
         frame.setIconImages(icons);
         frame.setTitle(gi.getTitle());
-        final PathwaysFrame pf1 = new PathwaysFrame(PathwaysFrameConstants.PATHWAYS_COMPONENT);
+//        final PathwaysFrame pf1 = new PathwaysFrame(PathwaysFrameConstants.PATHWAYS_COMPONENT);
+        pf1.removeVertices();
+        pf1.removeEdges();
+        pf1.viewScale = PathwaysFrameConstants.START_SCALING_FACTOR;
+        pf1.start();
+        pf1.updateCollections();
+        pf1.regraph();
+        frame.setVisible(false);
         frame.add(pf1);
         frame.setSize(1300, 700);
         frame.setMinimumSize(new Dimension(400, 300));
@@ -13585,19 +13597,21 @@ public class GraphicalInterface extends JFrame {
 				if (pf1.getVisualizationsFindDialog() != null) {
 					pf1.getVisualizationsFindDialog().dispose();
 				}
+				pf1.stop();
 				showVisualizationReportMenu.setEnabled(false);
 			}
 		});		
         frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+        //frame.setVisible(true);
         enableVisualizationItems(false);
         
         try {
-            Thread.sleep(2000);                 //1000 milliseconds is one second.
+            Thread.sleep(1000);                 //1000 milliseconds is one second.
         } catch(InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
         
+        frame.setVisible(true);
         if (LocalConfig.getInstance().isShowVisualizationReportSelected()) {
         	createVisualizationReport();
         }
