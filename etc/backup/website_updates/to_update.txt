@@ -1,0 +1,14 @@
+<p><font size=2><a href="help.html#overview">Overview </a></font></p>
+	<ul><li><font size=2><a href="help.html#sort">Sorting Tables</a></font></li>
+	<li><font size=2><a href="help.html#formula">Formula Bar</a></font></li>
+	<li><font size=2><a href="help.html#rename">Renaming Metabolites</a></font></li>
+	<li><font size=2><a href="help.html#rename_comp">Renaming Compartments</a></font></li></ul>
+
+
+<ul><li><font size=2><a href="select_solvers.html">Select Solvers</a></font></li>
+	<li><font size=2><a href="solver_parameters.html">Set Solver Parameters</a></font></li>
+	<li><font size=2><a href="visualization_options.html">Visualization Options</a></font></li></ul>
+
+
+edit - add rows to...
+add row to compartments table
