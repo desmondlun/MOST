@@ -76,9 +76,7 @@ public class TransportReactionCategorizer {
 			// get external reactions, not plotted
 			ArrayList<SBMLReactant> reactants = equn.getReactants();
 			ArrayList<SBMLProduct> products = equn.getProducts();
-//			System.out.println(reactants.size());
-//			System.out.println(products.size());
-			if (reactants.size() > 15 || products.size() > 15) {
+			if (reactants.size() > 10 || products.size() > 10) {
 				if (LocalConfig.getInstance().getUnplottedReactionIds().contains(id)) {
 					LocalConfig.getInstance().getUnplottedReactionIds().remove(LocalConfig.getInstance().getUnplottedReactionIds().indexOf(id));
 				}

@@ -67,7 +67,6 @@ import edu.rutgers.MOST.data.TextReactionsWriter;
 import edu.rutgers.MOST.data.TransportReactionCategorizer;
 import edu.rutgers.MOST.data.TransportReactionsByCompartments;
 import edu.rutgers.MOST.data.UndoConstants;
-import edu.rutgers.MOST.data.VisualizationData;
 import edu.rutgers.MOST.data.VisualizationDataProcessor;
 import edu.rutgers.MOST.data.VisualizationFluxesProcessor;
 import edu.rutgers.MOST.logic.ReactionParser;
@@ -1140,8 +1139,6 @@ public class GraphicalInterface extends JFrame {
 	DefaultTableModel reactionsRenamedModel;
 	DefaultTableModel metabolitesRenamedModel;
 	
-	PathwaysFrame pf1 = new PathwaysFrame(PathwaysFrameConstants.PATHWAYS_COMPONENT);
-
 	public GraphicalInterface() {		
 		// make this true only when troubleshooting, false for actual use
 //		showIdColumn = true;
@@ -1150,10 +1147,6 @@ public class GraphicalInterface extends JFrame {
 		gi = this;
 
 		isRoot = true;
-		
-		pf1.stop();
-		VisualizationData visualizationData = new VisualizationData();
-		LocalConfig.getInstance().setVisualizationData( visualizationData );
 		
 		LocalConfig.getInstance().fvaColumnsVisible = false;
 		LocalConfig.getInstance().fvaDone = true;
@@ -13565,6 +13558,7 @@ public class GraphicalInterface extends JFrame {
 		}
 		LocalConfig.getInstance().setNoIdentifierIds(noIdentifierIds);
 		VisualizationDataProcessor vdp = new VisualizationDataProcessor();
+		vdp.removeBiomassReactions(rxns);
 		vdp.processData(PathwaysFrameConstants.PATHWAYS_COMPONENT, rxns);
 	}
 	
@@ -13574,13 +13568,7 @@ public class GraphicalInterface extends JFrame {
         setVisualizationsPane(frame);
         frame.setIconImages(icons);
         frame.setTitle(gi.getTitle());
-//        final PathwaysFrame pf1 = new PathwaysFrame(PathwaysFrameConstants.PATHWAYS_COMPONENT);
-        pf1.removeVertices();
-        pf1.removeEdges();
-        pf1.viewScale = PathwaysFrameConstants.START_SCALING_FACTOR;
-        pf1.start();
-        pf1.updateCollections();
-        pf1.regraph();
+        final PathwaysFrame pf1 = new PathwaysFrame(PathwaysFrameConstants.PATHWAYS_COMPONENT);
         frame.setVisible(false);
         frame.add(pf1);
         frame.setSize(1300, 700);
