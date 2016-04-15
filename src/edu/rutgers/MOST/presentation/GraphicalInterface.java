@@ -6137,8 +6137,9 @@ public class GraphicalInterface extends JFrame {
 					clearUndoItems();
 	    			resetUndo();
 				}
-				if (choice == JOptionPane.NO_OPTION || choice == JOptionPane.CANCEL_OPTION) {
+				if (choice == JOptionPane.NO_OPTION || choice == JOptionPane.CLOSED_OPTION) {
 					metaboliteUpdateValid = false;
+					metabolitesTable.getModel().setValueAt(oldValue, rowIndex, GraphicalInterfaceConstants.COMPARTMENT_COLUMN);
 				}
 			}
 		} else {
@@ -10014,7 +10015,7 @@ public class GraphicalInterface extends JFrame {
 						compartmentPasteChoice = true;
 						return true;
 					}
-					if (choice == JOptionPane.NO_OPTION || choice == JOptionPane.CANCEL_OPTION) {
+					if (choice == JOptionPane.NO_OPTION || choice == JOptionPane.CLOSED_OPTION) {
 						noErrorAfterCompartmentPaste = true;
 						compartmentPasteChoice = false;
 						return false;
