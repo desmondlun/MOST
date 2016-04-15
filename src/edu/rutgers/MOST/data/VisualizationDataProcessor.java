@@ -52,6 +52,8 @@ public class VisualizationDataProcessor {
 	HashMap<String, ArrayList<String[]>> keggReactionIdPositionsMap = new HashMap<String, ArrayList<String[]>>();
 	HashMap<String, ArrayList<String[]>> reactionAbbrPositionsMap = new HashMap<String, ArrayList<String[]>>();
 
+	ArrayList<Integer> biomassIds = new ArrayList<Integer>();
+	
 	PathwayReactionNodeFactory prnf = new PathwayReactionNodeFactory();
 	PathwayMetaboliteNodeFactory pmnf = new PathwayMetaboliteNodeFactory();
 	Utilities util = new Utilities();
@@ -102,7 +104,9 @@ public class VisualizationDataProcessor {
 			} else {
 				if (!plottedIds.contains(rxns.get(r).getId())) {
 					if (!LocalConfig.getInstance().getExternalReactionIds().contains(rxns.get(r).getId())) {
-						unplottedIds.add(rxns.get(r).getId());
+						if (!biomassIds.contains(rxns.get(r).getId())) {
+							unplottedIds.add(rxns.get(r).getId());
+						}
 					}
 				}
 			}
@@ -651,6 +655,27 @@ public class VisualizationDataProcessor {
 				positionsMap.put(key, positions);
 			}
 		}
+	}
+	
+	public void removeBiomassReactions(Vector<SBMLReaction> reactions) {
+		ArrayList<Integer> indices = new ArrayList<Integer>();
+		for (int i = 0; i < reactions.size(); i++) {
+			int id = reactions.get(i).getId();
+			SBMLReactionEquation equn = (SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(id);
+			ArrayList<SBMLReactant> reactants = equn.getReactants();
+			ArrayList<SBMLProduct> products = equn.getProducts();
+			if (reactants.size() > 10 || products.size() > 10) {
+				indices.add(i);
+				biomassIds.add(id);
+				if (LocalConfig.getInstance().getUnplottedReactionIds().contains(id)) {
+					LocalConfig.getInstance().getUnplottedReactionIds().remove(LocalConfig.getInstance().getUnplottedReactionIds().indexOf(id));
+				}
+			}
+		}
+		for (int j = indices.size() - 1; j >= 0; j--) {
+			reactions.remove(indices.get(j));
+		}
+		System.out.println("b " + biomassIds);
 	}
 
 }
