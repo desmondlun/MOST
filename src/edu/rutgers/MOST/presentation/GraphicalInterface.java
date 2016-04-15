@@ -80,6 +80,7 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
@@ -494,6 +495,31 @@ public class GraphicalInterface extends JFrame {
 
 	public static void setMpsPopout(MPSPopout mpsPopout) {
 		GraphicalInterface.mpsPopout = mpsPopout;
+	}
+	
+	private static NotFoundDialog notFoundDialog;
+
+	public static NotFoundDialog getNotFoundDialog()
+	{
+		return notFoundDialog;
+	}
+
+	public static void setNotFoundDialog( NotFoundDialog notFoundDialog )
+	{
+		GraphicalInterface.notFoundDialog = notFoundDialog;
+	}
+	
+	private static NotFoundYesNoDialog notFoundYesNoDialog;
+
+	public static NotFoundYesNoDialog getNotFoundYesNoDialog()
+	{
+		return notFoundYesNoDialog;
+	}
+
+	public static void setNotFoundYesNoDialog(
+		NotFoundYesNoDialog notFoundYesNoDialog )
+	{
+		GraphicalInterface.notFoundYesNoDialog = notFoundYesNoDialog;
 	}
 
 	private static OutputPopout popout;
@@ -1276,6 +1302,24 @@ public class GraphicalInterface extends JFrame {
 		visualizeProgressBar.setLocationRelativeTo(null);
 		visualizeProgressBar.setVisible(false);
 		visualizeProgressBar.setAlwaysOnTop(true);
+		
+		notFoundDialog = new NotFoundDialog();
+		setNotFoundDialog(notFoundDialog);
+		notFoundDialog.pack();
+		notFoundDialog.setLocationRelativeTo(null);
+		notFoundDialog.setAlwaysOnTop(true);
+		notFoundDialog.setVisible(false);
+		
+		notFoundYesNoDialog = new NotFoundYesNoDialog();
+		setNotFoundYesNoDialog(notFoundYesNoDialog);
+		notFoundYesNoDialog.pack();
+		// move dialog uo from center so it does not obscure found item
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		int x = (screenSize.width - notFoundYesNoDialog.getSize().width)/2;
+		int y = (screenSize.height - notFoundYesNoDialog.getSize().height)/2;
+		notFoundYesNoDialog.setLocation(x, y - 150);
+		notFoundYesNoDialog.setAlwaysOnTop(true);
+		notFoundYesNoDialog.setVisible(false);
 		
 		compartmentsTableUpdater = new CompartmentsTableUpdater();
 

@@ -675,7 +675,6 @@ public class VisualizationDataProcessor {
 		for (int j = indices.size() - 1; j >= 0; j--) {
 			reactions.remove(indices.get(j));
 		}
-		System.out.println("b " + biomassIds);
 	}
 
 }

@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.Map;                                                                                                
                                                                                                                     
 
+
+
 import javax.imageio.ImageIO;
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
@@ -52,6 +54,8 @@ import javax.swing.WindowConstants;
 import org.apache.commons.collections15.Transformer;                                                                 
 import org.apache.commons.collections15.functors.ChainedTransformer;                                                 
                                                                                                                      
+
+
 
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.BorderRectangle;
@@ -273,9 +277,26 @@ public class PathwaysFrame extends JApplet {
 		VisualizationsFindDialog.wrapCheckBox.addActionListener(wrapAroundActionListener);
 		VisualizationsFindDialog.backwardsCheckBox.addActionListener(searchBackwardsActionListener);
 		VisualizationsFindDialog.exactMatchCheckBox.addActionListener(exactMatchActionListener);
+		
+		GraphicalInterface.getNotFoundDialog().okButton.addActionListener(notFoundActionListener);
+		GraphicalInterface.getNotFoundDialog().addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent evt) {
+				getVisualizationsFindDialog().setAlwaysOnTop(true);        	        	
+			}
+		});
+		
+		GraphicalInterface.getNotFoundYesNoDialog().yesButton.addActionListener(endFindActionListener);
+		GraphicalInterface.getNotFoundYesNoDialog().noButton.addActionListener(endFindNoActionListener);
+		GraphicalInterface.getNotFoundYesNoDialog().addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent evt) {
+				getVisualizationsFindDialog().setAlwaysOnTop(true);        	        	
+			}
+		});
 
 		KeyStroke find = KeyStroke.getKeyStroke(KeyEvent.VK_F,ActionEvent.CTRL_MASK,false);
-		getRootPane().registerKeyboardAction(findActionListener,find,JComponent.WHEN_IN_FOCUSED_WINDOW); 
+		getRootPane().registerKeyboardAction(findActionListener,find,JComponent.WHEN_IN_FOCUSED_WINDOW);
+		
+		wrapAround = VisualizationsFindConstants.WRAP_AROUND_DEFAULT;
 
 		/**************************************************************************/
 		// create menu bar
@@ -1026,9 +1047,6 @@ public class PathwaysFrame extends JApplet {
 	};
 
 	public void showFindDialog() {
-		//		LocalConfig.getInstance().setReactionsLocationsListCount(0);
-		//		LocalConfig.getInstance().setMetabolitesLocationsListCount(0);
-		//		findFieldChanged = false;
 		VisualizationsFindDialog findDialog = new VisualizationsFindDialog();
 		setVisualizationsFindDialog(findDialog);
 		//getVisualizationsFindDialog().findButton.addActionListener(findNextButtonActionListener);
@@ -1086,25 +1104,8 @@ public class PathwaysFrame extends JApplet {
 		findNext();
 	}
 
-	public void notFoundAction() {
-		getVisualizationsFindDialog().setAlwaysOnTop(false);
-		JOptionPane.showMessageDialog(null,                
-				"MOST has not found the item you are searching for.",                
-				"Item Not Found",                                
-				JOptionPane.INFORMATION_MESSAGE);
-		getVisualizationsFindDialog().setAlwaysOnTop(true);
-	}
-
-	public void endFindAction() {
-		getVisualizationsFindDialog().setAlwaysOnTop(false);
-		Object[] options = {"    Yes    ", "    No    ",};
-		int choice = JOptionPane.showOptionDialog(null, 
-				"MOST has not found the item you are searching for.\nDo you want to start over from the beginning?", 
-				"Item Not Found", 
-				JOptionPane.YES_NO_OPTION, 
-				JOptionPane.QUESTION_MESSAGE, 
-				null, options, options[0]);
-		if (choice == JOptionPane.YES_OPTION) {
+	ActionListener endFindActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
 			wrapAround = true; 
 
 			VisualizationsFindDialog.wrapCheckBox.setSelected(true);
@@ -1115,11 +1116,37 @@ public class PathwaysFrame extends JApplet {
 			} else {
 				findStartIndex = 0;
 			}
+			GraphicalInterface.getNotFoundYesNoDialog().setVisible(false);
+			getVisualizationsFindDialog().setAlwaysOnTop(true);
 		}
-		if (choice == JOptionPane.NO_OPTION) {
+	};
+	
+	// after ok button on not found or no button on not found yes no clicked
+	// need to put find back on top
+	ActionListener notFoundActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			GraphicalInterface.getNotFoundDialog().setVisible(false);
+			getVisualizationsFindDialog().setAlwaysOnTop(true);
+		}
+	};
+	
+	ActionListener endFindNoActionListener = new ActionListener() {
+		public void actionPerformed(ActionEvent ae) {
+			GraphicalInterface.getNotFoundYesNoDialog().setVisible(false);
+			getVisualizationsFindDialog().setAlwaysOnTop(true);
+		}
+	};
+	
+	public void notFoundAction() {
+		getVisualizationsFindDialog().setAlwaysOnTop(false);
+		GraphicalInterface.getNotFoundDialog().setVisible(true);
+		//getVisualizationsFindDialog().setAlwaysOnTop(true);
+	}
 
-		}
-		getVisualizationsFindDialog().setAlwaysOnTop(true);
+	public void endFindAction() {
+		getVisualizationsFindDialog().setAlwaysOnTop(false);
+		GraphicalInterface.getNotFoundYesNoDialog().setVisible(true);
+		//getVisualizationsFindDialog().setAlwaysOnTop(true);
 	}
 
 	private boolean findValueChanged(String findValue) {
@@ -1149,7 +1176,6 @@ public class PathwaysFrame extends JApplet {
 			}
 		} 
 		oldFindValue = findValue;
-		//HashMap<String, ArrayList<Double>> findLocationsMap = findLocationsMap();
 		if (findLocationsMap.size() == 0) {
 			notFoundAction();
 		} else {
@@ -1165,27 +1191,27 @@ public class PathwaysFrame extends JApplet {
 				if (findStartIndex > 0) {
 					findStartIndex -= 1;
 				} else {
-//					if (wrapAround) {
+					if (wrapAround) {
 						findStartIndex = findLocationsMap.size() - 1;
-						if (!wrapAround) {
-							endFindAction();
-						}
-//					} else {
-//						endFindAction();
-//					}
+//						if (!wrapAround) {
+//							endFindAction();
+//						}
+					} else {
+						endFindAction();
+					}
 				}
 			} else {
 				if (findStartIndex < (findLocationsMap.size() - 1)) {
 					findStartIndex += 1;
 				} else {
-//					if (wrapAround) {
+					if (wrapAround) {
 						findStartIndex = 0;
-						if (!wrapAround) {
-							endFindAction();
-						}
-//					} else {
-//						endFindAction();
-//					}
+//						if (!wrapAround) {
+//							endFindAction();
+//						}
+					} else {
+						endFindAction();
+					}
 				}
 			}													
 		}

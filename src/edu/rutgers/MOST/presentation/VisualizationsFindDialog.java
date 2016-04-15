@@ -192,7 +192,6 @@ public class VisualizationsFindDialog extends JDialog {
 		
         caseCheckBox.setSelected(VisualizationsFindConstants.MATCH_CASE_DEFAULT);
     	wrapCheckBox.setSelected(VisualizationsFindConstants.WRAP_AROUND_DEFAULT);
-//    	selectedAreaCheckBox.setSelected(false);
         backwardsCheckBox.setSelected(VisualizationsFindConstants.SEARCH_BACKWARDS_DEFAULT);
         exactMatchCheckBox.setSelected(VisualizationsFindConstants.EXACT_MATCH_DEFAULT);
         
@@ -203,7 +202,6 @@ public class VisualizationsFindDialog extends JDialog {
         
         caseCheckBox.setMnemonic(KeyEvent.VK_M);
         wrapCheckBox.setMnemonic(KeyEvent.VK_W);
-//        selectedAreaCheckBox.setMnemonic(KeyEvent.VK_S);
         backwardsCheckBox.setMnemonic(KeyEvent.VK_B);
         
         findButton.setEnabled(false);
@@ -215,7 +213,6 @@ public class VisualizationsFindDialog extends JDialog {
         exactMatchCheckBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         wrapCheckBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         backwardsCheckBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-//        selectedAreaCheckBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         placeholderLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
  
         findCutItem.setEnabled(false);
