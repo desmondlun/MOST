@@ -12,6 +12,7 @@ import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;                                                                                   
 import java.awt.event.ActionListener;                                                                                
 import java.awt.event.KeyEvent;
@@ -31,13 +32,14 @@ import java.util.Map;
 
 
 
+
 import javax.imageio.ImageIO;
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;                                                                                        
 import javax.swing.JApplet;                                                                                          
 import javax.swing.JButton;                                                                                          
-import javax.swing.JCheckBoxMenuItem;
+//import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
@@ -54,6 +56,7 @@ import javax.swing.WindowConstants;
 import org.apache.commons.collections15.Transformer;                                                                 
 import org.apache.commons.collections15.functors.ChainedTransformer;                                                 
                                                                                                                      
+
 
 
 
@@ -413,6 +416,18 @@ public class PathwaysFrame extends JApplet {
 						}
 					});
 					popup.add(nodeInformationMenu);
+					JMenuItem copyInformationMenu = new JMenuItem("Copy Node Information to Clipboard");
+					copyInformationMenu.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent ae) {
+							String info = arg0.toString();
+							if (info.equals(compartmentLabel)) {
+								info += "\n" + "Compartment: " + LocalConfig.getInstance().getSelectedCompartmentName();
+							}
+							String cleaned = cleanupNodeInfo(info);
+							setClipboardContents(cleaned);
+						}
+					});
+					popup.add(copyInformationMenu);
 					popup.show(vv, me.getX(), me.getY());
 				}
 				if (me.getButton() == MouseEvent.BUTTON1 && me.getClickCount() == 2) {
@@ -941,8 +956,8 @@ public class PathwaysFrame extends JApplet {
 
 	public void createNodeInformationDialog(Object arg0) {
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
-		icons.add(new ImageIcon("images/most16.jpg").getImage()); 
-		icons.add(new ImageIcon("images/most32.jpg").getImage());
+		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
+		icons.add(new ImageIcon("etc/most32.jpg").getImage());
 
 		if (getNodeInformationDialog() != null) {
 			getNodeInformationDialog().dispose();
@@ -950,8 +965,8 @@ public class PathwaysFrame extends JApplet {
 		NodeInformationDialog frame = new NodeInformationDialog(nodeName(arg0.toString()));
 		setNodeInformationDialog(frame);
 
-		frame.setIconImages(icons);
 		frame.pack();
+		frame.setIconImages(icons);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
@@ -1924,6 +1939,23 @@ public class PathwaysFrame extends JApplet {
 		public int compare(String a, String b) {
 			return Float.valueOf(a.toString()).compareTo(Float.valueOf(b.toString()));
 		}
+	}
+	
+	private String cleanupNodeInfo(String info) {
+		if (info.contains("<html>")) {
+			info = info.replace("<html>", "");
+		}
+		if (info.contains("<p>")) {
+			info = info.replace("<p>", "\n");
+		}
+		return info;
+		
+	}
+	
+	private static void setClipboardContents(String s) {
+	      StringSelection selection = new StringSelection(s);
+	      Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
+	            selection, selection);
 	}
 
 	public static void main(String[] args) {                                                                         

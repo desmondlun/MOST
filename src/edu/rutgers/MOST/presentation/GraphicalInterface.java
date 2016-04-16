@@ -1306,6 +1306,7 @@ public class GraphicalInterface extends JFrame {
 		notFoundDialog = new NotFoundDialog();
 		setNotFoundDialog(notFoundDialog);
 		notFoundDialog.pack();
+		notFoundDialog.setIconImages(icons);
 		notFoundDialog.setLocationRelativeTo(null);
 		notFoundDialog.setAlwaysOnTop(true);
 		notFoundDialog.setVisible(false);
@@ -1313,6 +1314,7 @@ public class GraphicalInterface extends JFrame {
 		notFoundYesNoDialog = new NotFoundYesNoDialog();
 		setNotFoundYesNoDialog(notFoundYesNoDialog);
 		notFoundYesNoDialog.pack();
+		notFoundYesNoDialog.setIconImages(icons);
 		// move dialog uo from center so it does not obscure found item
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (screenSize.width - notFoundYesNoDialog.getSize().width)/2;
