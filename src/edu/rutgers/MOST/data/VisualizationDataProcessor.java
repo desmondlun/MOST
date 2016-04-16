@@ -479,7 +479,9 @@ public class VisualizationDataProcessor {
 						updateFindPositionsMap(metaboliteAbbrPositionsMap, abbr, 
 								new String[] {nodeNamePositionMap.get(metabName)[0], nodeNamePositionMap.get(metabName)[1]});
 					}
-					name = pmnf.htmlDisplayName(abbr, nameList, abbrList, keggIdList, chargeList);
+					// TODO: figure out how to get database id here from metabolite node positions file
+					// so node info can be in the same format as other nodes
+					name = pmnf.htmlDisplayNameRenamed(abbr, nameList, abbrList, keggIdList, chargeList);
 					oldNameNewNameMap.put(metabName, name);
 					LocalConfig.getInstance().getMetaboliteNameAbbrMap().put(metabName, abbr);
 				}
@@ -504,7 +506,9 @@ public class VisualizationDataProcessor {
 							abbrList.add(LocalConfig.getInstance().getKeggIdMetaboliteMap().get("C00080").get(k).getMetaboliteAbbreviation());
 						}
 					}
-					name = pmnf.htmlDisplayName(abbr, nameList, abbrList, keggList, chargeList);
+					// TODO: figure out how to get database id here from metabolite node positions file
+					// so node info can be in the same format as other nodes
+					name = pmnf.htmlDisplayNameRenamed(abbr, nameList, abbrList, keggList, chargeList);
 					oldNameNewNameMap.put(metabName, name);
 					LocalConfig.getInstance().getMetaboliteNameAbbrMap().put(metabName, abbr);
 					// add positions to map for find exact match

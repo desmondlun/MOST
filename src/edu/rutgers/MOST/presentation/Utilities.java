@@ -435,4 +435,22 @@ public class Utilities {
 		return value;
 	}
 	
+	/**
+	 * Returns plural heading plus list to String if length of input list > 1. 
+	 * Else returns singular heading plus input String.
+	 * @param items
+	 * @param heading
+	 * @return
+	 */
+	public String maybeMakeList(ArrayList<String> items, String heading) {
+		String item = "<p>" + heading + ": ";
+		if (items.size() > 0) {
+			item = "<p>" + heading + ": " + items.get(0);
+		}
+		if (items.size() > 1) {
+			item = "<p>" + heading + "(s): " + items.toString();
+		}
+		return item;
+	}
+	
 }

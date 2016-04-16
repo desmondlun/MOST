@@ -1006,25 +1006,6 @@ public class PathwaysFrame extends JApplet {
 		return name;
 
 	}
-
-	/**
-	 * Adds suffix to duplicate names
-	 * @param value
-	 * @param metaboliteNameAbbrMap
-	 * @return
-	 */
-	public String duplicateSuffix(String value, Map<String, String> metaboliteNameAbbrMap) {
-		String duplicateSuffix = GraphicalInterfaceConstants.DUPLICATE_SUFFIX;
-		if (metaboliteNameAbbrMap.containsKey(value + duplicateSuffix)) {
-			int duplicateCount = Integer.valueOf(duplicateSuffix.substring(1, duplicateSuffix.length() - 1));
-			while (metaboliteNameAbbrMap.containsKey(value + duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1)))) {
-				duplicateCount += 1;
-			}
-			duplicateSuffix = duplicateSuffix.replace("1", Integer.toString(duplicateCount + 1));
-		}
-		return duplicateSuffix;
-	}
-	
 	
 	public String maybeAddCompartmentNameSuffix(String compAbbr) {
 		for (int c = 0; c < LocalConfig.getInstance().getListOfCompartments().size(); c++) { 

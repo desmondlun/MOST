@@ -11,6 +11,7 @@ import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterface;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
 import edu.rutgers.MOST.presentation.PathwaysFrameConstants;
+import edu.rutgers.MOST.presentation.Utilities;
 
 public class PathwayReactionNodeFactory {
 
@@ -22,6 +23,8 @@ public class PathwayReactionNodeFactory {
 	 * @param compartment
 	 * @return
 	 */
+	
+	Utilities util = new Utilities();
 	
 	private Map<String, ArrayList<String>> renameMetabolitesMap = new HashMap<String, ArrayList<String>>();
 
@@ -477,12 +480,12 @@ public class PathwayReactionNodeFactory {
 					+ displayReactionAbbreviation(reactionAbbrevations)
 					+ displayECNumber(ecNumbers)
 					+ displayKeggReactionId(keggReactionIds)
-					+ "<p> Equation: " + name
+					+ "<p>Equation: " + name
 					+ displaySubsystem(subsystems)
 					+ displayModelEquation(equations, "<p>Equation(s) (Abbreviations) from Model: ")
 					+ displayModelEquation(equationNames, "<p>Equation(s) (Names) from Model: ")
-					+ "<p> Fluxes: " + fluxes.toString()
-					+ "<p> Reaction ID: " + id;
+					+ "<p>Fluxes: " + fluxes.toString()
+					+ "<p>Reaction Database Id: " + id;
 		}
 		return displayName;
 	}
@@ -499,37 +502,19 @@ public class PathwayReactionNodeFactory {
 	}
 	
 	public String displayReactionAbbreviation(ArrayList<String> reactionAbbrevations) {
-		return maybeMakeList(reactionAbbrevations, "Reaction Abbreviation");
+		return util.maybeMakeList(reactionAbbrevations, "Reaction Abbreviation");
 	}
 	
 	public String displayECNumber(ArrayList<String> ecnumbers) {
-		return maybeMakeList(ecnumbers, "EC Number");
+		return util.maybeMakeList(ecnumbers, "EC Number");
 	}
 	
 	public String displayKeggReactionId(ArrayList<String> keggReactionIds) {
-		return maybeMakeList(keggReactionIds, "KEGG Reaction Id");
+		return util.maybeMakeList(keggReactionIds, "KEGG Reaction Id");
 	}
 	
 	public String displaySubsystem(ArrayList<String> subsystems) {
-		return maybeMakeList(subsystems, "Subsystem");
-	}
-	
-	/**
-	 * Returns plural heading plus list to String if length of input list > 1. 
-	 * Else returns singular heading plus input String.
-	 * @param items
-	 * @param heading
-	 * @return
-	 */
-	public String maybeMakeList(ArrayList<String> items, String heading) {
-		String item = "<p>" + heading + ": ";
-		if (items.size() > 0) {
-			item = "<p>" + heading + ": " + items.get(0);
-		}
-		if (items.size() > 1) {
-			item = "<p>" + heading + "(s): " + items.toString();
-		}
-		return item;
+		return util.maybeMakeList(subsystems, "Subsystem");
 	}
 	
 	public String displayReactionName(ArrayList<String> names) {
