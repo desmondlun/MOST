@@ -5,8 +5,11 @@ import java.util.Map;
 
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
+import edu.rutgers.MOST.presentation.Utilities;
 
 public class PathwayMetaboliteNodeFactory {
+	
+	Utilities util = new Utilities();
 
 	public PathwayMetaboliteNode createPathwayMetaboliteNode(String dataId, double x, double y,  
 			String type, String abbreviation, String name, String keggId) {
@@ -119,15 +122,15 @@ public class PathwayMetaboliteNodeFactory {
 	}
 	
 	public String displayMetaboliteAbbreviation(ArrayList<String> metaboliteAbbrevations) {
-		return maybeMakeList(metaboliteAbbrevations, "Metabolite Abbreviation");
+		return util.maybeMakeList(metaboliteAbbrevations, "Metabolite Abbreviation");
 	}
 	
 	public String displayMetaboliteName(ArrayList<String> metaboliteNames) {
-		return maybeMakeList(metaboliteNames, "Metabolite Name");
+		return util.maybeMakeList(metaboliteNames, "Metabolite Name");
 	}
 	
 	public String displayKeggId(ArrayList<String> keggMetaboliteIds) {
-		return maybeMakeList(keggMetaboliteIds, "KEGG ID");
+		return util.maybeMakeList(keggMetaboliteIds, "KEGG ID");
 	}
 	
 	/**
@@ -140,30 +143,24 @@ public class PathwayMetaboliteNodeFactory {
 	 * @return
 	 */
 	public String htmlDisplayName(String name, ArrayList<String> nameList, ArrayList<String> abbrList,
-			ArrayList<String> keggIdList, ArrayList<String> chargeList) {
-		String htmlName = "<html>" + name + "<p> Metabolite Names: " + nameList.toString() +
-				"<p> Metabolite Abbreviations: " + abbrList.toString() +
+			ArrayList<String> keggIdList, ArrayList<String> chargeList, String id) {
+		String htmlName = "<html>" + name + "<p>Metabolite Names: " + nameList.toString() +
+				"<p>Metabolite Abbreviations: " + abbrList.toString() +
 				"<p>KEGG Ids: " + keggIdList.toString() +
-				"<p>Charge: " + chargeList.toString() + "<p>";
+				"<p>Charge: " + chargeList.toString() + 
+				"<p>Metabolite Database Id: " + id + "<p>";
 		return htmlName;
 	}
 	
-	/**
-	 * Returns plural heading plus list to String if length of input list > 1. 
-	 * Else returns singular heading plus input String.
-	 * @param items
-	 * @param heading
-	 * @return
-	 */
-	public String maybeMakeList(ArrayList<String> items, String heading) {
-		String item = "<p>" + heading + ": ";
-		if (items.size() > 0) {
-			item = "<p>" + heading + ": " + items.get(0);
-		}
-		if (items.size() > 1) {
-			item = "<p>" + heading + "(s): " + items.toString();
-		}
-		return item;
+	// TODO: figure out how to get database id here from metabolite node positions file
+	// so node info can be in the same format as other nodes
+	public String htmlDisplayNameRenamed(String name, ArrayList<String> nameList, ArrayList<String> abbrList,
+		ArrayList<String> keggIdList, ArrayList<String> chargeList) {
+		String htmlName = "<html>" + name + "<p>Metabolite Names: " + nameList.toString() +
+			"<p>Metabolite Abbreviations: " + abbrList.toString() +
+			"<p>KEGG Ids: " + keggIdList.toString() +
+			"<p>Charge: " + chargeList.toString() + "<p>";
+		return htmlName;
 	}
 	
 	/**

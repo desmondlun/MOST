@@ -384,7 +384,8 @@ public class PathwayFilesReader {
 						// add KEGG id to nodes but not if KEGG id does not exist and file contains
 						// entry such as "-1"
 						if (pm.getKeggId().startsWith("C")) {
-							name = "<html>" + pm.getNames().get(0) + "<p>" + "KEGG Id: " + pm.getKeggId();
+							name = "<html>" + pm.getNames().get(0) + "<p>KEGG Id: " + pm.getKeggId() +
+								"<p>Metabolite Database Id: " + pm.getId();
 						}
 						String abbr = pm.getAbbreviation();
 						if (LocalConfig.getInstance().getKeggIdMetaboliteMap().containsKey(pm.getKeggId())) {
@@ -428,7 +429,7 @@ public class PathwayFilesReader {
 		    					abbr = util.maybeRemovePrefixAndSuffix(metabAbbr);
 		    				}
 							//abbr = util.maybeRemovePrefixAndSuffix(metabAbbr);
-							name = pmnf.htmlDisplayName(abbr, nameList, abbrList, keggIdList, chargeList);
+							name = pmnf.htmlDisplayName(abbr, nameList, abbrList, keggIdList, chargeList, pm.getId());
 						}
 						if (metaboliteNameAbbrMap.containsKey(name)) {
 							name = name + pmnf.duplicateSuffix(name, metaboliteNameAbbrMap);
@@ -649,7 +650,7 @@ public class PathwayFilesReader {
 						}
 						pr.writeReactionEquation();
 						pr.setName(pr.getEquation());
-						pr.setDisplayName("<html>" + pr.getEquation() +"<p> EC Number(s): " + pr.getEcNumbers() + "<p> Reaction ID: " + pr.getReactionId());
+						pr.setDisplayName("<html>" + pr.getEquation() +"<p> EC Number(s): " + pr.getEcNumbers() + "<p> Reaction Database Id: " + pr.getReactionId());
 						pr.setKeggReactantIds(keggReactantIds);
 						pr.setKeggProductIds(keggProductIds);
 						pr.setKeggReactantIdsDataMap(keggReactantIdsDataMap);
