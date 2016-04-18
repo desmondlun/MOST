@@ -441,13 +441,14 @@ public class ReactionFactory {
 		Vector<SBMLReaction> reactions = getAllReactions();
 		Vector<SBMLReaction> reactionsByCompartment = new Vector<SBMLReaction>();
 		for (int i = 0; i < reactions.size(); i++) {
-			SBMLReactionEquation equn = (SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(reactions.get(i).getId());
-			if (equn.getCompartmentList().size() == 1 && equn.getCompartmentList().contains(comp)) {
-				//System.out.println(equn.getCompartmentList());
-				reactionsByCompartment.add(reactions.get(i));
+			if (reactions.get(i) != null && LocalConfig.getInstance().getReactionEquationMap().containsKey(reactions.get(i).getId())) {
+				SBMLReactionEquation equn = (SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(reactions.get(i).getId());
+				if (equn.getCompartmentList().size() == 1 && equn.getCompartmentList().contains(comp)) {
+					reactionsByCompartment.add(reactions.get(i));
+				} 
 			}
 		}
-		//System.out.println(reactionsByCompartment);
+
 		return reactionsByCompartment;
 	}
 

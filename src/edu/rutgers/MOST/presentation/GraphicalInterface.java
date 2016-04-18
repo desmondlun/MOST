@@ -13581,7 +13581,6 @@ public class GraphicalInterface extends JFrame {
 			LocalConfig.getInstance().setEcNumberColumn(rf.locateECColumn());
 		}
 		Vector<SBMLReaction> rxns = null;
-//		Vector<SBMLReaction> membraneRxns = null;
 		if (LocalConfig.getInstance().getSelectedCompartmentName() != null && LocalConfig.getInstance().getSelectedCompartmentName().length() > 0) {
 			rxns = rf.getReactionsByCompartment(LocalConfig.getInstance().getSelectedCompartmentName());
 		} else {

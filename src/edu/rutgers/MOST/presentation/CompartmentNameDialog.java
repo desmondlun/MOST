@@ -157,7 +157,8 @@ public class CompartmentNameDialog extends JDialog {
     			}
     			cbCompartmentName.addItem(item);
     		}
-    		cbCompartmentName.setSelectedIndex(-1);
+    		// cannot allow blank compartment to be selected. do not uncoomment.
+    		//cbCompartmentName.setSelectedIndex(-1);
     		for (int c = 0; c < LocalConfig.getInstance().getListOfCompartments().size(); c++) {
     			//filters to match compartment names from list of compartments	
     			if (LocalConfig.getInstance().getListOfCompartments().get(c).getName() != null) {

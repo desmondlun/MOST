@@ -34,64 +34,70 @@ public class ECNumberMapCreator {
 		VisualizationFluxesProcessor processor = new VisualizationFluxesProcessor();
 		maxUpperBound = 0;
 		for (int r = 0; r < rxns.size(); r++) {
-			SBMLReaction reaction = (SBMLReaction) rxns.get(r);
-			String ecString = reaction.getEcNumber();
-			if (ecString != null && ecString.length() > 0) {
-				// model may contain more than one EC number, separated by white space
-				// AraGEM model has this condition
-				java.util.List<String> ecNumbers = Arrays.asList(ecString.split("\\s"));
-				for (int i = 0; i < ecNumbers.size(); i++) {
-					String ecNum = "";
-					// removes comma when EC numbers in a list - eg 1.1.1.1, 1.1.1.2
-					if (ecNumbers.get(i).endsWith(",")) {
-						ecNum = ecNumbers.get(i).substring(0, ecNumbers.get(i).length() - 2);
-					} else {
-						ecNum = ecNumbers.get(i);
-					}
-					if (ecNum != null && ecNum.length() > 0) {
-						// KEGG reaction ids are sometimes present in EC Number column
-						if (ecNum.startsWith("R") || ecNum.startsWith("r")) {
-							//System.out.println(ecNum);
-							if (LocalConfig.getInstance().getKeggReactionIdECNumberMap().containsKey(ecNum.toUpperCase())) {
-								if (LocalConfig.getInstance().getKeggReactionIdECNumberMap().get(ecNum.toUpperCase()) != null) {
-									try {
-										//System.out.println(LocalConfig.getInstance().getKeggReactionIdECNumberMap().get(ecNum.toUpperCase()));
-										for (int j = 0; j < LocalConfig.getInstance().getKeggReactionIdECNumberMap().get(ecNum.toUpperCase()).size(); j++) {
-											ecNum = LocalConfig.getInstance().getKeggReactionIdECNumberMap().get(ecNum.toUpperCase()).get(j);
-											if (ecNumberReactionMap.containsKey(ecNum)) {
-												ArrayList<SBMLReaction> rxnsList = ecNumberReactionMap.get(ecNum);
-												rxnsList.add(reaction);
-												ecNumberReactionMap.put(ecNum, rxnsList);
-											} else {
-												ArrayList<SBMLReaction> rxnsList = new ArrayList<SBMLReaction>();
-												rxnsList.add(reaction);
-												ecNumberReactionMap.put(ecNum, rxnsList);
+			if (rxns.get(r) != null) {
+				SBMLReaction reaction = (SBMLReaction) rxns.get(r);
+				String ecString = reaction.getEcNumber();
+				if (ecString != null && ecString.length() > 0) {
+					// model may contain more than one EC number, separated by white space
+					// AraGEM model has this condition
+					java.util.List<String> ecNumbers = Arrays.asList(ecString.split("\\s"));
+					for (int i = 0; i < ecNumbers.size(); i++) {
+						String ecNum = "";
+						// removes comma when EC numbers in a list - eg 1.1.1.1, 1.1.1.2
+						if (ecNumbers.get(i).endsWith(",")) {
+							ecNum = ecNumbers.get(i).substring(0, ecNumbers.get(i).length() - 2);
+						} else {
+							ecNum = ecNumbers.get(i);
+						}
+						if (ecNum != null && ecNum.length() > 0) {
+							// KEGG reaction ids are sometimes present in EC Number column
+							if (ecNum.startsWith("R") || ecNum.startsWith("r")) {
+								//System.out.println(ecNum);
+								if (LocalConfig.getInstance().getKeggReactionIdECNumberMap().containsKey(ecNum.toUpperCase())) {
+									if (LocalConfig.getInstance().getKeggReactionIdECNumberMap().get(ecNum.toUpperCase()) != null) {
+										try {
+											//System.out.println(LocalConfig.getInstance().getKeggReactionIdECNumberMap().get(ecNum.toUpperCase()));
+											for (int j = 0; j < LocalConfig.getInstance().getKeggReactionIdECNumberMap().get(ecNum.toUpperCase()).size(); j++) {
+												ecNum = LocalConfig.getInstance().getKeggReactionIdECNumberMap().get(ecNum.toUpperCase()).get(j);
+												if (ecNumberReactionMap.containsKey(ecNum)) {
+													ArrayList<SBMLReaction> rxnsList = ecNumberReactionMap.get(ecNum);
+													rxnsList.add(reaction);
+													updateECNumberReactionMap(ecNumberReactionMap, ecNum, rxnsList);
+													//ecNumberReactionMap.put(ecNum, rxnsList);
+												} else {
+													ArrayList<SBMLReaction> rxnsList = new ArrayList<SBMLReaction>();
+													rxnsList.add(reaction);
+													updateECNumberReactionMap(ecNumberReactionMap, ecNum, rxnsList);
+													//ecNumberReactionMap.put(ecNum, rxnsList);
+												}
 											}
+										} catch (Exception e) {
+											
 										}
-									} catch (Exception e) {
-										
 									}
 								}
 							}
-						}
-						if (ecNumberReactionMap.containsKey(ecNum)) {
-							ArrayList<SBMLReaction> rxnsList = ecNumberReactionMap.get(ecNum);
-							rxnsList.add(reaction);
-							ecNumberReactionMap.put(ecNum, rxnsList);
-						} else {
-							ArrayList<SBMLReaction> rxnsList = new ArrayList<SBMLReaction>();
-							rxnsList.add(reaction);
-							ecNumberReactionMap.put(ecNum, rxnsList);
+							if (ecNumberReactionMap.containsKey(ecNum)) {
+								ArrayList<SBMLReaction> rxnsList = ecNumberReactionMap.get(ecNum);
+								rxnsList.add(reaction);
+								updateECNumberReactionMap(ecNumberReactionMap, ecNum, rxnsList);
+								//ecNumberReactionMap.put(ecNum, rxnsList);
+							} else {
+								ArrayList<SBMLReaction> rxnsList = new ArrayList<SBMLReaction>();
+								rxnsList.add(reaction);
+								updateECNumberReactionMap(ecNumberReactionMap, ecNum, rxnsList);
+								//ecNumberReactionMap.put(ecNum, rxnsList);
+							}
 						}
 					}
+					if (!LocalConfig.getInstance().getIdentifierIds().contains(reaction.getId())) {
+						LocalConfig.getInstance().getIdentifierIds().add(reaction.getId());
+					}
+				} 
+				fluxes.add(reaction.getFluxValue());
+				if (reaction.getUpperBound() > maxUpperBound) {
+					maxUpperBound = reaction.getUpperBound();
 				}
-				if (!LocalConfig.getInstance().getIdentifierIds().contains(reaction.getId())) {
-					LocalConfig.getInstance().getIdentifierIds().add(reaction.getId());
-				}
-			} 
-			fluxes.add(reaction.getFluxValue());
-			if (reaction.getUpperBound() > maxUpperBound) {
-				maxUpperBound = reaction.getUpperBound();
 			}
 		}
 		if (!LocalConfig.getInstance().isFluxLevelsSet()) {
@@ -105,6 +111,13 @@ public class ECNumberMapCreator {
 		//LocalConfig.getInstance().setEcNumberReactionMap(ecNumberReactionMap);
 		//System.out.println("ec " + ecNumberReactionMap);
 		return ecNumberReactionMap;
+	}
+	
+	public void updateECNumberReactionMap(Map<String, ArrayList<SBMLReaction>> ecNumberReactionMap, 
+		String ecNum, ArrayList<SBMLReaction> rxnsList) {
+		if (ecNum != null && ecNum.trim().length() > 0) {
+			ecNumberReactionMap.put(ecNum, rxnsList);
+		}
 	}
 	
 }
