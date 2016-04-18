@@ -393,6 +393,7 @@ public class PathwayFilesReader {
 							ArrayList<String> abbrList = new ArrayList<String>();
 							ArrayList<String> nameList = new ArrayList<String>();
 							ArrayList<String> keggIdList = new ArrayList<String>();
+							ArrayList<String> chebiIdList = new ArrayList<String>();
 							ArrayList<String> chargeList = new ArrayList<String>();
 							for (int j = 0; j < LocalConfig.getInstance().getKeggIdMetaboliteMap().get(pm.getKeggId()).size(); j++) {
 								if (LocalConfig.getInstance().getKeggIdMetaboliteMap().get(pm.getKeggId()).get(j).getCompartment().
@@ -406,6 +407,10 @@ public class PathwayFilesReader {
 									}
 									if (!keggIdList.contains(pm.getKeggId())) {
 										keggIdList.add(pm.getKeggId());
+									}
+									String chebiId = LocalConfig.getInstance().getKeggIdMetaboliteMap().get(pm.getKeggId()).get(j).getChebiId();
+									if (chebiId != null && chebiId.length() > 0 && !chebiIdList.contains(chebiId.trim())) {
+										chebiIdList.add(chebiId.trim());
 									}
 									String charge = LocalConfig.getInstance().getKeggIdMetaboliteMap().get(pm.getKeggId()).get(j).getCharge();
 									if (charge != null && charge.length() > 0 && !chargeList.contains(charge.trim())) {
@@ -429,7 +434,7 @@ public class PathwayFilesReader {
 		    					abbr = util.maybeRemovePrefixAndSuffix(metabAbbr);
 		    				}
 							//abbr = util.maybeRemovePrefixAndSuffix(metabAbbr);
-							name = pmnf.htmlDisplayName(abbr, nameList, abbrList, keggIdList, chargeList, pm.getId());
+							name = pmnf.htmlDisplayName(abbr, nameList, abbrList, keggIdList, chebiIdList, chargeList, pm.getId());
 						}
 						if (metaboliteNameAbbrMap.containsKey(name)) {
 							name = name + pmnf.duplicateSuffix(name, metaboliteNameAbbrMap);

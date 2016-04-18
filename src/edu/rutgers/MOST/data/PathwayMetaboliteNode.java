@@ -12,6 +12,7 @@ public class PathwayMetaboliteNode {
 	private String dataId;
 	// links to model kegg id
 	private String keggId;
+	private String chebiId;
 	private double xPosition;
 	private double yPosition;
 	private String border;
@@ -65,6 +66,16 @@ public class PathwayMetaboliteNode {
 		this.keggId = keggId;
 	}
 
+	public String getChebiId()
+	{
+		return chebiId;
+	}
+
+	public void setChebiId( String chebiId )
+	{
+		this.chebiId = chebiId;
+	}
+
 	public double getxPosition() {
 		return xPosition;
 	}
@@ -104,6 +115,8 @@ public class PathwayMetaboliteNode {
 		+ ", name=" + name
 		+ ", reactionName=" + reactionName
 		+ ", dataId=" + dataId
+		+ ", keggId=" + keggId
+		+ ", chebiId=" + chebiId
 		+ ", xPosition=" + xPosition
 		+ ", yPosition=" + yPosition	
 		+ ", border=" + border

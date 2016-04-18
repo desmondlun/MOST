@@ -435,6 +435,7 @@ public class VisualizationDataProcessor {
 					}
 				}
 			}
+			ArrayList<String> chebiIdList = new ArrayList<String>();
 			ArrayList<String> chargeList = new ArrayList<String>();
 			for (int z = 0; z < prnf.getRenameMetabolitesMap().get(renameMetaboliteKeys.get(y)).size(); z++) {
 				////    			System.out.println("k1 " + prnf.getRenameMetabolitesMap().get(renameMetaboliteKeys.get(y)).get(z));
@@ -452,6 +453,10 @@ public class VisualizationDataProcessor {
 								}
 								if (!keggList.contains(LocalConfig.getInstance().getKeggIdMetaboliteMap().get(prnf.getRenameMetabolitesMap().get(renameMetaboliteKeys.get(y)).get(z)).get(j).getKeggId())) {
 									keggList.add(LocalConfig.getInstance().getKeggIdMetaboliteMap().get(prnf.getRenameMetabolitesMap().get(renameMetaboliteKeys.get(y)).get(z)).get(j).getKeggId());
+								}
+								String chebiId = LocalConfig.getInstance().getKeggIdMetaboliteMap().get(prnf.getRenameMetabolitesMap().get(renameMetaboliteKeys.get(y)).get(z)).get(j).getChebiId();
+								if (chebiId != null && chebiId.length() > 0 && !chebiIdList.contains(chebiId.trim())) {
+									chebiIdList.add(chebiId.trim());
 								}
 								String charge = LocalConfig.getInstance().getKeggIdMetaboliteMap().get(prnf.getRenameMetabolitesMap().get(renameMetaboliteKeys.get(y)).get(z)).get(j).getCharge();
 								if (charge != null && charge.length() > 0 && !chargeList.contains(charge.trim())) {
@@ -481,7 +486,7 @@ public class VisualizationDataProcessor {
 					}
 					// TODO: figure out how to get database id here from metabolite node positions file
 					// so node info can be in the same format as other nodes
-					name = pmnf.htmlDisplayNameRenamed(abbr, nameList, abbrList, keggIdList, chargeList);
+					name = pmnf.htmlDisplayNameRenamed(abbr, nameList, abbrList, keggIdList, chebiIdList, chargeList);
 					oldNameNewNameMap.put(metabName, name);
 					LocalConfig.getInstance().getMetaboliteNameAbbrMap().put(metabName, abbr);
 				}
@@ -508,7 +513,7 @@ public class VisualizationDataProcessor {
 					}
 					// TODO: figure out how to get database id here from metabolite node positions file
 					// so node info can be in the same format as other nodes
-					name = pmnf.htmlDisplayNameRenamed(abbr, nameList, abbrList, keggList, chargeList);
+					name = pmnf.htmlDisplayNameRenamed(abbr, nameList, abbrList, keggList, chebiIdList, chargeList);
 					oldNameNewNameMap.put(metabName, name);
 					LocalConfig.getInstance().getMetaboliteNameAbbrMap().put(metabName, abbr);
 					// add positions to map for find exact match
