@@ -106,15 +106,17 @@ public class PathwaysFrame extends JApplet {
     Graph<String, Number> graph; 
     public JPanel controls = new JPanel();
     
-    private static VisualizationsFindDialog visualizationsFindDialog;                                                                                                              
-	
-	public VisualizationsFindDialog getVisualizationsFindDialog() {
-		return visualizationsFindDialog;
+    private static VisualizationFindDialog visualizationFindDialog;                                                                                                              
+
+	public VisualizationFindDialog getVisualizationFindDialog()
+	{
+		return visualizationFindDialog;
 	}
 
-	public static void setVisualizationsFindDialog(
-			VisualizationsFindDialog visualizationsFindDialog) {
-		PathwaysFrame.visualizationsFindDialog = visualizationsFindDialog;
+	public static void setVisualizationFindDialog(
+		VisualizationFindDialog visualizationFindDialog )
+	{
+		PathwaysFrame.visualizationFindDialog = visualizationFindDialog;
 	}
 
 	private static HashMap<String, ArrayList<Double>> findLocationsMap;
@@ -274,17 +276,17 @@ public class PathwaysFrame extends JApplet {
 			}
 		};
 
-		VisualizationsFindDialog.findButton.addActionListener(findNextButtonActionListener);
-		VisualizationsFindDialog.doneButton.addActionListener(findDoneButtonActionListener);
-		VisualizationsFindDialog.caseCheckBox.addActionListener(matchCaseActionListener);
-		VisualizationsFindDialog.wrapCheckBox.addActionListener(wrapAroundActionListener);
-		VisualizationsFindDialog.backwardsCheckBox.addActionListener(searchBackwardsActionListener);
-		VisualizationsFindDialog.exactMatchCheckBox.addActionListener(exactMatchActionListener);
+		VisualizationFindDialog.findButton.addActionListener(findNextButtonActionListener);
+		VisualizationFindDialog.doneButton.addActionListener(findDoneButtonActionListener);
+		VisualizationFindDialog.caseCheckBox.addActionListener(matchCaseActionListener);
+		VisualizationFindDialog.wrapCheckBox.addActionListener(wrapAroundActionListener);
+		VisualizationFindDialog.backwardsCheckBox.addActionListener(searchBackwardsActionListener);
+		VisualizationFindDialog.exactMatchCheckBox.addActionListener(exactMatchActionListener);
 		
 		GraphicalInterface.getNotFoundDialog().okButton.addActionListener(notFoundActionListener);
 		GraphicalInterface.getNotFoundDialog().addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent evt) {
-				getVisualizationsFindDialog().setAlwaysOnTop(true);        	        	
+				getVisualizationFindDialog().setAlwaysOnTop(true);        	        	
 			}
 		});
 		
@@ -292,14 +294,14 @@ public class PathwaysFrame extends JApplet {
 		GraphicalInterface.getNotFoundYesNoDialog().noButton.addActionListener(endFindNoActionListener);
 		GraphicalInterface.getNotFoundYesNoDialog().addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent evt) {
-				getVisualizationsFindDialog().setAlwaysOnTop(true);        	        	
+				getVisualizationFindDialog().setAlwaysOnTop(true);        	        	
 			}
 		});
 
 		KeyStroke find = KeyStroke.getKeyStroke(KeyEvent.VK_F,ActionEvent.CTRL_MASK,false);
 		getRootPane().registerKeyboardAction(findActionListener,find,JComponent.WHEN_IN_FOCUSED_WINDOW);
 		
-		wrapAround = VisualizationsFindConstants.WRAP_AROUND_DEFAULT;
+		wrapAround = VisualizationFindConstants.WRAP_AROUND_DEFAULT;
 
 		/**************************************************************************/
 		// create menu bar
@@ -335,9 +337,10 @@ public class PathwaysFrame extends JApplet {
 		menuBar.add(fileMenu);
 
 		JMenu editMenu = new JMenu("Edit");
-		fileMenu.setMnemonic(KeyEvent.VK_E);
+		editMenu.setMnemonic(KeyEvent.VK_E);
 
 		editMenu.add(findItem);
+		findItem.setMnemonic(KeyEvent.VK_F);
 		findItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				if (!findMode) {
@@ -1043,9 +1046,9 @@ public class PathwaysFrame extends JApplet {
 	};
 
 	public void showFindDialog() {
-		VisualizationsFindDialog findDialog = new VisualizationsFindDialog();
-		setVisualizationsFindDialog(findDialog);
-		//getVisualizationsFindDialog().findButton.addActionListener(findNextButtonActionListener);
+		VisualizationFindDialog findDialog = new VisualizationFindDialog();
+		setVisualizationFindDialog(findDialog);
+		//getVisualizationFindDialog().findButton.addActionListener(findNextButtonActionListener);
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
 		int y = (screenSize.height - findDialog.getSize().height)/2;
@@ -1064,15 +1067,15 @@ public class PathwaysFrame extends JApplet {
 				findDialogCloseAction();
 			}
 		});
-		VisualizationsFindDialog.findBox.setEnabled(true);
+		VisualizationFindDialog.findBox.setEnabled(true);
 
-		VisualizationsFindDialog.doneButton.addActionListener(doneButtonActionListener);
+		VisualizationFindDialog.doneButton.addActionListener(doneButtonActionListener);
 
 		// ensure states of boolean values match states of findReplace frame
-		searchBackwards = VisualizationsFindConstants.SEARCH_BACKWARDS_DEFAULT;
-		matchCase = VisualizationsFindConstants.MATCH_CASE_DEFAULT;
-		wrapAround = VisualizationsFindConstants.WRAP_AROUND_DEFAULT;
-		exactMatch = VisualizationsFindConstants.EXACT_MATCH_DEFAULT;
+		searchBackwards = VisualizationFindConstants.SEARCH_BACKWARDS_DEFAULT;
+		matchCase = VisualizationFindConstants.MATCH_CASE_DEFAULT;
+		wrapAround = VisualizationFindConstants.WRAP_AROUND_DEFAULT;
+		exactMatch = VisualizationFindConstants.EXACT_MATCH_DEFAULT;
 		findMode = true;
 		findItem.setEnabled(false);
 	}	
@@ -1082,12 +1085,12 @@ public class PathwaysFrame extends JApplet {
 		findItem.setEnabled(true);
 
 		// ensure states of boolean values match states of findReplace frame
-		searchBackwards = VisualizationsFindConstants.SEARCH_BACKWARDS_DEFAULT;
-		matchCase = VisualizationsFindConstants.MATCH_CASE_DEFAULT;
-		wrapAround = VisualizationsFindConstants.WRAP_AROUND_DEFAULT;
-		exactMatch = VisualizationsFindConstants.EXACT_MATCH_DEFAULT;
-		getVisualizationsFindDialog().setVisible(false);
-		getVisualizationsFindDialog().dispose();
+		searchBackwards = VisualizationFindConstants.SEARCH_BACKWARDS_DEFAULT;
+		matchCase = VisualizationFindConstants.MATCH_CASE_DEFAULT;
+		wrapAround = VisualizationFindConstants.WRAP_AROUND_DEFAULT;
+		exactMatch = VisualizationFindConstants.EXACT_MATCH_DEFAULT;
+		getVisualizationFindDialog().setVisible(false);
+		getVisualizationFindDialog().dispose();
 	}
 
 	ActionListener findNextButtonActionListener = new ActionListener() {
@@ -1104,7 +1107,7 @@ public class PathwaysFrame extends JApplet {
 		public void actionPerformed(ActionEvent ae) {
 			wrapAround = true; 
 
-			VisualizationsFindDialog.wrapCheckBox.setSelected(true);
+			VisualizationFindDialog.wrapCheckBox.setSelected(true);
 			if (searchBackwards) {
 				if (searchBackwards && getFindLocationsMap() != null && getFindLocationsMap().size() > 0) {
 					findStartIndex = getFindLocationsMap().size() - 1;
@@ -1113,7 +1116,7 @@ public class PathwaysFrame extends JApplet {
 				findStartIndex = 0;
 			}
 			GraphicalInterface.getNotFoundYesNoDialog().setVisible(false);
-			getVisualizationsFindDialog().setAlwaysOnTop(true);
+			getVisualizationFindDialog().setAlwaysOnTop(true);
 		}
 	};
 	
@@ -1122,27 +1125,27 @@ public class PathwaysFrame extends JApplet {
 	ActionListener notFoundActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			GraphicalInterface.getNotFoundDialog().setVisible(false);
-			getVisualizationsFindDialog().setAlwaysOnTop(true);
+			getVisualizationFindDialog().setAlwaysOnTop(true);
 		}
 	};
 	
 	ActionListener endFindNoActionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent ae) {
 			GraphicalInterface.getNotFoundYesNoDialog().setVisible(false);
-			getVisualizationsFindDialog().setAlwaysOnTop(true);
+			getVisualizationFindDialog().setAlwaysOnTop(true);
 		}
 	};
 	
 	public void notFoundAction() {
-		getVisualizationsFindDialog().setAlwaysOnTop(false);
+		getVisualizationFindDialog().setAlwaysOnTop(false);
 		GraphicalInterface.getNotFoundDialog().setVisible(true);
-		//getVisualizationsFindDialog().setAlwaysOnTop(true);
+		//getVisualizationFindDialog().setAlwaysOnTop(true);
 	}
 
 	public void endFindAction() {
-		getVisualizationsFindDialog().setAlwaysOnTop(false);
+		getVisualizationFindDialog().setAlwaysOnTop(false);
 		GraphicalInterface.getNotFoundYesNoDialog().setVisible(true);
-		//getVisualizationsFindDialog().setAlwaysOnTop(true);
+		//getVisualizationFindDialog().setAlwaysOnTop(true);
 	}
 
 	private boolean findValueChanged(String findValue) {
@@ -1159,9 +1162,9 @@ public class PathwaysFrame extends JApplet {
 	public void findNext() {
 		String findValue = "";
 		if (matchCase) {
-			findValue = VisualizationsFindDialog.findBox.getSelectedItem().toString();
+			findValue = VisualizationFindDialog.findBox.getSelectedItem().toString();
 		} else {
-			findValue = VisualizationsFindDialog.findBox.getSelectedItem().toString().toLowerCase();
+			findValue = VisualizationFindDialog.findBox.getSelectedItem().toString().toLowerCase();
 		}
 		HashMap<String, ArrayList<Double>> findLocationsMap = findLocationsMap();
 		if (findValueChanged(findValue)) {
@@ -1175,7 +1178,7 @@ public class PathwaysFrame extends JApplet {
 		if (findLocationsMap.size() == 0) {
 			notFoundAction();
 		} else {
-			getVisualizationsFindDialog().requestFocus();
+			getVisualizationFindDialog().requestFocus();
 			ArrayList<String> findXCoordinates = new ArrayList<String>(findLocationsMap.keySet());
 			Collections.sort(findXCoordinates, new NumComparator());
 			ArrayList<Double> findPositions = findLocationsMap.get(findXCoordinates.get(findStartIndex));
@@ -1211,7 +1214,7 @@ public class PathwaysFrame extends JApplet {
 				}
 			}													
 		}
-		getVisualizationsFindDialog().requestFocus();
+		getVisualizationFindDialog().requestFocus();
 	}
 
 	public HashMap<String, ArrayList<Double>> findLocationsMap() {		
@@ -1221,14 +1224,14 @@ public class PathwaysFrame extends JApplet {
 		// save original entry for exact match
 		String originalFindValue = "";
 		if (matchCase) {
-			findValue = VisualizationsFindDialog.findBox.getSelectedItem().toString();
+			findValue = VisualizationFindDialog.findBox.getSelectedItem().toString();
 			originalFindValue = findValue;
 		} else {
-			originalFindValue = VisualizationsFindDialog.findBox.getSelectedItem().toString();
-			findValue = VisualizationsFindDialog.findBox.getSelectedItem().toString().toLowerCase();
+			originalFindValue = VisualizationFindDialog.findBox.getSelectedItem().toString();
+			findValue = VisualizationFindDialog.findBox.getSelectedItem().toString().toLowerCase();
 		}
 		if (exactMatch) {
-			if (VisualizationsFindDialog.matchByBox.getSelectedItem().equals(
+			if (VisualizationFindDialog.matchByBox.getSelectedItem().equals(
 					GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN_NAME)) {
 				if (metaboliteAbbrPositionsMap.containsKey(originalFindValue)) {
 					for (int r = 0; r < metaboliteAbbrPositionsMap.get(originalFindValue).size(); r++) {
@@ -1236,8 +1239,8 @@ public class PathwaysFrame extends JApplet {
 								metaboliteAbbrPositionsMap.get(originalFindValue).get(r)[1]);
 					}
 				}
-			} else if (VisualizationsFindDialog.matchByBox.getSelectedItem().equals(
-					VisualizationsFindConstants.KEGG_METABOLITE_ID_ITEM)) {
+			} else if (VisualizationFindDialog.matchByBox.getSelectedItem().equals(
+					VisualizationFindConstants.KEGG_METABOLITE_ID_ITEM)) {
 				String keggMetaboliteId = findValue.toUpperCase();
 				if (keggMetaboliteIdPositionsMap.containsKey(keggMetaboliteId)) {
 					for (int r = 0; r < keggMetaboliteIdPositionsMap.get(keggMetaboliteId).size(); r++) {
@@ -1245,16 +1248,16 @@ public class PathwaysFrame extends JApplet {
 								keggMetaboliteIdPositionsMap.get(keggMetaboliteId).get(r)[1]);
 					}
 				}
-			} else if (VisualizationsFindDialog.matchByBox.getSelectedItem().equals(
-					VisualizationsFindConstants.EC_NUMBER_ITEM)) {
+			} else if (VisualizationFindDialog.matchByBox.getSelectedItem().equals(
+					VisualizationFindConstants.EC_NUMBER_ITEM)) {
 				if (ecNumberPositionsMap.containsKey(findValue)) {
 					for (int e = 0; e < ecNumberPositionsMap.get(findValue).size(); e++) {
 						updateFindLocationsMap(findLocationsMap, ecNumberPositionsMap.get(findValue).get(e)[0], 
 								ecNumberPositionsMap.get(findValue).get(e)[1]);
 					}
 				}
-			} else if (VisualizationsFindDialog.matchByBox.getSelectedItem().equals(
-					VisualizationsFindConstants.KEGG_REACTION_ID_ITEM)) {
+			} else if (VisualizationFindDialog.matchByBox.getSelectedItem().equals(
+					VisualizationFindConstants.KEGG_REACTION_ID_ITEM)) {
 				// if match case is not selected, find values are set to lower case. while this works with generic find
 				// this does not work with KEGG ids that are upper case in the reaction positions file
 				String keggReactionId = findValue.toUpperCase();
@@ -1264,7 +1267,7 @@ public class PathwaysFrame extends JApplet {
 								keggReactionIdPositionsMap.get(keggReactionId).get(r)[1]);
 					}
 				}
-			} else if (VisualizationsFindDialog.matchByBox.getSelectedItem().equals(
+			} else if (VisualizationFindDialog.matchByBox.getSelectedItem().equals(
 					GraphicalInterfaceConstants.REACTION_ABBREVIATION_COLUMN_NAME)) {
 				if (reactionAbbrPositionsMap.containsKey(originalFindValue)) {
 					for (int r = 0; r < reactionAbbrPositionsMap.get(originalFindValue).size(); r++) {

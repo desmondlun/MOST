@@ -29,7 +29,7 @@ import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.TextFieldUndoItem;
 import static javax.swing.GroupLayout.Alignment.*;
  
-public class VisualizationsFindDialog extends JDialog {
+public class VisualizationFindDialog extends JDialog {
 	
 	/**
 	 * 
@@ -78,7 +78,7 @@ public class VisualizationsFindDialog extends JDialog {
 
 	private WindowFocusListener windowFocusListener;
 	
-	public VisualizationsFindDialog() {
+	public VisualizationFindDialog() {
     	
     	setMaximumSize(new Dimension(250, 300));
     	setResizable(false);
@@ -90,8 +90,8 @@ public class VisualizationsFindDialog extends JDialog {
         
         populateComboBox(findBox, LocalConfig.getInstance().getFindEntryList());
         matchByBox.removeAllItems();
-        for (int i = 0; i < VisualizationsFindConstants.FIND_BY_COLUMN_LIST.length; i++) {
-			matchByBox.addItem(VisualizationsFindConstants.FIND_BY_COLUMN_LIST[i]);
+        for (int i = 0; i < VisualizationFindConstants.FIND_BY_COLUMN_LIST.length; i++) {
+			matchByBox.addItem(VisualizationFindConstants.FIND_BY_COLUMN_LIST[i]);
 		}
         
         findBox.setSelectedIndex(-1);
@@ -156,7 +156,7 @@ public class VisualizationsFindDialog extends JDialog {
 			public void actionPerformed(ActionEvent a) { 
 				findField.setText("");
 	            try{
-	                String clip_string = getClipboardContents(VisualizationsFindDialog.this);
+	                String clip_string = getClipboardContents(VisualizationFindDialog.this);
 	                findField.replaceSelection(clip_string.trim());
 	                 
 	            }catch(Exception excpt){
@@ -190,10 +190,10 @@ public class VisualizationsFindDialog extends JDialog {
 			}
 		});
 		
-        caseCheckBox.setSelected(VisualizationsFindConstants.MATCH_CASE_DEFAULT);
-    	wrapCheckBox.setSelected(VisualizationsFindConstants.WRAP_AROUND_DEFAULT);
-        backwardsCheckBox.setSelected(VisualizationsFindConstants.SEARCH_BACKWARDS_DEFAULT);
-        exactMatchCheckBox.setSelected(VisualizationsFindConstants.EXACT_MATCH_DEFAULT);
+        caseCheckBox.setSelected(VisualizationFindConstants.MATCH_CASE_DEFAULT);
+    	wrapCheckBox.setSelected(VisualizationFindConstants.WRAP_AROUND_DEFAULT);
+        backwardsCheckBox.setSelected(VisualizationFindConstants.SEARCH_BACKWARDS_DEFAULT);
+        exactMatchCheckBox.setSelected(VisualizationFindConstants.EXACT_MATCH_DEFAULT);
         
         findLabel.setDisplayedMnemonic('F');
         findLabel.setLabelFor(findBox);
@@ -275,7 +275,7 @@ public class VisualizationsFindDialog extends JDialog {
                         .addGap(25)
             );
             
-        setTitle("Visualizations Find");
+        setTitle("Visualization Find");
         pack();
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         
@@ -375,14 +375,14 @@ public class VisualizationsFindDialog extends JDialog {
         {
             public void windowGainedFocus(WindowEvent we)
             {
-            	LocalConfig.getInstance().visualizationsFindFocusLost = false;
-            	LocalConfig.getInstance().visualizationsFindFocusGained = true;
+            	LocalConfig.getInstance().visualizationFindFocusLost = false;
+            	LocalConfig.getInstance().visualizationFindFocusGained = true;
             }
 
             public void windowLostFocus(WindowEvent we)
             {               
-            	LocalConfig.getInstance().visualizationsFindFocusLost = true;
-            	LocalConfig.getInstance().visualizationsFindFocusGained = false;
+            	LocalConfig.getInstance().visualizationFindFocusLost = true;
+            	LocalConfig.getInstance().visualizationFindFocusGained = false;
             }
         };
 
@@ -464,7 +464,7 @@ public class VisualizationsFindDialog extends JDialog {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
             	
-                new VisualizationsFindDialog().setVisible(true);
+                new VisualizationFindDialog().setVisible(true);
             }
         });
     }

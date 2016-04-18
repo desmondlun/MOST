@@ -42,7 +42,9 @@ A{text-decoration:none}
 	<p><font size=2><a href="help.html#overview">Overview </a></font></p>
 	<ul><li><font size=2><a href="help.html#sort">Sorting Tables</a></font></li>
 	<li><font size=2><a href="help.html#formula">Formula Bar</a></font></li>
-	<li><font size=2><a href="help.html#rename">Renaming Metabolites</a></font></li></ul>
+	<li><font size=2><a href="help.html#rename">Renaming Metabolites</a></font></li>
+	<li><font size=2><a href="help.html#rename_comp">Renaming Compartments</a></font></li>
+	<li><font size=2><a href="help.html#visualize">Visualization Overview</a></font></li></ul>
 
 	<p><font size=2><a href="installing_most.html">Installing MOST</a></font></p>
 	<ul><li><font size=2><a href="installing_most.html#req">Requirements</a></font></li>
@@ -80,6 +82,18 @@ A{text-decoration:none}
 	<li><font size=2><a href="analysis_menu.html#eflux2">E-Flux2</a></font></li>
 	<li><font size=2><a href="analysis_menu.html#spot">SPOT</a></font></li></ul>
 
+	<p><font size=2><a href="visualization_menu.html">Visualization Menu</a></font></p>
+
+	<ul><li><font size=2><a href="visualization_menu.html#visualize">Visualize Compartment</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#report">Show Visualization Report</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#locate_columns">Locate Identifier Columns</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#levels">Set Edge Flux Levels</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#reset_levels">Reset Edge Flux Levels to Default</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#frame_menus">Visualization Frame Menus</a></font></li>
+	<ul><li><font size=2><a href="visualization_menu.html#save_svg">Save As SVG</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#save_png">Save As PNG</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#find">Find</a></font></li></ul></ul>
+
 	<p><font size=2><a href="edit_menu.html">Edit Menu</a></font></p>
 
 	<ul><li><font size=2><a href="edit_menu.html#unused">Unused Metabolites</a></font></li>
@@ -94,7 +108,11 @@ A{text-decoration:none}
 
 	<ul><li><font size=2><a href="select_solvers.html">Select Solvers</a></font></li>
 	<li><font size=2><a href="solver_parameters.html">Set Solver Parameters</a></font></li>
-	<li><font size=2>Visualization Options</font></li></ul>
+	<li><font size=2>Visualization Options</font></li>
+	<ul><li><font size=2><a href="#graph_all">Graph All in Database</a></font></li>
+	<li><font size=2><a href="#scale">Scale Edge Thickness</a></font></li>
+	<li><font size=2><a href="#ignore_water">Ignore Water for Reaction Matching</a></font></li>
+	<li><font size=2><a href="#report">Show Visualization Report</a></font></li></ul></ul>
 
 	<p><font size=2><a href="toolbar.html">Toolbar</a></font></p>
 
@@ -126,7 +144,58 @@ A{text-decoration:none}
 
 	</td>
 
-	
+	<td width=600 valign=top>
+	<p align=center><font size=5>Visualization Options</font></p>
+
+	<blockquote>Select Options –> Visualization Options ->  (Alt+V then Alt+V) to view Visualization options.</blockquote>
+
+	<blockquote>A portion of a graph using the Graph All Reactions and Metabolites in Database option. Notice reactions
+	not found in model are shown in subdued colors.</blockquote>
+
+	<p><a name="graph_all"><strong>  Graph All Reactions and Metabolites in Database:</strong></a></p>
+	<blockquote>Select Options –> Visualization Options -> Graph All Reactions and Metabolites in Database (Alt+O then Alt+V then Alt+G). 
+	</blockquote>
+	<blockquote>The default setting in for visualization is to graph the reactions found in the selected compartment of the 
+	loaded model. However, when building a model, it may be helpful to see all reactions in the database. Selection of 
+	this option will visualize all reactions in the database, and reactions not present in the model will be drawn using 
+	subdued colors.</blockquote>
+
+	<p align="center"><img src ="images/graph_all_unchecked.jpg" alt="Image - Graph All Unchecked" border="0"></p>
+
+	<blockquote>A portion of a graph using default setting.</blockquote>
+
+	<p align="center"><img src ="images/graph_all.jpg" alt="Image - Graph All" border="0"></p>
+
+	<blockquote>A portion of a graph using the "Graph All Reactions and Metabolites in Database" option. Notice reactions
+	not found in model are shown in subdued colors.</blockquote>
+
+	<p><a name="scale"><strong>  Scale Edge Thickness Using Flux Values:</strong></a></p>
+	<blockquote>Select Options –> Visualization Options -> Scale Edge Thickness Using Flux Values (Alt+O then Alt+V then Alt+S). 
+	</blockquote>
+	<blockquote>The default setting in for visualization is to scale edge thicknesses using flux values. Selection of this option will
+	result in edges for all reactions found in the model to be the same thickness.</blockquote>
+
+	<p align="center"><img src ="images/scale_edge_unchecked.jpg" alt="Image - Scale Edges Unchecked" border="0"></p>
+
+	<blockquote>A portion of a graph with "Scale Edge Thickness Using Flux Values" unchecked.</blockquote>
+
+	<p><a name="ignore_water"><strong>  Ignore Water for Reaction Matching:</strong></a></p>
+	<blockquote>Select Options –> Visualization Options -> Ignore Water for Reaction Matching (Alt+O then Alt+V then Alt+W). 
+	</blockquote>
+
+	<blockquote>Water is commonly omitted in reactions. Selecting the ignore water option will allow comparison with reactions
+	in the database to be considered a match if water is not found in the reaction. For example  a reaction A --> B + C will be
+	graphed as reaction A + H2O --> B + C using this option.</blockquote>
+
+	<p><a name="report"><strong>  Show Visualization Report:</strong></a></p>
+	<blockquote>Select Options –> Visualization Options -> Show Visualization Report (Alt+O then Alt+V then Alt+R). 
+	</blockquote>
+
+	<blockquote>The default setting in for visualization is to show a report listing reactions in three categories: 
+	reactions found in the model that are not present in the database, reactions where one or more metabolite does
+	not have an identifier (KEGG id or CHEBI id), and reactions that have been graphed. Deselect this
+	option to prevent this report from being shown when visualizing. The report can be viewed while visualizing by
+	selecting Visualization --> Show Visualization Report (Alt+V then Alt+Z).</blockquote>
 
 	</td>
 	</tr>

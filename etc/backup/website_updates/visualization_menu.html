@@ -43,7 +43,8 @@ A{text-decoration:none}
 	<ul><li><font size=2><a href="help.html#sort">Sorting Tables</a></font></li>
 	<li><font size=2><a href="help.html#formula">Formula Bar</a></font></li>
 	<li><font size=2><a href="help.html#rename">Renaming Metabolites</a></font></li>
-	<li><font size=2><a href="help.html#rename_comp">Renaming Compartments</a></font></li></ul>
+	<li><font size=2><a href="help.html#rename_comp">Renaming Compartments</a></font></li>
+	<li><font size=2><a href="help.html#visualize">Visualization Overview</a></font></li></ul>
 
 	<p><font size=2><a href="installing_most.html">Installing MOST</a></font></p>
 	<ul><li><font size=2><a href="installing_most.html#req">Requirements</a></font></li>
@@ -81,6 +82,18 @@ A{text-decoration:none}
 	<li><font size=2><a href="analysis_menu.html#eflux2">E-Flux2</a></font></li>
 	<li><font size=2><a href="analysis_menu.html#spot">SPOT</a></font></li></ul>
 
+	<p><font size=2>Visualization Menu</font></p>
+
+	<ul><li><font size=2><a href="#visualize">Visualize Compartment</a></font></li>
+	<li><font size=2><a href="#report">Show Visualization Report</a></font></li>
+	<li><font size=2><a href="#locate_columns">Locate Identifier Columns</a></font></li>
+	<li><font size=2><a href="#levels">Set Edge Flux Levels</a></font></li>
+	<li><font size=2><a href="#reset_levels">Reset Edge Flux Levels to Default</a></font></li>
+	<li><font size=2><a href="#frame_menus">Visualization Frame Menus</a></font></li>
+	<ul><li><font size=2><a href="#save_svg">Save As SVG</a></font></li>
+	<li><font size=2><a href="#save_png">Save As PNG</a></font></li>
+	<li><font size=2><a href="#find">Find</a></font></li></ul></ul>
+
 	<p><font size=2><a href="edit_menu.html">Edit Menu</a></font></p>
 
 	<ul><li><font size=2><a href="edit_menu.html#unused">Unused Metabolites</a></font></li>
@@ -94,7 +107,12 @@ A{text-decoration:none}
 	<p><font size=2><a href="options_menu.html">Options Menu</a></font></p>
 
 	<ul><li><font size=2><a href="select_solvers.html">Select Solvers</a></font></li>
-	<li><font size=2><a href="solver_parameters.html">Set Solver Parameters</a></font></li></ul>
+	<li><font size=2><a href="solver_parameters.html">Set Solver Parameters</a></font></li>
+	<li><font size=2><a href="visualization_options.html>Visualization Options</a></font></li>
+	<ul><li><font size=2><a href="visualization_options.html#graph_all">Graph All in Database</a></font></li>
+	<li><font size=2><a href="visualization_options.html#scale">Scale Edge Thickness</a></font></li>
+	<li><font size=2><a href="visualization_options.html#ignore_water">Ignore Water for Reaction Matching</a></font></li>
+	<li><font size=2><a href="visualization_options.html#report">Show Visualization Report</a></font></li></ul></ul>
 
 	<p><font size=2><a href="toolbar.html">Toolbar</a></font></p>
 
@@ -155,7 +173,11 @@ A{text-decoration:none}
 
 	<p align="center"><img src ="images/compartment_selector.jpg" alt="Image - Compartment Name Selection" border="0"></p>
 
-	<blockquote>If no identifiers are found, the No Identifier Column warning will appear.</blockquote>
+	<blockquote>Select the compartment to visualize. Click the OK button to continue.</blockquote>
+
+	<blockquote>If no identifiers are found, the "No Identifier Column" warning will appear. See 
+	<a href="#locate_columns">Locate Identifier Columns</a>
+	to locate an identifier column.</blockquote>
 
 	<p align="center"><img src ="images/no_identifiers_warning.jpg" alt="Image - No Identifier Column warning" border="0"></p>
 
@@ -165,6 +187,23 @@ A{text-decoration:none}
 
 	<blockquote>Blank compartments will be renamed to "C_1" or a default name if the "Yes" button is clicked before visualization. Clicking
 	the "No" button will cancel the renaming of blank compartments and visualization of the model.</blockquote>
+
+	<blockquote>If an identifier column has been automatically located or user selected and there are no blank compartment
+	entries, a progress bar will appear, followed by the Visualization frame. A Visualization report will appear on top of the Visualization frame
+	if <a href="visualization_options.html#report">Show Visualization Report</a> is selected in <a href="visualization_options.html">Visualization Options</a>.</blockquote>
+
+	<p align="center"><a href="images/visualization_frame.jpg" target="_blank">
+	<img src ="images/visualization_frame.jpg" alt="Image - Visualization Frame" border="0" height="80%" width="80%"></a></p>
+
+	<p align="center"><a href="images/visualization_report.jpg" target="_blank">
+	<img src ="images/visualization_report.jpg" alt="Image - Visualization Report" border="0" height="80%" width="80%"></a></p>
+
+	<blockquote>Visualization frame and Visualization report.</blockquote>
+
+	<p><a name="report"><strong>  Show Visualization Report:</strong></a></p>
+
+	<blockquote>Select Visualization --> Show Visualization Report (Alt+V then Alt+Z) to show the report of reactions that were graphed
+	and not graphed.</blockquote> 
 
 	<p><a name="locate_columns"><strong>  Locate Identifier Columns:</strong></a></p>
 
@@ -193,6 +232,39 @@ A{text-decoration:none}
 	<p><a name="reset_levels"><strong>  Reset Edge Flux Levels to Default:</strong></a></p>
 	<blockquote>The default setting can be restored by clicking Visualization –> Reset Edge Flux Levels to Default 
 	 (Alt+V then Alt+D).</blockquote>
+
+	<br>
+
+	<p align=center><a name="frame_menus"><font size=5>Visualization Frame Menus</font></a></p>
+
+	<p align=center><font size=5>File Menu</font></p>
+
+	<blockquote>The Visualization File Menu is used for saving visualizations as 
+	<a href="https://en.wikipedia.org/wiki/Scalable_Vector_Graphics">SVG</a> files or 
+	<a href="https://en.wikipedia.org/wiki/Portable_Network_Graphics">PNG</a> files..
+	</blockquote>
+
+	<br>
+
+	<p><a name="save_svg"><strong>  Save Graph As SVG:</strong></a></p>
+
+	<blockquote>Select File –> Save Graph As SVG (Alt+F then Alt+S), select a directory to save to,
+	then type in a name for the file. If the name does not end with ".svg", the name will be 
+	appended with the extension. The entire graph will be written as an SVG file.</blockquote>
+
+	<p><a name="save_png"><strong>  Save Window As PNG:</strong></a></p>
+
+	<blockquote>Select File –> Save Window As PNG (Alt+F then Alt+W), select a directory to save to,
+	then type in a name for the file. If the name does not end with ".png", the name will be 
+	appended with the extension. The portion of the graph visible in the window will be written as a PNG file.</blockquote>
+
+	<p align=center><font size=5>Edit Menu</font></p>
+
+	<p><a name="find"><strong>  Find:</strong></a></p>
+
+	<blockquote>Select Edit –> Find (Alt+E then Alt+F, or Ctrl+F). The Visualization Find dialog will appear. Visualization Find 
+	has advanced find options such as find by Exact Match by Metabolite Abbreviation, KEGG Metabolite Id, EC Number, KEGG
+	Reaction Id, and Reaction Abbreviation.</blockquote>
 
 	</td>
 	</tr>

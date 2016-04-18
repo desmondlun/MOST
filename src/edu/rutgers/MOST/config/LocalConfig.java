@@ -1076,9 +1076,9 @@ public class LocalConfig {
 	}
 
 	// visualizations find
-	public boolean visualizationsFindFieldChanged;
-	public boolean visualizationsFindFocusLost;
-	public boolean visualizationsFindFocusGained;
+	public boolean visualizationFindFieldChanged;
+	public boolean visualizationFindFocusLost;
+	public boolean visualizationFindFocusGained;
 
 	// data from etc/visualizations files
 	private Map<String, ArrayList<String>> alternateMetabolitesMap;
