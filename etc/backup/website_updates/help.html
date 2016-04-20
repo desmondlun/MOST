@@ -106,7 +106,7 @@ A{text-decoration:none}
 
 	<ul><li><font size=2><a href="select_solvers.html">Select Solvers</a></font></li>
 	<li><font size=2><a href="solver_parameters.html">Set Solver Parameters</a></font></li>
-	<li><font size=2><a href="visualization_options.html>Visualization Options</a></font></li>
+	<li><font size=2><a href="visualization_options.html">Visualization Options</a></font></li>
 	<ul><li><font size=2><a href="visualization_options.html#graph_all">Graph All in Database</a></font></li>
 	<li><font size=2><a href="visualization_options.html#scale">Scale Edge Thickness</a></font></li>
 	<li><font size=2><a href="visualization_options.html#ignore_water">Ignore Water for Reaction Matching</a></font></li>
@@ -181,7 +181,7 @@ A{text-decoration:none}
 
 	<br>
 
-	<p><a name="overview"> Overview:</a></p>
+	<p><a name="overview"><strong> Overview:</strong></a></p>
 
 	<p align="center"><a href="images/most_screenshot.jpg" target="_blank">
 	<img src ="images/most_screenshot.jpg" alt="Image - MOST Screenshot" border="0" height="90%" width="90%"></a></p>
@@ -236,10 +236,16 @@ A{text-decoration:none}
 	<p align="center"><a href="images/rename_comp1.jpg" target="_blank">
 	<img src ="images/rename_comp1.jpg" alt="Image - Rename Compartment 1" border="0" height="90%" width="90%"></a></p>
 
+	<p align="center">Warning when renaming a compartment in Metabolites table.</p>
+
+	<br>
+
 	<blockquote>The Compartments table can be used to rename a compartment. </blockquote> 
 
 	<p align="center"><a href="images/comp_table_rename.jpg" target="_blank">
 	<img src ="images/comp_table_rename.jpg" alt="Image - Compartment Table Rename" border="0" height="90%" width="90%"></a></p>
+
+	<p align="center">Warning when renaming a compartment in Compartments table.</p>
 
 	<blockquote>Replace All cannot be used to 
 	rename a compartment. The following message will displayed when this action is attempted.</blockquote>
@@ -250,11 +256,87 @@ A{text-decoration:none}
 	<blockquote>Since compartments are keys, entries cannot be blank.</blockquote>
 
 	<blockquote>All changes in compartments cannot be undone, and after changing a compartment, 
-	<a href="toolbar.html#undo">Undo</a> and <a href="toolbar.html#undo">Redo</a> buttons and
-	menus will be cleared.
-	.</blockquote>
+	<a href="toolbar.html#undo">Undo</a> and <a href="toolbar.html#undo">Redo</a> history will be cleared.
+	</blockquote>
 
-	<p><a name="visualize">  Visualization Overview:</a></p>
+	<br>
+
+	<p><a name="visualize"><strong>  Visualization Overview:</a></strong></p>
+
+	<p align="center"><a href="images/visualization_frame.jpg" target="_blank">
+	<img src ="images/visualization_frame.jpg" alt="Image - MOST Screenshot" border="0" height="80%" width="80%"></a></p>
+
+	<blockquote>The Visualization frame uses zoom and pan navigation. The "+" button can be used to zoom in and the 
+	"-" button can ce used to zoom out. Dragging on the graph or moving the scroll bars can be used to move about
+	the graph.</blockquote>
+
+	<blockquote>The model and compartment that is being visualized are shown in the top left corner.</blockquote>
+
+	<p align="center"><img src ="images/name_comp.jpg" alt="Image - Name Compartment" border="0"></p>
+
+	<p align="center">Model name and compartment</p>
+
+	<br>
+
+	<blockquote>Reaction nodes have blue text and are all the same size. 
+	Metabolite nodes are large if the metabolite is a main component in a reaction and smaller for components such as H2O, O2, CO2,
+	and cofactors.
+	Large metabolite nodes are shown in black. 
+	and are enclosed in boxes if the metabolite occurs in multiple places.
+	Smaller metabolites are either in black or red if the metabolite is a cofactor.
+	Reaction edges link components in a reaction and arrows show if a reaction is reversible or not. 
+	Pathway names are shown in orange.
+	</blockquote>
+
+	<p align="center"><img src ="images/sample_reaction-rev.jpg" alt="Image - Reversible Reaction" border="0"></p>
+
+	<p align="center">Reversible reaction</p>
+	
+	<p align="center"><img src ="images/sample_reaction-irrev.jpg" alt="Image - Irreversible Reaction" border="0"></p>
+
+	<p align="center">Irreversible reaction</p>
+
+	<blockquote>Flux values are used to scale edge thicknesses by default, but this setting can be changed
+	by using the <a href="visualization_options.html">Visualization Options</a> menu and deselecting
+	<a href="visualization_options.html#scale">Scale Edge Thickness</a>.</blockquote>
+
+	<p align="center"><img src ="images/pathway_name.jpg" alt="Image - Pathway name." border="0"></p>
+
+	<p align="center">Pathway name node example - Citrate Cycle</p>
+
+	<br>
+
+	<blockquote>More information is available for nodes by hovering over a node to view a tooltip.
+	Each node also has a context menu that can be 
+	accessed by right-clicking on the node. Selecting "View Node Information" will show a
+	Node Information frame. Selecting "Copy Node Information to Clipboard" will make the
+	node information available to be pasted into a text editor. Node information can also be viewed 
+	in a Node Information frame by double-clicking on
+	the node. 
+	</blockquote>
+
+	<p align="center"><img src ="images/metab_info.jpg" alt="Image - Metabolite Info" border="0"></p>
+
+	<p align="center">Metabolite Information frame</p>
+	
+	<p align="center"><a href="images/rxn_info.jpg" target="_blank">
+	<img src ="images/rxn_info.jpg" alt="Image - Reaction info" border="0" height="90%" width="90%"></a></p>
+
+	<p align="center">Reaction Information frame</p>
+
+	<blockquote>Protons are usually not graphed as separate nodes, but are included in nodes of other metabolites.
+	</blockquote>
+
+	<p align="center"><a href="images/proton-rxn.jpg" target="_blank">
+	<img src ="images/proton-rxn.jpg" alt="Image - Proton in reaction" border="0" height="90%" width="90%"></a></p>
+
+	<p align="center">Reaction with proton</p>
+
+	<p align="center"><img src ="images/proton_mtb.jpg" alt="Image - Proton included with metabolite" border="0"></p>
+
+	<p align="center">Proton included with metabolite</p>
+
+	<br>
 
 	</td>
 	</table>
