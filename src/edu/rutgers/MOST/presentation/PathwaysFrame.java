@@ -1175,6 +1175,7 @@ public class PathwaysFrame extends JApplet {
 			}
 		} 
 		oldFindValue = findValue;
+//		System.out.println(findLocationsMap);
 		if (findLocationsMap.size() == 0) {
 			notFoundAction();
 		} else {
