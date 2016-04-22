@@ -36,6 +36,10 @@ public class MetaboliteVisualizationDataProcessor {
 							keggId = keggId.substring(0, keggId.indexOf("|"));
 							//System.out.println(keggId);
 						}
+						if (keggId.contains(",")) {
+							keggId = keggId.substring(0, keggId.indexOf(","));
+							//System.out.println(keggId);
+						}
 						// map used to match metabolite ids from model with KEGG ids
 						LocalConfig.getInstance().getMetaboliteIdKeggIdMap().put(metabId, keggId);
 						if (LocalConfig.getInstance().getKeggIdMetaboliteMap().containsKey(keggId)) {
