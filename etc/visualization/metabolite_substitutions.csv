@@ -13,6 +13,7 @@ C00092,C00668|C01172,D-Glucose 6-phosphate,"alpha-D-Glucose 6-phosphate, beta-D-
 C00095,C01496|C10906,D-Fructose,,,C10906 is a second entry
 C00103,C00663,"D-Glucose-1P, beta-D-Glucose 1-phosphate",,,
 C00162,C06423|C01571|C02679|C06424|C00249|C08362|C01530|C00712,Fatty acid,,,
+C00185,C06422,Cellobiose,,,
 C00226,C00756|C01633|C02277|C00823,"1-Alcohol (even chain, missing C14, C18)","1-Octanol, 1-Decanol, 1-Dodecanol, 1-Hexadecanol",,
 C00264,C05269|C05267|C05265|C05263|C05261|C05259,3-Oxoacyl-CoA,,,
 C00268,C15522,Dihydrobiopterin,4a-Hydroxytetrahydrobiopterin,,
@@ -66,3 +67,4 @@ C00283,C00087,H2S,,,
 C00328,C01718,L-Kynurenine,,,
 C03227,C02794,3-Hydroxy-L-kynurenine,,,
 C02291,C00542,Cystathionine,,,
+C00124,C00984,D-Galactose,,,
