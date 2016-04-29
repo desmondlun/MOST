@@ -10,8 +10,9 @@ C00071,C01545|C12307|C02278|C00517|C01838,"Aldehyde (even chain, missing C14)","
 C00077,C01602,Ornithine,,,
 C00085,C05345,D-Fructose 6-phosphate,beta-D-Fructose 6-phosphate,,
 C00092,C00668|C01172,D-Glucose 6-phosphate,"alpha-D-Glucose 6-phosphate, beta-D-Glucose 6-phosphate",,
-C00095,C01496|C10906,D-Fructose,,,C10906 is a second entry
+C00095,C01496|C10906|C02336,D-Fructose,,,C10906 is a second entry
 C00103,C00663,"D-Glucose-1P, beta-D-Glucose 1-phosphate",,,
+C00121,C16639|C08353,"Ribose, ribofuranose, ribopyranose",,,
 C00162,C06423|C01571|C02679|C06424|C00249|C08362|C01530|C00712,Fatty acid,,,
 C00185,C06422,Cellobiose,,,
 C00226,C00756|C01633|C02277|C00823,"1-Alcohol (even chain, missing C14, C18)","1-Octanol, 1-Decanol, 1-Dodecanol, 1-Hexadecanol",,
