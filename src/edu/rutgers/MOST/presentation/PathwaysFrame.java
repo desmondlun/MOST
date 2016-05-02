@@ -1004,10 +1004,23 @@ public class PathwaysFrame extends JApplet {
 	 */
 	public String nodeName(String name) {
 		if (oldNameNewNameMap.containsKey(name)) {
-			return oldNameNewNameMap.get(name);
+			return removedDatabaseId(oldNameNewNameMap.get(name));
+			//return oldNameNewNameMap.get(name);
 		}
+		//return removedDatabaseId(name);
 		return name;
 
+	}
+	
+	public String removedDatabaseId(String name) {
+		if (name.contains("Metabolite Database Id: ")) {
+			name = name.substring(0, name.indexOf("Metabolite Database Id: "));
+		} else if (name.contains("Reaction Database Id: ")) {
+			name = name.substring(0, name.indexOf("Reaction Database Id: "));
+		}
+		
+		return name;
+		
 	}
 	
 	public String maybeAddCompartmentNameSuffix(String compAbbr) {
@@ -1933,7 +1946,8 @@ public class PathwaysFrame extends JApplet {
 		if (info.contains("<p>")) {
 			info = info.replace("<p>", "\n");
 		}
-		return info;
+		
+		return removedDatabaseId(info);
 		
 	}
 	
