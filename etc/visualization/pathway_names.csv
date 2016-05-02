@@ -32,7 +32,7 @@ Pathway ID,Pathway KEGG Ids,Pathway Level,Pathway Level Position,Pathway Name,Me
 30,23,41,6.6,Pyrimidines,C00380|C00178|C00106
 31,-1,27,6.9,Glutamate group of amino acids,C00148
 32,23,27.4,8.4,Pyrimidine biosynthesis,C00295|C01103
-33,20,21.7,8.8,Urea cycle,C00086
+33,20,21.2,8.7,Urea cycle,C00086
 34,-1,17.2,7.2,Ketone bodies,C00332
 35,8|9,14.1,8.6,Fatty acid oxidation,C06423|C01571|C02679|C06424|C00249|C08362|C01530|C00712
 36,126,13.8,9.25,Carotenoids,C05433
@@ -52,3 +52,4 @@ Pathway ID,Pathway KEGG Ids,Pathway Level,Pathway Level Position,Pathway Name,Me
 50,-1,12.5,14.6,Isoprenoids,C00129|C00341|C00448
 51,-1,11.7,-12.3,Calvin Cycle,C01182
 52,-1,14.15,-13.55, CO2 Pumping (C4 plants),C01182
+53,-1,24.4,9.1,Nitrogen Metabolism,C00887|C00533|C01417
