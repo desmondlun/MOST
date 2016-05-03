@@ -267,6 +267,24 @@ public class PathwaysFrame extends JApplet {
 		keggReactionIdPositionsMap = visualizationData.getKeggReactionIdPositionsMap();
 		reactionAbbrPositionsMap = visualizationData.getReactionAbbrPositionsMap();
 		
+		if (LocalConfig.getInstance().getSecondaryMaxFlux() > 0) {
+			double minFlux = 0;
+			for (int i = 0; i < PathwaysFrameConstants.FLUX_WIDTHS.length; i++) {
+				double width = PathwaysFrameConstants.FLUX_WIDTHS[i];
+				System.out.println("w " + width);
+				System.out.println("w " + LocalConfig.getInstance().getSecondaryMaxFlux()*width);
+				if (edgeThickness(width) == 1.0) {
+					minFlux = LocalConfig.getInstance().getSecondaryMaxFlux()*width;
+				}
+				if (edgeThickness(width) > 1) {
+					System.out.println("w " + width);
+					System.out.println("w " + edgeThickness(width));
+				}
+			}
+			System.out.println(minFlux);
+			System.out.println("> " + PathwaysFrameConstants.INFINITE_FLUX_RATIO*LocalConfig.getInstance().getMaxFlux());
+		}
+		
 		//transformItem.setState(false);
 
 		// register actions

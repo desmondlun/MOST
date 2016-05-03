@@ -3,6 +3,7 @@ package edu.rutgers.MOST.presentation;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.Arrays;
+import java.util.List;
 
 public class PathwaysFrameConstants {
 
@@ -132,6 +133,14 @@ public class PathwaysFrameConstants {
 	public static final double LOWER_MID_FLUX_WIDTH = 2.0;
 	public static final double MINIMUM_FLUX_RATIO = 0.02;
 	public static final double MINIMUM_FLUX_WIDTH = 1.0;
+	
+	public static final double[] FLUX_WIDTHS = {
+		MINIMUM_FLUX_RATIO,
+		LOWER_MID_FLUX_RATIO,
+		LOW_MID_FLUX_RATIO,
+		MID_FLUX_RATIO,
+		TOP_FLUX_RATIO,
+		INFINITE_FLUX_RATIO };
 	
 	public static final int PATHWAYS_COMPONENT = 0;
 	public static final int PROCESSES_COMPONENT = 1;
