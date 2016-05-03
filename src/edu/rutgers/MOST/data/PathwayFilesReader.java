@@ -384,7 +384,8 @@ public class PathwayFilesReader {
 						// add KEGG id to nodes but not if KEGG id does not exist and file contains
 						// entry such as "-1"
 						if (pm.getKeggId().startsWith("C")) {
-							name = "<html>" + pm.getNames().get(0) + "<p>KEGG Id: " + pm.getKeggId() +
+							name = "<html>" + pm.getAbbreviation() + "<p>Name: " +
+								pm.getNames().get(0) + "<p>KEGG Id: " + pm.getKeggId() +
 								"<p>Metabolite Database Id: " + pm.getId();
 						}
 						String abbr = pm.getAbbreviation();

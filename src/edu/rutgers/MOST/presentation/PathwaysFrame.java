@@ -1188,13 +1188,18 @@ public class PathwaysFrame extends JApplet {
 			}
 		} 
 		oldFindValue = findValue;
-//		System.out.println(findLocationsMap);
+		System.out.println(findLocationsMap);
 		if (findLocationsMap.size() == 0) {
 			notFoundAction();
 		} else {
 			getVisualizationFindDialog().requestFocus();
 			ArrayList<String> findXCoordinates = new ArrayList<String>(findLocationsMap.keySet());
 			Collections.sort(findXCoordinates, new NumComparator());
+			if (findXCoordinates.size() > findStartIndex) {
+				
+			} else {
+				findStartIndex = 0;
+			}
 			ArrayList<Double> findPositions = findLocationsMap.get(findXCoordinates.get(findStartIndex));
 			findNodeByLocation(findPositions.get(0), findPositions.get(1));
 //			for (int i = 0; i < findXCoordinates.size(); i++) {

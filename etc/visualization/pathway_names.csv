@@ -49,7 +49,7 @@ Pathway ID,Pathway KEGG Ids,Pathway Level,Pathway Level Position,Pathway Name,Me
 47,16,35.5,12.55,Estrogens,C05141|C00951|C00468
 48,16,33.8,12.55,Androgens,C00535|C00951
 49,13,41.8,14.8,Bile acids,C01921|C04483
-50,-1,12.5,14.6,Isoprenoids,C00129|C00341|C00448
+50,-1,12.5,14.7,Isoprenoids,C00129|C00341|C00448
 51,-1,11.7,-12.3,Calvin Cycle,C01182
 52,-1,14.15,-13.55, CO2 Pumping (C4 plants),C01182
 53,-1,24.4,9.1,Nitrogen Metabolism,C00887|C00533|C01417
