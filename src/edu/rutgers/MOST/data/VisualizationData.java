@@ -20,6 +20,7 @@ public class VisualizationData {
 	private ArrayList<String> borderList;   // compartment border
 	private ArrayList<String> noBorderList;   // metabolite node border
 	private ArrayList<String> pathwayNames;
+	private ArrayList<String> fluxRangeNames;
 	private ArrayList<String> mainMetabolites;
 	private ArrayList<String> smallMainMetabolites;
 	private ArrayList<String> sideMetabolites;
@@ -41,6 +42,8 @@ public class VisualizationData {
 	private HashMap<String, ArrayList<String[]>> keggReactionIdPositionsMap;
 	private HashMap<String, ArrayList<String[]>> reactionAbbrPositionsMap;
 	private String report;
+	private String compartmentLabel;
+	private String legendLabel;
 	
 	public Map<String, String[]> getNodeNamePositionMap() {
 		return nodeNamePositionMap;
@@ -83,6 +86,14 @@ public class VisualizationData {
 	}
 	public void setPathwayNames(ArrayList<String> pathwayNames) {
 		this.pathwayNames = pathwayNames;
+	}
+	public ArrayList< String > getFluxRangeNames()
+	{
+		return fluxRangeNames;
+	}
+	public void setFluxRangeNames( ArrayList< String > fluxRangeNames )
+	{
+		this.fluxRangeNames = fluxRangeNames;
 	}
 	public ArrayList<String> getMainMetabolites() {
 		return mainMetabolites;
@@ -208,6 +219,22 @@ public class VisualizationData {
 	}
 	public void setReport(String report) {
 		this.report = report;
+	}
+	public String getCompartmentLabel()
+	{
+		return compartmentLabel;
+	}
+	public void setCompartmentLabel( String compartmentLabel )
+	{
+		this.compartmentLabel = compartmentLabel;
+	}
+	public String getLegendLabel()
+	{
+		return legendLabel;
+	}
+	public void setLegendLabel( String legendLabel )
+	{
+		this.legendLabel = legendLabel;
 	}
 	
 

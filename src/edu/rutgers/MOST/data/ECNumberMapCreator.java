@@ -11,16 +11,9 @@ import edu.rutgers.MOST.config.LocalConfig;
 
 public class ECNumberMapCreator {
 
-	// need fluxes to get max and secondary max if there are infinite fluxes
-	// usually in column as something like 999999.0
-	private ArrayList<Double> fluxes = new ArrayList<Double>();
-	
-	private double maxUpperBound;
-
 	/**
 	 * EC Number map created to be used for getting information from loaded
-	 * model by EC Number. To avoid going through reactions twice, max upper bound
-	 * found here, flux data processed further by VisualizationFluxesProcessor.
+	 * model by EC Number. 
 	 * If reaction is identified by EC Number, the only reason it should be rejected is
 	 * if main species in reaction are different from main species in visualization diagram.
 	 * This often occurs with sugars for example.
@@ -31,8 +24,6 @@ public class ECNumberMapCreator {
 		//ReactionFactory rf = new ReactionFactory("SBML");
 		//Vector<SBMLReaction> rxns = rf.getReactionsByCompartment(LocalConfig.getInstance().getCytosolName());
 		//Vector<SBMLReaction> rxns = rf.getAllReactions();
-		VisualizationFluxesProcessor processor = new VisualizationFluxesProcessor();
-		maxUpperBound = 0;
 		for (int r = 0; r < rxns.size(); r++) {
 			if (rxns.get(r) != null) {
 				SBMLReaction reaction = (SBMLReaction) rxns.get(r);
@@ -94,19 +85,8 @@ public class ECNumberMapCreator {
 						LocalConfig.getInstance().getIdentifierIds().add(reaction.getId());
 					}
 				} 
-				fluxes.add(reaction.getFluxValue());
-				if (reaction.getUpperBound() > maxUpperBound) {
-					maxUpperBound = reaction.getUpperBound();
-				}
 			}
 		}
-		if (!LocalConfig.getInstance().isFluxLevelsSet()) {
-			processor.setMaxFlux(maxUpperBound);
-			processor.setFluxes(fluxes);
-			processor.processFluxes();
-		}
-//		System.out.println("max " + LocalConfig.getInstance().getMaxFlux());
-//		System.out.println("sec " + LocalConfig.getInstance().getSecondaryMaxFlux());
 
 		//LocalConfig.getInstance().setEcNumberReactionMap(ecNumberReactionMap);
 		//System.out.println("ec " + ecNumberReactionMap);

@@ -13586,6 +13586,14 @@ public class GraphicalInterface extends JFrame {
 		} else {
 			rxns = rf.getAllReactions();
 		}
+		
+		if (!LocalConfig.getInstance().isFluxLevelsSet()) {
+			VisualizationFluxesProcessor processor = new VisualizationFluxesProcessor();
+			// need to process all reactions since this value needs to agree with value in
+			// flux levels dialog where compartment is not specified
+			processor.processReactions(rf.getAllReactions());
+			processor.processFluxes();
+		}
 		ECNumberMapCreator ecMapCreator = new ECNumberMapCreator();
 		Map<String, ArrayList<SBMLReaction>> ecNumberReactionMap = ecMapCreator.createEcNumberReactionMap(rxns);
 		LocalConfig.getInstance().setEcNumberReactionMap(ecNumberReactionMap);

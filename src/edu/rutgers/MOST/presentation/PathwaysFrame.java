@@ -33,6 +33,7 @@ import java.util.Map;
 
 
 
+
 import javax.imageio.ImageIO;
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
@@ -56,6 +57,7 @@ import javax.swing.WindowConstants;
 import org.apache.commons.collections15.Transformer;                                                                 
 import org.apache.commons.collections15.functors.ChainedTransformer;                                                 
                                                                                                                      
+
 
 
 
@@ -151,6 +153,7 @@ public class PathwaysFrame extends JApplet {
 	ArrayList<String> borderList = new ArrayList<String>();   // compartment border
 	ArrayList<String> noBorderList = new ArrayList<String>();   // metabolite node border
 	ArrayList<String> pathwayNames = new ArrayList<String>();
+	ArrayList<String> fluxRangeNames = new ArrayList<String>();
 	ArrayList<String> mainMetabolites = new ArrayList<String>();
 	ArrayList<String> smallMainMetabolites = new ArrayList<String>();
 	ArrayList<String> sideMetabolites = new ArrayList<String>();
@@ -177,7 +180,8 @@ public class PathwaysFrame extends JApplet {
 	PathwayMetaboliteNodeFactory pmnf = new PathwayMetaboliteNodeFactory();
 	Utilities util = new Utilities();
 
-	String compartmentLabel = "Model Name: " + LocalConfig.getInstance().getModelName();
+	String compartmentLabel = "";
+	String legendLabel = "";
 
 	//   	private double layoutScale;
 	private double viewScale = PathwaysFrameConstants.START_SCALING_FACTOR;
@@ -227,6 +231,8 @@ public class PathwaysFrame extends JApplet {
 	private int findStartIndex = 0;
 
 	final ScalingControl scaler = new CrossoverScalingControl();
+	
+	Utilities u = new Utilities();
 
 	/**                                                                                                              
 	 * create an instance of a simple graph with controls to                                                         
@@ -247,6 +253,7 @@ public class PathwaysFrame extends JApplet {
 		borderList = visualizationData.getBorderList();
 		noBorderList = visualizationData.getNoBorderList();
 		pathwayNames = visualizationData.getPathwayNames();
+		fluxRangeNames = visualizationData.getFluxRangeNames();
 		mainMetabolites = visualizationData.getMainMetabolites();
 		smallMainMetabolites = visualizationData.getSmallMainMetabolites();
 		sideMetabolites = visualizationData.getSideMetabolites();
@@ -266,24 +273,8 @@ public class PathwaysFrame extends JApplet {
 		ecNumberPositionsMap = visualizationData.getEcNumberPositionsMap();
 		keggReactionIdPositionsMap = visualizationData.getKeggReactionIdPositionsMap();
 		reactionAbbrPositionsMap = visualizationData.getReactionAbbrPositionsMap();
-		
-		if (LocalConfig.getInstance().getSecondaryMaxFlux() > 0) {
-			double minFlux = 0;
-			for (int i = 0; i < PathwaysFrameConstants.FLUX_WIDTHS.length; i++) {
-				double width = PathwaysFrameConstants.FLUX_WIDTHS[i];
-				System.out.println("w " + width);
-				System.out.println("w " + LocalConfig.getInstance().getSecondaryMaxFlux()*width);
-				if (edgeThickness(width) == 1.0) {
-					minFlux = LocalConfig.getInstance().getSecondaryMaxFlux()*width;
-				}
-				if (edgeThickness(width) > 1) {
-					System.out.println("w " + width);
-					System.out.println("w " + edgeThickness(width));
-				}
-			}
-			System.out.println(minFlux);
-			System.out.println("> " + PathwaysFrameConstants.INFINITE_FLUX_RATIO*LocalConfig.getInstance().getMaxFlux());
-		}
+		compartmentLabel = visualizationData.getCompartmentLabel();
+		legendLabel = visualizationData.getLegendLabel();
 		
 		//transformItem.setState(false);
 
@@ -653,6 +644,9 @@ public class PathwaysFrame extends JApplet {
 			} else if (name.equals(compartmentLabel)) {
 				width = PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_WIDTH;
 				height = PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_HEIGHT;
+			} else if (name.equals(legendLabel)) {
+				width = PathwaysFrameConstants.LEGEND_LABEL_NODE_WIDTH;
+				height = PathwaysFrameConstants.LEGEND_LABEL_NODE_HEIGHT;
 			} else if (mainMetabolites.contains(name)) {
 				if (!noBorderList.contains(name)) {
 					width = PathwaysFrameConstants.METABOLITE_BORDER_NODE_WIDTH;
@@ -673,7 +667,11 @@ public class PathwaysFrame extends JApplet {
 			} else if (pathwayNames.contains(name)) {
 				width = PathwaysFrameConstants.PATHWAY_NAME_NODE_WIDTH;
 				height = PathwaysFrameConstants.PATHWAY_NAME_NODE_HEIGHT; 
+			} else if (fluxRangeNames.contains(name)) {
+				width = PathwaysFrameConstants.FLUX_RANGE_NODE_WIDTH;
+				height = PathwaysFrameConstants.FLUX_RANGE_NODE_HEIGHT; 
 			}
+			
 			// based on http://stackoverflow.com/questions/2736320/write-text-onto-image-in-java
 			BufferedImage bufferedImage = new BufferedImage(width, height,
 					BufferedImage.TYPE_INT_RGB);
@@ -692,12 +690,26 @@ public class PathwaysFrame extends JApplet {
 				}
 				alignCenterString(graphics, name, width, PathwaysFrameConstants.PATHWAY_NAME_NODE_XPOS, PathwaysFrameConstants.PATHWAY_NAME_NODE_YPOS, PathwaysFrameConstants.PATHWAY_NAME_NODE_FONT_SIZE);
 				drawBorder(graphics, width, height, PathwaysFrameConstants.PATHWAY_NAME_BORDER_WIDTH);
+			} else if (fluxRangeNames.contains(name)) {
+				graphics.setFont(new Font(PathwaysFrameConstants.FONT_NAME, PathwaysFrameConstants.FONT_STYLE, PathwaysFrameConstants.FLUX_RANGE_NODE_FONT_SIZE));
+				graphics.drawString(name, PathwaysFrameConstants.FLUX_RANGE_NODE_XPOS, PathwaysFrameConstants.FLUX_RANGE_NODE_YPOS);
 			} else if (name.equals(compartmentLabel)) {
 				graphics.setFont(new Font(PathwaysFrameConstants.FONT_NAME, PathwaysFrameConstants.FONT_STYLE, PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_FONT_SIZE));
-				graphics.drawString(compartmentLabel, PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_XPOS, PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_YPOS);
+				String label = compartmentLabel;
+				if (compartmentLabel.length() > PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_MAX_CHARS) {
+					label = compartmentLabel.substring(0, PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_MAX_CHARS - 3) + "...";
+				}
+				graphics.drawString(label, PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_XPOS, PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_YPOS);
 				String comp = maybeAddCompartmentNameSuffix(LocalConfig.getInstance().getSelectedCompartmentName());
-				graphics.drawString("Compartment: " + comp, PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_XPOS, 
+				String compLabel = "Compartment: " + comp;
+				if (compLabel.length() > PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_MAX_CHARS) {
+					compLabel = compLabel.substring(0, PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_MAX_CHARS - 3) + "...";
+				}
+				graphics.drawString(compLabel, PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_XPOS, 
 						PathwaysFrameConstants.COMPARTMENT_LABEL_LINE_OFFSET + PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_YPOS);
+			} else if (name.equals(legendLabel)) {
+				graphics.setFont(new Font(PathwaysFrameConstants.FONT_NAME, PathwaysFrameConstants.FONT_STYLE, PathwaysFrameConstants.LEGEND_LABEL_NODE_FONT_SIZE));
+				graphics.drawString(legendLabel, PathwaysFrameConstants.LEGEND_LABEL_NODE_XPOS, PathwaysFrameConstants.LEGEND_LABEL_NODE_YPOS);
 			} else {
 				if (mainMetabolites.contains(name)) {
 					if (!foundMetabolitesList.contains(name)) {
@@ -796,10 +808,6 @@ public class PathwaysFrame extends JApplet {
 				if (s.length() > PathwaysFrameConstants.REACTION_NODE_MAX_CHARS) {
 					s = s.substring(0, PathwaysFrameConstants.REACTION_NODE_MAX_CHARS - PathwaysFrameConstants.REACTION_NODE_ELLIPSIS_CORRECTION) + "...";
 				}
-			} else if (s.equals(compartmentLabel)) {
-				if (s.length() > PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_MAX_CHARS) {
-					s = s.substring(0, PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_MAX_CHARS - PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_ELLIPSIS_CORRECTION) + "...";
-				}	
 			} else if (pathwayNames.contains(s)) {
 				if (s.length() > PathwaysFrameConstants.PATHWAY_NAME_NODE_MAX_CHARS) {
 					s = s.substring(0, PathwaysFrameConstants.PATHWAY_NAME_NODE_MAX_CHARS - PathwaysFrameConstants.PATHWAY_NAME_NODE_ELLIPSIS_CORRECTION) + "...";
@@ -1009,6 +1017,8 @@ public class PathwaysFrame extends JApplet {
 				thickness = PathwaysFrameConstants.TOP_FLUX_WIDTH;
 			} else if (Math.abs(fluxValue) <= LocalConfig.getInstance().getSecondaryMaxFlux()) {
 				thickness = PathwaysFrameConstants.SECONDARY_MAX_FLUX_WIDTH;
+			} else {
+				thickness = PathwaysFrameConstants.ABOVE_SECONDARY_MAX_FLUX_WIDTH;
 			}
 		}
 
@@ -1574,6 +1584,10 @@ public class PathwaysFrame extends JApplet {
 					width = PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_WIDTH;
 					height = PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_HEIGHT;
 					strokeWidth = 0;
+				} else if (nodeNameList.get(j).equals(legendLabel)) {
+					width = PathwaysFrameConstants.LEGEND_LABEL_NODE_WIDTH;
+					height = PathwaysFrameConstants.LEGEND_LABEL_NODE_HEIGHT;
+					strokeWidth = 0;	
 				} else if (mainMetabolites.contains(nodeNameList.get(j))) {
 					if (!noBorderList.contains(nodeNameList.get(j))) {
 						width = PathwaysFrameConstants.METABOLITE_BORDER_NODE_WIDTH;
@@ -1594,7 +1608,11 @@ public class PathwaysFrame extends JApplet {
 				} else if (pathwayNames.contains(nodeNameList.get(j))) {
 					width = PathwaysFrameConstants.PATHWAY_NAME_NODE_WIDTH;
 					height = PathwaysFrameConstants.PATHWAY_NAME_NODE_HEIGHT; 
+				} else if (fluxRangeNames.contains(nodeNameList.get(j))) {
+					width = PathwaysFrameConstants.FLUX_RANGE_NODE_WIDTH;
+					height = PathwaysFrameConstants.FLUX_RANGE_NODE_HEIGHT; 
 				}
+				
 				BorderRectangle r = new BorderRectangle();
 				r.setX(Double.parseDouble(nodeNamePositionMap.get(nodeNameList.get(j))[0]) - width/2);
 				r.setY(Double.parseDouble(nodeNamePositionMap.get(nodeNameList.get(j))[1]) - height/2);
@@ -1623,6 +1641,9 @@ public class PathwaysFrame extends JApplet {
 					}
 					xOffset = startX(getGraphics(), displayString(displayName), (int) (width*0.45));
 					yOffset = PathwaysFrameConstants.PATHWAY_NAME_NODE_YPOS;
+				} else if (fluxRangeNames.contains(nodeNameList.get(j))) {
+					xOffset = PathwaysFrameConstants.FLUX_RANGE_NODE_XPOS;
+					yOffset = PathwaysFrameConstants.FLUX_RANGE_NODE_YPOS;
 				} else if (nodeNameList.get(j).equals(compartmentLabel)) {
 					fontSize = Integer.toString(PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_FONT_SIZE);
 					//            		graphics.setFont(new Font("Arial", Font.TYPE1_FONT, PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_FONT_SIZE));
@@ -1631,6 +1652,10 @@ public class PathwaysFrame extends JApplet {
 							//            				PathwaysFrameConstants.COMPARTMENT_LABEL_LINE_OFFSET + PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_YPOS);
 					xOffset = PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_XPOS;
 					yOffset = PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_YPOS;
+				} else if (nodeNameList.get(j).equals(legendLabel)) {
+					fontSize = Integer.toString(PathwaysFrameConstants.LEGEND_LABEL_NODE_FONT_SIZE);
+					xOffset = PathwaysFrameConstants.LEGEND_LABEL_NODE_XPOS;
+					yOffset = PathwaysFrameConstants.LEGEND_LABEL_NODE_YPOS;
 				} else {
 					if (mainMetabolites.contains(nodeNameList.get(j))) {
 						fontSize = Integer.toString(PathwaysFrameConstants.METABOLITE_NODE_FONT_SIZE);

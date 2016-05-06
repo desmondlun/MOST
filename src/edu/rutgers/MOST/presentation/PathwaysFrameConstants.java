@@ -40,7 +40,9 @@ public class PathwaysFrameConstants {
 	public static final int HORIZONTAL_INCREMENT = 400; 
 	public static final int VERTICAL_INCREMENT = 380; // was 360, change made TCA cycle more circular
 	public static final int PATHWAY_NAME_NODE_WIDTH = 200;
-	public static final int PATHWAY_NAME_NODE_HEIGHT = 48;
+	public static final int PATHWAY_NAME_NODE_HEIGHT = 40;
+	public static final int FLUX_RANGE_NODE_WIDTH = 400;
+	public static final int FLUX_RANGE_NODE_HEIGHT = 48;
 	public static final int COMPARTMENT_LABEL_NODE_WIDTH = 4000;
 	public static final int COMPARTMENT_LABEL_NODE_HEIGHT = 230;
 	public static final int COMPARTMENT_LABEL_X_OFFSET = 2000;
@@ -49,6 +51,18 @@ public class PathwaysFrameConstants {
 	public static final int ADDITIONAL_COMPARTMENT_OFFSET = 440;
 	public static final int COMPARTMENT_LABEL_LEFT_PADDING = 25;
 	public static final int COMPARTMENT_LABEL_TOP_PADDING = 25;
+	public static final int LEGEND_LABEL_NODE_WIDTH = 1000;
+	public static final int LEGEND_LABEL_NODE_HEIGHT = 230;
+	public static final int LEGEND_LABEL_X_OFFSET = 100;
+	public static final int LEGEND_LABEL_Y_OFFSET = 150;
+	
+	public static final int LEGEND_LABEL_X_POSITION = 1500;
+	public static final int LEGEND_LABEL_Y_POSITION = 500;
+	
+	public static final int FLUX_RANGE_START_X_POSITION = 900;
+	public static final int FLUX_RANGE_START_Y_POSITION = 650;
+	
+	public static final int FLUX_RANGE_START_Y_INCREMENT = 50;
 	
 	public static final int METABOLITE_NO_BORDER_NODE_WIDTH = 90;
 	public static final int METABOLITE_NO_BORDER_NODE_HEIGHT = 28;
@@ -61,7 +75,9 @@ public class PathwaysFrameConstants {
 	public static final int REACTION_NODE_WIDTH = 120;
 	public static final int REACTION_NODE_HEIGHT = 36;
 	public static final int PATHWAY_NAME_NODE_FONT_SIZE = 36;
+	public static final int FLUX_RANGE_NODE_FONT_SIZE = 27;
 	public static final int COMPARTMENT_LABEL_NODE_FONT_SIZE = 100;
+	public static final int LEGEND_LABEL_NODE_FONT_SIZE = 90;
 	public static final int METABOLITE_NODE_FONT_SIZE = 27;
 	public static final int SMALL_MAIN_METABOLITE_NODE_FONT_SIZE = 28;
 	public static final int SIDE_METABOLITE_NODE_FONT_SIZE = 12;
@@ -72,7 +88,7 @@ public class PathwaysFrameConstants {
 	public static final int SIDE_METABOLITE_NODE_MAX_CHARS = 5;
 	public static final int REACTION_NODE_MAX_CHARS = 7;
 	public static final int PATHWAY_NAME_NODE_MAX_CHARS = 10;
-	public static final int COMPARTMENT_LABEL_NODE_MAX_CHARS = 60;
+	public static final int COMPARTMENT_LABEL_NODE_MAX_CHARS = 80;
 	
 	public static final String REACTION_CORRECTION_TYPE = "r";
 	public static final String METABOLITE_CORRECTION_TYPE = "m";
@@ -94,8 +110,12 @@ public class PathwaysFrameConstants {
 	// positions to start text in node
 	public static final int PATHWAY_NAME_NODE_XPOS = 0;
 	public static final int PATHWAY_NAME_NODE_YPOS = 34;
+	public static final int FLUX_RANGE_NODE_XPOS = 20;
+	public static final int FLUX_RANGE_NODE_YPOS = 34;
 	public static final int COMPARTMENT_LABEL_NODE_XPOS = 30;
 	public static final int COMPARTMENT_LABEL_NODE_YPOS = 100;
+	public static final int LEGEND_LABEL_NODE_XPOS = 30;
+	public static final int LEGEND_LABEL_NODE_YPOS = 100;
 	public static final int METABOLITE_NODE_XPOS = 0;
 	public static final int METABOLITE_NODE_YPOS = 23;
 	public static final int SMALL_MAIN_METABOLITE_NODE_XPOS = 0;
@@ -122,6 +142,9 @@ public class PathwaysFrameConstants {
 //	public static final int ARROW_NOTCH = 10;
 	public static final double INFINITE_FLUX_RATIO = 0.95;
 	public static final double INFINITE_FLUX_WIDTH = 12.0;
+	// if secondary max flux is user set, there is a gap between secondary max flux
+	// and 95% of max flux. this width fills that gap
+	public static final double ABOVE_SECONDARY_MAX_FLUX_WIDTH = 10.0;
 	public static final double SECONDARY_MAX_FLUX_WIDTH = 8.0;
 	public static final double TOP_FLUX_RATIO = 0.5;
 	public static final double TOP_FLUX_WIDTH = 6.0;
@@ -134,13 +157,19 @@ public class PathwaysFrameConstants {
 	public static final double MINIMUM_FLUX_RATIO = 0.02;
 	public static final double MINIMUM_FLUX_WIDTH = 1.0;
 	
-	public static final double[] FLUX_WIDTHS = {
+	public static final double[] FLUX_WIDTH_RATIOS = {
 		MINIMUM_FLUX_RATIO,
 		LOWER_MID_FLUX_RATIO,
 		LOW_MID_FLUX_RATIO,
 		MID_FLUX_RATIO,
-		TOP_FLUX_RATIO,
-		INFINITE_FLUX_RATIO };
+		TOP_FLUX_RATIO};
+	
+	public static final double[] FLUX_WIDTHS = {
+		MINIMUM_FLUX_WIDTH,
+		LOWER_MID_FLUX_WIDTH,
+		LOW_MID_FLUX_WIDTH,
+		MID_FLUX_WIDTH,
+		TOP_FLUX_WIDTH};
 	
 	public static final int PATHWAYS_COMPONENT = 0;
 	public static final int PROCESSES_COMPONENT = 1;

@@ -30,6 +30,7 @@ public class VisualizationDataProcessor {
 	ArrayList<String> borderList = new ArrayList<String>();   // compartment border
 	ArrayList<String> noBorderList = new ArrayList<String>();   // metabolite node border
 	ArrayList<String> pathwayNames = new ArrayList<String>();
+	ArrayList<String> fluxRangeNames = new ArrayList<String>();
 	ArrayList<String> mainMetabolites = new ArrayList<String>();
 	ArrayList<String> smallMainMetabolites = new ArrayList<String>();
 	ArrayList<String> sideMetabolites = new ArrayList<String>();
@@ -59,6 +60,7 @@ public class VisualizationDataProcessor {
 	Utilities util = new Utilities();
 
 	String compartmentLabel = "Model Name: " + LocalConfig.getInstance().getModelName();
+	String legendLabel = "Flux Value";
 
 	private Map<String, ArrayList<Double>> startPosMap = new HashMap<String, ArrayList<Double>>();
 	private double startX = 2*PathwaysFrameConstants.HORIZONTAL_INCREMENT;
@@ -143,9 +145,12 @@ public class VisualizationDataProcessor {
 				PathwaysFrameConstants.COMPARTMENT_LABEL_NODE_HEIGHT/2 + 
 				PathwaysFrameConstants.COMPARTMENT_LABEL_LEFT_PADDING);
 
-		//		if (component == PathwaysFrameConstants.PATHWAYS_COMPONENT) {
 		drawCompartmentLabel(compartmentLabel, compartmentLabelXOffset, compartmentLabelYOffset);
-		//		}
+		
+		drawLegendLabel(legendLabel, Integer.toString(PathwaysFrameConstants.LEGEND_LABEL_X_POSITION), 
+			Integer.toString(PathwaysFrameConstants.LEGEND_LABEL_Y_POSITION));
+		
+		drawLegend(component);
 
 		reactionList = new ArrayList<String>(reactionMap.keySet()); 
 		Collections.sort(reactionList);
@@ -159,6 +164,7 @@ public class VisualizationDataProcessor {
 		visualizationData.setBorderList(borderList);
 		visualizationData.setNoBorderList(noBorderList);
 		visualizationData.setPathwayNames(pathwayNames);
+		visualizationData.setFluxRangeNames(fluxRangeNames);
 		visualizationData.setMainMetabolites(mainMetabolites);
 		visualizationData.setSmallMainMetabolites(smallMainMetabolites);
 		visualizationData.setSideMetabolites(sideMetabolites);
@@ -179,6 +185,8 @@ public class VisualizationDataProcessor {
 		visualizationData.setKeggReactionIdPositionsMap(keggReactionIdPositionsMap);
 		visualizationData.setReactionAbbrPositionsMap(reactionAbbrPositionsMap);
 		visualizationData.setReport(report);
+		visualizationData.setCompartmentLabel(compartmentLabel);
+		visualizationData.setLegendLabel(legendLabel);
 		LocalConfig.getInstance().setVisualizationData(visualizationData);
 	}
 
@@ -557,6 +565,37 @@ public class VisualizationDataProcessor {
 			}
 		}
 	}
+	
+	public void drawLegend(int component) {
+		if (component == PathwaysFrameConstants.PATHWAYS_COMPONENT) {
+			Utilities u = new Utilities();
+			if (LocalConfig.getInstance().getSecondaryMaxFlux() > 0) {
+				// first value is greater than 0 to less than first value
+				// after that, >= to first value and < second value
+				String previousValue = "0.0";
+				String comparator = "> ";
+				double x = PathwaysFrameConstants.FLUX_RANGE_START_X_POSITION;
+				double y = PathwaysFrameConstants.FLUX_RANGE_START_Y_POSITION;
+				String zero = "0";
+				fluxRangeNames.add(zero);
+				nodeNamePositionMap.put(zero, new String[] {Double.toString(x), Double.toString(y)});
+				y += PathwaysFrameConstants.FLUX_RANGE_START_Y_INCREMENT;
+				for (int i = 0; i < PathwaysFrameConstants.FLUX_WIDTH_RATIOS.length; i++) {
+					String value = u.formattedNumber(Double.toString(PathwaysFrameConstants.FLUX_WIDTH_RATIOS[i]*LocalConfig.getInstance().getSecondaryMaxFlux()));
+					String name = comparator + previousValue + " to < " + value;
+					System.out.println(name);
+					fluxRangeNames.add(name);
+					nodeNamePositionMap.put(name, new String[] {Double.toString(x), Double.toString(y)});
+					y += PathwaysFrameConstants.FLUX_RANGE_START_Y_INCREMENT;
+					comparator = ">= ";
+					previousValue = value;
+				}
+				
+//				System.out.println("> 0.0 to <= " + u.formattedNumber(Double.toString(minFlux)));
+//				System.out.println("> " + u.formattedNumber(Double.toString(minFlux)) + " to <= " + u.formattedNumber(Double.toString(PathwaysFrameConstants.INFINITE_FLUX_RATIO*LocalConfig.getInstance().getMaxFlux())));
+			}
+		}
+	}
 
 	public boolean pathwayNameMetaboliteFound(ArrayList<String> list) {
 		boolean found = false;
@@ -625,6 +664,10 @@ public class VisualizationDataProcessor {
 	}
 
 	public void drawCompartmentLabel(String text, String xOffset, String yOffset) {
+		nodeNamePositionMap.put(text, new String[] {xOffset, yOffset});
+	}
+	
+	public void drawLegendLabel(String text, String xOffset, String yOffset) {
 		nodeNamePositionMap.put(text, new String[] {xOffset, yOffset});
 	}
 

@@ -1,6 +1,7 @@
 package edu.rutgers.MOST.data;
 
 import java.util.ArrayList;
+import java.util.Vector;
 
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.PathwaysFrameConstants;
@@ -30,6 +31,17 @@ public class VisualizationFluxesProcessor {
 	}
 	public void setSecondaryMaxFlux(double secondaryMaxFlux) {
 		this.secondaryMaxFlux = secondaryMaxFlux;
+	}
+	
+	public void processReactions(Vector<SBMLReaction> rxns) {
+		double maxUpperBound = 0;
+		for (int i = 0; i < rxns.size(); i++) {
+			fluxes.add(rxns.get(i).getFluxValue());
+			if (rxns.get(i).getUpperBound() > maxUpperBound) {
+				maxUpperBound = rxns.get(i).getUpperBound();
+			}
+		}
+		maxFlux = maxUpperBound;
 	}
 	
 	public void processFluxes() {
