@@ -28,6 +28,7 @@ public class SimpleProgressBar extends JFrame
 		progressBar.setStringPainted( true );
 		this.getContentPane().add( progressBar, BorderLayout.NORTH );
 		this.setSize( 300, 100 );
+		this.setLocationRelativeTo( null );
 		this.setVisible( true );
 		this.setDefaultCloseOperation( DISPOSE_ON_CLOSE );
 	}
