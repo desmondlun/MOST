@@ -147,10 +147,14 @@ public class VisualizationDataProcessor {
 
 		drawCompartmentLabel(compartmentLabel, compartmentLabelXOffset, compartmentLabelYOffset);
 		
-		drawLegendLabel(legendLabel, Integer.toString(PathwaysFrameConstants.LEGEND_LABEL_X_POSITION), 
-			Integer.toString(PathwaysFrameConstants.LEGEND_LABEL_Y_POSITION));
-		
-		drawLegend(component);
+		// only draw flux legend is there is are non-zero fluxes and edge thicknesses are scaled
+		// otherwise legend is meaningless
+		if (LocalConfig.getInstance().getSecondaryMaxFlux() > 0 && LocalConfig.getInstance().isScaleEdgeThicknessSelected()) {
+			drawLegendLabel(legendLabel, Integer.toString(PathwaysFrameConstants.LEGEND_LABEL_X_POSITION), 
+				Integer.toString(PathwaysFrameConstants.LEGEND_LABEL_Y_POSITION));
+			
+			drawLegend(component);
+		}
 
 		reactionList = new ArrayList<String>(reactionMap.keySet()); 
 		Collections.sort(reactionList);
@@ -569,32 +573,42 @@ public class VisualizationDataProcessor {
 	public void drawLegend(int component) {
 		if (component == PathwaysFrameConstants.PATHWAYS_COMPONENT) {
 			Utilities u = new Utilities();
-			if (LocalConfig.getInstance().getSecondaryMaxFlux() > 0) {
-				// first value is greater than 0 to less than first value
-				// after that, >= to first value and < second value
-				String previousValue = "0.0";
-				String comparator = "> ";
-				double x = PathwaysFrameConstants.FLUX_RANGE_START_X_POSITION;
-				double y = PathwaysFrameConstants.FLUX_RANGE_START_Y_POSITION;
-				String zero = "0";
-				fluxRangeNames.add(zero);
-				nodeNamePositionMap.put(zero, new String[] {Double.toString(x), Double.toString(y)});
+			// first value is greater than 0 to less than first value
+			// after that, >= to first value and < second value
+			String previousValue = "0";
+			String comparator = "> ";
+			double x = PathwaysFrameConstants.FLUX_RANGE_START_X_POSITION;
+			double y = PathwaysFrameConstants.FLUX_RANGE_START_Y_POSITION;
+			String zero = "= 0";
+			fluxRangeNames.add(zero);
+			nodeNamePositionMap.put(zero, new String[] {Double.toString(x), Double.toString(y)});
+			y += PathwaysFrameConstants.FLUX_RANGE_START_Y_INCREMENT;
+			for (int i = 0; i < PathwaysFrameConstants.FLUX_WIDTH_RATIOS.length; i++) {
+				String value = u.formattedNumber(Double.toString(PathwaysFrameConstants.FLUX_WIDTH_RATIOS[i]*LocalConfig.getInstance().getSecondaryMaxFlux()));
+				String name = comparator + previousValue + " to < " + value;
+				updateCollectionsForFluxRange(name, Double.toString(x), Double.toString(y));
 				y += PathwaysFrameConstants.FLUX_RANGE_START_Y_INCREMENT;
-				for (int i = 0; i < PathwaysFrameConstants.FLUX_WIDTH_RATIOS.length; i++) {
-					String value = u.formattedNumber(Double.toString(PathwaysFrameConstants.FLUX_WIDTH_RATIOS[i]*LocalConfig.getInstance().getSecondaryMaxFlux()));
-					String name = comparator + previousValue + " to < " + value;
-					System.out.println(name);
-					fluxRangeNames.add(name);
-					nodeNamePositionMap.put(name, new String[] {Double.toString(x), Double.toString(y)});
-					y += PathwaysFrameConstants.FLUX_RANGE_START_Y_INCREMENT;
-					comparator = ">= ";
-					previousValue = value;
-				}
-				
-//				System.out.println("> 0.0 to <= " + u.formattedNumber(Double.toString(minFlux)));
-//				System.out.println("> " + u.formattedNumber(Double.toString(minFlux)) + " to <= " + u.formattedNumber(Double.toString(PathwaysFrameConstants.INFINITE_FLUX_RATIO*LocalConfig.getInstance().getMaxFlux())));
+				comparator = ">= ";
+				previousValue = value;
 			}
+			String secMax = u.formattedNumber(Double.toString(LocalConfig.getInstance().getSecondaryMaxFlux()));
+			String name = comparator + previousValue + " to < " + secMax;
+			updateCollectionsForFluxRange(name, Double.toString(x), Double.toString(y));
+			y += PathwaysFrameConstants.FLUX_RANGE_START_Y_INCREMENT;
+			String maxFluxLimit = u.formattedNumber(Double.toString(PathwaysFrameConstants.INFINITE_FLUX_RATIO*LocalConfig.getInstance().getMaxFlux()));
+			//String maxFlux = u.formattedNumber(Double.toString(LocalConfig.getInstance().getMaxFlux()));
+			String secMaxToMaxFluxLimit = ">= " + secMax + " to <= " + maxFluxLimit;
+			updateCollectionsForFluxRange(secMaxToMaxFluxLimit, Double.toString(x), Double.toString(y));
+			y += PathwaysFrameConstants.FLUX_RANGE_START_Y_INCREMENT;
+			String maxFluxLimitEntry = "> " + maxFluxLimit;
+			updateCollectionsForFluxRange(maxFluxLimitEntry, Double.toString(x), Double.toString(y));
 		}
+	}
+	
+	public void updateCollectionsForFluxRange(String entry, String x, String y) {
+		System.out.println(entry);
+		fluxRangeNames.add(entry);
+		nodeNamePositionMap.put(entry, new String[] {x, y});
 	}
 
 	public boolean pathwayNameMetaboliteFound(ArrayList<String> list) {

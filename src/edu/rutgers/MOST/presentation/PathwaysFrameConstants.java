@@ -41,7 +41,7 @@ public class PathwaysFrameConstants {
 	public static final int VERTICAL_INCREMENT = 380; // was 360, change made TCA cycle more circular
 	public static final int PATHWAY_NAME_NODE_WIDTH = 200;
 	public static final int PATHWAY_NAME_NODE_HEIGHT = 40;
-	public static final int FLUX_RANGE_NODE_WIDTH = 400;
+	public static final int FLUX_RANGE_NODE_WIDTH = 600;
 	public static final int FLUX_RANGE_NODE_HEIGHT = 48;
 	public static final int COMPARTMENT_LABEL_NODE_WIDTH = 4000;
 	public static final int COMPARTMENT_LABEL_NODE_HEIGHT = 230;
@@ -51,16 +51,16 @@ public class PathwaysFrameConstants {
 	public static final int ADDITIONAL_COMPARTMENT_OFFSET = 440;
 	public static final int COMPARTMENT_LABEL_LEFT_PADDING = 25;
 	public static final int COMPARTMENT_LABEL_TOP_PADDING = 25;
-	public static final int LEGEND_LABEL_NODE_WIDTH = 1000;
-	public static final int LEGEND_LABEL_NODE_HEIGHT = 230;
+	public static final int LEGEND_LABEL_NODE_WIDTH = 1400;
+	public static final int LEGEND_LABEL_NODE_HEIGHT = 150;
 	public static final int LEGEND_LABEL_X_OFFSET = 100;
 	public static final int LEGEND_LABEL_Y_OFFSET = 150;
 	
-	public static final int LEGEND_LABEL_X_POSITION = 1500;
+	public static final int LEGEND_LABEL_X_POSITION = 1600;
 	public static final int LEGEND_LABEL_Y_POSITION = 500;
 	
-	public static final int FLUX_RANGE_START_X_POSITION = 900;
-	public static final int FLUX_RANGE_START_Y_POSITION = 650;
+	public static final int FLUX_RANGE_START_X_POSITION = 950;
+	public static final int FLUX_RANGE_START_Y_POSITION = 600;
 	
 	public static final int FLUX_RANGE_START_Y_INCREMENT = 50;
 	

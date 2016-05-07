@@ -820,6 +820,8 @@ public class PathwaysFrame extends JApplet {
 				if (s.length() > PathwaysFrameConstants.SIDE_METABOLITE_NODE_MAX_CHARS) {
 					s = s.substring(0, PathwaysFrameConstants.SIDE_METABOLITE_NODE_MAX_CHARS - PathwaysFrameConstants.SIDE_METABOLITE_NODE_ELLIPSIS_CORRECTION) + "...";
 				}
+			} else if (fluxRangeNames.contains(s) || s.equals(legendLabel)) {
+				// do nothing
 			} else {
 				if (s.length() > PathwaysFrameConstants.METABOLITE_NODE_MAX_CHARS) {
 					s = s.substring(0, PathwaysFrameConstants.METABOLITE_NODE_MAX_CHARS - PathwaysFrameConstants.METABOLITE_NODE_ELLIPSIS_CORRECTION) + "...";
@@ -1543,7 +1545,8 @@ public class PathwaysFrame extends JApplet {
 
 				// set border color, borderless is node background color
 				Color stroke = Color.BLACK;
-				if (noBorderList.contains(nodeNameList.get(j)) || reactions.contains(nodeNameList.get(j))) {
+				if (noBorderList.contains(nodeNameList.get(j)) || reactions.contains(nodeNameList.get(j)) ||
+					fluxRangeNames.contains(nodeNameList.get(j))) {
 					stroke = PathwaysFrameConstants.NODE_BACKGROUND_DETAULT_COLOR;
 				} else if (pathwayNames.contains(nodeNameList.get(j))) {
 					stroke = PathwaysFrameConstants.PATHWAY_NAME_COLOR;
