@@ -137,7 +137,8 @@ public class PathwaysFrameConstants {
 //	public static final int ARROW_LENGTH = 25; 
 //	public static final int ARROW_WIDTH = 30;
 //	public static final int ARROW_NOTCH = 12;
-	public static final int ARROW_LENGTH = 16; 
+//	public static final int ARROW_LENGTH = 16;
+	public static final int ARROW_LENGTH = 24;
 	public static final int ARROW_WIDTH = 16;
 	
 	public static final int ARROW_NOTCH = 0;

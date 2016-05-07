@@ -1224,7 +1224,7 @@ public class PathwaysFrame extends JApplet {
 			}
 		} 
 		oldFindValue = findValue;
-		System.out.println(findLocationsMap);
+//		System.out.println(findLocationsMap);
 		if (findLocationsMap.size() == 0) {
 			notFoundAction();
 		} else {
@@ -1274,7 +1274,7 @@ public class PathwaysFrame extends JApplet {
 
 	public HashMap<String, ArrayList<Double>> findLocationsMap() {		
 		HashMap<String, ArrayList<Double>> findLocationsMap = new HashMap<String, ArrayList<Double>>();
-
+		
 		String findValue = "";
 		// save original entry for exact match
 		String originalFindValue = "";
