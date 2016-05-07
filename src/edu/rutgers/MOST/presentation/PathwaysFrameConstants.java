@@ -64,7 +64,7 @@ public class PathwaysFrameConstants {
 	
 	public static final int FLUX_RANGE_START_Y_INCREMENT = 50;
 	public static final int FLUX_RANGE_EDGE_X_OFFSET = 300;
-	public static final int FLUX_RANGE_EDGE_LENGTH = 400;
+	public static final int FLUX_RANGE_EDGE_LENGTH = 500;
 	
 	public static final int METABOLITE_NO_BORDER_NODE_WIDTH = 90;
 	public static final int METABOLITE_NO_BORDER_NODE_HEIGHT = 28;

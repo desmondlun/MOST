@@ -1727,7 +1727,9 @@ public class PathwaysFrame extends JApplet {
 				} else {
 					svgText.setText(displayString(displayName));
 				}
-				if (!borderList.contains(nodeNameList.get(j))) {
+				if (borderList.contains(nodeNameList.get(j)) || fluxRangeWidths.contains(nodeNameList.get(j))) {
+					
+				} else {
 					textList.add(svgText);
 				}
 			} else {
