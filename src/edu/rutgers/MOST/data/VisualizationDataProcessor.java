@@ -31,7 +31,7 @@ public class VisualizationDataProcessor {
 	ArrayList<String> noBorderList = new ArrayList<String>();   // metabolite node border
 	ArrayList<String> pathwayNames = new ArrayList<String>();
 	ArrayList<String> fluxRangeNames = new ArrayList<String>();
-	ArrayList<Double> fluxRangeWidths = new ArrayList<Double>();
+	ArrayList<String> fluxRangeWidths = new ArrayList<String>();
 	ArrayList<String> mainMetabolites = new ArrayList<String>();
 	ArrayList<String> smallMainMetabolites = new ArrayList<String>();
 	ArrayList<String> sideMetabolites = new ArrayList<String>();
@@ -582,37 +582,60 @@ public class VisualizationDataProcessor {
 			double x = PathwaysFrameConstants.FLUX_RANGE_START_X_POSITION;
 			double y = PathwaysFrameConstants.FLUX_RANGE_START_Y_POSITION;
 			String zero = "= 0";
-			updateCollectionsForFluxRange(zero, Double.toString(x), Double.toString(y), 1.0);
+			updateCollectionsForFluxRange(zero, Double.toString(x), Double.toString(y), 1.0, PathwaysFrameConstants.ZERO_FLUX_WIDTH_NAME);
 //			fluxRangeNames.add(zero);
 //			nodeNamePositionMap.put(zero, new String[] {Double.toString(x), Double.toString(y)});
 			y += PathwaysFrameConstants.FLUX_RANGE_START_Y_INCREMENT;
 			for (int i = 0; i < PathwaysFrameConstants.FLUX_WIDTH_RATIOS.length; i++) {
 				String value = u.formattedNumber(Double.toString(PathwaysFrameConstants.FLUX_WIDTH_RATIOS[i]*LocalConfig.getInstance().getSecondaryMaxFlux()));
 				String name = comparator + previousValue + " to < " + value;
-				updateCollectionsForFluxRange(name, Double.toString(x), Double.toString(y), PathwaysFrameConstants.FLUX_WIDTHS[i]);
+				updateCollectionsForFluxRange(name, Double.toString(x), Double.toString(y), PathwaysFrameConstants.FLUX_WIDTHS[i],
+					PathwaysFrameConstants.WIDTH_PREFIX + Double.toString(PathwaysFrameConstants.FLUX_WIDTHS[i]));
 				y += PathwaysFrameConstants.FLUX_RANGE_START_Y_INCREMENT;
 				comparator = ">= ";
 				previousValue = value;
 			}
 			String secMax = u.formattedNumber(Double.toString(LocalConfig.getInstance().getSecondaryMaxFlux()));
 			String name = comparator + previousValue + " to < " + secMax;
-			updateCollectionsForFluxRange(name, Double.toString(x), Double.toString(y), PathwaysFrameConstants.SECONDARY_MAX_FLUX_WIDTH);
+			updateCollectionsForFluxRange(name, Double.toString(x), Double.toString(y), PathwaysFrameConstants.SECONDARY_MAX_FLUX_WIDTH,
+				PathwaysFrameConstants.WIDTH_PREFIX + Double.toString(PathwaysFrameConstants.SECONDARY_MAX_FLUX_WIDTH));
 			y += PathwaysFrameConstants.FLUX_RANGE_START_Y_INCREMENT;
 			String maxFluxLimit = u.formattedNumber(Double.toString(PathwaysFrameConstants.INFINITE_FLUX_RATIO*LocalConfig.getInstance().getMaxFlux()));
 			//String maxFlux = u.formattedNumber(Double.toString(LocalConfig.getInstance().getMaxFlux()));
 			String secMaxToMaxFluxLimit = ">= " + secMax + " to <= " + maxFluxLimit;
-			updateCollectionsForFluxRange(secMaxToMaxFluxLimit, Double.toString(x), Double.toString(y), PathwaysFrameConstants.ABOVE_SECONDARY_MAX_FLUX_WIDTH);
+			updateCollectionsForFluxRange(secMaxToMaxFluxLimit, Double.toString(x), Double.toString(y), PathwaysFrameConstants.ABOVE_SECONDARY_MAX_FLUX_WIDTH, 
+				PathwaysFrameConstants.WIDTH_PREFIX + Double.toString(PathwaysFrameConstants.ABOVE_SECONDARY_MAX_FLUX_WIDTH));
 			y += PathwaysFrameConstants.FLUX_RANGE_START_Y_INCREMENT;
 			String maxFluxLimitEntry = "> " + maxFluxLimit;
-			updateCollectionsForFluxRange(maxFluxLimitEntry, Double.toString(x), Double.toString(y), PathwaysFrameConstants.INFINITE_FLUX_WIDTH);
+			updateCollectionsForFluxRange(maxFluxLimitEntry, Double.toString(x), Double.toString(y), PathwaysFrameConstants.INFINITE_FLUX_WIDTH,
+				PathwaysFrameConstants.WIDTH_PREFIX + Double.toString(PathwaysFrameConstants.INFINITE_FLUX_WIDTH));
 		}
 	}
 	
-	public void updateCollectionsForFluxRange(String entry, String x, String y, double width) {
+	public void updateCollectionsForFluxRange(String entry, String x, String y, Double width, String widthName) {
 		//System.out.println(entry);
 		fluxRangeNames.add(entry);
-		fluxRangeWidths.add(width);
+		fluxRangeWidths.add(widthName);
+		String rightNode = widthName + PathwaysFrameConstants.WIDTH_RIGHT_NODE_SUFFIX;
+		fluxRangeWidths.add(rightNode);
 		nodeNamePositionMap.put(entry, new String[] {x, y});
+		// draw invisible nodes and connect with edges for legend since filled rectangles
+		// did not work
+		double edgeX = Double.parseDouble(x) + PathwaysFrameConstants.FLUX_RANGE_EDGE_X_OFFSET;
+		double edgeRightX = Double.parseDouble(x) + PathwaysFrameConstants.FLUX_RANGE_EDGE_X_OFFSET +
+			PathwaysFrameConstants.FLUX_RANGE_EDGE_LENGTH;
+		nodeNamePositionMap.put(widthName, new String[] {Double.toString(edgeX), y});
+		nodeNamePositionMap.put(rightNode, 
+			new String[] {Double.toString(edgeRightX), y});
+		reactionMap.put(widthName, new String[] {widthName, rightNode, "false"});
+		if (widthName.equals(PathwaysFrameConstants.ZERO_FLUX_WIDTH_NAME)) {
+			colorMap.put(widthName, PathwaysFrameConstants.GRAY_COLOR_VALUE);
+			fluxMap.put(widthName, 1.0);
+		} else {
+			fluxMap.put(widthName, width);
+		}
+		noBorderList.add(widthName);
+		noBorderList.add(rightNode);
 	}
 
 	public boolean pathwayNameMetaboliteFound(ArrayList<String> list) {

@@ -154,7 +154,7 @@ public class PathwaysFrame extends JApplet {
 	ArrayList<String> noBorderList = new ArrayList<String>();   // metabolite node border
 	ArrayList<String> pathwayNames = new ArrayList<String>();
 	ArrayList<String> fluxRangeNames = new ArrayList<String>();
-	ArrayList<Double> fluxRangeWidths = new ArrayList<Double>();
+	ArrayList<String> fluxRangeWidths = new ArrayList<String>();
 	ArrayList<String> mainMetabolites = new ArrayList<String>();
 	ArrayList<String> smallMainMetabolites = new ArrayList<String>();
 	ArrayList<String> sideMetabolites = new ArrayList<String>();
@@ -672,6 +672,9 @@ public class PathwaysFrame extends JApplet {
 			} else if (fluxRangeNames.contains(name)) {
 				width = PathwaysFrameConstants.FLUX_RANGE_NODE_WIDTH;
 				height = PathwaysFrameConstants.FLUX_RANGE_NODE_HEIGHT; 
+			} else if (fluxRangeWidths.contains(name)) {
+				width = 1;
+				height = 20;
 			}
 			
 			// based on http://stackoverflow.com/questions/2736320/write-text-onto-image-in-java
@@ -679,6 +682,7 @@ public class PathwaysFrame extends JApplet {
 					BufferedImage.TYPE_INT_RGB);
 			Graphics graphics = bufferedImage.getGraphics();
 			graphics.setColor(PathwaysFrameConstants.NODE_BACKGROUND_DETAULT_COLOR);
+			
 			if (borderList.contains(name)) {
 				graphics.setColor(Color.black);
 			}

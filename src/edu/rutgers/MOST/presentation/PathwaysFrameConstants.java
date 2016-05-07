@@ -63,6 +63,8 @@ public class PathwaysFrameConstants {
 	public static final int FLUX_RANGE_START_Y_POSITION = 600;
 	
 	public static final int FLUX_RANGE_START_Y_INCREMENT = 50;
+	public static final int FLUX_RANGE_EDGE_X_OFFSET = 300;
+	public static final int FLUX_RANGE_EDGE_LENGTH = 400;
 	
 	public static final int METABOLITE_NO_BORDER_NODE_WIDTH = 90;
 	public static final int METABOLITE_NO_BORDER_NODE_HEIGHT = 28;
@@ -170,6 +172,10 @@ public class PathwaysFrameConstants {
 		LOW_MID_FLUX_WIDTH,
 		MID_FLUX_WIDTH,
 		TOP_FLUX_WIDTH};
+	
+	public static final String ZERO_FLUX_WIDTH_NAME = "width_0.0";
+	public static final String WIDTH_PREFIX = "width_";
+	public static final String WIDTH_RIGHT_NODE_SUFFIX = "_2";
 	
 	public static final int PATHWAYS_COMPONENT = 0;
 	public static final int PROCESSES_COMPONENT = 1;
