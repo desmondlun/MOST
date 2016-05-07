@@ -154,6 +154,7 @@ public class PathwaysFrame extends JApplet {
 	ArrayList<String> noBorderList = new ArrayList<String>();   // metabolite node border
 	ArrayList<String> pathwayNames = new ArrayList<String>();
 	ArrayList<String> fluxRangeNames = new ArrayList<String>();
+	ArrayList<Double> fluxRangeWidths = new ArrayList<Double>();
 	ArrayList<String> mainMetabolites = new ArrayList<String>();
 	ArrayList<String> smallMainMetabolites = new ArrayList<String>();
 	ArrayList<String> sideMetabolites = new ArrayList<String>();
@@ -254,6 +255,7 @@ public class PathwaysFrame extends JApplet {
 		noBorderList = visualizationData.getNoBorderList();
 		pathwayNames = visualizationData.getPathwayNames();
 		fluxRangeNames = visualizationData.getFluxRangeNames();
+		fluxRangeWidths = visualizationData.getFluxRangeWidths();
 		mainMetabolites = visualizationData.getMainMetabolites();
 		smallMainMetabolites = visualizationData.getSmallMainMetabolites();
 		sideMetabolites = visualizationData.getSideMetabolites();
@@ -1002,30 +1004,30 @@ public class PathwaysFrame extends JApplet {
 		frame.setVisible(true);
 	}
 
-	public double edgeThickness(double fluxValue) {
-		double thickness = PathwaysFrameConstants.DEFAULT_EDGE_WIDTH;
-		if (Math.abs(fluxValue) > PathwaysFrameConstants.INFINITE_FLUX_RATIO*LocalConfig.getInstance().getMaxFlux()) {
-			thickness = PathwaysFrameConstants.INFINITE_FLUX_WIDTH;
-		} else if (Math.abs(fluxValue) > 0) {
-			if (Math.abs(fluxValue) < PathwaysFrameConstants.MINIMUM_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()) {
-				thickness = PathwaysFrameConstants.MINIMUM_FLUX_WIDTH;
-			} else if (Math.abs(fluxValue) < PathwaysFrameConstants.LOWER_MID_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()) {
-				thickness = PathwaysFrameConstants.LOW_MID_FLUX_WIDTH;
-			} else if (Math.abs(fluxValue) < PathwaysFrameConstants.LOWER_MID_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()) {
-				thickness = PathwaysFrameConstants.MID_FLUX_WIDTH;
-			} else if (Math.abs(fluxValue) < PathwaysFrameConstants.LOWER_MID_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()) {
-				thickness = PathwaysFrameConstants.MID_FLUX_WIDTH;
-			} else if (Math.abs(fluxValue) < PathwaysFrameConstants.TOP_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()) {
-				thickness = PathwaysFrameConstants.TOP_FLUX_WIDTH;
-			} else if (Math.abs(fluxValue) <= LocalConfig.getInstance().getSecondaryMaxFlux()) {
-				thickness = PathwaysFrameConstants.SECONDARY_MAX_FLUX_WIDTH;
-			} else {
-				thickness = PathwaysFrameConstants.ABOVE_SECONDARY_MAX_FLUX_WIDTH;
-			}
-		}
-
-		return thickness;
-	}
+//	public double edgeThickness(double fluxValue) {
+//		double thickness = PathwaysFrameConstants.DEFAULT_EDGE_WIDTH;
+//		if (Math.abs(fluxValue) > PathwaysFrameConstants.INFINITE_FLUX_RATIO*LocalConfig.getInstance().getMaxFlux()) {
+//			thickness = PathwaysFrameConstants.INFINITE_FLUX_WIDTH;
+//		} else if (Math.abs(fluxValue) > 0) {
+//			if (Math.abs(fluxValue) < PathwaysFrameConstants.MINIMUM_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()) {
+//				thickness = PathwaysFrameConstants.MINIMUM_FLUX_WIDTH;
+//			} else if (Math.abs(fluxValue) < PathwaysFrameConstants.LOWER_MID_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()) {
+//				thickness = PathwaysFrameConstants.LOW_MID_FLUX_WIDTH;
+//			} else if (Math.abs(fluxValue) < PathwaysFrameConstants.LOWER_MID_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()) {
+//				thickness = PathwaysFrameConstants.MID_FLUX_WIDTH;
+//			} else if (Math.abs(fluxValue) < PathwaysFrameConstants.LOWER_MID_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()) {
+//				thickness = PathwaysFrameConstants.MID_FLUX_WIDTH;
+//			} else if (Math.abs(fluxValue) < PathwaysFrameConstants.TOP_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()) {
+//				thickness = PathwaysFrameConstants.TOP_FLUX_WIDTH;
+//			} else if (Math.abs(fluxValue) <= LocalConfig.getInstance().getSecondaryMaxFlux()) {
+//				thickness = PathwaysFrameConstants.SECONDARY_MAX_FLUX_WIDTH;
+//			} else {
+//				thickness = PathwaysFrameConstants.ABOVE_SECONDARY_MAX_FLUX_WIDTH;
+//			}
+//		}
+//
+//		return thickness;
+//	}
 
 	/**
 	 * Returns name of renamed node if oldNameNewNameMap contains name, else returns name.

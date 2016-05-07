@@ -21,6 +21,7 @@ public class VisualizationData {
 	private ArrayList<String> noBorderList;   // metabolite node border
 	private ArrayList<String> pathwayNames;
 	private ArrayList<String> fluxRangeNames;
+	private ArrayList<Double> fluxRangeWidths;
 	private ArrayList<String> mainMetabolites;
 	private ArrayList<String> smallMainMetabolites;
 	private ArrayList<String> sideMetabolites;
@@ -94,6 +95,14 @@ public class VisualizationData {
 	public void setFluxRangeNames( ArrayList< String > fluxRangeNames )
 	{
 		this.fluxRangeNames = fluxRangeNames;
+	}
+	public ArrayList< Double > getFluxRangeWidths()
+	{
+		return fluxRangeWidths;
+	}
+	public void setFluxRangeWidths( ArrayList< Double > fluxRangeWidths )
+	{
+		this.fluxRangeWidths = fluxRangeWidths;
 	}
 	public ArrayList<String> getMainMetabolites() {
 		return mainMetabolites;
