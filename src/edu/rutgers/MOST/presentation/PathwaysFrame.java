@@ -956,7 +956,7 @@ public class PathwaysFrame extends JApplet {
 		if (color == PathwaysFrameConstants.BLACK_COLOR_VALUE) {
 			return Color.BLACK;
 		} else if (color == PathwaysFrameConstants.GRAY_COLOR_VALUE) {
-			return Color.GRAY;
+			return Color.LIGHT_GRAY;
 		} else if (color == PathwaysFrameConstants.RED_COLOR_VALUE) {
 			return Color.RED;
 		} else if (color == PathwaysFrameConstants.GREEN_COLOR_VALUE) {

@@ -131,7 +131,7 @@ public class PathwaysFrameConstants {
 	public static final int METABOLITE_BORDER_WIDTH = 4;
 	public static final int SIDE_METABOLITE_BORDER_WIDTH = 2;
 	
-	public static final double DEFAULT_EDGE_WIDTH = 0.0; 
+	public static final double DEFAULT_EDGE_WIDTH = 1.0; 
 //	public static final int ARROW_LENGTH = 25; 
 //	public static final int ARROW_WIDTH = 30;
 //	public static final int ARROW_NOTCH = 12;
