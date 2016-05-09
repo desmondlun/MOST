@@ -34,6 +34,7 @@ import java.util.Map;
 
 
 
+
 import javax.imageio.ImageIO;
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
@@ -57,6 +58,7 @@ import javax.swing.WindowConstants;
 import org.apache.commons.collections15.Transformer;                                                                 
 import org.apache.commons.collections15.functors.ChainedTransformer;                                                 
                                                                                                                      
+
 
 
 
@@ -2004,6 +2006,12 @@ public class PathwaysFrame extends JApplet {
 		}
 		if (info.contains("<p>")) {
 			info = info.replace("<p>", "\n");
+		}
+		if (info.contains(GraphicalInterfaceConstants.HTML_REVERSIBLE_ARROW)) {
+			info = info.replace(GraphicalInterfaceConstants.HTML_REVERSIBLE_ARROW, GraphicalInterfaceConstants.REVERSIBLE_ARROWS[0]);
+		}
+		if (info.contains(GraphicalInterfaceConstants.HTML_NOT_REVERSIBLE_ARROW)) {
+			info = info.replace(GraphicalInterfaceConstants.HTML_NOT_REVERSIBLE_ARROW, GraphicalInterfaceConstants.NOT_REVERSIBLE_ARROWS[1]);
 		}
 		
 		return removedDatabaseId(info);
