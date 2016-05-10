@@ -229,6 +229,7 @@ public class PathwaysFrame extends JApplet {
 	private boolean wrapAround;
 	private boolean searchBackwards;
 	private boolean exactMatch;
+	private boolean findMovedGraph;
 
 	private String oldFindValue = "";
 	private int findStartIndex = 0;
@@ -315,6 +316,7 @@ public class PathwaysFrame extends JApplet {
 		getRootPane().registerKeyboardAction(findActionListener,find,JComponent.WHEN_IN_FOCUSED_WINDOW);
 		
 		wrapAround = VisualizationFindConstants.WRAP_AROUND_DEFAULT;
+		findMovedGraph = false;
 
 		/**************************************************************************/
 		// create menu bar
@@ -1010,31 +1012,6 @@ public class PathwaysFrame extends JApplet {
 		frame.setVisible(true);
 	}
 
-//	public double edgeThickness(double fluxValue) {
-//		double thickness = PathwaysFrameConstants.DEFAULT_EDGE_WIDTH;
-//		if (Math.abs(fluxValue) > PathwaysFrameConstants.INFINITE_FLUX_RATIO*LocalConfig.getInstance().getMaxFlux()) {
-//			thickness = PathwaysFrameConstants.INFINITE_FLUX_WIDTH;
-//		} else if (Math.abs(fluxValue) > 0) {
-//			if (Math.abs(fluxValue) < PathwaysFrameConstants.MINIMUM_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()) {
-//				thickness = PathwaysFrameConstants.MINIMUM_FLUX_WIDTH;
-//			} else if (Math.abs(fluxValue) < PathwaysFrameConstants.LOWER_MID_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()) {
-//				thickness = PathwaysFrameConstants.LOW_MID_FLUX_WIDTH;
-//			} else if (Math.abs(fluxValue) < PathwaysFrameConstants.LOWER_MID_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()) {
-//				thickness = PathwaysFrameConstants.MID_FLUX_WIDTH;
-//			} else if (Math.abs(fluxValue) < PathwaysFrameConstants.LOWER_MID_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()) {
-//				thickness = PathwaysFrameConstants.MID_FLUX_WIDTH;
-//			} else if (Math.abs(fluxValue) < PathwaysFrameConstants.TOP_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()) {
-//				thickness = PathwaysFrameConstants.TOP_FLUX_WIDTH;
-//			} else if (Math.abs(fluxValue) <= LocalConfig.getInstance().getSecondaryMaxFlux()) {
-//				thickness = PathwaysFrameConstants.SECONDARY_MAX_FLUX_WIDTH;
-//			} else {
-//				thickness = PathwaysFrameConstants.ABOVE_SECONDARY_MAX_FLUX_WIDTH;
-//			}
-//		}
-//
-//		return thickness;
-//	}
-
 	/**
 	 * Returns name of renamed node if oldNameNewNameMap contains name, else returns name.
 	 * @param name
@@ -1129,6 +1106,7 @@ public class PathwaysFrame extends JApplet {
 		exactMatch = VisualizationFindConstants.EXACT_MATCH_DEFAULT;
 		findMode = true;
 		findItem.setEnabled(false);
+		findMovedGraph = false;
 	}	
 
 	public void findDialogCloseAction() {
@@ -1168,6 +1146,7 @@ public class PathwaysFrame extends JApplet {
 			}
 			GraphicalInterface.getNotFoundYesNoDialog().setVisible(false);
 			getVisualizationFindDialog().setAlwaysOnTop(true);
+			findMovedGraph = false;
 		}
 	};
 	
@@ -1177,6 +1156,7 @@ public class PathwaysFrame extends JApplet {
 		public void actionPerformed(ActionEvent ae) {
 			GraphicalInterface.getNotFoundDialog().setVisible(false);
 			getVisualizationFindDialog().setAlwaysOnTop(true);
+			findMovedGraph = false;
 		}
 	};
 	
@@ -1184,6 +1164,7 @@ public class PathwaysFrame extends JApplet {
 		public void actionPerformed(ActionEvent ae) {
 			GraphicalInterface.getNotFoundYesNoDialog().setVisible(false);
 			getVisualizationFindDialog().setAlwaysOnTop(true);
+			findMovedGraph = false;
 		}
 	};
 	
@@ -1191,12 +1172,14 @@ public class PathwaysFrame extends JApplet {
 		getVisualizationFindDialog().setAlwaysOnTop(false);
 		GraphicalInterface.getNotFoundDialog().setVisible(true);
 		//getVisualizationFindDialog().setAlwaysOnTop(true);
+		findMovedGraph = false;
 	}
 
 	public void endFindAction() {
 		getVisualizationFindDialog().setAlwaysOnTop(false);
 		GraphicalInterface.getNotFoundYesNoDialog().setVisible(true);
 		//getVisualizationFindDialog().setAlwaysOnTop(true);
+		findMovedGraph = false;
 	}
 
 	private boolean findValueChanged(String findValue) {
@@ -1205,6 +1188,7 @@ public class PathwaysFrame extends JApplet {
 
 		} else {
 			changed = true;
+			findMovedGraph = false;
 		}
 		
 		return changed;
@@ -1227,9 +1211,8 @@ public class PathwaysFrame extends JApplet {
 		} 
 		oldFindValue = findValue;
 //		System.out.println(findLocationsMap);
-		if (findLocationsMap.size() == 0) {
-			notFoundAction();
-		} else {
+		
+		if (findLocationsMap.size() > 0) {
 			getVisualizationFindDialog().requestFocus();
 			ArrayList<String> findXCoordinates = new ArrayList<String>(findLocationsMap.keySet());
 			Collections.sort(findXCoordinates, new NumComparator());
@@ -1240,18 +1223,12 @@ public class PathwaysFrame extends JApplet {
 			}
 			ArrayList<Double> findPositions = findLocationsMap.get(findXCoordinates.get(findStartIndex));
 			findNodeByLocation(findPositions.get(0), findPositions.get(1));
-//			for (int i = 0; i < findXCoordinates.size(); i++) {
-//				System.out.println(findLocationsMap.get(findXCoordinates.get(i)));
-//			}
 			if (searchBackwards) {
 				if (findStartIndex > 0) {
 					findStartIndex -= 1;
 				} else {
 					if (wrapAround) {
 						findStartIndex = findLocationsMap.size() - 1;
-//						if (!wrapAround) {
-//							endFindAction();
-//						}
 					} else {
 						endFindAction();
 					}
@@ -1262,14 +1239,15 @@ public class PathwaysFrame extends JApplet {
 				} else {
 					if (wrapAround) {
 						findStartIndex = 0;
-//						if (!wrapAround) {
-//							endFindAction();
-//						}
 					} else {
 						endFindAction();
 					}
 				}
 			}													
+		} else {
+			if (!findMovedGraph) {
+				notFoundAction();
+			}
 		}
 		getVisualizationFindDialog().requestFocus();
 	}
@@ -1401,6 +1379,7 @@ public class PathwaysFrame extends JApplet {
 		//        deltaY += 2830;   // full (before removing tabbed pane)       
 
 		layout.translate(deltaX - x, deltaY - y);
+		findMovedGraph = true;
 	}
 
 	ActionListener matchCaseActionListener = new ActionListener() {
@@ -1421,10 +1400,12 @@ public class PathwaysFrame extends JApplet {
 		public void actionPerformed(ActionEvent actionEvent) {
 			AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
 			searchBackwards = abstractButton.getModel().isSelected();
-			if (searchBackwards && getFindLocationsMap() != null && getFindLocationsMap().size() > 0) {
-				findStartIndex = getFindLocationsMap().size() - 1;
-			} else {
-				findStartIndex = 0;
+			if (getFindLocationsMap() != null && getFindLocationsMap().size() > 0) {
+				if (searchBackwards) {
+					findStartIndex = getFindLocationsMap().size() - 1;
+				} else {
+					findStartIndex = 0;
+				}
 			}
 		}
 	};

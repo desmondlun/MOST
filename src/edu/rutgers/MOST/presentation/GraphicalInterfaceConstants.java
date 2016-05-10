@@ -278,7 +278,7 @@ public class GraphicalInterfaceConstants
 	};
 
 	public static final String[] CHEBI_ID_METABOLITES_COLUMN_NAMES = 
-	{"CHEBI", "Chebi"
+	{"CHEBI", "Chebi", "ChEBI"
 	};
 
 	// messages box titles and messages
