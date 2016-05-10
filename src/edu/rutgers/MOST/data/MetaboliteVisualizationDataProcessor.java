@@ -19,7 +19,9 @@ public class MetaboliteVisualizationDataProcessor {
 						!isBoundaryMetabolite(metabolites.get(i))) {
 					String metabId = Integer.toString(metabolites.get(i).getId());
 					String keggId = metabolites.get(i).getKeggId();
-					if (keggId == null || keggId.length() == 0) {
+					// some modesl have strings such as "NA" in the KEGG id column. if KEGG doesn't start with
+					// C or G, it is not valid and same as a blank entry. therefore use CHEBI id if exists
+					if (keggId == null || keggId.length() == 0 || (!keggId.startsWith("C") && (!keggId.startsWith("G")))) {
 						if (LocalConfig.getInstance().getChebiIdColumn() > -1) {
 							String chebiId = metabolites.get(i).getChebiId();
 							if (chebiId != null && chebiId.length() > 0) {
