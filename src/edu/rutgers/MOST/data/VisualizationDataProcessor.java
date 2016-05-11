@@ -67,6 +67,9 @@ public class VisualizationDataProcessor {
 	private Map<String, ArrayList<Double>> startPosMap = new HashMap<String, ArrayList<Double>>();
 	private double startX = 2*PathwaysFrameConstants.HORIZONTAL_INCREMENT;
 	private double startY = PathwaysFrameConstants.START_Y;
+	
+	DecimalFormat formatter = PathwaysFrameConstants.FLUX_FORMATTER;
+	DecimalFormat sciFormatter = PathwaysFrameConstants.SCIENTIFIC_FLUX_FORMATTER;
 
 	public String report = "";
 
@@ -195,6 +198,7 @@ public class VisualizationDataProcessor {
 		visualizationData.setCompartmentLabel(compartmentLabel);
 		visualizationData.setLegendLabel(legendLabel);
 		LocalConfig.getInstance().setVisualizationData(visualizationData);
+
 	}
 
 	public void drawMetabolites(MetabolicPathway pathway, int component, String compartment) {
@@ -259,6 +263,18 @@ public class VisualizationDataProcessor {
 
 	public void drawReactions(MetabolicPathway pathway, int component, Vector<SBMLReaction> rxns, Map<Integer, SBMLReaction> idReactionMap) {
 		ArrayList<String> metabPosKeys = new ArrayList<String>(nodeNamePositionMap.keySet());
+		double minFlux = Double.parseDouble(util.formattedNumber(Double.toString(PathwaysFrameConstants.MINIMUM_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()), 
+			formatter, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT));
+		double lowerMidFlux = Double.parseDouble(util.formattedNumber(Double.toString(PathwaysFrameConstants.LOWER_MID_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()), 
+			formatter, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT));
+		double lowMidFlux = Double.parseDouble(util.formattedNumber(Double.toString(PathwaysFrameConstants.LOW_MID_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()), 
+			formatter, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT));
+		double midFlux = Double.parseDouble(util.formattedNumber(Double.toString(PathwaysFrameConstants.MID_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()), 
+			formatter, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT));
+		double topFlux = Double.parseDouble(util.formattedNumber(Double.toString(PathwaysFrameConstants.TOP_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()), 
+			formatter, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT));
+		double secMaxFlux = Double.parseDouble(util.formattedNumber(Double.toString(LocalConfig.getInstance().getSecondaryMaxFlux()), 
+			formatter, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT));
 		//    	LocalConfig.getInstance().setVisualizationsProgress(100);
 		for (int k = 0; k < pathway.getReactionsData().size(); k++) {
 			if (k%10 == 0) {
@@ -381,7 +397,8 @@ public class VisualizationDataProcessor {
 						if (pathway.getMetabolitesData().containsKey((pathway.getReactionsData().get(Integer.toString(k)).getReactantIds().get(r)))) {
 							String reac = pathway.getMetabolitesData().get((pathway.getReactionsData().get(Integer.toString(k)).getReactantIds().get(r))).getName();
 							reactionMap.put(displayName + "reactant " + Integer.toString(r), new String[] {displayName, reac, drawReverseArrow});
-							fluxMap.put(displayName + "reactant " + Integer.toString(r), edgeThickness(pn.getFluxValue()));
+							fluxMap.put(displayName + "reactant " + Integer.toString(r), edgeThickness(pn.getFluxValue(), minFlux, lowerMidFlux, 
+								lowMidFlux, midFlux, topFlux, secMaxFlux));
 							if (pn.getFluxValue() == 0 && !koReactions.contains(displayName) &&
 								LocalConfig.getInstance().isScaleEdgeThicknessSelected()) {
 								edgeColor = PathwaysFrameConstants.GRAY_COLOR_VALUE;
@@ -396,7 +413,8 @@ public class VisualizationDataProcessor {
 						if (pathway.getMetabolitesData().containsKey((pathway.getReactionsData().get(Integer.toString(k)).getProductIds().get(p)))) {
 							String prod = pathway.getMetabolitesData().get((pathway.getReactionsData().get(Integer.toString(k)).getProductIds().get(p))).getName();
 							reactionMap.put(displayName + "product " + Integer.toString(p), new String[] {displayName, prod, drawForwardArrow});
-							fluxMap.put(displayName + "product " + Integer.toString(p), edgeThickness(pn.getFluxValue()));
+							fluxMap.put(displayName + "product " + Integer.toString(p), edgeThickness(pn.getFluxValue(), minFlux, lowerMidFlux, 
+								lowMidFlux, midFlux, topFlux, secMaxFlux));
 							if (pn.getFluxValue() == 0 && !koReactions.contains(displayName) &&
 								LocalConfig.getInstance().isScaleEdgeThicknessSelected()) {
 								edgeColor = PathwaysFrameConstants.GRAY_COLOR_VALUE;
@@ -577,8 +595,6 @@ public class VisualizationDataProcessor {
 	
 	public void drawLegend(int component) {
 		if (component == PathwaysFrameConstants.PATHWAYS_COMPONENT) {
-			DecimalFormat formatter = PathwaysFrameConstants.FLUX_FORMATTER;
-			DecimalFormat sciFormatter = PathwaysFrameConstants.SCIENTIFIC_FLUX_FORMATTER;
 			Utilities u = new Utilities();
 			// first value is greater than 0 to less than first value
 			// after that, >= to first value and < second value
@@ -720,23 +736,24 @@ public class VisualizationDataProcessor {
 		nodeNamePositionMap.put(text, new String[] {xOffset, yOffset});
 	}
 
-	public double edgeThickness(double fluxValue) {
+	public double edgeThickness(double fluxValue, double minFlux, double lowerMidFlux, 
+		double lowMidFlux, double midFlux, double topFlux, double secMaxFlux) {
 		double thickness = PathwaysFrameConstants.DEFAULT_EDGE_WIDTH;
 		if (Math.abs(fluxValue) > PathwaysFrameConstants.INFINITE_FLUX_RATIO*LocalConfig.getInstance().getMaxFlux()) {
 			//System.out.println("flux " + pn.getFluxValue());
 			thickness = PathwaysFrameConstants.INFINITE_FLUX_WIDTH;
 		} else if (Math.abs(fluxValue) > 0) {
-			if (Math.abs(fluxValue) < PathwaysFrameConstants.MINIMUM_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()) {
+			if (Math.abs(fluxValue) < minFlux) {
 				thickness = PathwaysFrameConstants.MINIMUM_FLUX_WIDTH;
-			} else if (Math.abs(fluxValue) < PathwaysFrameConstants.LOWER_MID_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()) {
+			} else if (Math.abs(fluxValue) < lowerMidFlux) {
+				thickness = PathwaysFrameConstants.LOWER_MID_FLUX_WIDTH;
+			} else if (Math.abs(fluxValue) < lowMidFlux) {
 				thickness = PathwaysFrameConstants.LOW_MID_FLUX_WIDTH;
-			} else if (Math.abs(fluxValue) < PathwaysFrameConstants.LOWER_MID_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()) {
+			} else if (Math.abs(fluxValue) < midFlux) {
 				thickness = PathwaysFrameConstants.MID_FLUX_WIDTH;
-			} else if (Math.abs(fluxValue) < PathwaysFrameConstants.LOWER_MID_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()) {
-				thickness = PathwaysFrameConstants.MID_FLUX_WIDTH;
-			} else if (Math.abs(fluxValue) < PathwaysFrameConstants.TOP_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()) {
+			} else if (Math.abs(fluxValue) < topFlux) {
 				thickness = PathwaysFrameConstants.TOP_FLUX_WIDTH;
-			} else if (Math.abs(fluxValue) <= LocalConfig.getInstance().getSecondaryMaxFlux()) {
+			} else if (Math.abs(fluxValue) <= secMaxFlux) {
 				thickness = PathwaysFrameConstants.SECONDARY_MAX_FLUX_WIDTH;
 			} else {
 				thickness = PathwaysFrameConstants.ABOVE_SECONDARY_MAX_FLUX_WIDTH;
