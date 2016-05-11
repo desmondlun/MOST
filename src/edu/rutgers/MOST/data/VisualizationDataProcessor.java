@@ -1,5 +1,6 @@
 package edu.rutgers.MOST.data;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -576,6 +577,8 @@ public class VisualizationDataProcessor {
 	
 	public void drawLegend(int component) {
 		if (component == PathwaysFrameConstants.PATHWAYS_COMPONENT) {
+			DecimalFormat formatter = PathwaysFrameConstants.FLUX_FORMATTER;
+			DecimalFormat sciFormatter = PathwaysFrameConstants.SCIENTIFIC_FLUX_FORMATTER;
 			Utilities u = new Utilities();
 			// first value is greater than 0 to less than first value
 			// after that, >= to first value and < second value
@@ -589,7 +592,8 @@ public class VisualizationDataProcessor {
 //			nodeNamePositionMap.put(zero, new String[] {Double.toString(x), Double.toString(y)});
 			y += PathwaysFrameConstants.FLUX_RANGE_START_Y_INCREMENT;
 			for (int i = 0; i < PathwaysFrameConstants.FLUX_WIDTH_RATIOS.length; i++) {
-				String value = u.formattedNumber(Double.toString(PathwaysFrameConstants.FLUX_WIDTH_RATIOS[i]*LocalConfig.getInstance().getSecondaryMaxFlux()));
+				String value = u.formattedNumber(Double.toString(PathwaysFrameConstants.FLUX_WIDTH_RATIOS[i]*LocalConfig.getInstance().getSecondaryMaxFlux()), 
+					formatter, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT);
 				String name = comparator + previousValue + " to < " + value;
 				updateCollectionsForFluxRange(name, Double.toString(x), Double.toString(y), PathwaysFrameConstants.FLUX_WIDTHS[i],
 					PathwaysFrameConstants.WIDTH_PREFIX + Double.toString(PathwaysFrameConstants.FLUX_WIDTHS[i]));
@@ -597,12 +601,14 @@ public class VisualizationDataProcessor {
 				comparator = ">= ";
 				previousValue = value;
 			}
-			String secMax = u.formattedNumber(Double.toString(LocalConfig.getInstance().getSecondaryMaxFlux()));
+			String secMax = u.formattedNumber(Double.toString(LocalConfig.getInstance().getSecondaryMaxFlux()), 
+				formatter, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT);
 			String name = comparator + previousValue + " to < " + secMax;
 			updateCollectionsForFluxRange(name, Double.toString(x), Double.toString(y), PathwaysFrameConstants.SECONDARY_MAX_FLUX_WIDTH,
 				PathwaysFrameConstants.WIDTH_PREFIX + Double.toString(PathwaysFrameConstants.SECONDARY_MAX_FLUX_WIDTH));
 			y += PathwaysFrameConstants.FLUX_RANGE_START_Y_INCREMENT;
-			String maxFluxLimit = u.formattedNumber(Double.toString(PathwaysFrameConstants.INFINITE_FLUX_RATIO*LocalConfig.getInstance().getMaxFlux()));
+			String maxFluxLimit = u.formattedNumber(Double.toString(PathwaysFrameConstants.INFINITE_FLUX_RATIO*LocalConfig.getInstance().getMaxFlux()), 
+				formatter, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT);
 			//String maxFlux = u.formattedNumber(Double.toString(LocalConfig.getInstance().getMaxFlux()));
 			String secMaxToMaxFluxLimit = ">= " + secMax + " to <= " + maxFluxLimit;
 			updateCollectionsForFluxRange(secMaxToMaxFluxLimit, Double.toString(x), Double.toString(y), PathwaysFrameConstants.ABOVE_SECONDARY_MAX_FLUX_WIDTH, 

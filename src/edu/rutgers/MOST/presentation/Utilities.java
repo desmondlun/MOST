@@ -412,11 +412,9 @@ public class Utilities {
 	
 	// based on http://examples.javacodegeeks.com/core-java/text/format-number-with-custom-numberformat
 	// based on http://helpdesk.objects.com.au/java/how-to-control-decimal-places-displayed-in-jtable-column
-	public String formattedNumber(String value) {
-		DecimalFormat formatter = new DecimalFormat("#.########");
-		DecimalFormat sciFormatter = new DecimalFormat("#.######E0");
+	public String formattedNumber(String value, DecimalFormat formatter, DecimalFormat sciFormatter, double minDecimalFormat, double maxDecimalFormat) {
 		try {
-			if (Math.abs(Double.valueOf((String) value)) != 0.0 && (Math.abs(Double.valueOf((String) value)) < GraphicalInterfaceConstants.MIN_DECIMAL_FORMAT || Math.abs(Double.valueOf((String) value)) > GraphicalInterfaceConstants.MAX_DECIMAL_FORMAT)) {
+			if (Math.abs(Double.valueOf((String) value)) != 0.0 && (Math.abs(Double.valueOf((String) value)) < minDecimalFormat || Math.abs(Double.valueOf((String) value)) > maxDecimalFormat)) {
 				try {
 					value = sciFormatter.format((Number)Double.valueOf((String) value));
 				} catch (NumberFormatException nfe) {

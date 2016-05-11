@@ -1,6 +1,7 @@
 package edu.rutgers.MOST.presentation;
 
 import java.awt.Color;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 
 public class GraphicalInterfaceConstants
@@ -188,6 +189,9 @@ public class GraphicalInterfaceConstants
 
 	public static final double MIN_DECIMAL_FORMAT = 0.0001;
 	public static final double MAX_DECIMAL_FORMAT = 10000;
+	
+	public static final DecimalFormat FLUX_FORMATTER = new DecimalFormat("#.########");
+	public static final DecimalFormat SCIENTIFIC_FLUX_FORMATTER = new DecimalFormat("#.######E0");
 
 	// prefixes and suffixes
 	public static final String DB_COPIER_SUFFIX = "_orig";

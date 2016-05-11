@@ -2,6 +2,7 @@ package edu.rutgers.MOST.presentation;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 
@@ -251,5 +252,10 @@ public class PathwaysFrameConstants {
 		};
 
 	public static java.util.List<String> cofactorList = Arrays.asList(COFACTOR_KEGG_IDS);
+	
+	public static final DecimalFormat FLUX_FORMATTER = new DecimalFormat("#.####");
+	public static final DecimalFormat SCIENTIFIC_FLUX_FORMATTER = new DecimalFormat("#.##E0");
+	public static final double MIN_DECIMAL_FORMAT = 0.001;
+	public static final double MAX_DECIMAL_FORMAT = 1000;
 	
 }

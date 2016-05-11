@@ -13272,8 +13272,12 @@ public class GraphicalInterface extends JFrame {
 		String secondaryMaxFlux = Double.toString(LocalConfig.getInstance().getSecondaryMaxFlux());
 		Utilities u = new Utilities();
 		
-		maxFlux = u.formattedNumber(maxFlux);
-		secondaryMaxFlux = u.formattedNumber(secondaryMaxFlux);
+		DecimalFormat formatter = PathwaysFrameConstants.FLUX_FORMATTER;
+		DecimalFormat sciFormatter = PathwaysFrameConstants.SCIENTIFIC_FLUX_FORMATTER;
+		maxFlux = u.formattedNumber(maxFlux, formatter, sciFormatter, 
+			PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT);
+		secondaryMaxFlux = u.formattedNumber(secondaryMaxFlux, formatter, sciFormatter, 
+			PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT);
 		
 		frame.maxFluxField.setText(maxFlux);
 		frame.secondaryMaxFluxField.setText(secondaryMaxFlux);
