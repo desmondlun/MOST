@@ -381,7 +381,8 @@ public class VisualizationDataProcessor {
 							String reac = pathway.getMetabolitesData().get((pathway.getReactionsData().get(Integer.toString(k)).getReactantIds().get(r))).getName();
 							reactionMap.put(displayName + "reactant " + Integer.toString(r), new String[] {displayName, reac, drawReverseArrow});
 							fluxMap.put(displayName + "reactant " + Integer.toString(r), edgeThickness(pn.getFluxValue()));
-							if (pn.getFluxValue() == 0 && !koReactions.contains(displayName)) {
+							if (pn.getFluxValue() == 0 && !koReactions.contains(displayName) &&
+								LocalConfig.getInstance().isScaleEdgeThicknessSelected()) {
 								edgeColor = PathwaysFrameConstants.GRAY_COLOR_VALUE;
 							} 
 							if (!foundReactionsList.contains(displayName)) {
@@ -395,9 +396,10 @@ public class VisualizationDataProcessor {
 							String prod = pathway.getMetabolitesData().get((pathway.getReactionsData().get(Integer.toString(k)).getProductIds().get(p))).getName();
 							reactionMap.put(displayName + "product " + Integer.toString(p), new String[] {displayName, prod, drawForwardArrow});
 							fluxMap.put(displayName + "product " + Integer.toString(p), edgeThickness(pn.getFluxValue()));
-							if (pn.getFluxValue() == 0 && !koReactions.contains(displayName)) {
+							if (pn.getFluxValue() == 0 && !koReactions.contains(displayName) &&
+								LocalConfig.getInstance().isScaleEdgeThicknessSelected()) {
 								edgeColor = PathwaysFrameConstants.GRAY_COLOR_VALUE;
-							}
+							} 
 							if (!foundReactionsList.contains(displayName)) {
 								edgeColor = PathwaysFrameConstants.BLUE_NOT_FOUND_COLOR_VALUE;
 							}

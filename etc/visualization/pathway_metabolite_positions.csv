@@ -4601,7 +4601,7 @@ Pathway ID,Metabolite ID,Metabolite Level,Metabolite Level Position,Metabolite N
 0,4599,8.1,-8.9,Adenosine 5'-triphosphate,ATP,C00002,0,s,,,,
 0,4600,8.1,-8.7,Adenosine 5'-diphosphate,ADP,C00008,0,s,,,,
 0,4601,8.05,-8.5,Adenosine 5'-triphosphate,ATP,C00002,0,s,,,,
-0,4602,8.85,-8.6,Adenosine 5'-diphosphate,ADP,C00008,0,s,,,,
+0,4602,8.95,-8.6,Adenosine 5'-diphosphate,ADP,C00008,0,s,,,,
 0,4603,27.7,-2,D-Lactaldehyde,LALD_D,C00937,0,m,,,,
 0,4604,27.7,-2.25,L-Lactaldehyde,LALD_L,C00424,0,m,,,,
 0,4605,29.3,-2.3,L-Lactate,LAC_L,C00186,1,m,,,,

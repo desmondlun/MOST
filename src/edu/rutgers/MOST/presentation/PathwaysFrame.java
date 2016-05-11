@@ -937,7 +937,7 @@ public class PathwaysFrame extends JApplet {
 					value = edge_weight.get(context.element).doubleValue();
 				}
 			}
-			double arrowSize = 0.25;
+			double arrowSize = PathwaysFrameConstants.DEFAULT_ARROW_SIZE;
 			if (LocalConfig.getInstance().isScaleEdgeThicknessSelected()) {
 				if (value >= 1) {
 					arrowSize = Math.sqrt(value)/2;
@@ -1507,9 +1507,9 @@ public class PathwaysFrame extends JApplet {
 						arrowValue = fluxValue;
 					}
 				}
-				if (!borderList.contains(info[0]) && LocalConfig.getInstance().isScaleEdgeThicknessSelected()) {
+				if (!borderList.contains(info[0])) {
 					if (info[2].equals("true")) {
-						double arrowSize = 0.25;
+						double arrowSize = PathwaysFrameConstants.DEFAULT_ARROW_SIZE;
 						if (LocalConfig.getInstance().isScaleEdgeThicknessSelected()) {
 							if (arrowValue >= 1) {
 								arrowSize = Math.sqrt(arrowValue)/2;
