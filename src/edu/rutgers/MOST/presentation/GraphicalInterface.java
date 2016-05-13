@@ -80,7 +80,6 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
@@ -7668,6 +7667,18 @@ public class GraphicalInterface extends JFrame {
 		}
 	}
 	
+	HighlightPredicate nonEditableCompPredicate = new HighlightPredicate() {
+		public boolean isHighlighted(Component renderer ,ComponentAdapter adapter) {
+			if (!isRoot || analysisRunning || timerRunning || isVisualizing) {									
+				return true;
+			}						
+			return false;
+		}
+	};
+
+	ColorHighlighter nonEditableComp = new ColorHighlighter(nonEditableCompPredicate, null, 
+		GraphicalInterfaceConstants.NONEDITABLE_COLOR);
+	
 	public void setCompartmentsTableLayout() {
 		compartmentsTable.getSelectionModel().addListSelectionListener(new CompartmentsRowListener());
 		compartmentsTable.getColumnModel().getSelectionModel().
@@ -7675,6 +7686,8 @@ public class GraphicalInterface extends JFrame {
 
 		compartmentsTable.setAutoResizeMode(JXTable.AUTO_RESIZE_OFF);
 		compartmentsTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		
+		compartmentsTable.addHighlighter(nonEditableComp);
 		
 		// from http://www.java2s.com/Tutorial/Java/0240__Swing/thelastcolumnismovedtothefirstposition.htm
 		// columns cannot be rearranged by dragging 
@@ -10117,7 +10130,8 @@ public class GraphicalInterface extends JFrame {
 				//int mcol = reactionsTable.getColumn(reactionsTable.getColumnName(col)).getModelIndex();
 
 				if (row >= 0 && row < compartmentsTable.getRowCount()) {
-					//cancelCellEditing();            
+					cancelCellEditing(); 
+					maybeChangeSelection(row, col, compartmentsTable);           
 					JPopupMenu contextMenu = createContextMenu(row, col);
 					if (contextMenu != null
 							&& contextMenu.getComponentCount() > 0) {
@@ -10150,7 +10164,11 @@ public class GraphicalInterface extends JFrame {
 		});
 		contextMenu.add(copyMenu);
 		JMenuItem pasteMenu = new JMenuItem("Paste");
-		if (columnIndex == CompartmentsConstants.ABBREVIATION_COLUMN || !isRoot) {
+		if (isClipboardContainingText(this)
+			&& columnIndex != CompartmentsConstants.ABBREVIATION_COLUMN
+			&& isRoot && !isVisualizing) {
+			pasteMenu.setEnabled(true);
+		} else {
 			pasteMenu.setEnabled(false);
 		}
 		pasteMenu.setAccelerator(KeyStroke.getKeyStroke(
@@ -12147,8 +12165,8 @@ public class GraphicalInterface extends JFrame {
 				}
 				for (int i = 0; i < getMetabolitesFindLocationsList().size(); i++) {
 					int viewRow = metabolitesTable.convertRowIndexToModel(getMetabolitesFindLocationsList().get(i).get(0));
-					int id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(viewRow, 0));
-					String metabAbbrev = (String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
+//					int id = Integer.valueOf((String) metabolitesTable.getModel().getValueAt(viewRow, 0));
+//					String metabAbbrev = (String) metabolitesTable.getModel().getValueAt(viewRow, GraphicalInterfaceConstants.METABOLITE_ABBREVIATION_COLUMN);
 					String oldValue = (String) metabolitesTable.getModel().getValueAt(viewRow, getMetabolitesFindLocationsList().get(i).get(1));
 					String replaceAllValue = "";
 					if (matchCase) {
