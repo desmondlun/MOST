@@ -8291,7 +8291,7 @@ public class GraphicalInterface extends JFrame {
 				KeyEvent.VK_V, ActionEvent.CTRL_MASK));
 		if (isClipboardContainingText(this)
 				&& reactionsTable.getModel().isCellEditable(rowIndex, columnIndex)
-				&& isRoot) {
+				&& isRoot && !isVisualizing) {
 			pasteMenu.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					reactionsPaste();
@@ -8310,7 +8310,7 @@ public class GraphicalInterface extends JFrame {
 		contextMenu.add(pasteMenu);
 
 		JMenuItem clearMenu = new JMenuItem("Clear Contents");
-		if (isRoot) {
+		if (isRoot && !isVisualizing) {
 			if (columnIndex == GraphicalInterfaceConstants.KO_COLUMN || columnIndex == GraphicalInterfaceConstants.FLUX_VALUE_COLUMN ||
 					columnIndex == GraphicalInterfaceConstants.MIN_FLUX_COLUMN || columnIndex == GraphicalInterfaceConstants.MAX_FLUX_COLUMN ||
 					columnIndex == GraphicalInterfaceConstants.LOWER_BOUND_COLUMN || columnIndex == GraphicalInterfaceConstants.UPPER_BOUND_COLUMN ||
@@ -9456,7 +9456,7 @@ public class GraphicalInterface extends JFrame {
 				KeyEvent.VK_V, ActionEvent.CTRL_MASK));
 		if (isClipboardContainingText(this)
 				&& metabolitesTable.getModel().isCellEditable(rowIndex, columnIndex)
-				&& isRoot) {
+				&& isRoot && !isVisualizing) {
 			pasteMenu.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					metabolitesPaste();
@@ -9473,7 +9473,7 @@ public class GraphicalInterface extends JFrame {
 		contextMenu.add(pasteMenu);
 
 		JMenuItem clearMenu = new JMenuItem("Clear Contents");
-		if (isRoot) {
+		if (isRoot && !isVisualizing) {
 			if (columnIndex == GraphicalInterfaceConstants.BOUNDARY_COLUMN) {
 				clearMenu.setEnabled(false);
 			} else {
