@@ -195,15 +195,7 @@ public class PathwayReactionNodeFactory {
 			}
 		}
 		if (speciesMatch) {
-			for (int j = 0; j < modelIds.size(); j++) {
-				if (LocalConfig.getInstance().getAlternateMetabolitesMap().containsKey(modelIds.get(j)) ||
-						LocalConfig.getInstance().getMetaboliteSubstitutionsMap().containsKey(modelIds.get(j))) {
-					if (keggIdsDataMap.containsKey(modelIds.get(j))) {
-						String name = keggIdsDataMap.get(modelIds.get(j)).getName();
-						updateRenameMetabolitesMap(name, modelIds.get(j), containsProton);
-					} 
-				}
-			}
+			updateRenameMetabolitesMapFromModelIds(keggIdsDataMap, modelIds, containsProton);
 		} else {
 			if (speciesExactMatch(dataIds, keggIdsDataMap, modelIds)) {
 				speciesMatch = true;
@@ -245,13 +237,7 @@ public class PathwayReactionNodeFactory {
 		Collections.sort(data);
 		Collections.sort(model);
 		if (data.equals(model)) {
-			for (int i = 0; i < model.size(); i++) {
-				if (LocalConfig.getInstance().getAlternateMetabolitesMap().containsKey(model.get(i)) ||
-						LocalConfig.getInstance().getMetaboliteSubstitutionsMap().containsKey(model.get(i))) {
-					String name = keggIdsDataMap.get(model.get(i)).getName();
-					updateRenameMetabolitesMap(name, model.get(i), containsProton);
-				}
-			}
+			updateRenameMetabolitesMapFromModelIds(keggIdsDataMap, model, containsProton);
 			speciesMatch = true;
 		} else {
 			ArrayList<String> data1 = new ArrayList<String>();
@@ -341,6 +327,19 @@ public class PathwayReactionNodeFactory {
 		} else {
 			ArrayList<String> keggIds = new ArrayList<String>();
 			updateKeggIdList(name, keggId, keggIds, containsProton);
+		}
+	}
+	
+	public void updateRenameMetabolitesMapFromModelIds(Map<String, PathwayMetaboliteData> keggIdsDataMap, 
+		ArrayList<String> modelIds, boolean containsProton) {
+		for (int j = 0; j < modelIds.size(); j++) {
+			if (LocalConfig.getInstance().getAlternateMetabolitesMap().containsKey(modelIds.get(j)) ||
+					LocalConfig.getInstance().getMetaboliteSubstitutionsMap().containsKey(modelIds.get(j))) {
+				if (keggIdsDataMap.containsKey(modelIds.get(j))) {
+					String name = keggIdsDataMap.get(modelIds.get(j)).getName();
+					updateRenameMetabolitesMap(name, modelIds.get(j), containsProton);
+				} 
+			}
 		}
 	}
 	
@@ -480,7 +479,8 @@ public class PathwayReactionNodeFactory {
 					+ displayReactionAbbreviation(reactionAbbrevations)
 					+ displayECNumber(ecNumbers)
 					+ displayKeggReactionId(keggReactionIds)
-					+ "<p>Equation: " + name
+					// equation from database is not necessary if reaction found in model
+					//+ "<p>Equation: " + name
 					+ displaySubsystem(subsystems)
 					+ displayModelEquation(equations, "<p>Equation(s) (Abbreviations) from Model: ")
 					+ displayModelEquation(equationNames, "<p>Equation(s) (Names) from Model: ")
