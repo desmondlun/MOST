@@ -52,20 +52,25 @@ public class PathwaysFrameConstants {
 	public static final int ADDITIONAL_COMPARTMENT_OFFSET = 440;
 	public static final int COMPARTMENT_LABEL_LEFT_PADDING = 25;
 	public static final int COMPARTMENT_LABEL_TOP_PADDING = 25;
-	public static final int LEGEND_LABEL_NODE_WIDTH = 1400;
+	public static final int LEGEND_LABEL_NODE_WIDTH = 700;
 	public static final int LEGEND_LABEL_NODE_HEIGHT = 150;
 	public static final int LEGEND_LABEL_X_OFFSET = 100;
 	public static final int LEGEND_LABEL_Y_OFFSET = 150;
 	
-	public static final int LEGEND_LABEL_X_POSITION = 1600;
+	public static final int LEGEND_LABEL_X_POSITION = 930;
 	public static final int LEGEND_LABEL_Y_POSITION = 500;
 	
-	public static final int FLUX_RANGE_START_X_POSITION = 950;
+	public static final int FLUX_RANGE_START_X_POSITION = 550;
 	public static final int FLUX_RANGE_START_Y_POSITION = 600;
 	
 	public static final int FLUX_RANGE_START_Y_INCREMENT = 50;
 	public static final int FLUX_RANGE_EDGE_X_OFFSET = 300;
 	public static final int FLUX_RANGE_EDGE_LENGTH = 500;
+	
+	public static final int LEGEND_BORDER_LEFT_X = 200;
+	public static final int LEGEND_BORDER_RIGHT_X = 1440;
+	public static final int LEGEND_BORDER_TOP_Y = 400;
+	public static final int LEGEND_BORDER_BOTTOM_Y = 1100;
 	
 	public static final int METABOLITE_NO_BORDER_NODE_WIDTH = 90;
 	public static final int METABOLITE_NO_BORDER_NODE_HEIGHT = 28;

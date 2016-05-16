@@ -159,6 +159,13 @@ public class VisualizationDataProcessor {
 				Integer.toString(PathwaysFrameConstants.LEGEND_LABEL_Y_POSITION));
 			
 			drawLegend(component);
+			String legendBorderLeftX = Double.toString(PathwaysFrameConstants.LEGEND_BORDER_LEFT_X);
+			String legendBorderRightX = Double.toString(PathwaysFrameConstants.LEGEND_BORDER_RIGHT_X);
+			String legendBorderTopY = Double.toString(PathwaysFrameConstants.LEGEND_BORDER_TOP_Y);
+			String legendBorderBottomY = Double.toString(PathwaysFrameConstants.LEGEND_BORDER_BOTTOM_Y);
+
+			// draw legend border
+			drawCompartmentBorder(legendBorderLeftX, legendBorderRightX, legendBorderTopY, legendBorderBottomY, 4);
 		}
 
 		reactionList = new ArrayList<String>(reactionMap.keySet()); 
