@@ -68,7 +68,6 @@ public class VisualizationDataProcessor {
 	private double startX = 2*PathwaysFrameConstants.HORIZONTAL_INCREMENT;
 	private double startY = PathwaysFrameConstants.START_Y;
 	
-	DecimalFormat formatter = PathwaysFrameConstants.FLUX_FORMATTER;
 	DecimalFormat sciFormatter = PathwaysFrameConstants.SCIENTIFIC_FLUX_FORMATTER;
 
 	public String report = "";
@@ -270,18 +269,18 @@ public class VisualizationDataProcessor {
 
 	public void drawReactions(MetabolicPathway pathway, int component, Vector<SBMLReaction> rxns, Map<Integer, SBMLReaction> idReactionMap) {
 		ArrayList<String> metabPosKeys = new ArrayList<String>(nodeNamePositionMap.keySet());
-		double minFlux = Double.parseDouble(util.formattedNumber(Double.toString(PathwaysFrameConstants.MINIMUM_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()), 
-			formatter, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT));
-		double lowerMidFlux = Double.parseDouble(util.formattedNumber(Double.toString(PathwaysFrameConstants.LOWER_MID_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()), 
-			formatter, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT));
-		double lowMidFlux = Double.parseDouble(util.formattedNumber(Double.toString(PathwaysFrameConstants.LOW_MID_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()), 
-			formatter, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT));
-		double midFlux = Double.parseDouble(util.formattedNumber(Double.toString(PathwaysFrameConstants.MID_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()), 
-			formatter, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT));
-		double topFlux = Double.parseDouble(util.formattedNumber(Double.toString(PathwaysFrameConstants.TOP_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux()), 
-			formatter, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT));
-		double secMaxFlux = Double.parseDouble(util.formattedNumber(Double.toString(LocalConfig.getInstance().getSecondaryMaxFlux()), 
-			formatter, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT));
+		double minFlux = Double.parseDouble(util.roundToSignificantFigures(PathwaysFrameConstants.MINIMUM_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux(), 
+			PathwaysFrameConstants.FLUX_LEGEND_SIGNIFICANT_FIGURES, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT));
+		double lowerMidFlux = Double.parseDouble(util.roundToSignificantFigures(PathwaysFrameConstants.LOWER_MID_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux(), 
+			PathwaysFrameConstants.FLUX_LEGEND_SIGNIFICANT_FIGURES, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT));
+		double lowMidFlux = Double.parseDouble(util.roundToSignificantFigures(PathwaysFrameConstants.LOW_MID_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux(), 
+			PathwaysFrameConstants.FLUX_LEGEND_SIGNIFICANT_FIGURES, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT));
+		double midFlux = Double.parseDouble(util.roundToSignificantFigures(PathwaysFrameConstants.MID_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux(), 
+			PathwaysFrameConstants.FLUX_LEGEND_SIGNIFICANT_FIGURES, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT));
+		double topFlux = Double.parseDouble(util.roundToSignificantFigures(PathwaysFrameConstants.TOP_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux(), 
+			PathwaysFrameConstants.FLUX_LEGEND_SIGNIFICANT_FIGURES, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT));
+		double secMaxFlux = Double.parseDouble(util.roundToSignificantFigures(LocalConfig.getInstance().getSecondaryMaxFlux(), 
+			PathwaysFrameConstants.FLUX_LEGEND_SIGNIFICANT_FIGURES, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT));
 		//    	LocalConfig.getInstance().setVisualizationsProgress(100);
 		for (int k = 0; k < pathway.getReactionsData().size(); k++) {
 			if (k%10 == 0) {
@@ -602,7 +601,6 @@ public class VisualizationDataProcessor {
 	
 	public void drawLegend(int component) {
 		if (component == PathwaysFrameConstants.PATHWAYS_COMPONENT) {
-			Utilities u = new Utilities();
 			// first value is greater than 0 to less than first value
 			// after that, >= to first value and < second value
 			String previousValue = "0";
@@ -611,12 +609,10 @@ public class VisualizationDataProcessor {
 			double y = PathwaysFrameConstants.FLUX_RANGE_START_Y_POSITION;
 			String zero = "= 0";
 			updateCollectionsForFluxRange(zero, Double.toString(x), Double.toString(y), 1.0, PathwaysFrameConstants.ZERO_FLUX_WIDTH_NAME);
-//			fluxRangeNames.add(zero);
-//			nodeNamePositionMap.put(zero, new String[] {Double.toString(x), Double.toString(y)});
 			y += PathwaysFrameConstants.FLUX_RANGE_START_Y_INCREMENT;
 			for (int i = 0; i < PathwaysFrameConstants.FLUX_WIDTH_RATIOS.length; i++) {
-				String value = u.formattedNumber(Double.toString(PathwaysFrameConstants.FLUX_WIDTH_RATIOS[i]*LocalConfig.getInstance().getSecondaryMaxFlux()), 
-					formatter, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT);
+				String value = util.roundToSignificantFigures(PathwaysFrameConstants.FLUX_WIDTH_RATIOS[i]*LocalConfig.getInstance().getSecondaryMaxFlux(), 
+					PathwaysFrameConstants.FLUX_LEGEND_SIGNIFICANT_FIGURES, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT);
 				String name = comparator + previousValue + " to < " + value;
 				updateCollectionsForFluxRange(name, Double.toString(x), Double.toString(y), PathwaysFrameConstants.FLUX_WIDTHS[i],
 					PathwaysFrameConstants.WIDTH_PREFIX + Double.toString(PathwaysFrameConstants.FLUX_WIDTHS[i]));
@@ -624,15 +620,14 @@ public class VisualizationDataProcessor {
 				comparator = ">= ";
 				previousValue = value;
 			}
-			String secMax = u.formattedNumber(Double.toString(LocalConfig.getInstance().getSecondaryMaxFlux()), 
-				formatter, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT);
+			String secMax = util.roundToSignificantFigures(LocalConfig.getInstance().getSecondaryMaxFlux(), 
+				PathwaysFrameConstants.FLUX_LEGEND_SIGNIFICANT_FIGURES, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT);
 			String name = comparator + previousValue + " to < " + secMax;
 			updateCollectionsForFluxRange(name, Double.toString(x), Double.toString(y), PathwaysFrameConstants.SECONDARY_MAX_FLUX_WIDTH,
 				PathwaysFrameConstants.WIDTH_PREFIX + Double.toString(PathwaysFrameConstants.SECONDARY_MAX_FLUX_WIDTH));
 			y += PathwaysFrameConstants.FLUX_RANGE_START_Y_INCREMENT;
-			String maxFluxLimit = u.formattedNumber(Double.toString(PathwaysFrameConstants.INFINITE_FLUX_RATIO*LocalConfig.getInstance().getMaxFlux()), 
-				formatter, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT);
-			//String maxFlux = u.formattedNumber(Double.toString(LocalConfig.getInstance().getMaxFlux()));
+			String maxFluxLimit = util.roundToSignificantFigures(PathwaysFrameConstants.INFINITE_FLUX_RATIO*LocalConfig.getInstance().getMaxFlux(), 
+				PathwaysFrameConstants.FLUX_LEGEND_SIGNIFICANT_FIGURES, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT);
 			String secMaxToMaxFluxLimit = ">= " + secMax + " to <= " + maxFluxLimit;
 			updateCollectionsForFluxRange(secMaxToMaxFluxLimit, Double.toString(x), Double.toString(y), PathwaysFrameConstants.ABOVE_SECONDARY_MAX_FLUX_WIDTH, 
 				PathwaysFrameConstants.WIDTH_PREFIX + Double.toString(PathwaysFrameConstants.ABOVE_SECONDARY_MAX_FLUX_WIDTH));
@@ -644,7 +639,6 @@ public class VisualizationDataProcessor {
 	}
 	
 	public void updateCollectionsForFluxRange(String entry, String x, String y, Double width, String widthName) {
-		//System.out.println(entry);
 		fluxRangeNames.add(entry);
 		fluxRangeWidths.add(widthName);
 		String rightNode = widthName + PathwaysFrameConstants.WIDTH_RIGHT_NODE_SUFFIX;

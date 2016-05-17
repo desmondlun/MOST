@@ -42,7 +42,7 @@ public class PathwaysFrameConstants {
 	public static final int VERTICAL_INCREMENT = 380; // was 360, change made TCA cycle more circular
 	public static final int PATHWAY_NAME_NODE_WIDTH = 200;
 	public static final int PATHWAY_NAME_NODE_HEIGHT = 40;
-	public static final int FLUX_RANGE_NODE_WIDTH = 600;
+	public static final int FLUX_RANGE_NODE_WIDTH = 400;
 	public static final int FLUX_RANGE_NODE_HEIGHT = 48;
 	public static final int COMPARTMENT_LABEL_NODE_WIDTH = 4000;
 	public static final int COMPARTMENT_LABEL_NODE_HEIGHT = 230;
@@ -52,25 +52,25 @@ public class PathwaysFrameConstants {
 	public static final int ADDITIONAL_COMPARTMENT_OFFSET = 440;
 	public static final int COMPARTMENT_LABEL_LEFT_PADDING = 25;
 	public static final int COMPARTMENT_LABEL_TOP_PADDING = 25;
-	public static final int LEGEND_LABEL_NODE_WIDTH = 700;
+	public static final int LEGEND_LABEL_NODE_WIDTH = 500;
 	public static final int LEGEND_LABEL_NODE_HEIGHT = 150;
-	public static final int LEGEND_LABEL_X_OFFSET = 100;
+	public static final int LEGEND_LABEL_X_OFFSET = 0;
 	public static final int LEGEND_LABEL_Y_OFFSET = 150;
 	
-	public static final int LEGEND_LABEL_X_POSITION = 930;
+	public static final int LEGEND_LABEL_X_POSITION = 620;
 	public static final int LEGEND_LABEL_Y_POSITION = 500;
 	
-	public static final int FLUX_RANGE_START_X_POSITION = 550;
+	public static final int FLUX_RANGE_START_X_POSITION = 450;
 	public static final int FLUX_RANGE_START_Y_POSITION = 600;
 	
 	public static final int FLUX_RANGE_START_Y_INCREMENT = 50;
-	public static final int FLUX_RANGE_EDGE_X_OFFSET = 300;
+	public static final int FLUX_RANGE_EDGE_X_OFFSET = 0;
 	public static final int FLUX_RANGE_EDGE_LENGTH = 500;
 	
 	public static final int LEGEND_BORDER_LEFT_X = 200;
-	public static final int LEGEND_BORDER_RIGHT_X = 1440;
+	public static final int LEGEND_BORDER_RIGHT_X = 1040;
 	public static final int LEGEND_BORDER_TOP_Y = 400;
-	public static final int LEGEND_BORDER_BOTTOM_Y = 1100;
+	public static final int LEGEND_BORDER_BOTTOM_Y = 1070;
 	
 	public static final int METABOLITE_NO_BORDER_NODE_WIDTH = 90;
 	public static final int METABOLITE_NO_BORDER_NODE_HEIGHT = 28;
@@ -258,9 +258,9 @@ public class PathwaysFrameConstants {
 
 	public static java.util.List<String> cofactorList = Arrays.asList(COFACTOR_KEGG_IDS);
 	
-	public static final DecimalFormat FLUX_FORMATTER = new DecimalFormat("#.####");
 	public static final DecimalFormat SCIENTIFIC_FLUX_FORMATTER = new DecimalFormat("#.##E0");
-	public static final double MIN_DECIMAL_FORMAT = 0.001;
+	public static final double MIN_DECIMAL_FORMAT = 0.01;
 	public static final double MAX_DECIMAL_FORMAT = 1000;
+	public static final int FLUX_LEGEND_SIGNIFICANT_FIGURES = 3;
 	
 }

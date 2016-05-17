@@ -5,12 +5,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.channels.FileChannel;
 import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
@@ -432,7 +434,40 @@ public class Utilities {
 		}
 		return value;
 	}
-	
+
+	// from http://stackoverflow.com/questions/19487506/built-in-methods-for-displaying-significant-figures
+	public String toSignificantFiguresString(BigDecimal bd, int significantFigures ){
+		String test = String.format("%."+significantFigures+"G", bd);
+		if (test.contains("E+")){
+			test = String.format(Locale.US, "%.0f", Double.valueOf(String.format("%."+significantFigures+"G", bd)));
+		}
+		return test;
+	}
+
+	/**
+	 * Returns number rounded to significant figures and in scientific notation if
+	 * above or below input values
+	 * @param value
+	 * @param significantFigures
+	 * @param sciFormatter
+	 * @param minDecimalFormat
+	 * @param maxDecimalFormat
+	 * @return
+	 */
+	public String roundToSignificantFigures(double value, int significantFigures, DecimalFormat sciFormatter, 
+		double minDecimalFormat, double maxDecimalFormat) {
+		String result = toSignificantFiguresString(BigDecimal.valueOf(value), significantFigures);
+		if (Math.abs(Double.valueOf(result)) != 0.0 && (Math.abs(Double.valueOf(result)) < minDecimalFormat || Math.abs(Double.valueOf(result)) >= maxDecimalFormat)) {
+			try {
+				result = sciFormatter.format((Number)Double.valueOf(result));
+			} catch (NumberFormatException nfe) {
+
+			}
+		}
+
+		return result;
+	}
+
 	/**
 	 * Returns plural heading plus list to String if length of input list > 1. 
 	 * Else returns singular heading plus input String.
@@ -450,5 +485,5 @@ public class Utilities {
 		}
 		return item;
 	}
-	
+
 }
