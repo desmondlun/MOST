@@ -1,0 +1,4 @@
+The criteria for reaction identification
+	is more strict if no reaction identifier is present. If an identifier exists, a reaction is only rejected it it contains a species not
+	present in a given reation in the database used to identify reactions. If no identifier exists, all species must match, 
+	excluding protons.

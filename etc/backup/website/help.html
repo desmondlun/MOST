@@ -40,7 +40,9 @@ A{text-decoration:none}
 	<p><font size=2><a href="#overview">Overview </a></font></p>
 	<ul><li><font size=2><a href="#sort">Sorting Tables</a></font></li>
 	<li><font size=2><a href="#formula">Formula Bar</a></font></li>
-	<li><font size=2><a href="#rename">Renaming Metabolites</a></font></li></ul>
+	<li><font size=2><a href="#rename">Renaming Metabolites</a></font></li>
+	<li><font size=2><a href="#rename_comp">Renaming Compartments</a></font></li>
+	<li><font size=2><a href="#visualize">Visualization Overview</a></font></li></ul>
 
 	<p><font size=2><a href="installing_most.html">Installing MOST</a></font></p>
 	<ul><li><font size=2><a href="installing_most.html#req">Requirements</a></font></li>
@@ -78,6 +80,18 @@ A{text-decoration:none}
 	<li><font size=2><a href="analysis_menu.html#eflux2">E-Flux2</a></font></li>
 	<li><font size=2><a href="analysis_menu.html#spot">SPOT</a></font></li></ul>
 
+	<p><font size=2><a href="visualization_menu.html">Visualization Menu</a></font></p>
+
+	<ul><li><font size=2><a href="visualization_menu.html#visualize">Visualize Compartment</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#report">Show Visualization Report</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#locate_columns">Locate Identifier Columns</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#levels">Set Edge Flux Levels</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#reset_levels">Reset Edge Flux Levels to Default</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#frame_menus">Visualization Frame Menus</a></font></li>
+	<ul><li><font size=2><a href="visualization_menu.html#save_svg">Save As SVG</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#save_png">Save As PNG</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#find">Find</a></font></li></ul></ul>
+
 	<p><font size=2><a href="edit_menu.html">Edit Menu</a></font></p>
 
 	<ul><li><font size=2><a href="edit_menu.html#unused">Unused Metabolites</a></font></li>
@@ -91,7 +105,12 @@ A{text-decoration:none}
 	<p><font size=2><a href="options_menu.html">Options Menu</a></font></p>
 
 	<ul><li><font size=2><a href="select_solvers.html">Select Solvers</a></font></li>
-	<li><font size=2><a href="solver_parameters.html">Set Solver Parameters</a></font></li></ul>
+	<li><font size=2><a href="solver_parameters.html">Set Solver Parameters</a></font></li>
+	<li><font size=2><a href="visualization_options.html">Visualization Options</a></font></li>
+	<ul><li><font size=2><a href="visualization_options.html#graph_all">Graph All in Database</a></font></li>
+	<li><font size=2><a href="visualization_options.html#scale">Scale Edge Thickness</a></font></li>
+	<li><font size=2><a href="visualization_options.html#ignore_water">Ignore Water for Reaction Matching</a></font></li>
+	<li><font size=2><a href="visualization_options.html#report">Show Visualization Report</a></font></li></ul></ul>
 
 	<p><font size=2><a href="toolbar.html">Toolbar</a></font></p>
 
@@ -162,16 +181,18 @@ A{text-decoration:none}
 
 	<br>
 
-	<p><a name="overview"> Overview:</a></p>
+	<p><a name="overview"><strong> Overview:</strong></a></p>
 
-	<p align="center"><a href="images/MOSTscreenshot.jpg" target="_blank">
-	<img src ="images/MOSTscreenshot.jpg" alt="Image - MOST Screenshot" border="0" height="90%" width="90%"></a></p>
+	<p align="center"><a href="images/most_screenshot.jpg" target="_blank">
+	<img src ="images/most_screenshot.jpg" alt="Image - MOST Screenshot" border="0" height="90%" width="90%"></a></p>
 
 	<blockquote>MOST user interface with title bar, menu bar, toolbar, formula bar, tables, and console (from upper left to lower left), 
 	and tree on right</blockquote>
 
-	<blockquote>The main portion of the MOST interface consists of two spreadsheets: the Reactions 
-	table, and the Metabolites table. Tables can be selected by clicking the labeled tabs under the table scroll pane. <a name="sort">Tables can be sorted by
+	<blockquote>The main portion of the MOST interface consists of three spreadsheets: the Reactions 
+	table, the Metabolites table, and the Compartments table. MOST_alpha-14 and previous versions do not have a Compartments table. 
+	Tables can be selected by clicking the labeled tabs 
+	under the table scroll pane. <a name="sort">Tables can be sorted by
 	clicking on the table header of the column to be sorted. Additional clicks toggle between ascending and descending order. MOST has an 
 	<a href="edit_menu.html#unsort">Unsort</a> menu item to return to the original loaded order.</blockquote> 
 
@@ -193,13 +214,129 @@ A{text-decoration:none}
 	
 	<p><a name="rename">  Renaming Metabolites:</a></p>
 	
-	<blockquote>If a metabolite abbreviation or name is changed and the metabolite participates in
+	<blockquote>Metabolite abbreviations are keys in SBML and MOST.
+	If a metabolite abbreviation or name is changed and the metabolite participates in
 	one or more reactions, all reactions that contain the metabolite 
 	will be updated for the new name. A warning will be displayed before these updates are made.
 	Click "OK" to rename metabolite and update reactions, otherwise click "Cancel".</blockquote>
 
 	<p align="center"><a href="images/rename1.jpg" target="_blank">
 	<img src ="images/rename1.jpg" alt="Image - Rename 1" border="0" height="90%" width="90%"></a></p>
+
+	<br>
+	
+	<p><a name="rename_comp">  Renaming Compartments:</a></p>
+
+	<blockquote>Compartments in the Metabolites table are keys in SBML and MOST and are found in the Abbreviations column
+	of the Compartments table.
+	Renaming a compartment in the Metabolites table by editing the cell, using <a href="context_menu.html#copy">Paste</a>, 
+	or <a href="toolbar.html#find">Replace</a> may result in changing reactions, and if
+	the compartment is not present in the Compartments table, the compartment will be added to the table.</blockquote>
+
+	<p align="center"><a href="images/rename_comp1.jpg" target="_blank">
+	<img src ="images/rename_comp1.jpg" alt="Image - Rename Compartment 1" border="0" height="90%" width="90%"></a></p>
+
+	<p align="center">Warning when renaming a compartment in Metabolites table.</p>
+
+	<br>
+
+	<blockquote>The Compartments table can be used to rename a compartment. </blockquote> 
+
+	<p align="center"><a href="images/comp_table_rename.jpg" target="_blank">
+	<img src ="images/comp_table_rename.jpg" alt="Image - Compartment Table Rename" border="0" height="90%" width="90%"></a></p>
+
+	<p align="center">Warning when renaming a compartment in Compartments table.</p>
+
+	<blockquote>Replace All cannot be used to 
+	rename a compartment. The following message will displayed when this action is attempted.</blockquote>
+
+	<p align="center"><a href="images/comp_replace_all.jpg" target="_blank">
+	<img src ="images/comp_replace_all.jpg" alt="Image - Compartment Replace" border="0" height="90%" width="90%"></a></p>
+
+	<blockquote>Since compartments are keys, entries cannot be blank.</blockquote>
+
+	<blockquote>All changes in compartments cannot be undone, and after changing a compartment, 
+	<a href="toolbar.html#undo">Undo</a> and <a href="toolbar.html#undo">Redo</a> history will be cleared.
+	</blockquote>
+
+	<br>
+
+	<p><a name="visualize"><strong>  Visualization Overview:</a></strong></p>
+
+	<p align="center"><a href="images/visualization_frame.jpg" target="_blank">
+	<img src ="images/visualization_frame.jpg" alt="Image - MOST Screenshot" border="0" height="80%" width="80%"></a></p>
+
+	<blockquote>The Visualization frame uses zoom and pan navigation. The "+" button can be used to zoom in and the 
+	"-" button can ce used to zoom out. Dragging on the graph or moving the scroll bars can be used to move about
+	the graph.</blockquote>
+
+	<blockquote>The model and compartment that is being visualized are shown in the top left corner.</blockquote>
+
+	<p align="center"><img src ="images/name_comp.jpg" alt="Image - Name Compartment" border="0"></p>
+
+	<p align="center">Model name and compartment</p>
+
+	<br>
+
+	<blockquote>Reaction nodes have blue text and are all the same size. 
+	Metabolite nodes are large if the metabolite is a main component in a reaction and smaller for components such as H2O, O2, CO2,
+	and cofactors.
+	Large metabolite nodes are shown in black. 
+	and are enclosed in boxes if the metabolite occurs in multiple places.
+	Smaller metabolites are either in black or red if the metabolite is a cofactor.
+	Reaction edges link components in a reaction and arrows show if a reaction is reversible or not. 
+	Pathway names are shown in orange.
+	</blockquote>
+
+	<p align="center"><img src ="images/sample_reaction-rev.jpg" alt="Image - Reversible Reaction" border="0"></p>
+
+	<p align="center">Reversible reaction</p>
+	
+	<p align="center"><img src ="images/sample_reaction-irrev.jpg" alt="Image - Irreversible Reaction" border="0"></p>
+
+	<p align="center">Irreversible reaction</p>
+
+	<blockquote>Flux values are used to scale edge thicknesses by default, but this setting can be changed
+	by using the <a href="visualization_options.html">Visualization Options</a> menu and deselecting
+	<a href="visualization_options.html#scale">Scale Edge Thickness</a>.</blockquote>
+
+	<p align="center"><img src ="images/pathway_name.jpg" alt="Image - Pathway name." border="0"></p>
+
+	<p align="center">Pathway name node example - Citrate Cycle</p>
+
+	<br>
+
+	<blockquote>More information is available for nodes by hovering over a node to view a tooltip.
+	Each node also has a context menu that can be 
+	accessed by right-clicking on the node. Selecting "View Node Information" will show a
+	Node Information frame. Selecting "Copy Node Information to Clipboard" will make the
+	node information available to be pasted into a text editor. Node information can also be viewed 
+	in a Node Information frame by double-clicking on
+	the node. 
+	</blockquote>
+
+	<p align="center"><img src ="images/metab_info.jpg" alt="Image - Metabolite Info" border="0"></p>
+
+	<p align="center">Metabolite Information frame</p>
+	
+	<p align="center"><a href="images/rxn_info.jpg" target="_blank">
+	<img src ="images/rxn_info.jpg" alt="Image - Reaction info" border="0" height="90%" width="90%"></a></p>
+
+	<p align="center">Reaction Information frame</p>
+
+	<blockquote>Protons are usually not graphed as separate nodes, but are included in nodes of other metabolites.
+	</blockquote>
+
+	<p align="center"><a href="images/proton-rxn.jpg" target="_blank">
+	<img src ="images/proton-rxn.jpg" alt="Image - Proton in reaction" border="0" height="90%" width="90%"></a></p>
+
+	<p align="center">Reaction with proton</p>
+
+	<p align="center"><img src ="images/proton_mtb.jpg" alt="Image - Proton included with metabolite" border="0"></p>
+
+	<p align="center">Proton included with metabolite</p>
+
+	<br>
 
 	</td>
 	</table>

@@ -42,9 +42,7 @@ A{text-decoration:none}
 	<p><font size=2><a href="help.html#overview">Overview </a></font></p>
 	<ul><li><font size=2><a href="help.html#sort">Sorting Tables</a></font></li>
 	<li><font size=2><a href="help.html#formula">Formula Bar</a></font></li>
-	<li><font size=2><a href="help.html#rename">Renaming Metabolites</a></font></li>
-	<li><font size=2><a href="help.html#rename_comp">Renaming Compartments</a></font></li>
-	<li><font size=2><a href="help.html#visualize">Visualization Overview</a></font></li></ul>
+	<li><font size=2><a href="help.html#rename">Renaming Metabolites</a></font></li></ul>
 
 	<p><font size=2><a href="installing_most.html">Installing MOST</a></font></p>
 	<ul><li><font size=2><a href="installing_most.html#req">Requirements</a></font></li>
@@ -82,18 +80,6 @@ A{text-decoration:none}
 	<li><font size=2><a href="analysis_menu.html#eflux2">E-Flux2</a></font></li>
 	<li><font size=2><a href="analysis_menu.html#spot">SPOT</a></font></li></ul>
 
-	<p><font size=2><a href="visualization_menu.html">Visualization Menu</a></font></p>
-
-	<ul><li><font size=2><a href="visualization_menu.html#visualize">Visualize Compartment</a></font></li>
-	<li><font size=2><a href="visualization_menu.html#report">Show Visualization Report</a></font></li>
-	<li><font size=2><a href="visualization_menu.html#locate_columns">Locate Identifier Columns</a></font></li>
-	<li><font size=2><a href="visualization_menu.html#levels">Set Edge Flux Levels</a></font></li>
-	<li><font size=2><a href="visualization_menu.html#reset_levels">Reset Edge Flux Levels to Default</a></font></li>
-	<li><font size=2><a href="visualization_menu.html#frame_menus">Visualization Frame Menus</a></font></li>
-	<ul><li><font size=2><a href="visualization_menu.html#save_svg">Save As SVG</a></font></li>
-	<li><font size=2><a href="visualization_menu.html#save_png">Save As PNG</a></font></li>
-	<li><font size=2><a href="visualization_menu.html#find">Find</a></font></li></ul></ul>
-
 	<p><font size=2><a href="edit_menu.html">Edit Menu</a></font></p>
 
 	<ul><li><font size=2><a href="edit_menu.html#unused">Unused Metabolites</a></font></li>
@@ -107,12 +93,7 @@ A{text-decoration:none}
 	<p><font size=2><a href="options_menu.html">Options Menu</a></font></p>
 
 	<ul><li><font size=2><a href="select_solvers.html">Select Solvers</a></font></li>
-	<li><font size=2><a href="solver_parameters.html">Set Solver Parameters</a></font></li>
-	<li><font size=2><a href="visualization_options.html">Visualization Options</a></font></li>
-	<ul><li><font size=2><a href="visualization_options.html#graph_all">Graph All in Database</a></font></li>
-	<li><font size=2><a href="visualization_options.html#scale">Scale Edge Thickness</a></font></li>
-	<li><font size=2><a href="visualization_options.html#ignore_water">Ignore Water for Reaction Matching</a></font></li>
-	<li><font size=2><a href="visualization_options.html#report">Show Visualization Report</a></font></li></ul></ul>
+	<li><font size=2><a href="solver_parameters.html">Set Solver Parameters</a></font></li></ul>
 
 	<p><font size=2><a href="toolbar.html">Toolbar</a></font></p>
 
@@ -145,19 +126,14 @@ A{text-decoration:none}
 	</td>
 
 	<td width=600 valign=top>
-	<p align=center><font size=5>E-Flux2 Tutorial</font></p>
+	<p align=center><font size=5>FBA Tutorial - No FVA Results</font></p>
 
 	<p><strong>Step 1</strong></p>
 	
 	<blockquote><strong>Load Model. </strong>
-	To load an SBML or CSV model,  go to File, then click
-	either Load SBML or Load CSV. A model from the <a href="file_menu.html#collection">Model
-	Collection Database</a> can also be used. Select File &#8594; Load
-	from Model Collection Database (Alt+F then Alt+D). If
-	necessary, the model can be edited after being loaded
-	depending on your experiment.  
-	For a test purpose, select <strong>ecoli_core_model</strong>, 
-	then click the OK button on the Model Collection dialog. This model will be used for this tutorial </blockquote> 
+	Select File –> Load from Model Collection Database (Alt+F then Alt+D). Select <strong>ecoli_core_model</strong>, 
+	then click the OK button on the Model Collection dialog. This model will be used for this tutorial
+	since it is a small model and therefore analysis will be completed rapidly on any computer.</blockquote> 
 
 	<p align="center"><a href="images/load_ecoli_core.jpg" target="_blank">
 	<img src ="images/load_ecoli_core.jpg" alt="Image - Load E coli core" border="0" height="90%" width="90%"></a></p>
@@ -174,14 +150,14 @@ A{text-decoration:none}
 	<blockquote><strong>Set Biological Objective. </strong>Usually the biomass reaction is chosen
 	as the Biological Objective to be maximized. An easy way to find the biomass reaction in most
 	models is to use the Find/Replace dialog using Control-F keystroke on the keyboard. Type in
-	<tt>biomass</tt>, and click the Find button.</blockquote> 
+	biomass, and click the Find button.</blockquote> 
 
 	<p align="center"><a href="images/ecoli_core_biomass1.jpg" target="_blank">
 	<img src ="images/ecoli_core_biomass1.jpg" alt="Image - E coli core biomass 1" border="0" height="90%" width="90%"></a></p>
 
 	<blockquote>Once this reaction is located, scroll right to the Biological Objective column.
 	All models in the Model Collection table already have the biomass reaction objective set to 1.0, so 
-	this will not need to be changed. If a model from a different source is used, the Biological
+	this will not need to be changed.If a model from a different source is used, the Biological
 	Objective may need to be set.
 	</blockquote>
 
@@ -190,36 +166,40 @@ A{text-decoration:none}
 
 	<p><strong>Step 3</strong></p>
 
-	<blockquote><strong>Load Gene Expression File.</strong></blockquote> 
+	<blockquote><strong>Run Analysis. </strong>Select Analysis –> FBA (Alt+A then Alt+F).</blockquote>
 
-	<blockquote>E-Flux2 requires a CSV file with two columns where the first column in the gene name and the
-	second column is the gene expression as shown below:</blockquote>
+	<blockquote>If you are using Gurobi as a solver and your Gurobi license is not valid, the following error will appear:</blockquote>
+	
+	<p align="center"><img src ="images/no_license.jpg" alt="Image - No License" border="0"></p>
 
-	<p align="center"><img src ="images/gene_expr.jpg" alt="Image - Gene Expression" border="0"></p>
+	<blockquote>Your Gurobi license needs to be updated or refreshed.</blockquote>
 
-	<blockquote>Click <a href="gene_expr.csv" target="_blank">here</a> to download a sample gene expression csv file that can be used for
-	the test of the ecoli_core_model.</blockquote>
+	<blockquote>Otherwise, the FVA Dialog will appear:</blockquote>
 
-	<p><strong>Step 4</strong></p>
+	<p align="center"><img src ="images/fva_analysis.jpg" alt="Image - FVA Dialog" border="0"></p>
 
-	<blockquote><strong>Run Analysis. </strong>Select Analysis &#8594; E-Flux2 (Alt+A then Alt+E)..</blockquote>  
+	<blockquote>Selecting the "Run Euclidean norm minimization" checkbox finds a unique flux set by minimizing the length of the 
+	flux vector while maintaining the FBA Biomass flux (effectively, it is <a href="eflux_tutorial.html">E-Flux2</a> 
+	without formatting the reactions with gene expression data). This option provides a unique flux distribution.</blockquote>
 
-    	<blockquote>A file browser will appear. Select the gene expression csv downloaded in Step 3, then click the Open button
-	on the file browser.</blockquote>
+	<blockquote>Click the "No" button.</blockquote>
 
-	<p align="center"><a href="images/load_gene_expr.jpg" target="_blank">
-	<img src ="images/load_gene_expr.jpg" alt="Image - Load Gene Expression" border="0" height="90%" width="90%"></a></p>
+	<blockquote>After FBA is finished, a link to the results table will be added to the tree, and results will be displayed in the console.</blockquote>
 
-	<blockquote>A progress bar will appear:</blockquote>
+	<p align="center"><a href="images/fba_done.jpg" target="_blank">
+	<img src ="images/fba_done.jpg" alt="Image - FBA Results" border="0" height="90%" width="90%"></a></p>
 
-	<p align="center"><a href="images/eflux2_progress.jpg" target="_blank">
-	<img src ="images/eflux2_progress.jpg" alt="Image - E-Flux2 progress" border="0" height="90%" width="90%"></a></p>
+	<p align=center><font size=5>FBA Tutorial - Include FVA Results</font></p>
 
-	<blockquote>After E-Flux2 is finished, a new link of the optimization result will be added to the tree on the upper right panel, 
-	and results will be displayed in the console. The numerical values in the Flux Value column shows the predicted metabolic fluxes.</blockquote>
+	<blockquote>Repeat Steps 1 to 3, but select the "Run FVA analysis" checkbox and 
+	click the "Yes" button on the FVA dialog. Running FBA with FVA
+	results takes significantly more time than running FBA without FVA.</blockquote>
 
-	<p align="center"><a href="images/eflux2_done.jpg" target="_blank">
-	<img src ="images/eflux2_done.jpg" alt="Image - E-Flux2 Results" border="0" height="90%" width="90%"></a></p>
+	<blockquote>After FVA is done, two new columns, Min. Flux. and Max. Flux, will be added to the Reactions Table
+	to display the minimum and maximum fluxes for each reaction.</blockquote>
+
+	<p align="center"><a href="images/fva_done.jpg" target="_blank">
+	<img src ="images/fva_done.jpg" alt="Image - FVA Results" border="0" height="90%" width="90%"></a></p>
 
 	</td>
 	</tr>

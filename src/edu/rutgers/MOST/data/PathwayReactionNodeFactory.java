@@ -284,7 +284,6 @@ public class PathwayReactionNodeFactory {
 				String entry = model1.get(i);
 				if (LocalConfig.getInstance().getMetaboliteSubstitutionsMap().containsKey(data1.get(i))) {
 					for (int j = 0; j < model1.size(); j++) {
-						//System.out.println("m " + model1.get(j));
 						if (LocalConfig.getInstance().getMetaboliteSubstitutionsMap().get(data1.get(i)).contains(model1.get(j))) {
 							if (keggIdsDataMap.containsKey(data1.get(i))) {
 								// replace substitution with key

@@ -42,7 +42,9 @@ A{text-decoration:none}
 	<p><font size=2><a href="help.html#overview">Overview </a></font></p>
 	<ul><li><font size=2><a href="help.html#sort">Sorting Tables</a></font></li>
 	<li><font size=2><a href="help.html#formula">Formula Bar</a></font></li>
-	<li><font size=2><a href="help.html#rename">Renaming Metabolites</a></font></li></ul>
+	<li><font size=2><a href="help.html#rename">Renaming Metabolites</a></font></li>
+	<li><font size=2><a href="help.html#rename_comp">Renaming Compartments</a></font></li>
+	<li><font size=2><a href="help.html#visualize">Visualization Overview</a></font></li></ul>
 
 	<p><font size=2>Installing MOST</font></p>
 	<ul><li><font size=2><a href = "#req">Requirements</a></font></li>
@@ -81,6 +83,18 @@ A{text-decoration:none}
 	<li><font size=2><a href="analysis_menu.html#eflux2">E-Flux2</a></font></li>
 	<li><font size=2><a href="analysis_menu.html#spot">SPOT</a></font></li></ul>
 
+	<p><font size=2><a href="visualization_menu.html">Visualization Menu</a></font></p>
+
+	<ul><li><font size=2><a href="visualization_menu.html#visualize">Visualize Compartment</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#report">Show Visualization Report</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#locate_columns">Locate Identifier Columns</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#levels">Set Edge Flux Levels</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#reset_levels">Reset Edge Flux Levels to Default</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#frame_menus">Visualization Frame Menus</a></font></li>
+	<ul><li><font size=2><a href="visualization_menu.html#save_svg">Save As SVG</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#save_png">Save As PNG</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#find">Find</a></font></li></ul></ul>
+
 	<p><font size=2><a href="edit_menu.html">Edit Menu</a></font></p>
 
 	<ul><li><font size=2><a href="edit_menu.html#unused">Unused Metabolites</a></font></li>
@@ -94,7 +108,12 @@ A{text-decoration:none}
 	<p><font size=2><a href="options_menu.html">Options Menu</a></font></p>
 
 	<ul><li><font size=2><a href="select_solvers.html">Select Solvers</a></font></li>
-	<li><font size=2><a href="solver_parameters.html">Set Solver Parameters</a></font></li></ul>
+	<li><font size=2><a href="solver_parameters.html">Set Solver Parameters</a></font></li>
+	<li><font size=2><a href="visualization_options.html">Visualization Options</a></font></li>
+	<ul><li><font size=2><a href="visualization_options.html#graph_all">Graph All in Database</a></font></li>
+	<li><font size=2><a href="visualization_options.html#scale">Scale Edge Thickness</a></font></li>
+	<li><font size=2><a href="visualization_options.html#ignore_water">Ignore Water for Reaction Matching</a></font></li>
+	<li><font size=2><a href="visualization_options.html#report">Show Visualization Report</a></font></li></ul></ul>
 
 	<p><font size=2><a href="toolbar.html">Toolbar</a></font></p>
 
@@ -133,6 +152,9 @@ A{text-decoration:none}
 	<p></p>
 	<p><a name="req"><strong>  Requirements:</strong></a></p>
 	<blockquote>Java JRE 1.7. <a href="http://java.com/download">java.com/download</a>.</blockquote>
+
+	<br>
+
 	<blockquote>To determine if Java is installed and the installed version, visit the <a href="download.html#java">Downloads
 	</a> page. This is unnecessary for Macintosh since Java is included in the installation package.</blockquote>
 	
@@ -191,6 +213,15 @@ A{text-decoration:none}
 
 	<p><a name="issues"> Known Issues:</a></p>
 
+	<blockquote>MOST may load when your computer is booted. This behavior can be stopped in Windows 7 and
+	Windows 8 by following the instructions on this website:
+	<a href="http://www.pcworld.com/article/2602252/how-to-stop-autoloading-programs-in-windows-7-and-windows-8.html">
+	http://www.pcworld.com/article/2602252/how-to-stop-autoloading-programs-in-windows-7-and-windows-8.html</a>.
+	For Windows 10, follow the instructions on this website:
+	<a href="http://anewdomain.net/2015/07/26/how-to-disable-startup-programs-in-windows-10-and-speed-up-load-time/">
+	http://anewdomain.net/2015/07/26/how-to-disable-startup-programs-in-windows-10-and-speed-up-load-time/</a>
+	</blockquote>
+
 	<blockquote>Some programs or operating system permissions may prevent the MOST installer from working correctly. 
 	If the installer will not work, download the <a href="MOST_alpha-13.zip" target="_blank">MOST Executable Jar</a> and 
                 extract it into a directory, then double-click on the MOST.jar file to run MOST.</blockquote>
@@ -227,9 +258,9 @@ A{text-decoration:none}
 	<br>
 	<p><a name="mac"><strong>  Macintosh:</strong></a></p>
 
-	<blockquote>Download <a href="MOST.dmg" target="_blank">MOST for Macintosh</a>, then double-click on the .dmg file.</blockquote>
-
-	<blockquote>Drag MOST App into Applications folder.</blockquote>
+	<blockquote>Extract the zip into a folder and double-click the MOST.jar file to run MOST.
+	To use the <a href="select_solvers.html">Ipopt</a> solver with Macintosh,
+	<a href="https://gcc.gnu.org/wiki/GFortranBinaries#MacOS">GFortran</a> needs to be installed.</blockquote>
 
 	<p>Installing Gurobi for Mac:</p>
 

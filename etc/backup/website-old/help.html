@@ -16,15 +16,13 @@ A{text-decoration:none}
 	<table align=center cellspacing="0" cellpadding="0"><tr height=15>
 		<td align=center width=120><p><a href="index.html" name="top">Home</a></p></td>
 		<td align=center width=120><p><a href="download.html">Download</a></p></td>
-		<td align=center width=120><p><a href="Publications.html">Publications</a></p></td>
-		<td align=center width=120><p><a href="People.html">People</a></p></td>
-		<td align=center width=120><p><a href="help.html">Help</a></p></td>
-		<td align=center width=120><p><a href="Tutorials.html">Tutorials</a></p></td>
+		<td align=center width=120><p><a href="publications.html">Publications</a></p></td>
+		<td align=center width=120><p><a href="people.html">People</a></p></td>
+		<td align=center width=120><p>Help</p></td>
+		<td align=center width=120><p><a href="tutorials.html">Tutorials</a></p></td>
 	</table>
 
 			<!-- Title -->
-	
-	<!-- Title -->
 	
 	<p align=center><font size=7><a href="index.html">MOST</a></font></p>
 	<p align=center><font size=5>Metabolic Optimization and Simulation Tool</font></p>
@@ -35,16 +33,14 @@ A{text-decoration:none}
 	<td width=140 valign=top bgcolor=a0a0a0 align=top>
 	<p><font size=3>Help Topics</font></p>
 
-	<p><font size=2><a href="help.html#contact">Contact</a></font></p>
+	<p><font size=2><a href="#contact">Contact</a></font></p>
 
-	<p><font size=2><a href="help.html#about">About MOST</a></font></p>
+	<p><font size=2><a href="#about">About MOST</a></font></p>
 
-	<p><font size=2><a href="help.html#overview">Overview </a></font></p>
-	<ul><li><font size=2><a href="help.html#sort">Sorting Tables</a></font></li>
-	<li><font size=2><a href="help.html#formula">Formula Bar</a></font></li>
-	<li><font size=2><a href="help.html#rename">Renaming Metabolites</a></font></li>
-	<li><font size=2><a href="help.html#rename_comp">Renaming Compartments</a></font></li>
-	<li><font size=2><a href="help.html#visualize">Visualization Overview</a></font></li></ul>
+	<p><font size=2><a href="#overview">Overview </a></font></p>
+	<ul><li><font size=2><a href="#sort">Sorting Tables</a></font></li>
+	<li><font size=2><a href="#formula">Formula Bar</a></font></li>
+	<li><font size=2><a href="#rename">Renaming Metabolites</a></font></li></ul>
 
 	<p><font size=2><a href="installing_most.html">Installing MOST</a></font></p>
 	<ul><li><font size=2><a href="installing_most.html#req">Requirements</a></font></li>
@@ -82,18 +78,6 @@ A{text-decoration:none}
 	<li><font size=2><a href="analysis_menu.html#eflux2">E-Flux2</a></font></li>
 	<li><font size=2><a href="analysis_menu.html#spot">SPOT</a></font></li></ul>
 
-	<p><font size=2><a href="visualization_menu.html">Visualization Menu</a></font></p>
-
-	<ul><li><font size=2><a href="visualization_menu.html#visualize">Visualize Compartment</a></font></li>
-	<li><font size=2><a href="visualization_menu.html#report">Show Visualization Report</a></font></li>
-	<li><font size=2><a href="visualization_menu.html#locate_columns">Locate Identifier Columns</a></font></li>
-	<li><font size=2><a href="visualization_menu.html#levels">Set Edge Flux Levels</a></font></li>
-	<li><font size=2><a href="visualization_menu.html#reset_levels">Reset Edge Flux Levels to Default</a></font></li>
-	<li><font size=2><a href="visualization_menu.html#frame_menus">Visualization Frame Menus</a></font></li>
-	<ul><li><font size=2><a href="visualization_menu.html#save_svg">Save As SVG</a></font></li>
-	<li><font size=2><a href="visualization_menu.html#save_png">Save As PNG</a></font></li>
-	<li><font size=2><a href="visualization_menu.html#find">Find</a></font></li></ul></ul>
-
 	<p><font size=2><a href="edit_menu.html">Edit Menu</a></font></p>
 
 	<ul><li><font size=2><a href="edit_menu.html#unused">Unused Metabolites</a></font></li>
@@ -107,12 +91,7 @@ A{text-decoration:none}
 	<p><font size=2><a href="options_menu.html">Options Menu</a></font></p>
 
 	<ul><li><font size=2><a href="select_solvers.html">Select Solvers</a></font></li>
-	<li><font size=2><a href="solver_parameters.html">Set Solver Parameters</a></font></li>
-	<li><font size=2><a href="visualization_options.html">Visualization Options</a></font></li>
-	<ul><li><font size=2><a href="visualization_options.html#graph_all">Graph All in Database</a></font></li>
-	<li><font size=2><a href="visualization_options.html#scale">Scale Edge Thickness</a></font></li>
-	<li><font size=2><a href="visualization_options.html#ignore_water">Ignore Water for Reaction Matching</a></font></li>
-	<li><font size=2><a href="visualization_options.html#report">Show Visualization Report</a></font></li></ul></ul>
+	<li><font size=2><a href="solver_parameters.html">Set Solver Parameters</a></font></li></ul>
 
 	<p><font size=2><a href="toolbar.html">Toolbar</a></font></p>
 
@@ -145,51 +124,84 @@ A{text-decoration:none}
 	</td>
 
 	<td width=600 valign=top>
-	<p align=center><font size=5>Select Solvers</font></p>
+	<p align=center><font size=5></font></p>
+	<p align=center><font size=5></font></p>
 
-	<blockquote>Mixed Integer Linear Program (MILP) solvers are used for <a href="analysis_menu.html#fba">FBA</a>,
-	 <a href="analysis_menu.html#gdbb">GDBB</a>, and <a href="analysis_menu.html#eflux2">E-Flux2</a>. Quadratic solvers
-	are used for E-Flux2, and Nonlinear solver is used for <a href="analysis_menu.html#spot">SPOT</a> 
-	(Simplified Pearson cOrrelation with Transcriptomic data).
-	<a href="http://www.gurobi.com">Gurobi</a> or <a href="http://www.gnu.org/software/glpk/">GLPK</a> (GNU Linear Programming Kit) are available as MILP solvers, 
-	Gurobi and <a href="http://openopt.org/IPOPT">Ipopt</a> (Interior Point OPTimizer)
-	are available as Quadratic solvers, and Ipopt is available as a Nonlinear solver.</blockquote>
+	<p><a name="contact">  Contact email:</a></p>
 
-	<blockquote>Click Options -> Select Solvers (Alt+O then Alt+S) to select solvers for running Analyses.
-	The Select Solvers dialog will appear.</blockquote>
+	<blockquote>E-mail: <A HREF="mailto:dslun@rutgers.edu">dslun@rutgers.edu</A></blockquote>
 
-	<p align="center"><img src ="images/select_solver.jpg" alt="Image - Select Solver" border="0"></p>
+	<p><a name="about">  About MOST:</a></p>
 
-	<blockquote>The combo boxes boxes and buttons on the Select Solvers dialog can all be accessed 
-	using keyboard shortcuts by using Alt+ and underlined letter.</blockquote> 
+	<blockquote><a href="https://github.com/desmondlun/MOST/blob/master/README.md">View MOST License</a></blockquote>
 
-    	<blockquote>Example: Quadratic (Alt+ Q)</blockquote>
+	<blockquote>MOST source code can be viewed and downloaded <a href="https://github.com/desmondlun/MOST">here</a>.</blockquote>
 
-	<blockquote>If Gurobi is installed and the version is 5.6.2 or better, Gurobi will be selected in the
-	Select Solver dialog for Mixed Integer Linear and Quadratic Solvers. Otherwise, a solver that is included in
-	MOST will be selected.</blockquote>
+	<blockquote>Licenses to software used by MOST that require reproduction of the license text in the distribution are 
+	given below.</blockquote>
 
-	<p><a name="gurobi">  Install Gurobi:</a></p>
-	<blockquote>Gurobi jar file and
-	license can be downloaded at the Gurobi site <a href="http://www.gurobi.com">www.gurobi.com</a>.
-	It is important that the installation instructions given on the Gurobi site for your operating system are 
-	followed, so that the Gurobi native-code library and Gurobi JNI library can be found by MOST.
-	See <a href="#issues">Known Issues</a>.</blockquote>
+	<blockquote>commons-lang3-3.1.jar - <a href="http://www.apache.org/licenses/">View Apache License 2.0</a></blockquote>
+
+	<blockquote>GNU Linear Programming Kit (<a name="glpk">GLPK</a>) - <a href="http://www.gnu.org/software/glpk">http://www.gnu.org/software/glpk</a></blockquote>
+
+  	<blockquote>GLPK for Java - <a href="http://glpk-java.sourceforge.net/">http://glpk-java.sourceforge.net/</a></blockquote>
+
+	<blockquote>InstallSimple - <a href="install_simple_license.html">View InstallSimple License</a></blockquote>
+
+	<blockquote>Interior Point Optimizer (Ipopt) - <a href="http://openopt.org/IPOPT">http://openopt.org/IPOPT</a></blockquote>
+
+	<blockquote>jsbml-0.8-with-dependencies.jar - <a href="http://sbml.org/Software/JSBML/License">View JSBML License</a></blockquote>
+
+	<blockquote>log4j-1.2.17.jar - <a href="http://logging.apache.org/log4j/1.2/license.html">View Log4j License</a></blockquote>
+
+	<blockquote>opencsv-2.3.jar - <a href="http://opencsv.sourceforge.net/license.html">View OpenCSV License</a></blockquote>
+
+	<blockquote>swingx-all-1.6.4.jar - <a href="http://www.java2s.com/Open-Source/Java/Swing-Library/swingx/Catalogswingx.htm">View SwingX License</a></blockquote>
+
+	<blockquote>TableLayout.jar - <a href="https://java.net/projects/tablelayout/sources/svn/content/trunk/builders/example/ComponentArrangerExample.java?rev=103">View The Clearthought Software License, Version 2.0</a></blockquote>
 
 	<br>
-	<p><a name="issues"> Known Issues:</a></p>
 
-	<blockquote>If 32 bit Java is being run, the Gurobi jar file must also be 32 bit.</blockquote>
+	<p><a name="overview"> Overview:</a></p>
 
-	<blockquote><a name="no_license">If your Gurobi license is not valid, the following error will appear:</a></blockquote>
+	<p align="center"><a href="images/MOSTscreenshot.jpg" target="_blank">
+	<img src ="images/MOSTscreenshot.jpg" alt="Image - MOST Screenshot" border="0" height="90%" width="90%"></a></p>
+
+	<blockquote>MOST user interface with title bar, menu bar, toolbar, formula bar, tables, and console (from upper left to lower left), 
+	and tree on right</blockquote>
+
+	<blockquote>The main portion of the MOST interface consists of two spreadsheets: the Reactions 
+	table, and the Metabolites table. Tables can be selected by clicking the labeled tabs under the table scroll pane. <a name="sort">Tables can be sorted by
+	clicking on the table header of the column to be sorted. Additional clicks toggle between ascending and descending order. MOST has an 
+	<a href="edit_menu.html#unsort">Unsort</a> menu item to return to the original loaded order.</blockquote> 
+
+	<blockquote>MOST has a menu bar with <a href="file_menu.html">File</a>, <a href="analysis_menu.html">Analysis</a>, 
+	<a href="edit_menu.html">Edit</a>, <a href="options_menu.html">Options</a>, and Help items, a <a href="toolbar.html">Toolbar</a>, 
+	and <a href="context_menu.html">context (right-click) menus</a>  where editing and analyses functions can be accessed. 
+	MOST has a tree where links to the original loaded model and analyses run on the model are located, and a console where 
+	<a href="analysis_menu.html#fba">FBA</a> or <a href="analysis_menu.html#gdbb">GDBB</a>
+	results are displayed. The console can be expanded by right-clicking in the console and selecting 
+	<a href="context_menu.html#popout">"Pop Out"</a>. 
+	The results of analyses in spreadsheets and in the console can be saved.</blockquote>
+
+	<blockquote><a name="formula">The</a> <a href="context_menu.html#formula">Formula Bar</a> 
+	can be used for editing text in table cells. 
+	Text can also be pasted into the formula bar. In cases where text cannot be pasted directly into table cells due
+	to the text being the wrong  "flavor", pasting into the formula bar will work.</blockquote>
 	
-	<p align="center"><img src ="images/no_license.jpg" alt="Image - No License" border="0"></p>
+	<br>
+	
+	<p><a name="rename">  Renaming Metabolites:</a></p>
+	
+	<blockquote>If a metabolite abbreviation or name is changed and the metabolite participates in
+	one or more reactions, all reactions that contain the metabolite 
+	will be updated for the new name. A warning will be displayed before these updates are made.
+	Click "OK" to rename metabolite and update reactions, otherwise click "Cancel".</blockquote>
 
-	<blockquote>Your Gurobi license needs to be updated or refreshed.</blockquote>
+	<p align="center"><a href="images/rename1.jpg" target="_blank">
+	<img src ="images/rename1.jpg" alt="Image - Rename 1" border="0" height="90%" width="90%"></a></p>
 
 	</td>
-	</tr>
 	</table>
-
 </body>
 </html>
