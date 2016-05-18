@@ -441,7 +441,8 @@ public class PathwaysFrame extends JApplet {
 							if (info.equals(compartmentLabel)) {
 								info += "\n" + "Compartment: " + LocalConfig.getInstance().getSelectedCompartmentName();
 							}
-							String cleaned = cleanupNodeInfo(info);
+							//String cleaned = cleanupNodeInfo(info);
+							String cleaned = cleanupNodeInfo(removedDatabaseId(nodeName(info)));
 							setClipboardContents(cleaned);
 						}
 					});
@@ -520,7 +521,8 @@ public class PathwaysFrame extends JApplet {
 		// based on http://stackoverflow.com/questions/31940238/settooltip-in-jung-for-several-vertices
 		vv.setVertexToolTipTransformer(new Transformer<String,String>() {                                              
 			public String transform(String v) {
-				return nodeName(v);                                                    
+				//return nodeName(v);
+				return removedDatabaseId(nodeName(v));
 			}});                                
 		// no tooltips on edges
 		vv.setEdgeToolTipTransformer(new Transformer<Number,String>() {                                              
@@ -1003,7 +1005,8 @@ public class PathwaysFrame extends JApplet {
 		if (getNodeInformationDialog() != null) {
 			getNodeInformationDialog().dispose();
 		}
-		NodeInformationDialog frame = new NodeInformationDialog(nodeName(arg0.toString()));
+		//NodeInformationDialog frame = new NodeInformationDialog(nodeName(arg0.toString()));
+		NodeInformationDialog frame = new NodeInformationDialog(removedDatabaseId(nodeName(arg0.toString())));
 		setNodeInformationDialog(frame);
 
 		frame.pack();
@@ -1019,10 +1022,10 @@ public class PathwaysFrame extends JApplet {
 	 */
 	public String nodeName(String name) {
 		if (oldNameNewNameMap.containsKey(name)) {
-			return removedDatabaseId(oldNameNewNameMap.get(name));
-			//return oldNameNewNameMap.get(name);
+			//return removedDatabaseId(oldNameNewNameMap.get(name));
+			return oldNameNewNameMap.get(name);
 		}
-		//return removedDatabaseId(name);
+		
 		return name;
 
 	}
@@ -1995,7 +1998,7 @@ public class PathwaysFrame extends JApplet {
 			info = info.replace(GraphicalInterfaceConstants.HTML_NOT_REVERSIBLE_ARROW, GraphicalInterfaceConstants.NOT_REVERSIBLE_ARROWS[1]);
 		}
 		
-		return removedDatabaseId(info);
+		return removedDatabaseId(nodeName(info));
 		
 	}
 	

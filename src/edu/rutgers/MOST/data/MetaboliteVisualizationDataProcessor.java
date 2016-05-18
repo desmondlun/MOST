@@ -19,6 +19,16 @@ public class MetaboliteVisualizationDataProcessor {
 						!isBoundaryMetabolite(metabolites.get(i))) {
 					String metabId = Integer.toString(metabolites.get(i).getId());
 					String keggId = metabolites.get(i).getKeggId();
+					if (keggId != null && keggId.length() > 0) {
+						if (keggId.contains("|")) {
+							keggId = keggId.substring(0, keggId.indexOf("|"));
+							//System.out.println(keggId);
+						}
+						if (keggId.contains(",")) {
+							keggId = keggId.substring(0, keggId.indexOf(","));
+							//System.out.println(keggId);
+						}
+					}
 					// some modesl have strings such as "NA" in the KEGG id column. if KEGG doesn't start with
 					// C or G, it is not valid and same as a blank entry. therefore use CHEBI id if exists
 					if (keggId == null || keggId.length() == 0 || (!keggId.startsWith("C") && (!keggId.startsWith("G")))) {
@@ -34,14 +44,6 @@ public class MetaboliteVisualizationDataProcessor {
 						}
 					}
 					if (keggId != null && keggId.length() > 0) {
-						if (keggId.contains("|")) {
-							keggId = keggId.substring(0, keggId.indexOf("|"));
-							//System.out.println(keggId);
-						}
-						if (keggId.contains(",")) {
-							keggId = keggId.substring(0, keggId.indexOf(","));
-							//System.out.println(keggId);
-						}
 						// map used to match metabolite ids from model with KEGG ids
 						LocalConfig.getInstance().getMetaboliteIdKeggIdMap().put(metabId, keggId);
 						if (LocalConfig.getInstance().getKeggIdMetaboliteMap().containsKey(keggId)) {

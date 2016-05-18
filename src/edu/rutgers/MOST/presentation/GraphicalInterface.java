@@ -13286,16 +13286,9 @@ public class GraphicalInterface extends JFrame {
 	
 	public void createFluxLevelsDialog() {
 		FluxLevelsDialog frame = new FluxLevelsDialog();
-//		String maxFlux = Double.toString(LocalConfig.getInstance().getMaxFlux());
-//		String secondaryMaxFlux = Double.toString(LocalConfig.getInstance().getSecondaryMaxFlux());
 		Utilities u = new Utilities();
 		
-		//DecimalFormat formatter = PathwaysFrameConstants.FLUX_FORMATTER;
 		DecimalFormat sciFormatter = PathwaysFrameConstants.SCIENTIFIC_FLUX_FORMATTER;
-//		maxFlux = u.formattedNumber(maxFlux, formatter, sciFormatter, 
-//			PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT);
-//		secondaryMaxFlux = u.formattedNumber(secondaryMaxFlux, formatter, sciFormatter, 
-//			PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT);
 		String secondaryMaxFlux = u.roundToSignificantFigures(LocalConfig.getInstance().getSecondaryMaxFlux(), 
 			PathwaysFrameConstants.FLUX_LEGEND_SIGNIFICANT_FIGURES, sciFormatter, PathwaysFrameConstants.MIN_DECIMAL_FORMAT, PathwaysFrameConstants.MAX_DECIMAL_FORMAT);
 		String maxFlux = u.roundToSignificantFigures(PathwaysFrameConstants.INFINITE_FLUX_RATIO*LocalConfig.getInstance().getMaxFlux(), 
@@ -13305,7 +13298,6 @@ public class GraphicalInterface extends JFrame {
 		frame.secondaryMaxFluxField.setText(secondaryMaxFlux);
 		setFluxLevelsDialog(frame);
 		frame.setIconImages(icons);
-		//frame.setSize(550, 270);
 		frame.pack();
 		frame.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		frame.setLocationRelativeTo(null);

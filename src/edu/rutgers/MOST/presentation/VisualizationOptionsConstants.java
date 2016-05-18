@@ -11,7 +11,7 @@ public class VisualizationOptionsConstants {
 	public static final String IGNORE_WATER_FOR_REACTION_MATCHING_NAME = "Ignore Water for Reaction Matching";
 	public static final String SHOW_VISUALIZATION_REPORT = "Show Visualization Report";
 	
-	public static final boolean GRAPH_MISSING_METABOLITES_DEFAULT = true;
+	public static final boolean GRAPH_MISSING_METABOLITES_DEFAULT = false;
 	
 	public static final boolean SCALE_EDGE_THICKNESS_DEFAULT = true;
 	
