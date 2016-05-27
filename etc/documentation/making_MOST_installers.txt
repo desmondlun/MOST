@@ -10,6 +10,7 @@ Note if Project is loaded through git into Eclipse, you will not be able to make
 
 3. Set GraphicalInterfaceConstants.DEBUG_MODE = false in code to used for build only. 
 GraphicalInterfaceConstants.DEBUG_MODE should remain true in the GitHub repository.
+Set PathwaysFrameConstants.HIDE_DATABASE_IDS = true;
 
 4. Right click on the MOST project folder in Eclipse and select
 Export -> Java -> Runnable Jar. Select "Extract required libraries into generated jar.

@@ -656,13 +656,13 @@ public class PathwaysFrame extends JApplet {
 				width = PathwaysFrameConstants.LEGEND_LABEL_NODE_WIDTH;
 				height = PathwaysFrameConstants.LEGEND_LABEL_NODE_HEIGHT;
 			} else if (mainMetabolites.contains(name)) {
-				if (!noBorderList.contains(name)) {
-					width = PathwaysFrameConstants.METABOLITE_BORDER_NODE_WIDTH;
-					height = PathwaysFrameConstants.METABOLITE_BORDER_NODE_HEIGHT;
-				} else {
+//				if (!noBorderList.contains(name)) {
+//					width = PathwaysFrameConstants.METABOLITE_BORDER_NODE_WIDTH;
+//					height = PathwaysFrameConstants.METABOLITE_BORDER_NODE_HEIGHT;
+//				} else {
 					width = PathwaysFrameConstants.METABOLITE_NO_BORDER_NODE_WIDTH;
 					height = PathwaysFrameConstants.METABOLITE_NO_BORDER_NODE_HEIGHT;
-				}
+//				}
 			} else if (smallMainMetabolites.contains(name)) {	
 				width = PathwaysFrameConstants.SMALL_MAIN_METABOLITE_NODE_WIDTH;
 				height = PathwaysFrameConstants.SMALL_MAIN_METABOLITE_NODE_HEIGHT;
@@ -752,17 +752,18 @@ public class PathwaysFrame extends JApplet {
 						graphics.setColor(PathwaysFrameConstants.REACTION_KO_FONT_COLOR);
 					}
 					alignCenterString(graphics, name, width, PathwaysFrameConstants.REACTION_NODE_XPOS, PathwaysFrameConstants.REACTION_NODE_YPOS, PathwaysFrameConstants.REACTION_NODE_FONT_SIZE);
+					drawBorder(graphics, width, height, PathwaysFrameConstants.REACTION_BORDER_WIDTH);
 				}
 			}
-			if (mainMetabolites.contains(name) || smallMainMetabolites.contains(name)) {
-				if (!noBorderList.contains(name)) {
-					drawBorder(graphics, width, height, PathwaysFrameConstants.METABOLITE_BORDER_WIDTH);
-				}
-			} else if (sideMetabolites.contains(name)) {
-				if (!noBorderList.contains(name)) {
-					drawBorder(graphics, width, height, PathwaysFrameConstants.SIDE_METABOLITE_BORDER_WIDTH);
-				}
-			}
+//			if (mainMetabolites.contains(name) || smallMainMetabolites.contains(name)) {
+//				if (!noBorderList.contains(name)) {
+//					drawBorder(graphics, width, height, PathwaysFrameConstants.METABOLITE_BORDER_WIDTH);
+//				}
+//			} else if (sideMetabolites.contains(name)) {
+//				if (!noBorderList.contains(name)) {
+//					drawBorder(graphics, width, height, PathwaysFrameConstants.SIDE_METABOLITE_BORDER_WIDTH);
+//				}
+//			}
 			Icon icon = new ImageIcon(bufferedImage);
 			iconMap.put(name, icon);                                                                                                                                        
 		} 
@@ -1031,10 +1032,13 @@ public class PathwaysFrame extends JApplet {
 	}
 	
 	public String removedDatabaseId(String name) {
-		if (name.contains("Metabolite Database Id: ")) {
-			name = name.substring(0, name.indexOf("Metabolite Database Id: "));
-		} else if (name.contains("Reaction Database Id: ")) {
-			name = name.substring(0, name.indexOf("Reaction Database Id: "));
+		// hide database ids for distribution, unhide if editing node positions
+		if (PathwaysFrameConstants.HIDE_DATABASE_IDS) {
+			if (name.contains("Metabolite Database Id: ")) {
+				name = name.substring(0, name.indexOf("Metabolite Database Id: "));
+			} else if (name.contains("Reaction Database Id: ")) {
+				name = name.substring(0, name.indexOf("Reaction Database Id: "));
+			}
 		}
 		
 		return name;
@@ -1537,30 +1541,34 @@ public class PathwaysFrame extends JApplet {
 
 				// set border color, borderless is node background color
 				Color stroke = Color.BLACK;
-				if (noBorderList.contains(nodeNameList.get(j)) || reactions.contains(nodeNameList.get(j)) ||
+				if (noBorderList.contains(nodeNameList.get(j)) ||
 					fluxRangeNames.contains(nodeNameList.get(j))) {
 					stroke = PathwaysFrameConstants.NODE_BACKGROUND_DETAULT_COLOR;
 				} else if (pathwayNames.contains(nodeNameList.get(j))) {
 					stroke = PathwaysFrameConstants.PATHWAY_NAME_COLOR;
 				} else {
-					if (mainMetabolites.contains(nodeNameList.get(j))) {
-						if (!foundMetabolitesList.contains(nodeNameList.get(j))) {
-							stroke = PathwaysFrameConstants.METABOLITE_NOT_FOUND_COLOR;
-						}
-					} else if (smallMainMetabolites.contains(nodeNameList.get(j))) {
-						if (!foundMetabolitesList.contains(nodeNameList.get(j))) {
-							stroke = PathwaysFrameConstants.METABOLITE_NOT_FOUND_COLOR;
-						}
-					} else if (sideMetabolites.contains(nodeNameList.get(j))) {
-						if (!foundMetabolitesList.contains(nodeNameList.get(j))) {
-							stroke = PathwaysFrameConstants.METABOLITE_NOT_FOUND_COLOR;
-						}
-						if (cofactors.contains(nodeNameList.get(j))) {
-							stroke = PathwaysFrameConstants.COFACTOR_COLOR;
-							if (!foundMetabolitesList.contains(nodeNameList.get(j))) {
-								stroke = PathwaysFrameConstants.COFACTOR_NOT_FOUND_COLOR;
-							}
-						}
+					if (mainMetabolites.contains(nodeNameList.get(j)) || 
+						smallMainMetabolites.contains(nodeNameList.get(j)) ||
+						sideMetabolites.contains(nodeNameList.get(j))) {
+						stroke = PathwaysFrameConstants.NODE_BACKGROUND_DETAULT_COLOR;
+//					if (mainMetabolites.contains(nodeNameList.get(j))) {
+//						if (!foundMetabolitesList.contains(nodeNameList.get(j))) {
+//							stroke = PathwaysFrameConstants.METABOLITE_NOT_FOUND_COLOR;
+//						}
+//					} else if (smallMainMetabolites.contains(nodeNameList.get(j))) {
+//						if (!foundMetabolitesList.contains(nodeNameList.get(j))) {
+//							stroke = PathwaysFrameConstants.METABOLITE_NOT_FOUND_COLOR;
+//						}
+//					} else if (sideMetabolites.contains(nodeNameList.get(j))) {
+//						if (!foundMetabolitesList.contains(nodeNameList.get(j))) {
+//							stroke = PathwaysFrameConstants.METABOLITE_NOT_FOUND_COLOR;
+//						}
+//						if (cofactors.contains(nodeNameList.get(j))) {
+//							stroke = PathwaysFrameConstants.COFACTOR_COLOR;
+//							if (!foundMetabolitesList.contains(nodeNameList.get(j))) {
+//								stroke = PathwaysFrameConstants.COFACTOR_NOT_FOUND_COLOR;
+//							}
+//						}
 					} else if (reactions.contains(nodeNameList.get(j))) {
 						stroke = PathwaysFrameConstants.REACTION_NODE_DETAULT_FONT_COLOR;
 						if (!foundReactionsList.contains(nodeNameList.get(j))) {
@@ -1584,13 +1592,13 @@ public class PathwaysFrame extends JApplet {
 					height = PathwaysFrameConstants.LEGEND_LABEL_NODE_HEIGHT;
 					strokeWidth = 0;	
 				} else if (mainMetabolites.contains(nodeNameList.get(j))) {
-					if (!noBorderList.contains(nodeNameList.get(j))) {
-						width = PathwaysFrameConstants.METABOLITE_BORDER_NODE_WIDTH;
-						height = PathwaysFrameConstants.METABOLITE_BORDER_NODE_HEIGHT;
-					} else {
+//					if (!noBorderList.contains(nodeNameList.get(j))) {
+//						width = PathwaysFrameConstants.METABOLITE_BORDER_NODE_WIDTH;
+//						height = PathwaysFrameConstants.METABOLITE_BORDER_NODE_HEIGHT;
+//					} else {
 						width = PathwaysFrameConstants.METABOLITE_NO_BORDER_NODE_WIDTH;
 						height = PathwaysFrameConstants.METABOLITE_NO_BORDER_NODE_HEIGHT;
-					}
+//					}
 				} else if (smallMainMetabolites.contains(nodeNameList.get(j))) {	
 					width = PathwaysFrameConstants.SMALL_MAIN_METABOLITE_NODE_WIDTH;
 					height = PathwaysFrameConstants.SMALL_MAIN_METABOLITE_NODE_HEIGHT;
@@ -1635,7 +1643,7 @@ public class PathwaysFrame extends JApplet {
 						color = PathwaysFrameConstants.PATHWAY_NAME_NOT_FOUND_COLOR;
 					}
 					xOffset = startX(getGraphics(), displayString(displayName), (int) (width*0.45));
-					yOffset = PathwaysFrameConstants.PATHWAY_NAME_NODE_YPOS;
+					yOffset = PathwaysFrameConstants.PATHWAY_NAME_NODE_YPOS_SVG;
 				} else if (fluxRangeNames.contains(nodeNameList.get(j))) {
 					xOffset = PathwaysFrameConstants.FLUX_RANGE_NODE_XPOS;
 					yOffset = PathwaysFrameConstants.FLUX_RANGE_NODE_YPOS;
@@ -1688,7 +1696,7 @@ public class PathwaysFrame extends JApplet {
 							color = PathwaysFrameConstants.REACTION_KO_FONT_COLOR;
 						}
 						xOffset = startX(getGraphics(), displayString(displayName), (int) (width*0.5));
-						yOffset = PathwaysFrameConstants.REACTION_NODE_YPOS;
+						yOffset = PathwaysFrameConstants.REACTION_NODE_YPOS_SVG;
 					}
 				}
 				svgText.setX(Double.parseDouble(nodeNamePositionMap.get(nodeNameList.get(j))[0]) + xOffset - width/2);

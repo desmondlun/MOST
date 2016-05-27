@@ -118,6 +118,7 @@ public class PathwaysFrameConstants {
 	// positions to start text in node
 	public static final int PATHWAY_NAME_NODE_XPOS = 0;
 	public static final int PATHWAY_NAME_NODE_YPOS = 34;
+	public static final int PATHWAY_NAME_NODE_YPOS_SVG = 27;
 	public static final int FLUX_RANGE_NODE_XPOS = 20;
 	public static final int FLUX_RANGE_NODE_YPOS = 34;
 	public static final int COMPARTMENT_LABEL_NODE_XPOS = 30;
@@ -131,12 +132,14 @@ public class PathwaysFrameConstants {
 	public static final int SIDE_METABOLITE_NODE_XPOS = 0;
 	public static final int SIDE_METABOLITE_NODE_YPOS = 13;
 	public static final int REACTION_NODE_XPOS = 0;
-	public static final int REACTION_NODE_YPOS = 23;
+	public static final int REACTION_NODE_YPOS = 26;
+	public static final int REACTION_NODE_YPOS_SVG = 24;
 	public static final int SIDE_NODE_XPOS = 0;
 	public static final int SIDE_NODE_YPOS = 23;
 	
 	public static final int PATHWAY_NAME_BORDER_WIDTH = 4;
 	public static final int METABOLITE_BORDER_WIDTH = 4;
+	public static final int REACTION_BORDER_WIDTH = 4;
 	public static final int SIDE_METABOLITE_BORDER_WIDTH = 2;
 	
 	public static final double DEFAULT_EDGE_WIDTH = 1.0; 
@@ -262,5 +265,7 @@ public class PathwaysFrameConstants {
 	public static final double MIN_DECIMAL_FORMAT = 0.01;
 	public static final double MAX_DECIMAL_FORMAT = 1000;
 	public static final int FLUX_LEGEND_SIGNIFICANT_FIGURES = 3;
+	
+	public static final boolean HIDE_DATABASE_IDS = true;
 	
 }

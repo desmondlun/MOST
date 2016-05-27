@@ -247,9 +247,9 @@ public class VisualizationDataProcessor {
 					}
 				}
 				if (drawMetabolite) {
-					if (pathway.getMetabolitesData().get(Integer.toString(j)).getBorder().equals("0")) {
-						noBorderList.add(pathway.getMetabolitesData().get(Integer.toString(j)).getName());
-					}
+//					if (pathway.getMetabolitesData().get(Integer.toString(j)).getBorder().equals("0")) {
+//						noBorderList.add(pathway.getMetabolitesData().get(Integer.toString(j)).getName());
+//					}
 					classifyMetabolite(type, metabName, keggId);
 					double x = 0;
 					double y = 0;
@@ -633,8 +633,11 @@ public class VisualizationDataProcessor {
 				PathwaysFrameConstants.WIDTH_PREFIX + Double.toString(PathwaysFrameConstants.ABOVE_SECONDARY_MAX_FLUX_WIDTH));
 			y += PathwaysFrameConstants.FLUX_RANGE_START_Y_INCREMENT;
 			String maxFluxLimitEntry = "> " + maxFluxLimit;
-			updateCollectionsForFluxRange(maxFluxLimitEntry, Double.toString(x), Double.toString(y), PathwaysFrameConstants.INFINITE_FLUX_WIDTH,
-				PathwaysFrameConstants.WIDTH_PREFIX + Double.toString(PathwaysFrameConstants.INFINITE_FLUX_WIDTH));
+			// prevent > Infinity from appearing in key!!  
+			if (!maxFluxLimit.equals(GraphicalInterfaceConstants.VALID_INFINITY_ENTRY)) {
+				updateCollectionsForFluxRange(maxFluxLimitEntry, Double.toString(x), Double.toString(y), PathwaysFrameConstants.INFINITE_FLUX_WIDTH,
+					PathwaysFrameConstants.WIDTH_PREFIX + Double.toString(PathwaysFrameConstants.INFINITE_FLUX_WIDTH));
+			}
 		}
 	}
 	
