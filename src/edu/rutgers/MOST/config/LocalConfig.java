@@ -1284,6 +1284,18 @@ public class LocalConfig {
 	public void setChebiIdKeggIdMap(Map<String, String> chebiIdKeggIdMap) {
 		this.chebiIdKeggIdMap = chebiIdKeggIdMap;
 	}
+	
+	private Map<String, String> modelSEEDKeggIdMap;
+
+	public Map< String, String > getModelSEEDKeggIdMap()
+	{
+		return modelSEEDKeggIdMap;
+	}
+
+	public void setModelSEEDKeggIdMap( Map< String, String > modelSEEDKeggIdMap )
+	{
+		this.modelSEEDKeggIdMap = modelSEEDKeggIdMap;
+	}
 
 	private Map<String, PathwayReactionData> modelKeggEquationMap;
 

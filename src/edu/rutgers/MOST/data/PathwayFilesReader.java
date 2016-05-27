@@ -788,6 +788,8 @@ public class PathwayFilesReader {
 		reader.readSideSpeciesFile(sideSpecies);
 		reader.readMetaboliteSubstitutionsFile(metaboliteSubstitutions);
 		reader.readChebiIdsKeggIdsFile(chebiIdsKeggIds);
+		KEGGIdModelSEEDReader seedReader = new KEGGIdModelSEEDReader();
+		seedReader.readFile();
 	}
 	
 	/**
