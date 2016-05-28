@@ -35,6 +35,7 @@ import edu.rutgers.MOST.data.ECNumberMapCreator;
 import edu.rutgers.MOST.data.GDBBModel;
 import edu.rutgers.MOST.data.JSBMLValidator;
 import edu.rutgers.MOST.data.JSBMLWriter;
+import edu.rutgers.MOST.data.KEGGIdModelSEEDReader;
 import edu.rutgers.MOST.data.KEGGIdReactionMapCreator;
 import edu.rutgers.MOST.data.MetabolicPathway;
 import edu.rutgers.MOST.data.MetaboliteFactory;
@@ -13560,8 +13561,14 @@ public class GraphicalInterface extends JFrame {
 				LocalConfig.getInstance().getChebiIdColumn() > -1) {
 			showMissingItemMessage = false;
 		} else {
-			missingItem = "KEGG Ids or CHEBI Ids";
-			missingData = "metabolites";
+			KEGGIdModelSEEDReader seedReader = new KEGGIdModelSEEDReader();
+			seedReader.readFile();
+			if (modelSeedIdsPresent(f)) {
+				showMissingItemMessage = false;
+			} else {
+				missingItem = "KEGG Ids or CHEBI Ids";
+				missingData = "metabolites";
+			}
 		}
 		
 		if (showMissingItemMessage) {
@@ -13578,6 +13585,30 @@ public class GraphicalInterface extends JFrame {
 			found = true;
 		}
 		return found;
+	}
+	
+	public boolean modelSeedIdsPresent(MetaboliteFactory f) {
+		Vector<SBMLMetabolite> allMetabolites = f.getAllMetabolites();
+		boolean modelSeedIdsPresent = false;
+		Utilities u = new Utilities();
+		for (int i = 0; i < allMetabolites.size(); i++) {
+			String abbr = u.cleanedUpModelSeedMetaboliteAbbreviation(allMetabolites.get(i).getMetaboliteAbbreviation());
+//			if (abbr.startsWith(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX) && abbr.length() > 2) {
+//				abbr = abbr.substring(2);
+//				System.out.println("2 " + abbr);
+//			}
+//			if (abbr.contains("_")) {
+//				abbr = abbr.substring(0, abbr.indexOf("_"));
+//				System.out.println("3 " + abbr);
+//			}
+			
+			if (LocalConfig.getInstance().getModelSEEDKeggIdMap().containsKey(abbr)) {
+				modelSeedIdsPresent = true;
+			}
+		}
+		
+		return modelSeedIdsPresent;
+		
 	}
 	
 	public void categorizeTransportReactions() {

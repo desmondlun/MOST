@@ -491,5 +491,26 @@ public class Utilities {
 		}
 		return item;
 	}
+	
+	/**
+	 * ModelSEED metabolite abbreviations usually end with "_" + compartment suffix.
+	 * Models may have "M_" prefix in front of ModelSEED id
+	 * Returns metabolite abbreviation with these two items removed
+	 * @param abbr
+	 * @return
+	 */
+	public String cleanedUpModelSeedMetaboliteAbbreviation(String abbr) {
+		if (abbr.startsWith(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX) && abbr.length() > 2) {
+			abbr = abbr.substring(2);
+			//System.out.println("1 " + abbr);
+		}
+		if (abbr.contains("_")) {
+			abbr = abbr.substring(0, abbr.indexOf("_"));
+			//System.out.println("2 " + abbr);
+		}
+		
+		return abbr;
+		
+	}
 
 }

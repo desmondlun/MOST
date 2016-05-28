@@ -29,10 +29,10 @@ public class SBMLConstants {
 	public static final String METABOLITE_ABBREVIATION_PREFIX = "M_";
 	public static final String REACTION_ABBREVIATION_PREFIX = "R_";
 	public static final String[] METABOLITE_ABBREVIATION_PREFIXES =
-		{"M_", "m_", "S_", "s_", "_"
+		{"M_", "m_", "S_", "s_", "_", "cpd"
 		};
 	public static final String[] REACTION_ABBREVIATION_PREFIXES =
-		{"R_", "r_", "_"
+		{"R_", "r_", "_", "rxn"
 		};
 	
 	// Illegal characters
