@@ -1624,6 +1624,7 @@ public class GraphicalInterface extends JFrame {
 		LocalConfig.getInstance().setKeggReactionIdColumnName("");
 
 		pathwayFilesRead = false;
+		LocalConfig.getInstance().setModelSeedIdsFound(false);
 
 		DynamicTreePanel.getTreePanel().deleteItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
@@ -13565,6 +13566,7 @@ public class GraphicalInterface extends JFrame {
 			seedReader.readFile();
 			if (modelSeedIdsPresent(f)) {
 				showMissingItemMessage = false;
+				LocalConfig.getInstance().setModelSeedIdsFound(true);
 			} else {
 				missingItem = "KEGG Ids or CHEBI Ids";
 				missingData = "metabolites";

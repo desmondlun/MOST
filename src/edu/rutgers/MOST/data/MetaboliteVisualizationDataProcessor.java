@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import edu.rutgers.MOST.config.LocalConfig;
+import edu.rutgers.MOST.presentation.Utilities;
 
 public class MetaboliteVisualizationDataProcessor {
 
 	public void processMetabolitesData() {
 		MetaboliteFactory f = new MetaboliteFactory("SBML");
+		Utilities u = new Utilities();
 		if (LocalConfig.getInstance().getKeggMetaboliteIdColumn() > -1 || 
-				LocalConfig.getInstance().getChebiIdColumn() > -1) {
+				LocalConfig.getInstance().getChebiIdColumn() > -1 ||
+				LocalConfig.getInstance().isModelSeedIdsFound()) {
 			Vector<SBMLMetabolite> metabolites = f.getAllMetabolites();
 			for (int i = 0; i < metabolites.size(); i++) {
 				// if metabolite abbreviation is not empty and KEGG id is not empty
@@ -40,6 +43,12 @@ public class MetaboliteVisualizationDataProcessor {
 //									System.out.println(LocalConfig.getInstance().getChebiIdKeggIdMap().get(chebiId));
 									keggId = LocalConfig.getInstance().getChebiIdKeggIdMap().get(chebiId);
 								}
+							}
+						}
+						if (LocalConfig.getInstance().isModelSeedIdsFound()) {
+							String abbr = u.cleanedUpModelSeedMetaboliteAbbreviation(metabolites.get(i).getMetaboliteAbbreviation());
+							if (LocalConfig.getInstance().getModelSEEDKeggIdMap().containsKey(abbr)) {
+								keggId = LocalConfig.getInstance().getModelSEEDKeggIdMap().get(abbr);
 							}
 						}
 					}

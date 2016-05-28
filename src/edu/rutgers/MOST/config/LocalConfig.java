@@ -1296,6 +1296,18 @@ public class LocalConfig {
 	{
 		this.modelSEEDKeggIdMap = modelSEEDKeggIdMap;
 	}
+	
+	private boolean modelSeedIdsFound;
+
+	public boolean isModelSeedIdsFound()
+	{
+		return modelSeedIdsFound;
+	}
+
+	public void setModelSeedIdsFound( boolean modelSeedIdsFound )
+	{
+		this.modelSeedIdsFound = modelSeedIdsFound;
+	}
 
 	private Map<String, PathwayReactionData> modelKeggEquationMap;
 

@@ -26,10 +26,12 @@ public class SBMLConstants {
 	public static final String RENAME_COLUMN_MESSAGE = "Do you wish to rename a column? If \"No\", column names will be ";
 	public static final String DUPLICATE_COLUMN_SUFFIX = "_1";
 	
+	public static final String MODEL_SEED_METABOLITE_PREFIX = "cpd";
+	
 	public static final String METABOLITE_ABBREVIATION_PREFIX = "M_";
 	public static final String REACTION_ABBREVIATION_PREFIX = "R_";
 	public static final String[] METABOLITE_ABBREVIATION_PREFIXES =
-		{"M_", "m_", "S_", "s_", "_", "cpd"
+		{"M_", "m_", "S_", "s_", "_", MODEL_SEED_METABOLITE_PREFIX
 		};
 	public static final String[] REACTION_ABBREVIATION_PREFIXES =
 		{"R_", "r_", "_", "rxn"

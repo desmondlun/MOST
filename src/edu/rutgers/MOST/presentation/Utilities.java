@@ -350,13 +350,18 @@ public class Utilities {
 	}
 	
 	public boolean hasMetabolitePrefix(String metabAbbr) {
+		boolean hasPrefix = false;
 		for (int i = 0; i < SBMLConstants.METABOLITE_ABBREVIATION_PREFIXES.length; i++) {
 			if (metabAbbr.startsWith(SBMLConstants.METABOLITE_ABBREVIATION_PREFIXES[i])) {
-				return true;
+				hasPrefix = true;
 			}
 		}
+		// don't remove prefix if ModelSEED prefix
+		if (metabAbbr.startsWith(SBMLConstants.MODEL_SEED_METABOLITE_PREFIX)) {
+			hasPrefix = false;
+		}
 		
-		return false;
+		return hasPrefix;
 		
 	}
 	
