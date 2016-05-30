@@ -15,8 +15,9 @@ import edu.rutgers.MOST.config.LocalConfig;
 public class KEGGIdModelSEEDReader {  
 
 	public void readFile() {
-		// file from http://sb.nhri.org.tw/GEMSiRV/en/Manual
-		File file = new File("etc/visualization/met_KEEGtoSEED-08022456.TXT");
+		// original files from http://sb.nhri.org.tw/GEMSiRV/en/Manual and 
+		// http://dx.doi.org/10.1186/gb-2009-10-6-r69
+		File file = new File("etc/visualization/KEEGtoSEED.txt");
 		//reading file line by line in Java using BufferedReader      
 		FileInputStream fis = null;
 		BufferedReader reader = null;

@@ -13594,16 +13594,7 @@ public class GraphicalInterface extends JFrame {
 		boolean modelSeedIdsPresent = false;
 		Utilities u = new Utilities();
 		for (int i = 0; i < allMetabolites.size(); i++) {
-			String abbr = u.cleanedUpModelSeedMetaboliteAbbreviation(allMetabolites.get(i).getMetaboliteAbbreviation());
-//			if (abbr.startsWith(SBMLConstants.METABOLITE_ABBREVIATION_PREFIX) && abbr.length() > 2) {
-//				abbr = abbr.substring(2);
-//				System.out.println("2 " + abbr);
-//			}
-//			if (abbr.contains("_")) {
-//				abbr = abbr.substring(0, abbr.indexOf("_"));
-//				System.out.println("3 " + abbr);
-//			}
-			
+			String abbr = u.cleanedUpModelSeedMetaboliteAbbreviation(allMetabolites.get(i).getMetaboliteAbbreviation());		
 			if (LocalConfig.getInstance().getModelSEEDKeggIdMap().containsKey(abbr)) {
 				modelSeedIdsPresent = true;
 			}
