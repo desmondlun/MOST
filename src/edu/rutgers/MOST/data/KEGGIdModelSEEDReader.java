@@ -34,17 +34,12 @@ public class KEGGIdModelSEEDReader {
 				line = reader.readLine();
 				line = line.trim();
 				String[] splitted = line.split("\\s+");
-//				for (int i = 0; i < splitted.length; i++) {
-//					System.out.println(splitted[i]);
-//				}
 				if (splitted.length > 1 && splitted[1] != null && splitted[1].length() > 0 &&
 					splitted[0] != null && splitted[0].length() > 0) {
-					// only one duplicate ModelSEED id in file - cpd00027
-					// corresponds to C00031 D-Glucose, C00267 alpha-D-Glucose
-//					if (modelSEEDKeggIdMap.containsKey(splitted[1])) {
-//						System.out.println("c " + splitted[1]);
+//					if (modelSEEDKeggIdMap.containsKey(splitted[1].trim())) {
+//						System.out.println("c " + splitted[1].trim());
 //					} 
-					modelSEEDKeggIdMap.put(splitted[1], splitted[0]);
+					modelSEEDKeggIdMap.put(splitted[1].trim(), splitted[0].trim());
 				}
 			}          
 
@@ -59,7 +54,6 @@ public class KEGGIdModelSEEDReader {
 				reader.close();
 				fis.close();
 				//writer.close();
-				modelSEEDKeggIdMap.put("cpd00027", "C00031");
 				LocalConfig.getInstance().setModelSEEDKeggIdMap(modelSEEDKeggIdMap);
 				//System.out.println(LocalConfig.getInstance().getModelSEEDKeggIdMap());
 			} catch (IOException ex) {
