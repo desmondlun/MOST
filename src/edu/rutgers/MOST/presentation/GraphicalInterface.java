@@ -13557,7 +13557,6 @@ public class GraphicalInterface extends JFrame {
 			LocalConfig.getInstance().setKeggMetaboliteIdColumn(f.locateKeggIdColumn());
 			LocalConfig.getInstance().setChebiIdColumn(f.locateChebiIdColumn());
 		}
-		// if KEGG id or CHEBI id still not found, show prompt
 		if (LocalConfig.getInstance().getKeggMetaboliteIdColumn() > -1 || 
 				LocalConfig.getInstance().getChebiIdColumn() > -1) {
 			showMissingItemMessage = false;
@@ -13567,6 +13566,8 @@ public class GraphicalInterface extends JFrame {
 			if (modelSeedIdsPresent(f)) {
 				showMissingItemMessage = false;
 				LocalConfig.getInstance().setModelSeedIdsFound(true);
+				// if KEGG id or CHEBI id still not found and metabolite abbreviations, 
+				// are not ModelSEED format, show prompt
 			} else {
 				missingItem = "KEGG Ids or CHEBI Ids";
 				missingData = "metabolites";
