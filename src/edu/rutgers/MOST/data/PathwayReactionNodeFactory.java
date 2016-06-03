@@ -174,7 +174,8 @@ public class PathwayReactionNodeFactory {
 	 * @return
 	 */
 	public boolean speciesMatch(ArrayList<String> dataIds, Map<String, PathwayMetaboliteData> keggIdsDataMap, ArrayList<String> modelIds) {
-//		if (dataIds.contains("C00111") && modelIds.contains("C00111")) {
+//		if ((dataIds.contains("C00013") && (modelIds.contains("C00002") || modelIds.contains("C00044"))) ||
+//			((dataIds.contains("C00536") && (modelIds.contains("C00008") || modelIds.contains("C00035"))))) {
 //			System.out.println("data " + dataIds);
 //			System.out.println("model " + modelIds);
 //		}
@@ -261,8 +262,9 @@ public class PathwayReactionNodeFactory {
 				model1.remove(model1.indexOf(ki));
 				data1.remove(data1.indexOf(ki));
 				// add any removed keys in alternate or substitution to map
-				if (LocalConfig.getInstance().getAlternateMetabolitesMap().containsKey(ki) ||
-						LocalConfig.getInstance().getMetaboliteSubstitutionsMap().containsKey(ki)) {
+//				if (LocalConfig.getInstance().getAlternateMetabolitesMap().containsKey(ki) ||
+//						LocalConfig.getInstance().getMetaboliteSubstitutionsMap().containsKey(ki)) {
+				if (LocalConfig.getInstance().getMetaboliteSubstitutionsMap().containsKey(ki)) {
 					if (keggIdsDataMap.containsKey(ki)) {
 						String name = keggIdsDataMap.get(ki).getName();
 						updateRenameMetabolitesMap(name, ki, containsProton);
@@ -294,15 +296,16 @@ public class PathwayReactionNodeFactory {
 					}
 				} else if (keggIdsDataMap.get(data1.get(i)).getType().equals(PathwaysCSVFileConstants.SIDE_METABOLITE_TYPE) &&
 						LocalConfig.getInstance().getAlternateMetabolitesMap().containsKey(data1.get(i))) {
-					if (!modelIds.contains(data1.get(i)) && (data1.get(i).equals("C00002") ||
-						data1.get(i).equals("C00008") || data1.get(i).equals("C00020"))) {
-						if (renameMetabolitesMap.containsKey(keggIdsDataMap.get(data1.get(i)).getName())) {
-							ArrayList<String> keggIds = renameMetabolitesMap.get(keggIdsDataMap.get(data1.get(i)).getName());
-							if (keggIds.contains(data1.get(i))) {
-								keggIds.remove(keggIds.indexOf(data1.get(i)));
-							}
-						}
-					}
+//					if (!modelIds.contains(data1.get(i)) && (data1.get(i).equals("C00002") ||
+//						data1.get(i).equals("C00008") || data1.get(i).equals("C00020"))) {
+//					if (!modelIds.contains(data1.get(i))) {
+//						if (renameMetabolitesMap.containsKey(keggIdsDataMap.get(data1.get(i)).getName())) {
+//							ArrayList<String> keggIds = renameMetabolitesMap.get(keggIdsDataMap.get(data1.get(i)).getName());
+//							if (keggIds.contains(data1.get(i))) {
+//								keggIds.remove(keggIds.indexOf(data1.get(i)));
+//							}
+//						}
+//					}
 					for (int j = 0; j < model1.size(); j++) {
 						if (LocalConfig.getInstance().getAlternateMetabolitesMap().get(data1.get(i)).contains(model1.get(j))) {
 							if (keggIdsDataMap.containsKey(data1.get(i))) {
@@ -324,6 +327,7 @@ public class PathwayReactionNodeFactory {
 				}
 			}
 		}
+//	}
 		
 		return speciesMatch;
 	}
