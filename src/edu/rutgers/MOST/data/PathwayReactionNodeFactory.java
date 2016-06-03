@@ -37,6 +37,8 @@ public class PathwayReactionNodeFactory {
 		this.renameMetabolitesMap = renameMetabolitesMap;
 	}
 	
+	public ArrayList<String> namesList = new ArrayList<String>();
+	
 	public ArrayList<Integer> plottedIds = new ArrayList<Integer>();
 
 	public PathwayReactionNode createPathwayReactionNode(PathwayReactionData prd, 
@@ -75,6 +77,8 @@ public class PathwayReactionNodeFactory {
 			setReversibilityAndDirection(prd, pn, reactions);
 		}
 		pn.setReactions(reactions);
+		//System.out.println(namesList);
+		
 		
 		return pn;
 	}
@@ -296,16 +300,6 @@ public class PathwayReactionNodeFactory {
 					}
 				} else if (keggIdsDataMap.get(data1.get(i)).getType().equals(PathwaysCSVFileConstants.SIDE_METABOLITE_TYPE) &&
 						LocalConfig.getInstance().getAlternateMetabolitesMap().containsKey(data1.get(i))) {
-//					if (!modelIds.contains(data1.get(i)) && (data1.get(i).equals("C00002") ||
-//						data1.get(i).equals("C00008") || data1.get(i).equals("C00020"))) {
-//					if (!modelIds.contains(data1.get(i))) {
-//						if (renameMetabolitesMap.containsKey(keggIdsDataMap.get(data1.get(i)).getName())) {
-//							ArrayList<String> keggIds = renameMetabolitesMap.get(keggIdsDataMap.get(data1.get(i)).getName());
-//							if (keggIds.contains(data1.get(i))) {
-//								keggIds.remove(keggIds.indexOf(data1.get(i)));
-//							}
-//						}
-//					}
 					for (int j = 0; j < model1.size(); j++) {
 						if (LocalConfig.getInstance().getAlternateMetabolitesMap().get(data1.get(i)).contains(model1.get(j))) {
 							if (keggIdsDataMap.containsKey(data1.get(i))) {
@@ -322,12 +316,11 @@ public class PathwayReactionNodeFactory {
 			if (data1.equals(model2)) {
 				speciesMatch = true;
 				ArrayList<String> names = new ArrayList<String>(nameReplacedId.keySet());
-				for (int i = 0; i < names.size(); i++) {					
+				for (int i = 0; i < names.size(); i++) {
 					updateRenameMetabolitesMap(names.get(i), nameReplacedId.get(names.get(i)), containsProton);
 				}
 			}
 		}
-//	}
 		
 		return speciesMatch;
 	}
@@ -363,6 +356,7 @@ public class PathwayReactionNodeFactory {
 				//System.out.println(keggIds);
 			}
 			renameMetabolitesMap.put(name, keggIds);
+			namesList.add(name);
 		}
 	}
 	
