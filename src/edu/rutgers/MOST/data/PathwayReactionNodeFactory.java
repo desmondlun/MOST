@@ -79,6 +79,18 @@ public class PathwayReactionNodeFactory {
 		pn.setReactions(reactions);
 		//System.out.println(namesList);
 		
+//		for (int j = 0; j < namesList.size(); j++) {
+//			boolean contains = false;
+//			for (int i = 0; i < reactions.size(); i++) {
+//				String abbr = LocalConfig.getInstance().getMetaboliteNameAbbrMap().get(namesList.get(j));
+//				if (reactions.get(i).getReactionEqunAbbr().contains(abbr)) {
+//					contains = true;
+//				}
+//			}
+//			if (!contains) {
+//				renameMetabolitesMap.remove(namesList.get(j));
+//			}
+//		}
 		
 		return pn;
 	}
