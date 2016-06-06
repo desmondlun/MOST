@@ -317,7 +317,7 @@ public class PathwayReactionNodeFactory {
 							if (keggIdsDataMap.containsKey(data1.get(i))) {
 								// replace alternate with key
 								entry = data1.get(i);
-								nameReplacedId.put(keggIdsDataMap.get(data1.get(i)).getName(), model1.get(j));
+								//nameReplacedId.put(keggIdsDataMap.get(data1.get(i)).getName(), model1.get(j));
 							}
 						} 
 					}
@@ -350,8 +350,9 @@ public class PathwayReactionNodeFactory {
 	public void updateRenameMetabolitesMapFromModelIds(Map<String, PathwayMetaboliteData> keggIdsDataMap, 
 		ArrayList<String> modelIds, boolean containsProton) {
 		for (int j = 0; j < modelIds.size(); j++) {
-			if (LocalConfig.getInstance().getAlternateMetabolitesMap().containsKey(modelIds.get(j)) ||
-					LocalConfig.getInstance().getMetaboliteSubstitutionsMap().containsKey(modelIds.get(j))) {
+//			if (LocalConfig.getInstance().getAlternateMetabolitesMap().containsKey(modelIds.get(j)) ||
+//					LocalConfig.getInstance().getMetaboliteSubstitutionsMap().containsKey(modelIds.get(j))) {
+			if (LocalConfig.getInstance().getMetaboliteSubstitutionsMap().containsKey(modelIds.get(j))) {
 				if (keggIdsDataMap.containsKey(modelIds.get(j))) {
 					String name = keggIdsDataMap.get(modelIds.get(j)).getName();
 					updateRenameMetabolitesMap(name, modelIds.get(j), containsProton);
