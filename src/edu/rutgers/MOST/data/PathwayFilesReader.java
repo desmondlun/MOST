@@ -22,6 +22,7 @@ public class PathwayFilesReader {
 	Map<String, PathwayMetaboliteData> metaboliteDataKeggIdMap = new HashMap<String, PathwayMetaboliteData>();
 	Map<String, String> metaboliteNameAbbrMap = new HashMap<String, String>();
 	Map<String, PathwayMetaboliteData> metaboliteNameDataMap = new HashMap<String, PathwayMetaboliteData>();
+	Map<String, PathwayMetaboliteData> metaboliteIdDataMap = new HashMap<String, PathwayMetaboliteData>();
 	Map<String, ArrayList<String>> additionalMetabolitesMap = new HashMap<String, ArrayList<String>>();
 	Map<String, ArrayList<String>> alternateMetabolitesMap = new HashMap<String, ArrayList<String>>();
 	Map<String, ArrayList<String>> metaboliteSubstitutionsMap = new HashMap<String, ArrayList<String>>();
@@ -443,6 +444,7 @@ public class PathwayFilesReader {
 						pm.setAbbreviation(abbr);
 						metaboliteNameAbbrMap.put(name, abbr);
 						metaboliteNameDataMap.put(name, pm);
+						metaboliteIdDataMap.put(pm.getId(), pm);
 					}
 					count += 1;
 				}
@@ -450,6 +452,7 @@ public class PathwayFilesReader {
 				LocalConfig.getInstance().setMetabolicPathways(metabolicPathways);
 				LocalConfig.getInstance().setMetaboliteNameAbbrMap(metaboliteNameAbbrMap);
 				LocalConfig.getInstance().setMetaboliteNameDataMap(metaboliteNameDataMap);
+				LocalConfig.getInstance().setMetaboliteIdDataMap(metaboliteIdDataMap);
 				LocalConfig.getInstance().setKeggIdsInGraph(keggIdsInGraph);
 //				System.out.println("pfr kegg ids in graph " + keggIdsInGraph);
 			} catch (IOException e) {

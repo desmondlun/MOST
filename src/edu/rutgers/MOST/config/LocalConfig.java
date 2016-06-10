@@ -1176,6 +1176,19 @@ public class LocalConfig {
 		Map<String, PathwayMetaboliteData> metaboliteNameDataMap) {
 		this.metaboliteNameDataMap = metaboliteNameDataMap;
 	}
+	
+	Map<String, PathwayMetaboliteData> metaboliteIdDataMap;
+
+	public Map< String, PathwayMetaboliteData > getMetaboliteIdDataMap()
+	{
+		return metaboliteIdDataMap;
+	}
+
+	public void setMetaboliteIdDataMap(
+		Map< String, PathwayMetaboliteData > metaboliteIdDataMap )
+	{
+		this.metaboliteIdDataMap = metaboliteIdDataMap;
+	}
 
 	private Map<String, PathwayReactionData> reactionDataKeggIdMap;
 

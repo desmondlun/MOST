@@ -37,9 +37,9 @@ public class PathwayReactionNodeFactory {
 		this.renameMetabolitesMap = renameMetabolitesMap;
 	}
 	
-	public ArrayList<String> namesList = new ArrayList<String>();
-	
 	public ArrayList<Integer> plottedIds = new ArrayList<Integer>();
+	
+	public ArrayList<String> maybeReplacedNames = new ArrayList<String>();
 
 	public PathwayReactionNode createPathwayReactionNode(PathwayReactionData prd, 
 			String compartment, int component, 
@@ -76,23 +76,147 @@ public class PathwayReactionNodeFactory {
 		if (reactions.size() > 0) {
 			setReversibilityAndDirection(prd, pn, reactions);
 		}
+		pn.setDataId(prd.getReactionId());
 		pn.setReactions(reactions);
-		//System.out.println(namesList);
 		
-//		for (int j = 0; j < namesList.size(); j++) {
-//			boolean contains = false;
-//			for (int i = 0; i < reactions.size(); i++) {
-//				String abbr = LocalConfig.getInstance().getMetaboliteNameAbbrMap().get(namesList.get(j));
-//				if (reactions.get(i).getReactionEqunAbbr().contains(abbr)) {
-//					contains = true;
-//				}
-//			}
-//			if (!contains) {
-//				renameMetabolitesMap.remove(namesList.get(j));
-//			}
-//		}
+		for (int i = 0; i < prd.getReactantIds().size(); i++) {
+			if (LocalConfig.getInstance().getMetaboliteIdDataMap().containsKey(prd.getReactantIds().get(i))) {
+				PathwayMetaboliteData pmd = LocalConfig.getInstance().getMetaboliteIdDataMap().get(prd.getReactantIds().get(i));
+				if (pmd.getType().equals(PathwaysCSVFileConstants.SIDE_METABOLITE_TYPE)) {
+					if (LocalConfig.getInstance().getAlternateMetabolitesMap().containsKey(pmd.getKeggId())) {
+						if (reactions.size() > 0) {
+							System.out.println(pn.getDataId());
+							//System.out.println(pmd);
+							updateAlternateMetabNodes(reactions, pmd);
+//							boolean containsProton = false;
+//							for (int j = 0; j < reactions.size(); j++) {
+//								System.out.println(reactions.get(j).getReactionEqunAbbr());
+//								SBMLReactionEquation equn = ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(reactions.get(j).getId()));
+//								for (int r = 0; r < equn.getReactants().size(); r++) {
+//									String keggId = LocalConfig.getInstance().getMetaboliteIdKeggIdMap().get(Integer.toString(equn.getReactants().get(r).getMetaboliteId()));
+//									if (keggId.equals("C00080")) {
+//										containsProton = true;
+//									}
+//								}
+//								for (int r = 0; r < equn.getReactants().size(); r++) {
+//									//System.out.println(equn.getReactants().get(r).getMetaboliteId());
+//									String keggId = LocalConfig.getInstance().getMetaboliteIdKeggIdMap().get(Integer.toString(equn.getReactants().get(r).getMetaboliteId()));
+//									if (LocalConfig.getInstance().getAlternateMetabolitesMap().containsKey(pmd.getKeggId())) {
+//										updateRenameMetabMapAlternates(pmd, keggId, containsProton);
+//									}
+//								}
+//								for (int p = 0; p < equn.getProducts().size(); p++) {
+//									String keggId = LocalConfig.getInstance().getMetaboliteIdKeggIdMap().get(Integer.toString(equn.getProducts().get(p).getMetaboliteId()));
+//									if (keggId.equals("C00080")) {
+//										containsProton = true;
+//									}
+//								}
+//								for (int p = 0; p < equn.getProducts().size(); p++) {
+//									//System.out.println(equn.getProducts().get(p).getMetaboliteId());
+//									String keggId = LocalConfig.getInstance().getMetaboliteIdKeggIdMap().get(Integer.toString(equn.getProducts().get(p).getMetaboliteId()));
+//									if (LocalConfig.getInstance().getAlternateMetabolitesMap().containsKey(pmd.getKeggId())) {
+//										updateRenameMetabMapAlternates(pmd, keggId, containsProton);
+//									}
+//								}
+//							}
+						}
+					}
+				}
+			}
+		}
+		
+		for (int i = 0; i < prd.getProductIds().size(); i++) {
+			if (LocalConfig.getInstance().getMetaboliteIdDataMap().containsKey(prd.getProductIds().get(i))) {
+				PathwayMetaboliteData pmd = LocalConfig.getInstance().getMetaboliteIdDataMap().get(prd.getProductIds().get(i));
+				if (pmd.getType().equals(PathwaysCSVFileConstants.SIDE_METABOLITE_TYPE)) {
+					if (LocalConfig.getInstance().getAlternateMetabolitesMap().containsKey(pmd.getKeggId())) {
+						if (reactions.size() > 0) {
+							System.out.println(pn.getDataId());
+							//System.out.println(pmd);
+							updateAlternateMetabNodes(reactions, pmd);
+//							boolean containsProton = false;
+//							for (int j = 0; j < reactions.size(); j++) {
+//								SBMLReactionEquation equn = ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(reactions.get(j).getId()));
+//								for (int r = 0; r < equn.getReactants().size(); r++) {
+//									String keggId = LocalConfig.getInstance().getMetaboliteIdKeggIdMap().get(Integer.toString(equn.getReactants().get(r).getMetaboliteId()));
+//									if (keggId.equals("C00080")) {
+//										containsProton = true;
+//									}
+//								}
+//								for (int r = 0; r < equn.getReactants().size(); r++) {
+//									String keggId = LocalConfig.getInstance().getMetaboliteIdKeggIdMap().get(Integer.toString(equn.getReactants().get(r).getMetaboliteId()));
+//									if (LocalConfig.getInstance().getAlternateMetabolitesMap().containsKey(pmd.getKeggId())) {
+//										updateRenameMetabMapAlternates(pmd, keggId, containsProton);
+//									}
+//								}
+//								for (int p = 0; p < equn.getProducts().size(); p++) {
+//									String keggId = LocalConfig.getInstance().getMetaboliteIdKeggIdMap().get(Integer.toString(equn.getProducts().get(p).getMetaboliteId()));
+//									if (keggId.equals("C00080")) {
+//										containsProton = true;
+//									}
+//								}
+//								for (int p = 0; p < equn.getProducts().size(); p++) {
+//									String keggId = LocalConfig.getInstance().getMetaboliteIdKeggIdMap().get(Integer.toString(equn.getProducts().get(p).getMetaboliteId()));
+//									if (LocalConfig.getInstance().getAlternateMetabolitesMap().containsKey(pmd.getKeggId())) {
+//										updateRenameMetabMapAlternates(pmd, keggId, containsProton);
+//									}
+//								}
+//							}
+						}
+					}
+				}
+			}
+		}
 		
 		return pn;
+	}
+	
+	public void updateAlternateMetabNodes(ArrayList<SBMLReaction> reactions, PathwayMetaboliteData pmd) {
+		boolean containsProton = false;
+		for (int j = 0; j < reactions.size(); j++) {
+			SBMLReactionEquation equn = ((SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(reactions.get(j).getId()));
+			for (int r = 0; r < equn.getReactants().size(); r++) {
+				String keggId = LocalConfig.getInstance().getMetaboliteIdKeggIdMap().get(Integer.toString(equn.getReactants().get(r).getMetaboliteId()));
+				if (keggId.equals("C00080")) {
+					containsProton = true;
+				}
+			}
+			for (int r = 0; r < equn.getReactants().size(); r++) {
+				String keggId = LocalConfig.getInstance().getMetaboliteIdKeggIdMap().get(Integer.toString(equn.getReactants().get(r).getMetaboliteId()));
+				if (LocalConfig.getInstance().getAlternateMetabolitesMap().containsKey(pmd.getKeggId())) {
+					updateRenameMetabMapAlternates(pmd, keggId, containsProton);
+				}
+			}
+			for (int p = 0; p < equn.getProducts().size(); p++) {
+				String keggId = LocalConfig.getInstance().getMetaboliteIdKeggIdMap().get(Integer.toString(equn.getProducts().get(p).getMetaboliteId()));
+				if (keggId.equals("C00080")) {
+					containsProton = true;
+				}
+			}
+			for (int p = 0; p < equn.getProducts().size(); p++) {
+				String keggId = LocalConfig.getInstance().getMetaboliteIdKeggIdMap().get(Integer.toString(equn.getProducts().get(p).getMetaboliteId()));
+				if (LocalConfig.getInstance().getAlternateMetabolitesMap().containsKey(pmd.getKeggId())) {
+					updateRenameMetabMapAlternates(pmd, keggId, containsProton);
+				}
+			}
+		}
+	}
+	
+	public void updateRenameMetabMapAlternates(PathwayMetaboliteData pmd, String keggId, boolean containsProton) {
+		if (pmd.getKeggId().equals(keggId)) {
+			System.out.println(pmd.getKeggId());
+			System.out.println(pmd.getName());
+			System.out.println(keggId);
+			System.out.println(containsProton);
+			updateRenameMetabolitesMap(pmd.getName(), keggId, containsProton);
+		}
+		if (LocalConfig.getInstance().getAlternateMetabolitesMap().get(pmd.getKeggId()).contains(keggId)) {
+			System.out.println("k " + pmd.getKeggId());
+			System.out.println(pmd.getName());
+			System.out.println(keggId);
+			System.out.println(containsProton);
+			updateRenameMetabolitesMap(pmd.getName(), keggId, containsProton);
+		}
 	}
 	
 	// TODO: check if compartment is redundant since reactions from reaction factory are already
@@ -232,6 +356,7 @@ public class PathwayReactionNodeFactory {
 	public boolean speciesExactMatch(ArrayList<String> dataIds, Map<String, PathwayMetaboliteData> keggIdsDataMap, ArrayList<String> modelIds) {
 		boolean speciesMatch = false;
 		boolean containsProton = false;
+		String maybeReplacedName = "";
 //		System.out.println("data " + dataIds);
 //		System.out.println("model " + modelIds);
 		if (modelIds.contains("C00080")) {
@@ -317,6 +442,8 @@ public class PathwayReactionNodeFactory {
 							if (keggIdsDataMap.containsKey(data1.get(i))) {
 								// replace alternate with key
 								entry = data1.get(i);
+								//System.out.println(keggIdsDataMap.get(data1.get(i)).getName());
+								maybeReplacedName = keggIdsDataMap.get(data1.get(i)).getName();
 								//nameReplacedId.put(keggIdsDataMap.get(data1.get(i)).getName(), model1.get(j));
 							}
 						} 
@@ -330,6 +457,9 @@ public class PathwayReactionNodeFactory {
 				ArrayList<String> names = new ArrayList<String>(nameReplacedId.keySet());
 				for (int i = 0; i < names.size(); i++) {
 					updateRenameMetabolitesMap(names.get(i), nameReplacedId.get(names.get(i)), containsProton);
+				}
+				if (maybeReplacedName.length() > 0 && !maybeReplacedNames.contains(maybeReplacedName)) {
+					maybeReplacedNames.add(maybeReplacedName);
 				}
 			}
 		}
@@ -369,7 +499,6 @@ public class PathwayReactionNodeFactory {
 				//System.out.println(keggIds);
 			}
 			renameMetabolitesMap.put(name, keggIds);
-			namesList.add(name);
 		}
 	}
 	
@@ -576,6 +705,10 @@ public class PathwayReactionNodeFactory {
 			reversible = "true";
 		}
 		return reversible;
+	}
+	
+	public void createSideNodeNames(PathwayReactionData prd) {
+
 	}
 
 }
