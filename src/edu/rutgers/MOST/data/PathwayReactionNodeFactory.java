@@ -631,17 +631,17 @@ public class PathwayReactionNodeFactory {
 	
 	public void updateRenameMetabMapAlternates(PathwayMetaboliteData pmd, String keggId, boolean containsProton) {
 		if (pmd.getKeggId().equals(keggId)) {
-			System.out.println(pmd.getKeggId());
-			System.out.println(pmd.getName());
-			System.out.println(keggId);
-			System.out.println(containsProton);
+//			System.out.println(pmd.getKeggId());
+//			System.out.println(pmd.getName());
+//			System.out.println(keggId);
+//			System.out.println(containsProton);
 			updateRenameMetabolitesMap(pmd.getName(), keggId, containsProton);
 		}
 		if (LocalConfig.getInstance().getAlternateMetabolitesMap().get(pmd.getKeggId()).contains(keggId)) {
-			System.out.println("k " + pmd.getKeggId());
-			System.out.println(pmd.getName());
-			System.out.println(keggId);
-			System.out.println(containsProton);
+//			System.out.println("k " + pmd.getKeggId());
+//			System.out.println(pmd.getName());
+//			System.out.println(keggId);
+//			System.out.println(containsProton);
 			updateRenameMetabolitesMap(pmd.getName(), keggId, containsProton);
 		}
 	}
