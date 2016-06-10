@@ -38,8 +38,6 @@ public class PathwayReactionNodeFactory {
 	}
 	
 	public ArrayList<Integer> plottedIds = new ArrayList<Integer>();
-	
-	public ArrayList<String> maybeReplacedNames = new ArrayList<String>();
 
 	public PathwayReactionNode createPathwayReactionNode(PathwayReactionData prd, 
 			String compartment, int component, 
@@ -247,7 +245,6 @@ public class PathwayReactionNodeFactory {
 	public boolean speciesExactMatch(ArrayList<String> dataIds, Map<String, PathwayMetaboliteData> keggIdsDataMap, ArrayList<String> modelIds) {
 		boolean speciesMatch = false;
 		boolean containsProton = false;
-		String maybeReplacedName = "";
 //		System.out.println("data " + dataIds);
 //		System.out.println("model " + modelIds);
 		if (modelIds.contains("C00080")) {
@@ -333,9 +330,6 @@ public class PathwayReactionNodeFactory {
 							if (keggIdsDataMap.containsKey(data1.get(i))) {
 								// replace alternate with key
 								entry = data1.get(i);
-								//System.out.println(keggIdsDataMap.get(data1.get(i)).getName());
-								maybeReplacedName = keggIdsDataMap.get(data1.get(i)).getName();
-								//nameReplacedId.put(keggIdsDataMap.get(data1.get(i)).getName(), model1.get(j));
 							}
 						} 
 					}
@@ -348,9 +342,6 @@ public class PathwayReactionNodeFactory {
 				ArrayList<String> names = new ArrayList<String>(nameReplacedId.keySet());
 				for (int i = 0; i < names.size(); i++) {
 					updateRenameMetabolitesMap(names.get(i), nameReplacedId.get(names.get(i)), containsProton);
-				}
-				if (maybeReplacedName.length() > 0 && !maybeReplacedNames.contains(maybeReplacedName)) {
-					maybeReplacedNames.add(maybeReplacedName);
 				}
 			}
 		}

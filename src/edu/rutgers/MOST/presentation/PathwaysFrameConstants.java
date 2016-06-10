@@ -266,6 +266,6 @@ public class PathwaysFrameConstants {
 	public static final double MAX_DECIMAL_FORMAT = 1000;
 	public static final int FLUX_LEGEND_SIGNIFICANT_FIGURES = 3;
 	
-	public static final boolean HIDE_DATABASE_IDS = true;
+	public static final boolean HIDE_DATABASE_IDS = false;
 	
 }
