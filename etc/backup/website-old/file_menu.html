@@ -42,7 +42,9 @@ A{text-decoration:none}
 	<p><font size=2><a href="help.html#overview">Overview </a></font></p>
 	<ul><li><font size=2><a href="help.html#sort">Sorting Tables</a></font></li>
 	<li><font size=2><a href="help.html#formula">Formula Bar</a></font></li>
-	<li><font size=2><a href="help.html#rename">Renaming Metabolites</a></font></li></ul>
+	<li><font size=2><a href="help.html#rename">Renaming Metabolites</a></font></li>
+	<li><font size=2><a href="help.html#rename_comp">Renaming Compartments</a></font></li>
+	<li><font size=2><a href="help.html#visualize">Visualization Overview</a></font></li></ul>
 
 	<p><font size=2><a href="installing_most.html">Installing MOST</a></font></p>
 	<ul><li><font size=2><a href="installing_most.html#req">Requirements</a></font></li>
@@ -80,6 +82,18 @@ A{text-decoration:none}
 	<li><font size=2><a href="analysis_menu.html#eflux2">E-Flux2</a></font></li>
 	<li><font size=2><a href="analysis_menu.html#spot">SPOT</a></font></li></ul>
 
+	<p><font size=2><a href="visualization_menu.html">Visualization Menu</a></font></p>
+
+	<ul><li><font size=2><a href="visualization_menu.html#visualize">Visualize Compartment</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#report">Show Visualization Report</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#locate_columns">Locate Identifier Columns</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#levels">Set Edge Flux Levels</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#reset_levels">Reset Edge Flux Levels to Default</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#frame_menus">Visualization Frame Menus</a></font></li>
+	<ul><li><font size=2><a href="visualization_menu.html#save_svg">Save As SVG</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#save_png">Save As PNG</a></font></li>
+	<li><font size=2><a href="visualization_menu.html#find">Find</a></font></li></ul></ul>
+
 	<p><font size=2><a href="edit_menu.html">Edit Menu</a></font></p>
 
 	<ul><li><font size=2><a href="edit_menu.html#unused">Unused Metabolites</a></font></li>
@@ -93,7 +107,12 @@ A{text-decoration:none}
 	<p><font size=2><a href="options_menu.html">Options Menu</a></font></p>
 
 	<ul><li><font size=2><a href="select_solvers.html">Select Solvers</a></font></li>
-	<li><font size=2><a href="solver_parameters.html">Set Solver Parameters</a></font></li></ul>
+	<li><font size=2><a href="solver_parameters.html">Set Solver Parameters</a></font></li>
+	<li><font size=2><a href="visualization_options.html">Visualization Options</a></font></li>
+	<ul><li><font size=2><a href="visualization_options.html#graph_all">Graph All in Database</a></font></li>
+	<li><font size=2><a href="visualization_options.html#scale">Scale Edge Thickness</a></font></li>
+	<li><font size=2><a href="visualization_options.html#ignore_water">Ignore Water for Reaction Matching</a></font></li>
+	<li><font size=2><a href="visualization_options.html#report">Show Visualization Report</a></font></li></ul></ul>
 
 	<p><font size=2><a href="toolbar.html">Toolbar</a></font></p>
 
@@ -222,9 +241,21 @@ A{text-decoration:none}
 
 	<blockquote>After loading CSV files, if any reaction equations are spaced incorrectly, the following message will appear:</blockquote>
 
-	<p align="center"><img src ="images/suspicious_warning.jpg" alt="Image - No License" border="0"></p>
+	<p align="center"><img src ="images/suspicious_warning.jpg" alt="Image - Suspicious metabolites" border="0"></p>
 
 	<blockquote>See <a href="edit_menu.html#suspicious">Suspicious Metabolites</a> for more details.</blockquote>
+
+	<blockquote>Additional warnings will be diplayed if the value in the Reversible column is not compatible with the 
+	arrow in the reaction equation, lower bound is negative and reaction is irreversible. Cells with incompatible reversible
+	values will be highlighted yellow, and cells with invalid lower bounds will be highlighted orange.
+	</blockquote>
+
+	<p align="center"><img src ="images/warning2.jpg" alt="Image - Additional Warnings" border="0"></p>
+
+	<blockquote>If there are suspicious metabolites and additional warnings, both messages will be shown
+	in one dialog.</blockquote>
+
+	<p align="center"><img src ="images/additional_warnings.jpg" alt="Image - Combined Warnings" border="0"></p>
 
 	<br>
 	<p><a name="excel"><strong> Load Excel Spreadsheets:</strong></a></p>
@@ -241,8 +272,8 @@ A{text-decoration:none}
 
 	<blockquote>Select a row on this table that corresponds to the desired model, then click “OK”.</blockquote>
 
-	<p align="center"><a href="images/load_ecoli_core.jpg" target="_blank">
-	<img src ="images/load_ecoli_core.jpg" alt="Image - Load E coli core" border="0" height="90%" width="90%"></a></p>
+	<p align="center"><a href="images/model_collection_table.jpg" target="_blank">
+	<img src ="images/model_collection_table.jpg" alt="Image - Model Collection Table" border="0" height="90%" width="90%"></a></p>
 
 	<blockquote><a href="http://blog.theseed.org/model_seed/">Model Seed</a> has a large collection of models in SBML format that have
 	been tested to load on MOST.</blockquote>
@@ -284,6 +315,10 @@ A{text-decoration:none}
 	Save As SBML to save a copy to another directory such as My Documents.</blockquote>
 
 	<blockquote>If an extension is not typed into the file chooser, it will automatically be added.</blockquote>
+
+	<blockquote>If any abbreviations are not valid SBML, a dialog will appear containing old and new names for renamed abbreviations.</blockquote>
+
+	<p align="center"><img src ="images/renamed_metab_warn.jpg" alt="Image - Renamed Abbreviations Warning" border="0"></p>
 
 	<p><a name="savecsv"><strong> Save As CSV:</strong></a></p>
 

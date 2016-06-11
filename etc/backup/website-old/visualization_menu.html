@@ -152,24 +152,24 @@ A{text-decoration:none}
 	</blockquote>
 
 	<blockquote>MOST uses <a href="http://www.genome.jp/kegg/">KEGG</a> ids,
-	<a href="https://www.ebi.ac.uk/chebi/">ChEBI</a> ids, or
-	<a href="http://blog.theseed.org/model_seed/">Model SEED</a> ids
+	<a href="https://www.ebi.ac.uk/chebi/">CHEBI</a> ids, or
+	<a href="http://blog.theseed.org/model_seed/">Model Seed</a> ids
 	to identify metabolites. 
 	Identifier columns are automatically 
-	located if the columns names contain "KEGG", "Kegg", "ChEBI", "CHEBI", or "Chebi", or "EC", "E.C.". 
+	located if the columns names contain "KEGG", "Kegg", "CHEBI", or "Chebi", or "EC", "E.C.". 
 	<a href="http://enzyme.expasy.org/">EC Numbers</a> or 
 	KEGG reaction ids can be used to assist in identifying reactions but are not required.</blockquote>
-	<blockquote>Model SEED ids in models from Model SEED are located in the Metabolite Abberviation column and automatically
+	<blockquote>Model Seed ids in models from Model Seed are located in the Metabolite Abberviation column and automatically
 	located when visualizing.
 	Click <a href="#about">here</a> for more information on visualization.</blockquote> 
 	<blockquote>MOST visualizes models by compartment. 
 	If any compartment entries are blank, the compartments will need to be renamed to a default name.</blockquote>
 
 	<blockquote>Models in the <a href="file_menu.html#collection">Model Collection</a> that contain KEGG ids 
-	and/or ChEBI ids and can be 
+	and/or CHEBI ids and can be 
 	visualized are indicated by a "Yes" entry in the Identifiers column. SBML models
-	from <a href="http://blog.theseed.org/model_seed/">Model SEED</a> will
-	also visualize if Model SEED ids such as "cpd00001_c0" are located in the Metabolite Abbreviation column
+	from <a href="http://blog.theseed.org/model_seed/">Model Seed</a> will
+	also visualize if Model Seed ids such as "cpd00001_c0" are located in the Metabolite Abbreviation column
 	of the Metabolites table.</blockquote>
 
 	<br>
@@ -220,7 +220,7 @@ A{text-decoration:none}
 	located by MOST because the column names are not contained in the list of commonly used names.</blockquote>
 
 	<blockquote>The following menu items exist in the Visualize menu to locate identifier columns:
-	"Locate KEGG Metabolite Id Column", "Locate ChEBI Id Column", "Locate EC Number Column", and "Locate KEGG Reaction Id Column".
+	"Locate KEGG Metabolite Id Column", "Locate CHEBI Id Column", "Locate EC Number Column", and "Locate KEGG Reaction Id Column".
 	</blockquote>
 
 	<p><a name="levels"><strong>  Set Edge Flux Levels:</strong></a></p>
@@ -300,8 +300,8 @@ multi-step reactions that are condensed into one step whereas the models availab
 cases there was enough room to map all of the steps. A database was created with tables matching reactions and metabolites 
 to positions in the map and metabolites to reactions.</blockquote>
 <blockquote><a href="http://www.genome.jp/kegg/">KEGG</a> ids,
-	<a href="https://www.ebi.ac.uk/chebi/">ChEBI</a> ids, or
-	<a href="http://blog.theseed.org/model_seed/">Model SEED</a> ids 
+	<a href="https://www.ebi.ac.uk/chebi/">CHEBI</a> ids, or
+	<a href="http://blog.theseed.org/model_seed/">Model Seed</a> ids 
 are required to identify metabolites, 
 since these identifiers serve as positive identifiers of a metabolite. 
 Only reactions where all metabolites have identifiers are considered. Reactions are mapped by compartment. Reactions and 
@@ -324,7 +324,7 @@ associated metabolites due to the use of these classes.</blockquote>
 <blockquote>The JUNG library in Java is used to draw the map from positions in this database. A report is generated after 
 visualizing the model with lists of reactions that have identifiers but are not present in the database, reactions where one or 
 more metabolites is not identified, and reactions that have been graphed.</blockquote>
-<blockquote>Locating models with KEGG ids or ChEBI ids as identifiers has proven difficult. Our method has been tested on several models 
+<blockquote>Locating models with KEGG ids or CHEBI ids as identifiers has proven difficult. Our method has been tested on several models 
 that have identifiers. About 75% of reactions where all metabolites have identifiers are mapped in these models on average in 
 the cytosol and periplasm compartments in bacteria, and cytosol, mitochondria, nucleus, and peroxisome compartments in 
 eukaryotes. Theoretically more reactions with identified metabolites should be able to be mapped, but these reactions 

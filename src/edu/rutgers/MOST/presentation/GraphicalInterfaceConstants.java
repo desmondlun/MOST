@@ -67,7 +67,7 @@ public class GraphicalInterfaceConstants
 	
 	public static final String METABOLITE_KEGG_ID_COLUMN_NAME = "KEGG ID";
 	public static final String REACTION_KEGG_ID_COLUMN_NAME = "KEGG ID";
-	public static final String CHEBI_ID_COLUMN_NAME = "CHEBI ID";
+	public static final String CHEBI_ID_COLUMN_NAME = "ChEBI ID";
 	public static final String EC_NUMBER_COLUMN_NAME = "EC Number";
 	
 	public static final String REACTIONS_COLUMNS_IDENTIFIER = "reactions";
