@@ -261,6 +261,9 @@ public class PathwaysFrameConstants {
 
 	public static java.util.List<String> cofactorList = Arrays.asList(COFACTOR_KEGG_IDS);
 	
+	public static final String METABOLITES_DB_ID_HEADING = "Metabolite Database ID: ";
+	public static final String REACTIONS_DB_ID_HEADING = "Reaction Database ID: ";
+	
 	public static final DecimalFormat SCIENTIFIC_FLUX_FORMATTER = new DecimalFormat("#.##E0");
 	public static final double MIN_DECIMAL_FORMAT = 0.01;
 	public static final double MAX_DECIMAL_FORMAT = 1000;

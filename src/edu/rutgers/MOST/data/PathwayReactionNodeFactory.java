@@ -515,7 +515,7 @@ public class PathwayReactionNodeFactory {
 					+ displayModelEquation(equations, "<p>Equation(s) (Abbreviations) from Model: ")
 					+ displayModelEquation(equationNames, "<p>Equation(s) (Names) from Model: ")
 					+ "<p>Fluxes: " + fluxes.toString()
-					+ "<p>Reaction Database Id: " + id;
+					+ "<p>" + PathwaysFrameConstants.REACTIONS_DB_ID_HEADING + id;
 		}
 		return displayName;
 	}
@@ -540,7 +540,7 @@ public class PathwayReactionNodeFactory {
 	}
 	
 	public String displayKeggReactionId(ArrayList<String> keggReactionIds) {
-		return util.maybeMakeList(keggReactionIds, "KEGG Reaction Id");
+		return util.maybeMakeList(keggReactionIds, "KEGG Reaction ID");
 	}
 	
 	public String displaySubsystem(ArrayList<String> subsystems) {

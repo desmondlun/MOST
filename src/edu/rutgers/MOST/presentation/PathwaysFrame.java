@@ -1034,10 +1034,10 @@ public class PathwaysFrame extends JApplet {
 	public String removedDatabaseId(String name) {
 		// hide database ids for distribution, unhide if editing node positions
 		if (PathwaysFrameConstants.HIDE_DATABASE_IDS) {
-			if (name.contains("Metabolite Database Id: ")) {
-				name = name.substring(0, name.indexOf("Metabolite Database Id: "));
-			} else if (name.contains("Reaction Database Id: ")) {
-				name = name.substring(0, name.indexOf("Reaction Database Id: "));
+			if (name.contains(PathwaysFrameConstants.METABOLITES_DB_ID_HEADING)) {
+				name = name.substring(0, name.indexOf(PathwaysFrameConstants.METABOLITES_DB_ID_HEADING));
+			} else if (name.contains(PathwaysFrameConstants.REACTIONS_DB_ID_HEADING)) {
+				name = name.substring(0, name.indexOf(PathwaysFrameConstants.REACTIONS_DB_ID_HEADING));
 			}
 		}
 		

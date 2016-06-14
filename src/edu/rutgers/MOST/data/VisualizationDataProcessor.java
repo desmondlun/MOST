@@ -122,7 +122,7 @@ public class VisualizationDataProcessor {
 		Collections.sort(unplottedIds);
 		//System.out.println("unplotted " + unplottedIds);
 		String unplottedTitle = "Unplotted Reactions - Reaction not in Database: ";
-		String missingKeggIdTitle = "Unplotted Reactions - Missing KEGG Id(s): ";
+		String missingKeggIdTitle = "Unplotted Reactions - Missing KEGG ID(s): ";
 		String plottedTitle = "Plotted Reactions: ";
 		report += reportGenerator.reportSection(unplottedTitle, idReactionMapAllReactions, unplottedIds);
 		report += "\n";

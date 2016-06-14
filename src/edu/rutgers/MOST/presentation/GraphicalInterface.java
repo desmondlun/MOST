@@ -764,10 +764,10 @@ public class GraphicalInterface extends JFrame {
 	public final JMenuItem unsortMetabMenuItem = new JMenuItem("Unsort Metabolites Table");
 	public final JMenuItem visualizeMenu = new JMenuItem("Visualize Compartment");
 	public final JMenuItem showVisualizationReportMenu = new JMenuItem("Show Visualization Report");
-	public final JMenuItem locateKeggMetaboliteIdColumnMenu = new JMenuItem("Locate KEGG Metabolite Id Column");
-	public final JMenuItem locateChebiIdColumnMenu = new JMenuItem("Locate " + GraphicalInterfaceConstants.CHEBI_ID_COLUMN_NAME + " Id Column");
+	public final JMenuItem locateKeggMetaboliteIdColumnMenu = new JMenuItem("Locate KEGG Metabolite ID Column");
+	public final JMenuItem locateChebiIdColumnMenu = new JMenuItem("Locate " + GraphicalInterfaceConstants.CHEBI_ID_COLUMN_NAME + " ID Column");
 	public final JMenuItem locateECNumberColumnMenu = new JMenuItem("Locate EC Number Column");
-	public final JMenuItem locateKeggReactionIdColumnMenu = new JMenuItem("Locate KEGG Reaction Id Column");
+	public final JMenuItem locateKeggReactionIdColumnMenu = new JMenuItem("Locate KEGG Reaction ID Column");
 	public final JMenuItem setFluxLevelsMenu = new JMenuItem("Set Edge Flux Levels");
 	public final JMenuItem resetFluxLevelsMenu = new JMenuItem("Reset Edge Flux Levels to Default");
 	public final JMenuItem setUpSolver = new JMenuItem("Select Solvers");
@@ -2364,7 +2364,7 @@ public class GraphicalInterface extends JFrame {
         			index = f.locateKeggIdColumn();
         		}
         		showIdentifierColumnNameDialog(GraphicalInterfaceConstants.METABOLITES_COLUMNS_IDENTIFIER,
-        			"Locate KEGG Metabolite Id Column",
+        			"Locate KEGG Metabolite ID Column",
         			GraphicalInterfaceConstants.METABOLITE_KEGG_ID_COLUMN_NAME,
         			index);
         	}
@@ -2381,7 +2381,7 @@ public class GraphicalInterface extends JFrame {
         			index = f.locateChebiIdColumn();
         		}
         		showIdentifierColumnNameDialog(GraphicalInterfaceConstants.METABOLITES_COLUMNS_IDENTIFIER,
-        			"Locate " + GraphicalInterfaceConstants.CHEBI_ID_COLUMN_NAME + " Id Column",
+        			"Locate " + GraphicalInterfaceConstants.CHEBI_ID_COLUMN_NAME + " Column",
         			GraphicalInterfaceConstants.CHEBI_ID_COLUMN_NAME,
         			index);
         	}
@@ -2415,7 +2415,7 @@ public class GraphicalInterface extends JFrame {
         			index = f.locateKeggIdColumn();
         		}
         		showIdentifierColumnNameDialog(GraphicalInterfaceConstants.REACTIONS_COLUMNS_IDENTIFIER,
-        			"Locate KEGG Reaction Id Column",
+        			"Locate KEGG Reaction ID Column",
         			GraphicalInterfaceConstants.METABOLITE_KEGG_ID_COLUMN_NAME,
         			index);
         	}

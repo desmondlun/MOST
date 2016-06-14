@@ -5,6 +5,7 @@ import java.util.Map;
 
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
+import edu.rutgers.MOST.presentation.PathwaysFrameConstants;
 import edu.rutgers.MOST.presentation.Utilities;
 
 public class PathwayMetaboliteNodeFactory {
@@ -59,10 +60,10 @@ public class PathwayMetaboliteNodeFactory {
 			ArrayList<String> keggIdList, ArrayList<String> chebiIdList, ArrayList<String> chargeList, String id) {
 		String htmlName = "<html>" + name + "<p>Metabolite Name(s): " + nameList.toString() +
 				"<p>Metabolite Abbreviation(s): " + abbrList.toString() +
-				"<p>KEGG Id(s): " + keggIdList.toString() +
-				"<p>CHEBI Id(s): " + chebiIdList.toString() +
+				"<p>KEGG ID(s): " + keggIdList.toString() +
+				"<p>CHEBI ID(s): " + chebiIdList.toString() +
 				"<p>Charge: " + chargeList.toString() + 
-				"<p>Metabolite Database Id: " + id + "<p>";
+				"<p>" + PathwaysFrameConstants.METABOLITES_DB_ID_HEADING + id;
 		return htmlName;
 	}
 	
@@ -72,9 +73,9 @@ public class PathwayMetaboliteNodeFactory {
 		ArrayList<String> keggIdList, ArrayList<String> chebiIdList, ArrayList<String> chargeList) {
 		String htmlName = "<html>" + name + "<p>Metabolite Name(s): " + nameList.toString() +
 			"<p>Metabolite Abbreviation(s): " + abbrList.toString() +
-			"<p>KEGG Id(s): " + keggIdList.toString() +
-			"<p>CHEBI Id(s): " + chebiIdList.toString() +
-			"<p>Charge: " + chargeList.toString() + "<p>";
+			"<p>KEGG ID(s): " + keggIdList.toString() +
+			"<p>CHEBI ID(s): " + chebiIdList.toString() +
+			"<p>Charge: " + chargeList.toString();
 		return htmlName;
 	}
 	

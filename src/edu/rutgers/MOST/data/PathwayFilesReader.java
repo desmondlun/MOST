@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.presentation.GraphicalInterfaceConstants;
+import edu.rutgers.MOST.presentation.PathwaysFrameConstants;
 import edu.rutgers.MOST.presentation.Utilities;
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -385,8 +386,8 @@ public class PathwayFilesReader {
 						// entry such as "-1"
 						if (pm.getKeggId().startsWith("C") || pm.getKeggId().startsWith("G")) {
 							name = "<html>" + pm.getAbbreviation() + "<p>Name: " +
-								pm.getNames().get(0) + "<p>KEGG Id: " + pm.getKeggId() +
-								"<p>Metabolite Database Id: " + pm.getId();
+								pm.getNames().get(0) + "<p>KEGG ID: " + pm.getKeggId() +
+								"<p>" + PathwaysFrameConstants.METABOLITES_DB_ID_HEADING + pm.getId();
 						}
 						String abbr = pm.getAbbreviation();
 						if (LocalConfig.getInstance().getKeggIdMetaboliteMap().containsKey(pm.getKeggId())) {
@@ -658,7 +659,7 @@ public class PathwayFilesReader {
 						}
 						pr.writeReactionEquation();
 						pr.setName(pr.getEquation());
-						pr.setDisplayName("<html>" + pr.getEquation() +"<p> EC Number(s): " + pr.getEcNumbers() + "<p> Reaction Database Id: " + pr.getReactionId());
+						pr.setDisplayName("<html>" + pr.getEquation() +"<p> EC Number(s): " + pr.getEcNumbers() + "<p>" + PathwaysFrameConstants.REACTIONS_DB_ID_HEADING + pr.getReactionId());
 						pr.setKeggReactantIds(keggReactantIds);
 						pr.setKeggProductIds(keggProductIds);
 						pr.setKeggReactantIdsDataMap(keggReactantIdsDataMap);

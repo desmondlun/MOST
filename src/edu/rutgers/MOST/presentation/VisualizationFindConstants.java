@@ -4,9 +4,9 @@ import java.util.Arrays;
 
 public class VisualizationFindConstants {
 	
-	public static final String KEGG_METABOLITE_ID_ITEM = "KEGG Metabolite Id";
+	public static final String KEGG_METABOLITE_ID_ITEM = "KEGG Metabolite ID";
 	public static final String EC_NUMBER_ITEM = "EC Number";
-	public static final String KEGG_REACTION_ID_ITEM = "KEGG Reaction Id";
+	public static final String KEGG_REACTION_ID_ITEM = "KEGG Reaction ID";
 	
 	public static final String[] FIND_BY_COLUMN_LIST = 
 		{ 
