@@ -150,8 +150,10 @@ A{text-decoration:none}
 	<p><strong>Step 1</strong></p>
 	
 	<blockquote><strong>Load Model. </strong>
+	Select File –> Load from Model Collection Database (Alt+F then Alt+D). 
 	For a test purpose, select <strong>ecoli_core_model</strong>, 
-	then click the OK button on the Model Collection dialog. This model will be used for this tutorial.
+	then click the OK button on the Model Collection dialog. This model will be used for this tutorial
+	since it is a small model and therefore visualization will be rapid on any computer.
 	Notice the "Yes" entry in the Identifiers column, meaning the model has KEGG IDs
 	or ChEBI IDs or both. Only models with identifiers can be visualized. See the
 	<a href="visualization_menu.html">Visualization Menu page</a> for more on identifiers.
@@ -190,7 +192,9 @@ A{text-decoration:none}
 	<blockquote>A Visualization report will appear on top of the Visualization frame. The report lists reactions that were graphed
 	and not graphed. For the ecoli_core_model, all 49 of the reactions in the cytosol compartment will be visualized
 	and listed in the Plotted Reactions category. The OK button on the bottom of the report or X button on the top right 
-	can be used to close the report, or the report can be minimized to view the Visualization frame.</blockquote>
+	can be used to close the report, or the report can be minimized to view the Visualization frame. If the report was closed
+	it can easily be viewed again by selecting Options –> Visualization Options -> Show Visualization Report 
+	from the Graphical Interface menu bar.(Alt+O then Alt+V then Alt+R).</blockquote>
 
 	<p align="center"><a href="images/visualization_report-ecoli_core.jpg" target="_blank">
 	<img src ="images/visualization_report-ecoli_core.jpg" alt="Image - Visualization Report" border="0" height="80%" width="80%"></a></p>
@@ -207,7 +211,8 @@ A{text-decoration:none}
 	<blockquote><strong>Navigate the Visualization</strong></blockquote>
 
 	<blockquote> 
-	The visualization can be navigated by dragging the mouse inside the drawing or moving the scroll bars. The "+" button
+	MOST-Visualization features zoom and pan navigation. 
+	The visualization can be panned by dragging the mouse inside the drawing or moving the scroll bars. The "+" button
                 will zoom in and the "-" button will zoom out. The name of the model and compartment visualized are in the
 	top left corner. A legend containing line thicknesses and the flux ranges (absolute value) that each thickness represents lies below the 
 	compartment name if the model contains any non-zero fluxes.</blockquote>
@@ -218,10 +223,21 @@ A{text-decoration:none}
 	<blockquote>The remainder of the visualization contains reaction, and metabolite nodes joined by
 	edges and pathway labels. See <a href="help.html#visualize">Visualization Overview</a>.</blockquote>
 
+	<p><strong>Step 4</strong></p>
+
+	<blockquote><strong>Save the Visualization as an SVG file</strong></blockquote>
+
+	<blockquote>Using the menu bar on the Visualization Frame, select File –> Save Graph As SVG (Alt+F then Alt+S), select a directory to save to, 
+	then type in a name for the file. If the name does not end with ".svg", the name will be appended 
+	with the extension. The entire graph will be written as an SVG (Scalable Vector Graphics) file. SVG files can be edited using
+	vector graphics editing software such as the commercial program <a href="http://www.adobe.com/products/illustrator.html" target="_blank">Adobe Illustrator</a>.
+	Free programs are also available for editing SVG files such as 
+	<a href="https://inkscape.org/en/download/windows/" target="_blank">Inkscape</a>.</blockquote>
+
 	<blockquote>The visualization of the ecoli_core is rather sparse considering the small number of reactions present.
 	After becoming accustomed to the appearance and navigation of the visualization of a small model, 
 	try loading a larger model such as
-	iAF1260 which also has a "Yes" in the Identifiers column.</blockquote>
+	iAF1260 or another model that has a "Yes" in the Identifiers column.</blockquote>
 
 	</td>
 	</tr>
