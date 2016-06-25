@@ -4155,7 +4155,7 @@ public class GraphicalInterface extends JFrame {
 					curSettings.add("LastSBML", rawPathName);
 
 					String rawFilename = file.getName();				
-					if (!rawFilename.endsWith(".xml") && !rawFilename.endsWith(".sbml")) {
+					if (!rawFilename.toLowerCase().endsWith(".xml") && !rawFilename.toLowerCase().endsWith(".sbml")) {
 						JOptionPane.showMessageDialog(null,                
 								"Not a Valid SBML File.",                
 								"Invalid SBML File",                                

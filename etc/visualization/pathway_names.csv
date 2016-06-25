@@ -10,7 +10,7 @@ Pathway ID,Pathway KEGG Ids,Pathway Level,Pathway Level Position,Pathway Name,Me
 8,34,38.4,-7.4,beta-Lactam antibiotics,C06564
 9,103,41,-7.9,Butanol/butyrate fermentation,C06142|C00246
 10,3,6.7,-7.2,Pentose interconversions,C00181
-11,61,0.2,-1.4,Polysaccarides,C00317|C00718|C00760
+11,61,0.2,-1.6,Polysaccarides,C00317|C00718|C00760
 12,2,5.5,-3.1,Entner-Douderoff pathway,C04442
 13,-1,10.7,-1.1,Methane oxidation,C01438
 14,2,7.4,-0.8,Pentose cycle,C00279|C00281
