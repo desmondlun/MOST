@@ -292,54 +292,6 @@ A{text-decoration:none}
 	has advanced find options such as find by Exact Match by Metabolite Abbreviation, KEGG Metabolite ID, EC Number, KEGG
 	Reaction ID, and Reaction Abbreviation to refine your search.</blockquote>
 
-	<p><a name="about"><strong>  About Visualization </strong></a></p>
-
-	<blockquote>The Metabolic Pathways portion of <a href="http://biochemical-pathways.com/#/map/1">Roche Biochemical Pathways map</a> 
-was used as a guide for positions of 
-metabolites and reactions. 
-<a href="http://www.genome.jp/kegg/pathway.html">KEGG Pathway Database</a> was used to as a source for possible reactions, as well as models 
-such as E. Coli iAF1260, iJO1366, and yeast_7.5_cobra. These sources were used to map ~1800 reactions most of which 
-include metabolites from the Roche map. Metabolites and reactions not present in the Roche map were added to our map 
-based on constraints such as belonging to the same pathway as reactions in the Roche map and whether there was available 
-space in the map for a reaction and associated metabolites. One problem with using the Roche map is that there are many 
-multi-step reactions that are condensed into one step whereas the models available include most or all of these steps. In most 
-cases there was enough room to map all of the steps. A database was created with tables matching reactions and metabolites 
-to positions in the map and metabolites to reactions.</blockquote>
-<blockquote><a href="http://www.genome.jp/kegg/">KEGG</a> IDs,
-	<a href="https://www.ebi.ac.uk/chebi/">ChEBI</a> IDs, or
-	<a href="http://blog.theseed.org/model_seed/">Model SEED</a> IDs 
-are required to identify metabolites, 
-since these identifiers serve as positive identifiers of a metabolite. 
-Only reactions where all metabolites have identifiers are considered. Reactions are mapped by compartment. Reactions and 
-metabolites that participate in a given reaction are identified by matching KEGG IDs of reactants and products from the model 
-to reactants and products in this database in forward or reverse order. Protons in reactions from the model are excluded from 
-this matching and water can optionally be excluded since these species are commonly omitted in commonly used models. If 
-EC Numbers or KEGG IDs for reactions are present in a model, the requirements for a match are less strict, and a reaction is 
-considered a match if the identifier matches the identifier in the database unless a species is present in the database that is not 
-in the model. (An example: one enzyme can catalyze several sugars.) If no identifier is present for a reaction, an exact match is
-required for identification. Due to space constraints in the map, there is a maximum of three reactions connecting any pair of major 
-metabolites in a pathway in most cases. Classes of reactions and metabolites are used to limit the number of reaction nodes to 
-three. These classes are used in redox reactions which commonly have three types of reactions, reactions involving 
-NAD/NADP - NADH/NADPH, reactions involving peroxide, and reactions with the broad classes of acceptor and reduced acceptor. 
-Examples of acceptor/reduced acceptor pairs are FAD/FADH2, Ferricytochrome c/Ferrocytochrome c, and quinol/quinone. 
-Cofactors such as AMP/ADP/ATP can also be substituted for by similar compounds in reactions such as GMP/GDP/GTP, 
-IMP/IDP/ITP and others. Compounds such as fatty acids where the compounds are the same except for carbon length are 
-considered to be classes of compounds, and some sugars are treated the same as many models do not distinguish between 
-D-Glucose, alpha-D-Glucose and beta-D-Glucose for example. Multiple reactions may be mapped to a reaction position and 
-associated metabolites due to the use of these classes.</blockquote> 
-<blockquote>The JUNG library in Java is used to draw the map from positions in this database. A report is generated after 
-visualizing the model with lists of reactions that have identifiers but are not present in the database, reactions where one or 
-more metabolites is not identified, and reactions that have been graphed.</blockquote>
-<blockquote>Locating models with KEGG IDs or ChEBI IDs as identifiers has proven difficult, but models with Model SEED IDs
-can also be visualized which means a large number of models can be visualized. 
-Our method has been tested on 35 models. 
-About 76% of reactions where all metabolites have identifiers are mapped in these models on average
-in compartments where a significant number of reactions have identifiers 
-Theoretically more reactions with identified metabolites should be able to be mapped, but these reactions 
-will not fit in the Roche map template.</blockquote>
-
-	</blockquote>
-
 	</td>
 	</tr>
 	</table>

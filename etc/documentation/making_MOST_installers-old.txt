@@ -23,4 +23,36 @@ Click OK for next two dialogs.
 and README, and SOURCES from folder created in step 3 must be placed in this folder. This folder will be used to create a tar.gz
 for Linux and zip file.
 
-6. Update links in download.htmll.
+6. Create Windows executable:
+Open launch4j
+In Basic Tab - Output file - browse for folder created in step 2. Type in MOST.exe. 
+In Jar runtime path type MOST.jar
+Check - "Don't wrap the jar, launch only" checkbox
+Browse for most32.ico in folder from step 3 in etc subdirectory.
+In JRE tab type 1.7.0 in Min JRE version
+
+You can save this set up if desired in folder from step 3.
+
+Click the gear icon on top to build exe.
+If the arrow is clicked, MOST will launch but strangely no icons will exist in
+the toolbar. Instead to test exe, double click newly created exe in folder.
+
+7. Create installer:
+Copy contents from MOST_distXXXXXX folder into a new folder MOSTWinXXXXXX where XXXXXX is the date.
+Delete linux and mac folders from the lib folder.
+Open InstallSimple.
+Open MOST.ispro in GitHub MOST repository local folder in dist folder
+Click Next until Graphics page is reached
+Update link in Graphics page to current folder created in step 3 etc folder
+for Splash screen.
+On Files to distribute screen, browse for folder in step 3, then choose
+Special Folder -> System Drive and type Program Files\MOST in
+Setup path box.
+Click Next
+In Shortcuts select MOST.exe then check Desktop, Start Menu, and 
+Program Files
+Click Next
+Click Next until Build Setup is reached. Click Build.
+Rename Setup.exe to MOST_Setup.exe
+
+8. Update links in download.html and Installing_MOST.html.
