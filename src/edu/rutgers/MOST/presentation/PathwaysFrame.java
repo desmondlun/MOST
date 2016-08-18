@@ -998,17 +998,32 @@ public class PathwaysFrame extends JApplet {
 		return defaultArrow;
 	}
 
-	public void createNodeInformationDialog(Object arg0) {
+	public void createNodeInformationDialog(final Object arg0) {
 		final ArrayList<Image> icons = new ArrayList<Image>(); 
 		icons.add(new ImageIcon("etc/most16.jpg").getImage()); 
 		icons.add(new ImageIcon("etc/most32.jpg").getImage());
-
+		
 		if (getNodeInformationDialog() != null) {
 			getNodeInformationDialog().dispose();
 		}
 		//NodeInformationDialog frame = new NodeInformationDialog(nodeName(arg0.toString()));
 		NodeInformationDialog frame = new NodeInformationDialog(removedDatabaseId(nodeName(arg0.toString())));
 		setNodeInformationDialog(frame);
+		
+		getNodeInformationDialog().copyNodeInfoButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				String info = arg0.toString();
+				if (info.equals(compartmentLabel)) {
+					info += "\n" + "Compartment: " + LocalConfig.getInstance().getSelectedCompartmentName();
+				}
+				//String cleaned = cleanupNodeInfo(info);
+				String cleaned = cleanupNodeInfo(removedDatabaseId(nodeName(info)));
+				setClipboardContents(cleaned);
+				if (getNodeInformationDialog() != null) {
+					getNodeInformationDialog().dispose();
+				}
+			}
+		});
 
 		frame.pack();
 		frame.setIconImages(icons);

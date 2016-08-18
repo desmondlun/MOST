@@ -21,6 +21,7 @@ public class NodeInformationDialog extends JDialog {
 	// html can be used to make multi line label.
 	public static JLabel messageLabel = new JLabel();	
 	public static JButton okButton = new JButton("OK");	
+	public JButton copyNodeInfoButton = new JButton("Copy Node Information to Clipboard");
 	
 	public NodeInformationDialog(String info) {
 		// need to set up box layout
@@ -48,6 +49,9 @@ public class NodeInformationDialog extends JDialog {
 	    JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 		buttonPanel.add(okButton);
+		JLabel label = new JLabel("  ");
+		buttonPanel.add(label);
+		buttonPanel.add(copyNodeInfoButton);
 		buttonPanel.setBorder(BorderFactory.createEmptyBorder(0,20,20,20));
 
 		hbButton.add(buttonPanel);
