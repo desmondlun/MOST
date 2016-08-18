@@ -11,10 +11,27 @@ import edu.rutgers.MOST.presentation.ResizableDialog;
 
 public class QuadraticIPoptSolver extends Ipopt implements QuadraticSolver
 {
+	private static String dependsFolder = "lib/";
+	static {
+		if( System.getProperty( "os.name" ).toLowerCase().contains( "windows" ) )
+		{
+			dependsFolder += "win" + System.getProperty( "sun.arch.data.model" );
+		}
+		else if( System.getProperty( "os.name" ).toLowerCase()
+				.contains( "mac os x" ) )
+			dependsFolder += "mac";
+		else
+			dependsFolder += "linux";
+	}
+	
 	private ArrayList< Double > soln = new ArrayList< Double >();
 	private SolverComponent component = new SolverComponentLightWeight();
 	protected ResizableDialog dialog = new ResizableDialog( "Error",
 			"IPopt Quadratic Solver Error", "IPopt Quadratic Solver Error" );
+	
+	public QuadraticIPoptSolver() {
+		super(dependsFolder, Ipopt.DLLNAME);
+	}
 	
 	/**
 	 * Process the stack trace for exceptions or errors

@@ -19,7 +19,7 @@
 	<classpathentry kind="lib" path="lib/jung-io-2.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/jung-jai-2.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/jung-visualization-2.0.1.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_92"/>
 	<classpathentry kind="lib" path="lib/gurobi.jar"/>
 	<classpathentry kind="lib" path="lib/glpk-java.jar">
 		<attributes>

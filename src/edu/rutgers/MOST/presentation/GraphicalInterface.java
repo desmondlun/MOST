@@ -25,10 +25,10 @@ import org.jdesktop.swingx.decorator.HighlightPredicate;
 import org.sbml.jsbml.SBMLDocument;
 import org.sbml.jsbml.SBMLReader;
 
-import edu.rutgers.MOST.Analysis.Eflux2;
-import edu.rutgers.MOST.Analysis.FBA;
-import edu.rutgers.MOST.Analysis.GDBB;
-import edu.rutgers.MOST.Analysis.SPOT;
+import edu.rutgers.MOST.analysis.Eflux2;
+import edu.rutgers.MOST.analysis.FBA;
+import edu.rutgers.MOST.analysis.GDBB;
+import edu.rutgers.MOST.analysis.SPOT;
 import edu.rutgers.MOST.config.LocalConfig;
 import edu.rutgers.MOST.data.ConfigProperties;
 import edu.rutgers.MOST.data.ECNumberMapCreator;
@@ -4132,7 +4132,6 @@ public class GraphicalInterface extends JFrame {
 			SaveChangesPrompt();
 			saveFile = false;
 			if (openFileChooser) {
-				JTextArea output = null;
 				JFileChooser fileChooser = new JFileChooser();
 				fileChooser.setDialogTitle("Load SBML File"); 
 				fileChooser.setFileFilter(new SBMLFileFilter());
@@ -4146,7 +4145,7 @@ public class GraphicalInterface extends JFrame {
 				fileChooser.setCurrentDirectory(new File(u.lastPath(lastSBML_path, fileChooser)));					
  
 				//... Open a file dialog.
-				int retval = fileChooser.showOpenDialog(output);
+				int retval = fileChooser.showOpenDialog(null);
 				if (retval == JFileChooser.APPROVE_OPTION) {
 					loadSetUp();
 					//... The user selected a file, get it, use it.
@@ -4256,7 +4255,7 @@ public class GraphicalInterface extends JFrame {
 		Utilities u = new Utilities();
 		// if path is null or does not exist, default used, else last path used
 		final JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));	
+		fileChooser.setCurrentDirectory(new File(u.lastPath(lastCSV_path, fileChooser)));
 		fileChooser.setFileSelectionMode( JFileChooser.FILES_ONLY );
 		fileChooser.setDialogTitle( title );
 		fileChooser.setFileFilter( new javax.swing.filechooser.FileFilter()
@@ -4282,8 +4281,11 @@ public class GraphicalInterface extends JFrame {
 			}
 			
 		});
-		if( JFileChooser.APPROVE_OPTION != fileChooser.showOpenDialog( null ) )
+
+		int retVal = fileChooser.showOpenDialog( null );
+		if( retVal != JFileChooser.APPROVE_OPTION )
 			return null;
+		
 		return fileChooser.getSelectedFile();
 	}
 	
@@ -13785,7 +13787,15 @@ public class GraphicalInterface extends JFrame {
 	/********************************************************************************************/
 	
 	public static void main(String[] args) {
-	//public static void main(String[] args) throws Exception {
+		try {
+			// Set cross-platform Java L&F (also called "Metal")
+			UIManager.setLookAndFeel(
+				UIManager.getCrossPlatformLookAndFeelClassName());
+		} 
+		catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+			// handle exception
+		}
+
 		ResizableDialog dialog = new ResizableDialog("Error", "Error", "Error");
 		dialog.setLocationRelativeTo(null);
 		try {

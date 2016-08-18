@@ -1,4 +1,4 @@
-package edu.rutgers.MOST.Analysis;
+package edu.rutgers.MOST.analysis;
 
 import java.util.ArrayList;
 import java.util.HashMap;

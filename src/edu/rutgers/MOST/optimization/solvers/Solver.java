@@ -93,8 +93,8 @@ public interface Solver
 	 *  Set the vector of gene expression values for the fluxes.
 	 *  The value of each index corresponds to the value of the same index in the flux vector
 	 * @param geneExpr The gene expression vector
-	 * @see edu.rutgers.MOST.Analysis.Eflux2
-	 * @see edu.rutgers.MOST.Analysis.SPOT
+	 * @see edu.rutgers.MOST.analysis.Eflux2
+	 * @see edu.rutgers.MOST.analysis.SPOT
 	 */
 	public abstract void setGeneExpr( Vector< Double > geneExpr );
 

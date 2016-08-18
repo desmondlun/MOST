@@ -528,11 +528,10 @@ public class GraphicalInterfaceConstants
 	// folder
 	// in Windows XP -
 	// http://stackoverflow.com/questions/1198911/how-to-get-local-application-data-folder-in-java
-	public static final String SETTINGS_PATH_SUFFIX_WINDOWS_7 = "\\AppData\\Local";
+	public static final String SETTINGS_PATH_SUFFIX_WINDOWS_7 = "/AppData/Local";
+	public static final String SETTINGS_PATH_SUFFIX_WINDOWS_XP = "/Local Settings/Application Data";
 
-	public static final String SETTINGS_PATH_SUFFIX_WINDOWS_XP = "\\Local Settings\\Application Data";
-
-	public static final String FOLDER_NAME = "\\MOST\\";
+	public static final String FOLDER_NAME = "/MOST/";
 
 	public static final String EDIT_OPT_TABLE_ERROR = "Results Tables Are Not Editable";
 	public static final String EDIT_OPT_TABLE_ERROR_TITLE = "Read-Only Table";

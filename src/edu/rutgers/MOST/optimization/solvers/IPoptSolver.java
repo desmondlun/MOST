@@ -9,6 +9,19 @@ import org.coinor.Ipopt;
 
 public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, LinearSolver
 {
+	private static String dependsFolder = "lib/";
+	static {
+		if( System.getProperty( "os.name" ).toLowerCase().contains( "windows" ) )
+		{
+			dependsFolder += "win" + System.getProperty( "sun.arch.data.model" );
+		}
+		else if( System.getProperty( "os.name" ).toLowerCase()
+				.contains( "mac os x" ) )
+			dependsFolder += "mac";
+		else
+			dependsFolder += "linux";
+	}
+	
 	private boolean usingNormalConstraint = false;
 	private boolean obj_set = false;
 	SolverComponent component = new SolverComponentHeavyWeight();
@@ -19,6 +32,7 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 	
 	public IPoptSolver()
 	{
+		super(dependsFolder, Ipopt.DLLNAME);
 	}
 
 	@Override
@@ -73,11 +87,11 @@ public  abstract class IPoptSolver extends Ipopt implements NonlinearSolver, Lin
 		this.create( component.variableCount(), constraintCount,
 				constraintCount * component.variableCount(), component.variableCount() * component.variableCount(), Ipopt.C_STYLE );
 		
-		this.setNumericOption( KEY_OBJ_SCALING_FACTOR, -1.0 );
+		this.setNumericOption( "obj_scaling_factor", -1.0 );
 		this.setIntegerOption( "mumps_mem_percent", 500 );
-		this.setIntegerOption( KEY_MAX_ITER, 30000 );
-		this.setStringOption( KEY_HESSIAN_APPROXIMATION, "limited-memory" );
-		//this.addNumOption( KEY_ACCEPTABLE_TOL, 1e-9 );
+		this.setIntegerOption( "max_iter", 30000 );
+		this.setStringOption( "hessian_approximation", "limited-memory" );
+		//this.addNumOption( "acceptable_tol", 1e-9 );
 		this.OptimizeNLP();
 		
 		for( double d : this.getVariableValues() )

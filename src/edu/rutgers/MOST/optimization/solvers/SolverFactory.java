@@ -9,7 +9,7 @@ public class SolverFactory
 	 * Create a solver capable of linear optimizations
 	 * @param algorithm FBA or GDBB only
 	 * @return A linear optimizer
-	 * @see edu.rutgers.MOST.Analysis.FBA
+	 * @see edu.rutgers.MOST.analysis.FBA
 	 */
 	public static LinearSolver createFBASolver()
 	{
@@ -30,8 +30,8 @@ public class SolverFactory
 	 * Create a solver capable of mixed-integer linear optimizations
 	 * @param algorithm FBA or GDBB only
 	 * @return A linear optimizer
-	 * @see edu.rutgers.MOST.Analysis.FBA
-	 * @see edu.rutgers.MOST.Analysis.GDBB
+	 * @see edu.rutgers.MOST.analysis.FBA
+	 * @see edu.rutgers.MOST.analysis.GDBB
 	 */
 	public static MILSolver createGDBBSolver()
 	{
@@ -51,7 +51,7 @@ public class SolverFactory
 	/**
 	 * Create a solver capable of quadratic optimizations
 	 * @return A quadratic optimizer
-	 * @see edu.rutgers.MOST.Analysis.Eflux2
+	 * @see edu.rutgers.MOST.analysis.Eflux2
 	 */
 	public static QuadraticSolver createQuadraticSolver()
 	{
