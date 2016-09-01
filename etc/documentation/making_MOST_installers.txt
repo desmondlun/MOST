@@ -12,15 +12,17 @@ Note if Project is loaded through git into Eclipse, you will not be able to make
 GraphicalInterfaceConstants.DEBUG_MODE should remain true in the GitHub repository.
 Set PathwaysFrameConstants.HIDE_DATABASE_IDS = true;
 
-4. Right click on the MOST project folder in Eclipse and select
+4. Remove contents of dist folder if exists.
+
+5. Right click on the MOST project folder in Eclipse and select
 Export -> Java -> Runnable Jar. Select "Extract required libraries into generated jar.
 Locate the correct GraphicalInterface, and browse for folder. 
 Browse for folder created in step 2 and type in MOST.jar
 in input box. Click Finish.
 Click OK for next two dialogs.
 
-5. Create a folder MOST_alpha-x where x is version. The MOST.jar, etc folder, lib folder, ModelCollection.csv,
+6. Create a folder MOST_alpha-x where x is version. The MOST.jar, etc folder, lib folder, ModelCollection.csv,
 and README, and SOURCES from folder created in step 3 must be placed in this folder. This folder will be used to create a tar.gz
 for Linux and zip file.
 
-6. Update links in download.htmll.
+7. Update links in download.htmll.
