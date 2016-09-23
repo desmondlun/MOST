@@ -56,11 +56,14 @@ public abstract class GurobiSolver implements MILSolver
 		{
 			try
 			{
+				System.out.println("java.library.path = " + System.getProperty( "java.library.path" ));
+				
 				GRBEnv env = new GRBEnv();
 				env.dispose();
 			}
 			catch ( GRBException e ) // necessary due to throws declaration
 			{
+				e.printStackTrace();
 			}
 		}
 		catch ( UnsatisfiedLinkError | NoClassDefFoundError except )
@@ -70,9 +73,9 @@ public abstract class GurobiSolver implements MILSolver
 
 		return true; // gurobi does link
 	}
+	
 	protected void processStackTrace( final Exception e )
 	{
-		//e.printStackTrace();
 		Thread t = new Thread()
 		{
 			@Override
