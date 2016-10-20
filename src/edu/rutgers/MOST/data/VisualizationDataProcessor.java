@@ -220,10 +220,8 @@ public class VisualizationDataProcessor {
 				String type = pathway.getMetabolitesData().get(Integer.toString(j)).getType();
 				String keggId = pathway.getMetabolitesData().get(Integer.toString(j)).getKeggId();
 				boolean drawMetabolite = true;
+				String id = pathway.getMetabolitesData().get(Integer.toString(j)).getId();
 				ArrayList<String> abbrList = new ArrayList<String>();
-				if (LocalConfig.getInstance().isGraphCalvinCycleSelected()) {
-					System.out.println("true");
-				}
 				if (LocalConfig.getInstance().getKeggIdMetaboliteMap().containsKey(keggId)) {
 					for (int k = 0; k < LocalConfig.getInstance().getKeggIdMetaboliteMap().get(keggId).size(); k++) {
 						if (LocalConfig.getInstance().getKeggIdMetaboliteMap().get(keggId).get(k).getCompartment().
@@ -247,6 +245,12 @@ public class VisualizationDataProcessor {
 						} else {
 							drawMetabolite = false;
 						}
+					}
+				}
+				if (!LocalConfig.getInstance().isGraphMissingMetabolitesSelected()) {
+					if (!LocalConfig.getInstance().isGraphCalvinCycleSelected() && 
+						PathwaysFrameConstants.calvinCycleMetaboliteIDsList.contains(id)) {
+						drawMetabolite = false;
 					}
 				}
 				if (drawMetabolite) {
@@ -353,6 +357,12 @@ public class VisualizationDataProcessor {
 					if (!LocalConfig.getInstance().isGraphMissingMetabolitesSelected()) {
 						drawReaction = false;
 					} 
+				}
+				if (!LocalConfig.getInstance().isGraphMissingMetabolitesSelected()) {
+					if (!LocalConfig.getInstance().isGraphCalvinCycleSelected() && 
+						PathwaysFrameConstants.calvinCycleReactionIDsList.contains(pn.getDataId())) {
+						drawReaction = false;
+					}
 				}
 				if (drawReaction) {
 					//System.out.println(pathway.getReactionsData().get(Integer.toString(k)).getEcNumbers());
@@ -581,8 +591,14 @@ public class VisualizationDataProcessor {
 						drawPathwayName = false;
 					}
 				}
+				String pathwayName = LocalConfig.getInstance().getPathwayNameMap().get(Integer.toString(p)).getName();
+				if (!LocalConfig.getInstance().isGraphMissingMetabolitesSelected()) {
+					if (!LocalConfig.getInstance().isGraphCalvinCycleSelected() && pathwayName.equals("Calvin Cycle")) {
+						drawPathwayName = false;
+					}
+				}
 				if (drawPathwayName) {
-					String pathwayName = LocalConfig.getInstance().getPathwayNameMap().get(Integer.toString(p)).getName();
+					//String pathwayName = LocalConfig.getInstance().getPathwayNameMap().get(Integer.toString(p)).getName();
 					pathwayNames.add(pathwayName);
 					PathwayNameNode pnn = new PathwayNameNode();
 					double x = 0;

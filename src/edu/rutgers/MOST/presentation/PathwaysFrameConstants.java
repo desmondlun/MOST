@@ -271,23 +271,26 @@ public class PathwaysFrameConstants {
 	
 	// These reactions only occur in the Calvin cycle in Roche and Carbon Fixation in Photosynthetic Organisms pathway in KEGG.
 	// The reactions also occur in Carbon Metabolism overall view in KEGG.
-	public static final Integer[] CALVIN_CYCLE_REQUIRED_REACTION_IDS = {1561, 1570};
+	public static final String[] CALVIN_CYCLE_REQUIRED_REACTION_IDS = {"1561", "1570"};
 	
-	public static java.util.List<Integer> calvinCycleRequiredReactionIDsList = Arrays.asList(CALVIN_CYCLE_REQUIRED_REACTION_IDS);
+	public static java.util.List<String> calvinCycleRequiredReactionIDsList = Arrays.asList(CALVIN_CYCLE_REQUIRED_REACTION_IDS);
 	
-	public static final Integer[] CALVIN_CYCLE_REACTION_IDS = {1561, 1562, 1563, 1564, 1565, 1566, 1567,
-		1568, 1569, 1570, 1571, 1572, 1573, 1574, 1575, 1576, 1577, 1578, 1579, 1580, 1581, 1582,
-		1583, 1584, 1585, 1848};
+	public static final String[] CALVIN_CYCLE_REACTION_IDS = {"1561", "1562", "1563", "1564", 
+		"1565", "1566", "1567", "1568", "1569", "1570", "1571", "1572", 
+		"1573", "1574", "1575", "1576", "1577", "1578", "1579", "1580", 
+		"1581", "1582", "1583", "1584", "1585", "1848"};
 	
-	public static java.util.List<Integer> calvinCycleReactionIDsList = Arrays.asList(CALVIN_CYCLE_REACTION_IDS);
+	public static java.util.List<String> calvinCycleReactionIDsList = Arrays.asList(CALVIN_CYCLE_REACTION_IDS);
 	
-	public static final Integer[] CALVIN_CYCLE_METABOLITE_IDS = {4068, 4069, 4070, 4071, 4072, 4073, 4074,
-		4075, 4076, 4077, 4078, 4079, 4080, 4081, 4082, 4083, 4084, 4085, 4086, 4087, 4088, 4089, 4090, 4091,
-		4092, 4093, 4094, 4095, 4096, 4097, 4098, 4099, 4100, 4101, 4102, 4103, 4104, 4105, 4106, 4107, 4108,
-		4109, 4110, 4111, 4112, 4113, 4114, 4115, 4116, 4117, 4118, 4119, 4120, 4121, 4122, 4123, 4124, 4125,
-		4126, 4751, 4752, 4753};
+	public static final String[] CALVIN_CYCLE_METABOLITE_IDS = {"4068", "4069", "4070", "4071", 
+		"4072", "4073", "4074", "4075", "4076", "4077", "4078", "4079", "4080", "4081", "4082",
+		"4083", "4084", "4085", "4086", "4087", "4088", "4089", "4090", "4091", "4092", "4093", 
+		"4094", "4095", "4096", "4097", "4098", "4099", "4100", "4101", "4102", "4103", "4104", 
+		"4105", "4106", "4107", "4108", "4109", "4110", "4111", "4112", "4113", "4114", "4115", 	
+		"4116", "4117", "4118", "4119", "4120", "4121", "4122", "4123", "4124", "4125",
+		"4126", "4751", "4752", "4753"};
 	
-	public static java.util.List<Integer> calvinCycleMetaboliteIDsList = Arrays.asList(CALVIN_CYCLE_METABOLITE_IDS);
+	public static java.util.List<String> calvinCycleMetaboliteIDsList = Arrays.asList(CALVIN_CYCLE_METABOLITE_IDS);
 	
 	public static final boolean HIDE_DATABASE_IDS = false;
 	
