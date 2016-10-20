@@ -68,6 +68,7 @@ import edu.rutgers.MOST.data.TextReactionsWriter;
 import edu.rutgers.MOST.data.TransportReactionCategorizer;
 import edu.rutgers.MOST.data.TransportReactionsByCompartments;
 import edu.rutgers.MOST.data.UndoConstants;
+import edu.rutgers.MOST.data.VisualizationConfigProperties;
 import edu.rutgers.MOST.data.VisualizationDataProcessor;
 import edu.rutgers.MOST.data.VisualizationFluxesProcessor;
 import edu.rutgers.MOST.logic.ReactionParser;
@@ -13458,13 +13459,53 @@ public class GraphicalInterface extends JFrame {
 	 * Sets Visualization Options defaults on startup of Graphical Interface
 	 */
 	public void setVisualizationOptionsDefaults() {
-		// may eventually get this from a config file
 		LocalConfig.getInstance().setGraphMissingMetabolitesSelected(VisualizationOptionsConstants.GRAPH_MISSING_METABOLITES_DEFAULT);
 		LocalConfig.getInstance().setGraphCalvinCycleSelected(VisualizationOptionsConstants.GRAPH_CALVIN_CYCLE_DEFAULT);
 		LocalConfig.getInstance().setScaleEdgeThicknessSelected(VisualizationOptionsConstants.SCALE_EDGE_THICKNESS_DEFAULT);
 		LocalConfig.getInstance().setIgnoreProtonSelected(VisualizationOptionsConstants.IGNORE_PROTON_DEFAULT);
 		LocalConfig.getInstance().setIgnoreWaterSelected(VisualizationOptionsConstants.IGNORE_WATER_DEFAULT);
 		LocalConfig.getInstance().setShowVisualizationReportSelected(VisualizationOptionsConstants.SHOW_VISUALIZATION_REPORT_DEFAULT);
+		
+		// get preferences from config file if exists
+		VisualizationConfigProperties configProp = new VisualizationConfigProperties();
+		if (configProp.fileExists()) {
+			VisualizationConfigProperties.readFile();
+			if (VisualizationConfigProperties.getGraphMissingMetabolitesSelected() != null) {
+				if (VisualizationConfigProperties.getGraphMissingMetabolitesSelected().equals("true")) {
+					LocalConfig.getInstance().setGraphMissingMetabolitesSelected(true);
+				} else {
+					LocalConfig.getInstance().setGraphMissingMetabolitesSelected(false);
+				}
+			}
+			if (VisualizationConfigProperties.getGraphCalvinCycleSelected() != null) {
+				if (VisualizationConfigProperties.getGraphCalvinCycleSelected().equals("true")) {
+					LocalConfig.getInstance().setGraphCalvinCycleSelected(true);
+				} else {
+					LocalConfig.getInstance().setGraphCalvinCycleSelected(false);
+				}
+			}
+			if (VisualizationConfigProperties.getScaleEdgeThicknessSelected() != null) {
+				if (VisualizationConfigProperties.getScaleEdgeThicknessSelected().equals("true")) {
+					LocalConfig.getInstance().setScaleEdgeThicknessSelected(true);
+				} else {
+					LocalConfig.getInstance().setScaleEdgeThicknessSelected(false);
+				}
+			}
+			if (VisualizationConfigProperties.getIgnoreWaterSelected() != null) {
+				if (VisualizationConfigProperties.getIgnoreWaterSelected().equals("true")) {
+					LocalConfig.getInstance().setIgnoreWaterSelected(true);
+				} else {
+					LocalConfig.getInstance().setIgnoreWaterSelected(false);
+				}
+			}
+			if (VisualizationConfigProperties.getShowVisualizationReportSelected() != null) {
+				if (VisualizationConfigProperties.getShowVisualizationReportSelected().equals("true")) {
+					LocalConfig.getInstance().setShowVisualizationReportSelected(true);
+				} else {
+					LocalConfig.getInstance().setShowVisualizationReportSelected(false);
+				}
+			}
+		}
 	}
 	
 	public void clearVisualizationCollections() {

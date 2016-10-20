@@ -18,6 +18,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import edu.rutgers.MOST.config.LocalConfig;
+import edu.rutgers.MOST.data.ConfigProperties;
+import edu.rutgers.MOST.data.SettingsFactory;
+import edu.rutgers.MOST.data.VisualizationConfigProperties;
 
 public class VisualizationOptionsDialog extends JDialog {
 
@@ -166,6 +169,9 @@ public class VisualizationOptionsDialog extends JDialog {
 //				LocalConfig.getInstance().setIgnoreProtonSelected(ignoreProtonCheckBox.isSelected());
 				LocalConfig.getInstance().setIgnoreWaterSelected(ignoreWaterCheckBox.isSelected());
 				LocalConfig.getInstance().setShowVisualizationReportSelected(showVisualizationRerortCheckBox.isSelected());
+				VisualizationConfigProperties.writeToFile(Boolean.toString(graphMissingMetabolitesCheckBox.isSelected()), 
+					Boolean.toString(graphCalvinCycleCheckBox.isSelected()), Boolean.toString(scaleEdgeThicknessCheckBox.isSelected()),
+					Boolean.toString(ignoreWaterCheckBox.isSelected()), Boolean.toString(showVisualizationRerortCheckBox.isSelected()));
 				setVisible(false);
 				dispose();
 //				System.out.println(LocalConfig.getInstance().isGraphMissingReactionsSelected());
