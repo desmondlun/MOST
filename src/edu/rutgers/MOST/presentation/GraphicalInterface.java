@@ -13460,6 +13460,7 @@ public class GraphicalInterface extends JFrame {
 	public void setVisualizationOptionsDefaults() {
 		// may eventually get this from a config file
 		LocalConfig.getInstance().setGraphMissingMetabolitesSelected(VisualizationOptionsConstants.GRAPH_MISSING_METABOLITES_DEFAULT);
+		LocalConfig.getInstance().setGraphCalvinCycleSelected(VisualizationOptionsConstants.GRAPH_CALVIN_CYCLE_DEFAULT);
 		LocalConfig.getInstance().setScaleEdgeThicknessSelected(VisualizationOptionsConstants.SCALE_EDGE_THICKNESS_DEFAULT);
 		LocalConfig.getInstance().setIgnoreProtonSelected(VisualizationOptionsConstants.IGNORE_PROTON_DEFAULT);
 		LocalConfig.getInstance().setIgnoreWaterSelected(VisualizationOptionsConstants.IGNORE_WATER_DEFAULT);

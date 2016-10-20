@@ -6,13 +6,14 @@ public class VisualizationOptionsConstants {
 	public static final String VISUALIZATION_OPTIONS_MENU_ITEM_NAME = "Visualization Options";
 	
 	public static final String GRAPH_ALL_REACTIONS_METABOLITES_IN_DATABASE_NAME = "Graph All Reactions and Metabolites in Database";
+	public static final String GRAPH_CALVIN_CYCLE_NAME = "Always Graph Calvin Cycle";
 	public static final String SCALE_EDGE_THICKNESS_USING_FLUX_VALUES_NAME = "Scale Edge Thickness Using Flux Values";
 	public static final String IGNORE_PROTON_FOR_REACTION_MATCHING_NAME = "Ignore Proton for Reaction Matching";
 	public static final String IGNORE_WATER_FOR_REACTION_MATCHING_NAME = "Ignore Water for Reaction Matching";
 	public static final String SHOW_VISUALIZATION_REPORT = "Show Visualization Report";
 	
 	public static final boolean GRAPH_MISSING_METABOLITES_DEFAULT = false;
-	
+	public static final boolean GRAPH_CALVIN_CYCLE_DEFAULT = false;
 	public static final boolean SCALE_EDGE_THICKNESS_DEFAULT = true;
 	
 	public static final boolean IGNORE_PROTON_DEFAULT = true;

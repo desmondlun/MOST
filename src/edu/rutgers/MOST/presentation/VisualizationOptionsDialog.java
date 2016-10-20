@@ -28,6 +28,8 @@ public class VisualizationOptionsDialog extends JDialog {
 	
 	private JCheckBox graphMissingMetabolitesCheckBox = new JCheckBox(VisualizationOptionsConstants.GRAPH_ALL_REACTIONS_METABOLITES_IN_DATABASE_NAME);
 	
+	private JCheckBox graphCalvinCycleCheckBox = new JCheckBox(VisualizationOptionsConstants.GRAPH_CALVIN_CYCLE_NAME);
+	
 	private JCheckBox scaleEdgeThicknessCheckBox = new JCheckBox(VisualizationOptionsConstants.SCALE_EDGE_THICKNESS_USING_FLUX_VALUES_NAME);
 	
 	// Proton cannot be ignored unless reactions and metabolites positions databases are updated
@@ -48,12 +50,14 @@ public class VisualizationOptionsDialog extends JDialog {
 		
 		// set check box defaults
 		graphMissingMetabolitesCheckBox.setSelected(LocalConfig.getInstance().isGraphMissingMetabolitesSelected());
+		graphCalvinCycleCheckBox.setSelected(LocalConfig.getInstance().isGraphCalvinCycleSelected());
 		scaleEdgeThicknessCheckBox.setSelected(LocalConfig.getInstance().isScaleEdgeThicknessSelected());
 //		ignoreProtonCheckBox.setSelected(LocalConfig.getInstance().isIgnoreProtonSelected());
 		ignoreWaterCheckBox.setSelected(LocalConfig.getInstance().isIgnoreWaterSelected());
 		showVisualizationRerortCheckBox.setSelected(LocalConfig.getInstance().isShowVisualizationReportSelected());
 		
 		graphMissingMetabolitesCheckBox.setMnemonic(KeyEvent.VK_G);
+		graphCalvinCycleCheckBox.setMnemonic(KeyEvent.VK_C);
 		scaleEdgeThicknessCheckBox.setMnemonic(KeyEvent.VK_S);
 //		ignoreProtonCheckBox.setMnemonic(KeyEvent.VK_I);
 		ignoreWaterCheckBox.setMnemonic(KeyEvent.VK_W);
@@ -63,6 +67,7 @@ public class VisualizationOptionsDialog extends JDialog {
 		Box vb = Box.createVerticalBox();
 
 		Box hbGraphMissingMetabolites = Box.createHorizontalBox();
+		Box hbGraphCalvinCycle = Box.createHorizontalBox();
 		Box hbScaleEdgeThickness = Box.createHorizontalBox();
 //		Box hbIgnoreProton = Box.createHorizontalBox();
 		Box hbIgnoreWater = Box.createHorizontalBox();
@@ -79,6 +84,17 @@ public class VisualizationOptionsDialog extends JDialog {
 				VisualizationOptionsConstants.RIGHT_BORDER));
 
 		hbGraphMissingMetabolites.add(leftJustify(hbGraphMissingMetabolitesPanel));
+		
+		JPanel hbGraphCalvinCyclePanel = new JPanel();
+		hbGraphCalvinCyclePanel.setLayout(new BoxLayout(hbGraphCalvinCyclePanel, BoxLayout.X_AXIS));
+		hbGraphCalvinCyclePanel.add(graphCalvinCycleCheckBox);
+		hbGraphCalvinCyclePanel.setBorder(BorderFactory.createEmptyBorder(
+				0, 
+				VisualizationOptionsConstants.LEFT_BORDER, 
+				VisualizationOptionsConstants.SUB_TOPIC_GAP, 
+				VisualizationOptionsConstants.RIGHT_BORDER));
+
+		hbGraphCalvinCycle.add(leftJustify(hbGraphCalvinCyclePanel));
 		
 		JPanel hbScaleEdgeThicknessPanel = new JPanel();
 		hbScaleEdgeThicknessPanel.setLayout(new BoxLayout(hbScaleEdgeThicknessPanel, BoxLayout.X_AXIS));
@@ -134,6 +150,7 @@ public class VisualizationOptionsDialog extends JDialog {
 		hbButton.add(buttonPanel);
 
 		vb.add(hbGraphMissingMetabolites);
+		vb.add(hbGraphCalvinCycle);
 		vb.add(hbScaleEdgeThickness);
 //		vb.add(hbIgnoreProton);
 		vb.add(hbIgnoreWater);
@@ -144,6 +161,7 @@ public class VisualizationOptionsDialog extends JDialog {
     	ActionListener okButtonActionListener = new ActionListener() {
 			public void actionPerformed(ActionEvent prodActionEvent) {
 				LocalConfig.getInstance().setGraphMissingMetabolitesSelected(graphMissingMetabolitesCheckBox.isSelected());
+				LocalConfig.getInstance().setGraphCalvinCycleSelected(graphCalvinCycleCheckBox.isSelected());
 				LocalConfig.getInstance().setScaleEdgeThicknessSelected(scaleEdgeThicknessCheckBox.isSelected());
 //				LocalConfig.getInstance().setIgnoreProtonSelected(ignoreProtonCheckBox.isSelected());
 				LocalConfig.getInstance().setIgnoreWaterSelected(ignoreWaterCheckBox.isSelected());

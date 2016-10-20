@@ -221,6 +221,9 @@ public class VisualizationDataProcessor {
 				String keggId = pathway.getMetabolitesData().get(Integer.toString(j)).getKeggId();
 				boolean drawMetabolite = true;
 				ArrayList<String> abbrList = new ArrayList<String>();
+				if (LocalConfig.getInstance().isGraphCalvinCycleSelected()) {
+					System.out.println("true");
+				}
 				if (LocalConfig.getInstance().getKeggIdMetaboliteMap().containsKey(keggId)) {
 					for (int k = 0; k < LocalConfig.getInstance().getKeggIdMetaboliteMap().get(keggId).size(); k++) {
 						if (LocalConfig.getInstance().getKeggIdMetaboliteMap().get(keggId).get(k).getCompartment().

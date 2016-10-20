@@ -963,6 +963,7 @@ public class LocalConfig {
 
 	// Visualization options
 	private boolean graphMissingMetabolitesSelected;
+	private boolean graphCalvinCycleSelected;
 	private boolean scaleEdgeThicknessSelected;
 	private boolean ignoreProtonSelected;
 	private boolean ignoreWaterSelected;
@@ -975,6 +976,16 @@ public class LocalConfig {
 	public void setGraphMissingMetabolitesSelected(
 		boolean graphMissingMetabolitesSelected) {
 		this.graphMissingMetabolitesSelected = graphMissingMetabolitesSelected;
+	}
+	
+	public boolean isGraphCalvinCycleSelected()
+	{
+		return graphCalvinCycleSelected;
+	}
+
+	public void setGraphCalvinCycleSelected( boolean graphCalvinCycleSelected )
+	{
+		this.graphCalvinCycleSelected = graphCalvinCycleSelected;
 	}
 
 	public boolean isScaleEdgeThicknessSelected() {
