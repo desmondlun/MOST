@@ -593,7 +593,8 @@ public class VisualizationDataProcessor {
 				}
 				String pathwayName = LocalConfig.getInstance().getPathwayNameMap().get(Integer.toString(p)).getName();
 				if (!LocalConfig.getInstance().isGraphMissingMetabolitesSelected()) {
-					if (!LocalConfig.getInstance().isGraphCalvinCycleSelected() && pathwayName.equals("Calvin Cycle")) {
+					if (!LocalConfig.getInstance().isGraphCalvinCycleSelected() && (pathwayName.equals("Calvin Cycle") ||
+						pathwayName.equals(" CO2 Pumping (C4 plants)"))) {
 						drawPathwayName = false;
 					}
 				}
