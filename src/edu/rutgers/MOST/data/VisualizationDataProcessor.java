@@ -71,6 +71,8 @@ public class VisualizationDataProcessor {
 	DecimalFormat sciFormatter = PathwaysFrameConstants.SCIENTIFIC_FLUX_FORMATTER;
 
 	public String report = "";
+	
+	private boolean calvinCycleRequiredReactionIdsFound = false;
 
 	public Map<Integer, SBMLReaction> createCompartmentIdReactionMap(Vector<SBMLReaction> rxns) {
 		Map<Integer, SBMLReaction> idReactionMap = new HashMap<Integer, SBMLReaction>();
@@ -94,6 +96,7 @@ public class VisualizationDataProcessor {
 			startX = startPosMap.get(pathway.getId()).get(0);
 			startY = startPosMap.get(pathway.getId()).get(1);
 		}
+		checkForRequiredReactionIDs(pathway, component, rxns, idReactionMap);
 		drawMetabolites(pathway, component, LocalConfig.getInstance().getSelectedCompartmentName());
 		drawReactions(pathway, component, rxns, idReactionMap);
 
@@ -204,7 +207,43 @@ public class VisualizationDataProcessor {
 		visualizationData.setCompartmentLabel(compartmentLabel);
 		visualizationData.setLegendLabel(legendLabel);
 		LocalConfig.getInstance().setVisualizationData(visualizationData);
-
+	}
+	
+	/**
+	 * This method allows pathways to be drawn or not drawn based on the presence or absence
+	 * of one or more reactions in a list
+	 * @param pathway
+	 * @param component
+	 * @param rxns
+	 * @param idReactionMap
+	 */
+	public void checkForRequiredReactionIDs(MetabolicPathway pathway, int component, Vector<SBMLReaction> rxns, Map<Integer, SBMLReaction> idReactionMap) {
+		ArrayList<String> foundIds = new ArrayList<String>();
+		for (int k = 0; k < pathway.getReactionsData().size(); k++) {
+			if (k%10 == 0) {
+				LocalConfig.getInstance().setVisualizationsProgress((k * ProgressConstants.CHECK_FOR_REQUIRED_REACTIONS_LOAD_PERCENT) / pathway.getReactionsData().size()
+						+ ProgressConstants.VISUALIZATIONS_LOAD_PERCENT);	
+			}
+			if (pathway.getComponent() == component) {
+				PathwayReactionNode pn = prnf.createPathwayReactionNode(pathway.getReactionsData().get(Integer.toString(k)), 
+					LocalConfig.getInstance().getSelectedCompartmentName(), pathway.getComponent(), rxns, 
+					idReactionMap);
+				// reaction found in model
+				if (pn.getReactions().size() > 0) {
+					foundIds.add(pn.getDataId());
+				}
+			}
+		}
+		boolean found = true;
+		for (int j = 0; j < PathwaysFrameConstants.calvinCycleRequiredReactionIDsList.size(); j++) {
+			if (!foundIds.contains(PathwaysFrameConstants.calvinCycleRequiredReactionIDsList.get(j))) {
+				found = false;
+				break;
+			}
+		}
+		if (found) {
+			calvinCycleRequiredReactionIdsFound = true;
+		}
 	}
 
 	public void drawMetabolites(MetabolicPathway pathway, int component, String compartment) {
@@ -212,7 +251,7 @@ public class VisualizationDataProcessor {
 		for (int j = 0; j < pathway.getMetabolitesData().size(); j++) {
 			if (j%10 == 0) {
 				LocalConfig.getInstance().setVisualizationsProgress((j * ProgressConstants.VISUALIZATIONS_METABOLITE_LOAD_PERCENT) / pathway.getMetabolitesData().size()
-						+ ProgressConstants.VISUALIZATIONS_LOAD_PERCENT);	
+						+ ProgressConstants.VISUALIZATIONS_LOAD_PERCENT + ProgressConstants.CHECK_FOR_REQUIRED_REACTIONS_LOAD_PERCENT);	
 				//System.out.println(LocalConfig.getInstance().getVisualizationsProgress());
 			}
 			if (pathway.getComponent() == component) {
@@ -247,10 +286,15 @@ public class VisualizationDataProcessor {
 						}
 					}
 				}
+				// Draw everything if graph all in database, else if Always Draw Calvin cycle
+				// is not selected, don't draw Calvin cycle unless required reactions are found
+				// in the model
 				if (!LocalConfig.getInstance().isGraphMissingMetabolitesSelected()) {
 					if (!LocalConfig.getInstance().isGraphCalvinCycleSelected() && 
 						PathwaysFrameConstants.calvinCycleMetaboliteIDsList.contains(id)) {
-						drawMetabolite = false;
+						if (!calvinCycleRequiredReactionIdsFound) {
+							drawMetabolite = false;
+						}
 					}
 				}
 				if (drawMetabolite) {
@@ -273,7 +317,7 @@ public class VisualizationDataProcessor {
 			}
 		}
 	}
-
+	
 	public void drawReactions(MetabolicPathway pathway, int component, Vector<SBMLReaction> rxns, Map<Integer, SBMLReaction> idReactionMap) {
 		ArrayList<String> metabPosKeys = new ArrayList<String>(nodeNamePositionMap.keySet());
 		double minFlux = Double.parseDouble(util.roundToSignificantFigures(PathwaysFrameConstants.MINIMUM_FLUX_RATIO*LocalConfig.getInstance().getSecondaryMaxFlux(), 
@@ -292,7 +336,8 @@ public class VisualizationDataProcessor {
 		for (int k = 0; k < pathway.getReactionsData().size(); k++) {
 			if (k%10 == 0) {
 				LocalConfig.getInstance().setVisualizationsProgress((k * ProgressConstants.VISUALIZATIONS_REACTION_LOAD_PERCENT) / pathway.getReactionsData().size()
-						+ ProgressConstants.VISUALIZATIONS_LOAD_PERCENT + ProgressConstants.VISUALIZATIONS_METABOLITE_LOAD_PERCENT);	
+						+ ProgressConstants.VISUALIZATIONS_LOAD_PERCENT + ProgressConstants.VISUALIZATIONS_METABOLITE_LOAD_PERCENT +
+						ProgressConstants.CHECK_FOR_REQUIRED_REACTIONS_LOAD_PERCENT);	
 			}
 			if (pathway.getComponent() == component) {
 				ArrayList<String> reacAbbrList = new ArrayList<String>();
@@ -358,10 +403,15 @@ public class VisualizationDataProcessor {
 						drawReaction = false;
 					} 
 				}
+				// Draw everything if graph all in database, else if Always Draw Calvin cycle
+				// is not selected, don't draw Calvin cycle unless required reactions are found
+				// in the model
 				if (!LocalConfig.getInstance().isGraphMissingMetabolitesSelected()) {
 					if (!LocalConfig.getInstance().isGraphCalvinCycleSelected() && 
 						PathwaysFrameConstants.calvinCycleReactionIDsList.contains(pn.getDataId())) {
-						drawReaction = false;
+						if (!calvinCycleRequiredReactionIdsFound) {
+							drawReaction = false;
+						}
 					}
 				}
 				if (drawReaction) {
@@ -595,7 +645,9 @@ public class VisualizationDataProcessor {
 				if (!LocalConfig.getInstance().isGraphMissingMetabolitesSelected()) {
 					if (!LocalConfig.getInstance().isGraphCalvinCycleSelected() && (pathwayName.equals("Calvin Cycle") ||
 						pathwayName.equals(" CO2 Pumping (C4 plants)"))) {
-						drawPathwayName = false;
+						if (!calvinCycleRequiredReactionIdsFound) {
+							drawPathwayName = false;
+						}
 					}
 				}
 				if (drawPathwayName) {
