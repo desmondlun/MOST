@@ -13473,35 +13473,35 @@ public class GraphicalInterface extends JFrame {
 			if (VisualizationConfigProperties.getGraphMissingMetabolitesSelected() != null) {
 				if (VisualizationConfigProperties.getGraphMissingMetabolitesSelected().equals("true")) {
 					LocalConfig.getInstance().setGraphMissingMetabolitesSelected(true);
-				} else {
+				} else if (VisualizationConfigProperties.getGraphMissingMetabolitesSelected().equals("false")) {
 					LocalConfig.getInstance().setGraphMissingMetabolitesSelected(false);
 				}
 			}
 			if (VisualizationConfigProperties.getGraphCalvinCycleSelected() != null) {
 				if (VisualizationConfigProperties.getGraphCalvinCycleSelected().equals("true")) {
 					LocalConfig.getInstance().setGraphCalvinCycleSelected(true);
-				} else {
+				} else if (VisualizationConfigProperties.getGraphCalvinCycleSelected().equals("false")) {
 					LocalConfig.getInstance().setGraphCalvinCycleSelected(false);
 				}
 			}
 			if (VisualizationConfigProperties.getScaleEdgeThicknessSelected() != null) {
 				if (VisualizationConfigProperties.getScaleEdgeThicknessSelected().equals("true")) {
 					LocalConfig.getInstance().setScaleEdgeThicknessSelected(true);
-				} else {
+				} else if (VisualizationConfigProperties.getScaleEdgeThicknessSelected().equals("false")) {
 					LocalConfig.getInstance().setScaleEdgeThicknessSelected(false);
 				}
 			}
 			if (VisualizationConfigProperties.getIgnoreWaterSelected() != null) {
 				if (VisualizationConfigProperties.getIgnoreWaterSelected().equals("true")) {
 					LocalConfig.getInstance().setIgnoreWaterSelected(true);
-				} else {
+				} else if (VisualizationConfigProperties.getIgnoreWaterSelected().equals("false")) {
 					LocalConfig.getInstance().setIgnoreWaterSelected(false);
 				}
 			}
 			if (VisualizationConfigProperties.getShowVisualizationReportSelected() != null) {
 				if (VisualizationConfigProperties.getShowVisualizationReportSelected().equals("true")) {
 					LocalConfig.getInstance().setShowVisualizationReportSelected(true);
-				} else {
+				} else if (VisualizationConfigProperties.getShowVisualizationReportSelected().equals("false")) {
 					LocalConfig.getInstance().setShowVisualizationReportSelected(false);
 				}
 			}
