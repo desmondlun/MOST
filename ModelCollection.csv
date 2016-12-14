@@ -5,7 +5,7 @@ iRC1080_autotrophic,Chlamydomonas reinhardtii,1080,2191,1706,Yes,"Chang et al., 
 iRC1080_heterotrophic,Chlamydomonas reinhardtii,1080,2191,1706,Yes,"Chang et al., 2011",sbml/Chlamydomonas reinhardtii,sbml,http://dx.doi.org/10.1038/msb.2011.52
 iRC1080_mixotrophic,Chlamydomonas reinhardtii,1080,2191,1706,Yes,"Chang et al., 2011",sbml/Chlamydomonas reinhardtii,sbml,http://dx.doi.org/10.1038/msb.2011.52
 iCB925,Clostridium beijerinckii NCIMB 8052,925,938,900,Yes,"Milne et al., 2011",sbml/Clostridium beijerinckii,sbml,http://dx.doi.org/10.1186/1752-0509-5-130
-iAI549,Dehalococcoides ethenogenes,549,555,587,No,"Islam et al., 2010",sbml/Dehalococcoides ethenogenes,sbml,http://dx.doi.org/10.1371/journal.pcbi.1000887
+iAI549,Dehalococcoides ethenogenes,549,555,587,Yes,"Islam et al., 2010",sbml/Dehalococcoides ethenogenes,sbml,http://dx.doi.org/10.1371/journal.pcbi.1000887
 ecoli_core_model,Escherichia coli,134,95,92,Yes,"Orth et al, 2010",sbml/E. Coli,sbml,http://dx.doi.org/10.1128/ecosalplus.10.2.1 
 Ec_iAF1260_anaerobic_glc10_acetate,Escherichia coli K-12 MG1655,1260,2382,1972,Yes,"Egen and Lun, 2012",sbml/E. Coli,sbml,http://dx.doi.org/10.1093/bioinformatics/bts255
 Ec_iAF1260_anaerobic_glc10_succinate,Escherichia coli K-12 MG1655,1260,2382,1972,Yes,"Egen and Lun, 2012",sbml/E. Coli,sbml,http://dx.doi.org/10.1093/bioinformatics/bts255
@@ -13,7 +13,7 @@ iAF1260,Escherichia coli K-12 MG1655,1260,2077,1039,Yes,"Feist et al., 2007",sbm
 iJO1366,Escherichia coli K-12 MG1655,1366,2583,1805,Yes,"Orth et al, 2011",sbml/E. Coli,sbml,http://dx.doi.org/10.1038/msb.2011.65
 iJR904,Escherichia coli K-12 MG1655,904,1075,904,Yes,"Reed et al., 2003",sbml/E. Coli,sbml,http://dx.doi.org/10.1186/gb-2003-4-9-r54
 iCA1273,Escherichia coli W (ATCC 9637),1273,2477,2062,Yes,"Archer et al., 2011",sbml/E. Coli,sbml,http://dx.doi.org/10.1186/1471-2164-12-9
-iIT341,Helicobacter pylori 26695,341,554,562,No,"Thiele et al., 2005",sbml/Helicobacter pylori,sbml,http://dx.doi.org/10.1128/JB.187.16.5818-5830.2005
+iIT341,Helicobacter pylori 26695,341,554,562,Yes,"Thiele et al., 2005",sbml/Helicobacter pylori,sbml,http://dx.doi.org/10.1128/JB.187.16.5818-5830.2005
 recon2model.v02,Homo sapiens,1789,7440,9798,Yes,"Thiele et al., 2013",sbml/recon2_02,sbml,http://dx.doi.org/10.1038/nbt.2488
 iYL1228,Klebsiella pneumoniae MGH 78578,1228,2262,1658,No,"Liao et al, 2011",sbml/Klebsiella pneumoniae,sbml,http://dx.doi.org/10.1128/JB.01218-10
 iAC560,Leishmania major Friedlin,560,1112,1165,No,"Chivali et al., 2008",sbml/Leishmania major,sbml,http://dx.doi.org/10.1038/msb.2008.15
