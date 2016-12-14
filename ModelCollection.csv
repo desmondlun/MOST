@@ -1,9 +1,9 @@
 Model Version,Organism Name,Genes,Reactions,Metabolites,Identifiers,Reference,Path,Type,URL
 AraGEM,Arabidopsis thaliana,1419,1601,1769,No,"de Oliveira Dal'Molin et al., 2009",sbml/Arabidopsis thaliana,sbml,http://dx.doi.org/10.1104/pp.109.148817
 iBsu1103,Bacillus subtilis 168,1103,1681,1625,Yes,"Henry et al., 2009",sbml/Bacillus subtilis,sbml,http://dx.doi.org/10.1186/gb-2009-10-6-r69
-iRC1080_autotrophic,Chlamydomonas reinhardtii,1080,2191,1706,No,"Chang et al., 2011",sbml/Chlamydomonas reinhardtii,sbml,http://dx.doi.org/10.1038/msb.2011.52
-iRC1080_heterotrophic,Chlamydomonas reinhardtii,1080,2191,1706,No,"Chang et al., 2011",sbml/Chlamydomonas reinhardtii,sbml,http://dx.doi.org/10.1038/msb.2011.52
-iRC1080_mixotrophic,Chlamydomonas reinhardtii,1080,2191,1706,No,"Chang et al., 2011",sbml/Chlamydomonas reinhardtii,sbml,http://dx.doi.org/10.1038/msb.2011.52
+iRC1080_autotrophic,Chlamydomonas reinhardtii,1080,2191,1706,Yes,"Chang et al., 2011",sbml/Chlamydomonas reinhardtii,sbml,http://dx.doi.org/10.1038/msb.2011.52
+iRC1080_heterotrophic,Chlamydomonas reinhardtii,1080,2191,1706,Yes,"Chang et al., 2011",sbml/Chlamydomonas reinhardtii,sbml,http://dx.doi.org/10.1038/msb.2011.52
+iRC1080_mixotrophic,Chlamydomonas reinhardtii,1080,2191,1706,Yes,"Chang et al., 2011",sbml/Chlamydomonas reinhardtii,sbml,http://dx.doi.org/10.1038/msb.2011.52
 iCB925,Clostridium beijerinckii NCIMB 8052,925,938,900,Yes,"Milne et al., 2011",sbml/Clostridium beijerinckii,sbml,http://dx.doi.org/10.1186/1752-0509-5-130
 iAI549,Dehalococcoides ethenogenes,549,555,587,No,"Islam et al., 2010",sbml/Dehalococcoides ethenogenes,sbml,http://dx.doi.org/10.1371/journal.pcbi.1000887
 ecoli_core_model,Escherichia coli,134,95,92,Yes,"Orth et al, 2010",sbml/E. Coli,sbml,http://dx.doi.org/10.1128/ecosalplus.10.2.1 
@@ -23,9 +23,8 @@ pcbi.1003126.s001,Neurospora crassa,836,1845,1008,Yes,"Dreyfuss et al., 2013",sb
 tpj13081,Phaeodactylum tricornutum,-,850,754,Yes,"Kim et al., 2015",sbml/Phaeodactylum tricornutum,sbml,http://dx.doi.org/10.1111/tpj.13081
 msb201060-s4,Plasmodium falciparum 3D7,366,1001,1025,No,"Plata et al., 2010",sbml/Plasmodium falciparum,sbml,http://dx.doi.org/10.1038/msb.2010.60
 iND750,Saccharomyces cerevisiae Sc288,750,1266,1177,No,"Duarte et al., 2004",sbml/Saccharomyces cerevisiae,sbml,http://dx.doi.org/10.1101%2Fgr.2250904
-yeast_7.5_cobra,Saccharomyces cerevisiae Yeast v6.0,900,3490,3370,Yes,"Aung et al., 2013",sbml/Yeast_7.5,sbml,http://dx.doi.org/10.1089/ind.2013.0013
-yeast_7.5_recon,Saccharomyces cerevisiae Yeast v6.0,900,3490,3370,Yes,"Aung et al., 2013",sbml/Yeast_7.5,sbml,http://dx.doi.org/10.1089/ind.2013.0013
-yeast_7.11,Saccharomyces cerevisiae Yeast v6.0,900,3490,3370,No,"Aung et al., 2013",sbml/Yeast_7.11,sbml,http://dx.doi.org/10.1089/ind.2013.0013
+yeast_7.6,Saccharomyces cerevisiae Yeast v6.0,900,3490,3370,Yes,"Aung et al., 2013",sbml/yeast_7.6,sbml,http://dx.doi.org/10.1089/ind.2013.0013
+yeast_7.6_recon,Saccharomyces cerevisiae Yeast v6.0,900,3490,3370,Yes,"Aung et al., 2013",sbml/yeast_7.6,sbml,http://dx.doi.org/10.1089/ind.2013.0013
 iRR1083,Salmonella typhimurium LT2,1083,2546,1802,Yes,"Raghunathan et al., 2009",sbml/Salmonella typhimurium,sbml,http://dx.doi.org/10.1186/1752-0509-3-38
 iSB619,Staphylococcus aureus N315,619,743,741,No,"Becker and Palsson, 2005",sbml/Staphylococcus aureus,sbml,http://dx.doi.org/10.1186/1471-2180-5-8
 1471-2164-11-202-s2,Streptomyces coelicolor A3(2),789,1015,877,No,"Alam et al., 2010",sbml/Streptomyces coelicolor,sbml,http://dx.doi.org/10.1186/1471-2164-11-202
