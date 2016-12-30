@@ -12429,11 +12429,17 @@ public class GraphicalInterface extends JFrame {
 				JOptionPane.YES_NO_OPTION, 
 				JOptionPane.QUESTION_MESSAGE, 
 				null, options, options[0]);
-		listModel.remove(listModel.indexOf(LocalConfig.getInstance().getOptimizationFilesList().get(DynamicTree.getRow() - 1)));
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+			DynamicTreePanel.getTreePanel().tree.getLastSelectedPathComponent();
+		Solution nodeInfo = (Solution)node.getUserObject();
+		String nodeName = nodeInfo.getDatabaseName();
+		listModel.remove(listModel.indexOf(nodeName));
 		if (choice == JOptionPane.YES_OPTION) {
-			File f = new File(LocalConfig.getInstance().getOptimizationFilesList().get(DynamicTree.getRow() - 1) + ".log");
+			Utilities u = new Utilities();
+			String path = u.createLogFileName(nodeName + ".log");
+			File f = new File(path);
 			if (f.exists()) {
-				Utilities.delete(LocalConfig.getInstance().getOptimizationFilesList().get(DynamicTree.getRow() - 1) + ".log");
+				Utilities.delete(path);
 			}
 		}
 		if (choice == JOptionPane.NO_OPTION) {
