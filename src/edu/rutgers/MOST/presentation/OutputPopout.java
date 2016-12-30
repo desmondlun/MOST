@@ -213,6 +213,7 @@ public class OutputPopout extends JFrame {
 		try {
 			FileWriter writer = new FileWriter(f);
 			textArea.write(writer);  // Use TextComponent write
+			writer.close();
 		} catch (IOException ie) {
 			JOptionPane.showMessageDialog(OutputPopout.this, ie);
 			System.exit(1);
