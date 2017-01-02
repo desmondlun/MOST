@@ -5178,7 +5178,7 @@ public class GraphicalInterface extends JFrame {
 	 */
 	public void saveOptimizationsPrompt() {
 		saveChangesOKClicked = false;
-		Object[] options = {"  Yes  ", "   No   "};
+		Object[] options = {"  Yes  ", "   No   ", "Cancel"};
 		int choice = JOptionPane.showOptionDialog(null, 
 				"Optimizations have not been saved. Save Optimizations?", 
 				"Save Optimizations?",  
@@ -5200,6 +5200,10 @@ public class GraphicalInterface extends JFrame {
 		if (choice == JOptionPane.NO_OPTION)
 		{
 			exit = true;
+		}
+		if (choice == JOptionPane.CANCEL_OPTION)
+		{
+			exit = false;
 		}
 	}
 
@@ -12433,7 +12437,12 @@ public class GraphicalInterface extends JFrame {
 			DynamicTreePanel.getTreePanel().tree.getLastSelectedPathComponent();
 		Solution nodeInfo = (Solution)node.getUserObject();
 		String nodeName = nodeInfo.getDatabaseName();
-		listModel.remove(listModel.indexOf(nodeName));
+		if (listModel.contains(nodeName)) {
+			listModel.remove(listModel.indexOf(nodeName));
+		}
+		if (LocalConfig.getInstance().getOptimizationFilesList().contains(nodeName)) {
+			LocalConfig.getInstance().getOptimizationFilesList().remove(LocalConfig.getInstance().getOptimizationFilesList().indexOf(nodeName));
+		}
 		if (choice == JOptionPane.YES_OPTION) {
 			Utilities u = new Utilities();
 			String path = u.createLogFileName(nodeName + ".log");
