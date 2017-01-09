@@ -234,10 +234,110 @@ A{text-decoration:none}
 	Free programs are also available for editing SVG files such as 
 	<a href="https://inkscape.org/en/download/windows/" target="_blank">Inkscape</a>.</blockquote>
 
+	<blockquote>An SVG created from the visualization of this model can be found in <a href="Supplementary_Data.zip" target="_blank">Supplementary_Data</a>. The file name is 
+	“ecoli_core-cytosol.svg”.</blockquote>
+
+	<p><strong>Step 5</strong></p>
+
+	<blockquote><strong>Visualize Larger Models</strong></blockquote>
+
 	<blockquote>The visualization of the ecoli_core is rather sparse considering the small number of reactions present.
 	After becoming accustomed to the appearance and navigation of the visualization of a small model, 
 	try loading a larger model such as
 	iAF1260 or another model that has a "Yes" in the Identifiers column.</blockquote>
+
+	<blockquote>Sample SVG files and reports can be found in <a href="Supplementary_Data.zip" target="_blank">Supplementary_Data</a>. 
+	An analysis of the SVG files and reports follows for several models.</blockquote>
+
+	<blockquote><strong><i>E. coli </i>K-12 MG1655 iAF1260 model Cytosol compartment</strong></blockquote>
+
+	<blockquote>Please see the following files in <a href="Supplementary_Data.zip" target="_blank">Supplementary_Data</a>:</blockquote>
+
+	<blockquote><ol>
+	<li>ecoli_iAF1260-cytosol.svg</li>
+	<li>ecoli_iAF1260-cytosol-fba.svg</li>
+	<li>Visualization Report - iAF1260-cytosol.txt</li>
+	<li>Visualization Report - iAF1260-cytosol-fba.txt</li>
+	<li>ecoli_iAF1260-cytosol-all_reactions_in_database.svg</li>
+	<li>iAF1260-Calvin_Cycle.svg</li>
+	<li>Visualization Report - iAF1260-Calvin_Cycle.txt</li>
+	</ol></blockquote>
+	
+	<blockquote>These files were created from visualization of the iAF1260 model. File 3 is the Visualization Report for file 1. The 
+	first category in the report is “Unplotted Reactions - Reaction not in Database”. These are reactions where all metabolites have 
+	been identified KEGG IDs but these reactions are not present in our map and therefore are not plotted. The second category 
+	is “Unplotted Reactions - Missing KEGG ID(s)”. Reactions in this category contain one or more metabolites that are not identified 
+	by a KEGG ID or other identifier (see S2 below for a description of identifiers). The third category is “Plotted Reactions”. These 
+	reactions are plotted in the visualization.</blockquote>
+
+	<blockquote>File 5 is a visualization of the iAF1260 model where the option “Graph All Reactions and Metabolites in Database” 
+	has been selected in the Options -> Visualization Options menu. If this option is selected and a model is visualized, reactions 
+	nodes and the nodes of metabolites that exclusively participate in that reaction that are not identified are shown in light colors. 
+	The tooltips of unidentified reaction nodes will show which metabolites need to be present for the reaction to be plotted. The 
+	tooltips of unidentified metabolite nodes will contain information from the database only (3 lines as opposed to 6 for identified 
+	metabolites). The “Unplotted Reactions” category in the report and the “Graph All Reactions and Metabolites in Database” option 
+	can assist a user to identify metabolites that are not identified in a model.</blockquote>
+
+	<blockquote>In file 1 there is no legend in the upper left since all fluxes are 0 in the iAF1260 model. The edges of all reactions 
+	will be thin gray lines.  If <a href="analysis_menu.html#fba">FBA</a> is run on this model, the model will contain non-zero fluxes 
+	and a legend will be present showing 
+	edge thicknesses for fluxes. See file 3 and the report for this visualization – file 4. </blockquote>
+
+	<blockquote>In File 5, the Calvin Cycle is plotted since all reactions and metabolites in the database have been plotted. In files 
+	1 and 3 the Calvin Cycle is not plotted since reactions that only occur in the Calvin Cycle have not been found in the model.
+	</blockquote>
+
+	<blockquote>File 6 and file 7, the report for this file show the results if the option “Graph All Reactions and Metabolites in Database” 
+	has been deselected and “Always Graph Calvin Cycle” has been selected in the Options -> Visualization Options menu and then a 
+	model is visualized. Any reactions found in the model that occur in the Calvin Cycle will be plotted. This option is useful if the user 
+	believes the Calvin Cycle should be present in the visualized model.</blockquote> 
+
+	<blockquote><strong><i>Synechococcus sp. </i>PCC 7002 syn7002 model Cytosol compartment – an example of a model with a 
+	Calvin Cycle</strong></blockquote>
+
+	<blockquote>Please see the following files in <a href="Supplementary_Data.zip" target="_blank">Supplementary_Data</a>:</blockquote>
+
+	<blockquote><ol>
+	<li>syn7002-cytosol.svg</li>
+	<li>Visualization Report - syn7002-cytosol.txt</li>
+	</ol></blockquote>	
+
+	<blockquote>The option “Graph All Reactions and Metabolites in Database” has been deselected and “Always Graph Calvin Cycle” 
+	has been deselected in the Options -> Visualization Options menu, then this model was visualized. Files 1 and 2 were created from 
+	this visualization. Notice that the Calvin Cycle is found since reactions that only occur in this model are found. The Calvin Cycle can 
+	be found near the top of the visualization to the right of the model name and compartment label.</blockquote>
+
+	<blockquote>Reports for this model and others can be analyzed similarly to the analysis of the report in the iAF1260 section above. 
+	<a href="Supplementary_Table_S2.xlsx" target="_blank">Supplementary Table S2</a> 
+	shows the number of reactions in each category for 35 models.</blockquote>
+
+	<br>
+
+	<blockquote>The supplementary Data also contains SVG files and reports created from the following models:</blockquote>
+
+	<blockquote><i>Homo sapiens</i> recon2model.v02 Cytoplasm compartment:</blockquote>
+	<blockquote><ol>
+	<li>homo_sapiens_recon2model.v02-cytoplasm.svg</li>
+	<li>Visualization Report - recon2model.v02-cytoplasm.txt</li>
+	</ol></blockquote>		
+
+	<blockquote><i>Homo sapiens</i> recon2model.v02 Mitochondrion compartment:</blockquote>
+	<blockquote><ol>
+	<li>homo_sapiens_recon2model.v02- mitochondrion.svg</li>
+	<li>Visualization Report - recon2model.v02- mitochondrion.txt</li>
+	</ol></blockquote>		
+
+	<blockquote><i>Saccharomyces cerevisiae</i> Yeast v6.0 yeast_7.6 model Cytoplasm compartment</blockquote>
+	<blockquote><ol>
+	<li>yeast_7.6-cytoplasm.svg</li>
+	<li>Visualization Report - yeast_7.6-cytoplasm.txt</li>
+	</ol></blockquote>	
+
+	<blockquote><i>Saccharomyces cerevisiae</i> Yeast v6.0 yeast_7.6 model Mitochondrion compartment</blockquote>
+	<blockquote><ol>
+	<li>yeast_7.6- mitochondrion.svg</li>
+	<li>Visualization Report - yeast_7.6- mitochondrion.txt</li>
+	</ol></blockquote>	
 
 	</td>
 	</tr>
