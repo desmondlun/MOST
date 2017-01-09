@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <!-- Created by MOST version 1.0 on 2017-01-04 18:52 with jsbml version 0.8. -->
 <sbml xmlns="http://www.sbml.org/sbml/level2" level="2" version="1">
-  <model id="M_inj">
+  <model id="M_INJ661">
     <listOfUnitDefinitions>
       <unitDefinition id="mmol_per_gDW_per_hr" name="mmol_per_gDW_per_hr">
         <listOfUnits>
