@@ -1,0 +1,102 @@
+CURRENT VERSION: 7.5
+
+three versions of the network are made available
+* yeast_x.yz.xml, a model for use in flux analyses, in FBC format [http://sbml.org/Community/Wiki/SBML_Level_3_Proposals/Flux_Constraints]
+* yeast_x.yz_cobra.xml, the same model, in Cobra format [http://opencobra.sf.net/]
+* yeast_x.yz_recon.xml, a reconstruction containing only reactions for which there is experimental
+evidence
+
+----------------------------------------------------------------------------------------------------
+
+CHECKSUM
+
+maximal growth rate: 0.0947 flux units
+
+----------------------------------------------------------------------------------------------------
+
+CONVERSION SBML TO TEXT FILE
+
+can be performed for example using the Cobra toolbox and commands
+
+>> model = readCbModel('yeast_x.yz_cobra.xml',inf);
+>> writeCbModel(model,'text','yeast_x.yz.txt');
+
+though this is not recommended as semantic annotations may be lost.
+
+----------------------------------------------------------------------------------------------------
+
+UPDATES
+
+yeast_7.6: 09 Jul 2015
+suggestions from Ben Heavner
+* removed reaction r_1117 as catalyst YPR021C assigned wrong function
+* reaction r_0217 irreversible in 2-oxoglutarate / L-aspartate direction
+
+yeast 7.5: 18 Dec 2014
+* changes as suggested in Hnin Aung paper: "The influence of cofactors, thermodynamics, and compartmentalization on pathway yields in the evolution of the yeast consensus model":
+
+- glycine and serine transport between the mitochondria and cytosol [r_1811,r_2045] and serine hydroxymethyltransferase [r_0503] set as reversible [DOI:10.1021/bi971610n]
+- remove H+ in glycine-cleavage complex rxn [r_0507] for charge balancing
+- malic enzyme [r_0718] can also utilize NAD+ [PMID:9603875,22851014]
+- homoserine dehydrogenase [r_0546] can also use NADH [doi:10.1016/S0167-4838(00)
+00203-X]
+- soluble fumarate reductase can also utilize FMNH2 [r_1000] [DOI:10.1111/j.1574-6968.2002.tb11377.x]
+- metabolites exchanged through mitochondrial transporter [r_1099] changed to 2-oxoadipate and 2-oxoglutarate and reaction set as reversible [doi:10.1074/jbc.M004332200]
+- L-aminoadipate-semialdehyde dehydrogenase [r_0678] requires ATP [DOI:10.1039/A801345D]
+- include reaction for citrate to cis-aconitate in cytosol [r_0303] [doi:10.1091/mbc.E04-11-1028]
+- changed proton stoichiometry for cytochrome oxidase [r_0438] [DOI:10.1099/mic.0.050039-0] and for ubiquinol cytochrome-c reductase [r_0439] [PMID:2164001]
+
+* gene associations in disjunctive normal form (DNF)
+
+yeast 7.11: 16 Jan 2014
+* aspartate transport [r_1117] can only flow in cytoplasm to mitochondria direction, to avoid free generation of proton gradient
+* contributor: Hnin Aung
+
+yeast 7.1: 3 nov 2013 [development version, detailed changelog]
+* malic enzyme [r_0718] is NADP-dependent, not NAD [pmid:9603875,15491864,22851014]
+* NADH:ubiquinone oxidoreductase [r_0773] is not proton translocating [pmid:11370674,20559329]
+* ATP synthase [r_0226] moves 4 cytoplasmic protons
+* allow proton leak [r_2129] from cytoplasm to mitochondrion
+* mitochondrial ADP/ATP transporter [r_1110] does not cotransport protons [pmid:7003152,14998997]
+* zymesterol intermediate 1c reactions [r_0234,r_0240] discussed in pmid:22194828
+* GDH2 irreversible
+* remove citrate isomerase [r_0303]
+* dihydoorotic acid dehydrogenase [r_0453] uses only fumarate as electron donor: remove r_0338,r_0339,r_2127
+* pyruvate can be transported [r_1254] out of the cell [pmid:23549479]
+* folate, not folic acid
+* heme O monooxygenase [r_0530] associated with genes (YPL252C AND YDR376W) or (YPL252C AND YDR376W AND YER141W)
+* add chitin and heme a to biomass definition [r_4041] with minimal stoichiometry (10^-6)
+* allow potassium exchange [r_2020] from medium
+* extracellular reaction raffinose -> fructose + melibiose catalysed by SUC2 [pmid:4967422]
+* PHM8 is a 5'-nucleotidase for CMP [r_0076], GMP [r_1619] and UMP [r_0078] [pmid:23670538]
+* PNP1 phosphorylase activity specific to inosine and guanosine [pmid:23670538]
+* URH1 hydrolase activity specific to uridine [pmid:23670538]
+* PGM3 is a phosphoribomutase [r_0907], not a phosphoglucomutase [r_0888] [pmid:23670538]
+* metabolite formula, charge and #carbons added to SBML
+* contributors: Hnin Aung, Kevin Correia, Ben Heavner, Kieran Smallbone, Bal‡zs Szappanos
+
+
+yeast 7.00: 19 apr 2013 [http://dx.doi.org/10.1089/ind.2013.0013]
+* large update, as described in Hnin Aung, Susan Henry and Larry Walker: "Revising the representation of fatty acid, glycerolipid, and glycerophospholipid metabolism in the consensus model of yeast metabolism"
+
+yeast 6.06: 8 apr 2013 [http://dx.doi.org/10.1093/database/bat059]
+* refined version of yeast 5, obtained through additional curation
+* slightly smaller model with a higher predictive accuracy of gene essentiality
+
+yeast 5.01: 21 nov 2011 [http://dx.doi.org/10.1186/1752-0509-6-55]
+* final yeast 5 release
+* large increase in coverage, particularly with regard to sphingolipid metabolism
+* increased compatibility with Cobra toolbox
+* model can consume glucose (rate 1 flux unit), and ammonium, H+, iron(2+), oxygen, phosphate, potassium, sodium, sulphate, water (unlimited rate)
+* no longer releasing in old SBML format - get the latest http://sbml.org/Software/libSBML
+* contributors: Ben Heavner, Brandon Barker, Tunahan Cakir, Nicolas Le Novere, Chuan Lu, Hanan Messiha, Naglis Malys, Kieran Smallbone, Neil Swainston
+
+yeast 4.05: 11 aug 2010 [http://dx.doi.org/10.1186/1752-0509-4-145]
+* final yeast 4 release
+* published in BMC Sys Bio
+* addition of lipid metabolism
+* Cobra format (http://opencobra.sf.net/) allowing contraint-based analyses to be performed
+* following iMM904 (http://dx.doi.org/10.1186/1752-0509-3-37), the ATP requirements of the cell are fixed at 1, and the the model can consume
+- oxygen (rate 2)
+- glucose (rate 10)
+- ammonium, [H+], iron(2+), phosphate, potassium, sodium, sulphate, [water] (unlimited)
