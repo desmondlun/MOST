@@ -1,6 +1,0 @@
-opt-tpj.csv is FBA from original model tpj13081-sup-0003-TableS3.xml
-opt-tpj-a.csv is unused metabolites have been removed, and supplemental data has
-been added to "used" metabolites added by MOST.
-
-The FBA results are identical, so the update did not affect the validity of the model,
-but now it can be visualized.
