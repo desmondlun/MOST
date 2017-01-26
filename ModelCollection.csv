@@ -17,11 +17,11 @@ iIT341,Helicobacter pylori 26695,341,554,562,Yes,"Thiele et al., 2005",sbml/Heli
 recon2model.v02,Homo sapiens,1789,7440,9798,Yes,"Thiele et al., 2013",sbml/recon2_02,sbml,http://dx.doi.org/10.1038/nbt.2488
 iYL1228,Klebsiella pneumoniae MGH 78578,1228,2262,1658,Yes,"Liao et al, 2011",sbml/Klebsiella pneumoniae,sbml,http://dx.doi.org/10.1128/JB.01218-10
 iAC560,Leishmania major Friedlin,560,1112,1165,Yes,"Chivali et al., 2008",sbml/Leishmania major,sbml,http://dx.doi.org/10.1038/msb.2008.15
-GSMmouse190508_kegg,Mus musculus,473,2037,2110,Yes,"Sheikh et al., 2005",sbml/Mus musculus,sbml,http://dx.doi.org/10.1021/bp0498138
+GSMmouse190508,Mus musculus,473,2037,2110,Yes,"Sheikh et al., 2005",sbml/Mus musculus,sbml,http://dx.doi.org/10.1021/bp0498138
 iNJ661,Mycobacterium tuberculosis H37Rv,661,1025,912,Yes,"Jamshidi and Palsson, 2007",sbml/Mycobacterium tuberculosis,sbml,http://dx.doi.org/10.1186/1752-0509-1-26
-pcbi.1003126.s001,Neurospora crassa,836,1845,1008,Yes,"Dreyfuss et al., 2013",sbml/Neurospora crassa,sbml,http://dx.doi.org/10.1371%2Fjournal.pcbi.1003126
+iJDZ836,Neurospora crassa,836,1845,1008,Yes,"Dreyfuss et al., 2013",sbml/Neurospora crassa,sbml,http://dx.doi.org/10.1371%2Fjournal.pcbi.1003126
 tpj13081,Phaeodactylum tricornutum,-,850,754,Yes,"Kim et al., 2015",sbml/Phaeodactylum tricornutum,sbml,http://dx.doi.org/10.1111/tpj.13081
-msb201060-s4,Plasmodium falciparum 3D7,366,1001,1025,Yes,"Plata et al., 2010",sbml/Plasmodium falciparum,sbml,http://dx.doi.org/10.1038/msb.2010.60
+iTH366,Plasmodium falciparum 3D7,366,1001,1025,Yes,"Plata et al., 2010",sbml/Plasmodium falciparum,sbml,http://dx.doi.org/10.1038/msb.2010.60
 iND750,Saccharomyces cerevisiae Sc288,750,1266,1177,Yes,"Duarte et al., 2004",sbml/Saccharomyces cerevisiae,sbml,http://dx.doi.org/10.1101%2Fgr.2250904
 yeast_7.6,Saccharomyces cerevisiae Yeast v6.0,900,3490,3370,Yes,"Aung et al., 2013",sbml/yeast_7.6,sbml,http://dx.doi.org/10.1089/ind.2013.0013
 yeast_7.6_recon,Saccharomyces cerevisiae Yeast v6.0,900,3490,3370,Yes,"Aung et al., 2013",sbml/yeast_7.6,sbml,http://dx.doi.org/10.1089/ind.2013.0013
