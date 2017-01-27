@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<!-- Created by MOST version 1.0 on 2017-01-26 18:47 with jsbml version 0.8. -->
+<!-- Created by MOST version 1.0 on 2017-01-27 13:49 with jsbml version 0.8. -->
 <sbml xmlns="http://www.sbml.org/sbml/level2" level="2" version="1">
-  <model id="M_iSR432_kegg">
+  <model id="M_iSR432">
     <listOfUnitDefinitions>
       <unitDefinition id="mmol_per_gDW_per_hr" name="mmol_per_gDW_per_hr">
         <listOfUnits>
@@ -18,4081 +18,4081 @@
     <listOfSpecies>
       <species id="M_acorn_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00437</p>
   </body></notes>
       </species>
       <species id="M_13dpg_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00236</p>
   </body></notes>
       </species>
       <species id="M_ad_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C06244</p>
   </body></notes>
       </species>
       <species id="M_pser_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01005</p>
   </body></notes>
       </species>
       <species id="M_chor_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00251</p>
   </body></notes>
       </species>
       <species id="M_2mbcoa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01033|C15980</p>
   </body></notes>
       </species>
       <species id="M_2dmmq7_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: </p>
+     <p>KEGG ID: C05818</p>
   </body></notes>
       </species>
       <species id="M_lipo4_24_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_din_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C05512</p>
   </body></notes>
       </species>
       <species id="M_dttp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00459</p>
   </body></notes>
       </species>
       <species id="M_trnaphe_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01648</p>
   </body></notes>
       </species>
       <species id="M_succ_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00042</p>
   </body></notes>
       </species>
       <species id="M_gtp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00044</p>
   </body></notes>
       </species>
       <species id="M_gtca3_45_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_spmd_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00315</p>
   </body></notes>
       </species>
       <species id="M_f6p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00085|C05345</p>
   </body></notes>
       </species>
       <species id="M_hepdp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04216</p>
   </body></notes>
       </species>
       <species id="M_4gudbd_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03078</p>
   </body></notes>
       </species>
       <species id="M_h_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00080</p>
   </body></notes>
       </species>
       <species id="M_2mecdp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C11453</p>
   </body></notes>
       </species>
       <species id="M_adp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00008</p>
   </body></notes>
       </species>
       <species id="M_asntrna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03402</p>
   </body></notes>
       </species>
       <species id="M_carn_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: </p>
+     <p>KEGG ID: C00386</p>
   </body></notes>
       </species>
       <species id="M_6pthp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03684</p>
   </body></notes>
       </species>
       <species id="M_agm_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00179</p>
   </body></notes>
       </species>
       <species id="M_teich_45_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_5mdr1p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04188</p>
   </body></notes>
       </species>
       <species id="M_uamag_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00692</p>
   </body></notes>
       </species>
       <species id="M_pran_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04302</p>
   </body></notes>
       </species>
       <species id="M_4mop_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00233</p>
   </body></notes>
       </species>
       <species id="M_3c3hmp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02504</p>
   </body></notes>
       </species>
       <species id="M_ins_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00294</p>
   </body></notes>
       </species>
       <species id="M_gcald_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00266</p>
   </body></notes>
       </species>
       <species id="M_cmpacna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_fe3_b" name="." boundaryCondition="true" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C14819</p>
   </body></notes>
       </species>
       <species id="M_fprica_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04734</p>
   </body></notes>
       </species>
       <species id="M_fdp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C05378|C00354</p>
   </body></notes>
       </species>
       <species id="M_trdrd_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00342</p>
   </body></notes>
       </species>
       <species id="M_so3_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C11481|C00094</p>
   </body></notes>
       </species>
       <species id="M_met_DASH_L_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01733|C00073</p>
   </body></notes>
       </species>
       <species id="M_cellulose_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: </p>
+     <p>KEGG ID: C00760</p>
   </body></notes>
       </species>
       <species id="M_2ahhmp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_fa9coa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: </p>
+     <p>KEGG ID:  </p>
   </body></notes>
       </species>
       <species id="M_pap_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00054</p>
   </body></notes>
       </species>
       <species id="M_iletrna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03127</p>
   </body></notes>
       </species>
       <species id="M_anth_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00108</p>
   </body></notes>
       </species>
       <species id="M_h2co3_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: </p>
+     <p>KEGG ID: C01353</p>
   </body></notes>
       </species>
       <species id="M_cmp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00055</p>
   </body></notes>
       </species>
       <species id="M_ala_DASH_D_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00133</p>
   </body></notes>
       </species>
       <species id="M_methf_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00445</p>
   </body></notes>
       </species>
       <species id="M_amet_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00019</p>
   </body></notes>
       </species>
       <species id="M_db4p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C15556</p>
   </body></notes>
       </species>
       <species id="M_ade_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00147</p>
   </body></notes>
       </species>
       <species id="M_dudp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01346</p>
   </body></notes>
       </species>
       <species id="M_gsn_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00387</p>
   </body></notes>
       </species>
       <species id="M_udpglcur_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00167</p>
   </body></notes>
       </species>
       <species id="M_thym_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00178</p>
   </body></notes>
       </species>
       <species id="M_arg_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00062|C02385</p>
   </body></notes>
       </species>
       <species id="M_q8_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C17569</p>
   </body></notes>
       </species>
       <species id="M_ttdca_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C06424</p>
   </body></notes>
       </species>
       <species id="M_12dag3p_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_tcam_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_adprib_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00301</p>
   </body></notes>
       </species>
       <species id="M_h2o2_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00027</p>
   </body></notes>
       </species>
       <species id="M_xtsn_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01762</p>
   </body></notes>
       </species>
       <species id="M_o2_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00007</p>
   </body></notes>
       </species>
       <species id="M_sbt_DASH_D_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00794</p>
   </body></notes>
       </species>
       <species id="M_ttdce_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_ahdt_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04895</p>
   </body></notes>
       </species>
       <species id="M_ru5p_DASH_D_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00199</p>
   </body></notes>
       </species>
       <species id="M_mthgxl_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00546</p>
   </body></notes>
       </species>
       <species id="M_3php_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03232</p>
   </body></notes>
       </species>
       <species id="M_acgam1p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04501|C04256</p>
   </body></notes>
       </species>
       <species id="M_quln_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03722</p>
   </body></notes>
       </species>
       <species id="M_dann_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01037</p>
   </body></notes>
       </species>
       <species id="M_trnatrp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01652</p>
   </body></notes>
       </species>
       <species id="M_s7p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C05382</p>
   </body></notes>
       </species>
       <species id="M_udcpp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C17556|C00348</p>
   </body></notes>
       </species>
       <species id="M_acg5p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04133</p>
   </body></notes>
       </species>
       <species id="M_d12dg_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_thm_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00378</p>
   </body></notes>
       </species>
       <species id="M_3c4mop_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04236</p>
   </body></notes>
       </species>
       <species id="M_4pasp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03082</p>
   </body></notes>
       </species>
       <species id="M_10fthf_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00234</p>
   </body></notes>
       </species>
       <species id="M_hxan_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00262</p>
   </body></notes>
       </species>
       <species id="M_cit_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00158</p>
   </body></notes>
       </species>
       <species id="M_cit_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00158</p>
   </body></notes>
       </species>
       <species id="M_co_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00237</p>
   </body></notes>
       </species>
       <species id="M_trnaleu_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01645</p>
   </body></notes>
       </species>
       <species id="M_gmp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00144</p>
   </body></notes>
       </species>
       <species id="M_udpg_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00029</p>
   </body></notes>
       </species>
       <species id="M_4hphac_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00642|C13636</p>
   </body></notes>
       </species>
       <species id="M_pro_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00148</p>
   </body></notes>
       </species>
       <species id="M_dxyl5p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C11437</p>
   </body></notes>
       </species>
       <species id="M_trptrna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03512</p>
   </body></notes>
       </species>
       <species id="M_histd_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00860</p>
   </body></notes>
       </species>
       <species id="M_trnalys_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01646</p>
   </body></notes>
       </species>
       <species id="M_eig3p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04666</p>
   </body></notes>
       </species>
       <species id="M_lysylpgly_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_asn_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00152</p>
   </body></notes>
       </species>
       <species id="M_k_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00238</p>
   </body></notes>
       </species>
       <species id="M_fmettrna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03294</p>
   </body></notes>
       </species>
       <species id="M_k_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00238</p>
   </body></notes>
       </species>
       <species id="M_k_b" name="." boundaryCondition="true" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00238</p>
   </body></notes>
       </species>
       <species id="M_hpyr_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00168</p>
   </body></notes>
       </species>
       <species id="M_sbzcoa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03160</p>
   </body></notes>
       </species>
       <species id="M_orot_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00295</p>
   </body></notes>
       </species>
       <species id="M_ps_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_ACP_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00229</p>
   </body></notes>
       </species>
       <species id="M_dpcoa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00882</p>
   </body></notes>
       </species>
       <species id="M_hmbil_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01024</p>
   </body></notes>
       </species>
       <species id="M_indaccoa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C15489</p>
   </body></notes>
       </species>
       <species id="M_5fthf_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03479</p>
   </body></notes>
       </species>
       <species id="M_dhna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03657</p>
   </body></notes>
       </species>
       <species id="M_glc_DASH_D_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00293|C00267|C00031</p>
   </body></notes>
       </species>
       <species id="M_glc_DASH_D_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00293|C00267|C00031</p>
   </body></notes>
       </species>
       <species id="M_btamp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C05921</p>
   </body></notes>
       </species>
       <species id="M_for_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00058</p>
   </body></notes>
       </species>
       <species id="M_for_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00058</p>
   </body></notes>
       </species>
       <species id="M_for_b" name="." boundaryCondition="true" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00058</p>
   </body></notes>
       </species>
       <species id="M_tdcoa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02593</p>
   </body></notes>
       </species>
       <species id="M_pgly_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_decdp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_nadh_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00004</p>
   </body></notes>
       </species>
       <species id="M_ile_DASH_L_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00407</p>
   </body></notes>
       </species>
       <species id="M_ocdca_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01530</p>
   </body></notes>
       </species>
       <species id="M_sl_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: </p>
+     <p>KEGG ID: C11537</p>
   </body></notes>
       </species>
       <species id="M_3mob_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00141</p>
   </body></notes>
       </species>
       <species id="M_ppap_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02876</p>
   </body></notes>
       </species>
       <species id="M_iasp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C05840</p>
   </body></notes>
       </species>
       <species id="M_man6p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00275</p>
   </body></notes>
       </species>
       <species id="M_dcamp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03794</p>
   </body></notes>
       </species>
       <species id="M_g6p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00092|C00668</p>
   </body></notes>
       </species>
       <species id="M_2cpr5p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C10528|C01302</p>
   </body></notes>
       </species>
       <species id="M_dctp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00458</p>
   </body></notes>
       </species>
       <species id="M_cdpglu_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: </p>
+     <p>KEGG ID: C00501</p>
   </body></notes>
       </species>
       <species id="M_fmn_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00061</p>
   </body></notes>
       </species>
       <species id="M_m12dg_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_nadp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00006</p>
   </body></notes>
       </species>
       <species id="M_thdp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03972</p>
   </body></notes>
       </species>
       <species id="M_nac_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C11486</p>
   </body></notes>
       </species>
       <species id="M_26dap_DASH_M_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00680</p>
   </body></notes>
       </species>
       <species id="M_glyc_DASH_R_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00258</p>
   </body></notes>
       </species>
       <species id="M_ac_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00033</p>
   </body></notes>
       </species>
       <species id="M_ac_b" name="." boundaryCondition="true" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00033</p>
   </body></notes>
       </species>
       <species id="M_ch4s_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00409</p>
   </body></notes>
       </species>
       <species id="M_thmmp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01081</p>
   </body></notes>
       </species>
       <species id="M_ac_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00033</p>
   </body></notes>
       </species>
       <species id="M_tyrtrna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02839</p>
   </body></notes>
       </species>
       <species id="M_alaala_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00993</p>
   </body></notes>
       </species>
       <species id="M_4h2oglt_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01127|C05946</p>
   </body></notes>
       </species>
       <species id="M_asp_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C16433|C00049</p>
   </body></notes>
       </species>
       <species id="M_histrna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02988</p>
   </body></notes>
       </species>
       <species id="M_gdptp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04494</p>
   </body></notes>
       </species>
       <species id="M_mercppyr_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00957</p>
   </body></notes>
       </species>
       <species id="M_frdp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00448</p>
   </body></notes>
       </species>
       <species id="M_glx_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00048</p>
   </body></notes>
       </species>
       <species id="M_gcald_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00266</p>
   </body></notes>
       </species>
       <species id="M_h2s_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00297|C00283</p>
   </body></notes>
       </species>
       <species id="M_trdacoa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_h2s_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00297|C00283</p>
   </body></notes>
       </species>
       <species id="M_h2s_b" name="." boundaryCondition="true" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00297|C00283</p>
   </body></notes>
       </species>
       <species id="M_aa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01659</p>
   </body></notes>
       </species>
       <species id="M_gcald_b" name="." boundaryCondition="true" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00266</p>
   </body></notes>
       </species>
       <species id="M_cu2_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00070</p>
   </body></notes>
       </species>
       <species id="M_cu2_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00070</p>
   </body></notes>
       </species>
       <species id="M_prpp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00119</p>
   </body></notes>
       </species>
       <species id="M_lac_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00186</p>
   </body></notes>
       </species>
       <species id="M_val_DASH_L_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00183</p>
   </body></notes>
       </species>
       <species id="M_val_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00183</p>
   </body></notes>
       </species>
       <species id="M_4ppcys_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04352</p>
   </body></notes>
       </species>
       <species id="M_glyc3p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00093|C00623</p>
   </body></notes>
       </species>
       <species id="M_dtdp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00363</p>
   </body></notes>
       </species>
       <species id="M_3pg_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00597|C00197</p>
   </body></notes>
       </species>
       <species id="M_coa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00010</p>
   </body></notes>
       </species>
       <species id="M_3mop_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03465|C00671</p>
   </body></notes>
       </species>
       <species id="M_mg2_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00305</p>
   </body></notes>
       </species>
       <species id="M_trnahis_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01643</p>
   </body></notes>
       </species>
       <species id="M_mg2_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00305</p>
   </body></notes>
       </species>
       <species id="M_glu5sa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01165</p>
   </body></notes>
       </species>
       <species id="M_cyst_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02291</p>
   </body></notes>
       </species>
       <species id="M_lcts_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00243</p>
   </body></notes>
       </species>
       <species id="M_spmd_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00315</p>
   </body></notes>
       </species>
       <species id="M_succ_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00042</p>
   </body></notes>
       </species>
       <species id="M_succ_b" name="." boundaryCondition="true" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00042</p>
   </body></notes>
       </species>
       <species id="M_suchms_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01118</p>
   </body></notes>
       </species>
       <species id="M_fa10coa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_fa11_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_grdp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00341</p>
   </body></notes>
       </species>
       <species id="M_dhf_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00415</p>
   </body></notes>
       </species>
       <species id="M_dgmp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00362</p>
   </body></notes>
       </species>
       <species id="M_mettrna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02430</p>
   </body></notes>
       </species>
       <species id="M_25aics_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04811|C04823</p>
   </body></notes>
       </species>
       <species id="M_trnatyr_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00787</p>
   </body></notes>
       </species>
       <species id="M_h4spt_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C18802</p>
   </body></notes>
       </species>
       <species id="M_trnaser_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01650</p>
   </body></notes>
       </species>
       <species id="M_ctp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00063</p>
   </body></notes>
       </species>
       <species id="M_lystrna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01931</p>
   </body></notes>
       </species>
       <species id="M_thymd_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00214</p>
   </body></notes>
       </species>
       <species id="M_tyr_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00082|C01536</p>
   </body></notes>
       </species>
       <species id="M_acgam6p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00357</p>
   </body></notes>
       </species>
       <species id="M_g3p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00118|C00661</p>
   </body></notes>
       </species>
       <species id="M_1ag3p_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_cellobiose_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: </p>
+     <p>KEGG ID: C00185</p>
   </body></notes>
       </species>
       <species id="M_cellobiose_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: </p>
+     <p>KEGG ID: C00185 </p>
   </body></notes>
       </species>
       <species id="M_phe_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00079</p>
   </body></notes>
       </species>
       <species id="M_pi_b" name="." boundaryCondition="true" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00009</p>
   </body></notes>
       </species>
       <species id="M_pi_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00009</p>
   </body></notes>
       </species>
       <species id="M_hphaccoa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C05338</p>
   </body></notes>
       </species>
       <species id="M_pi_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00009</p>
   </body></notes>
       </species>
       <species id="M_acryl_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00511</p>
   </body></notes>
       </species>
       <species id="M_14glun_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00718</p>
   </body></notes>
       </species>
       <species id="M_btn_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00120</p>
   </body></notes>
       </species>
       <species id="M_pmtcoa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00154</p>
   </body></notes>
       </species>
       <species id="M_ctobiose_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_uamr_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01050</p>
   </body></notes>
       </species>
       <species id="M_gal_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00124</p>
   </body></notes>
       </species>
       <species id="M_5apru_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01268</p>
   </body></notes>
       </species>
       <species id="M_gtp_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00044</p>
   </body></notes>
       </species>
       <species id="M_odecoa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_hista_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00388</p>
   </body></notes>
       </species>
       <species id="M_h_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00080</p>
   </body></notes>
       </species>
       <species id="M_alatrna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00886</p>
   </body></notes>
       </species>
       <species id="M_prbatp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02739</p>
   </body></notes>
       </species>
       <species id="M_fdox_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: </p>
+     <p>KEGG ID: C02869</p>
   </body></notes>
       </species>
       <species id="M_pep_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00074</p>
   </body></notes>
       </species>
       <species id="M_gal_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00124</p>
   </body></notes>
       </species>
       <species id="M_orn_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01602|C00077</p>
   </body></notes>
       </species>
       <species id="M_ppcoa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00100</p>
   </body></notes>
       </species>
       <species id="M_asptrna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02984</p>
   </body></notes>
       </species>
       <species id="M_fa4coa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_uama_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01212</p>
   </body></notes>
       </species>
       <species id="M_5aprbu_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04454</p>
   </body></notes>
       </species>
       <species id="M_h_b" name="." boundaryCondition="true" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00080</p>
   </body></notes>
       </species>
       <species id="M_pad_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02505</p>
   </body></notes>
       </species>
       <species id="M_acmanap_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04257</p>
   </body></notes>
       </species>
       <species id="M_ser_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00716|C00065</p>
   </body></notes>
       </species>
       <species id="M_uacgam_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00043</p>
   </body></notes>
       </species>
       <species id="M_h2mb4p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C11811</p>
   </body></notes>
       </species>
       <species id="M_34hpp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01179</p>
   </body></notes>
       </species>
       <species id="M_ugmda_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04882</p>
   </body></notes>
       </species>
       <species id="M_r5p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00117|C03736</p>
   </body></notes>
       </species>
       <species id="M_2me4p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C11434</p>
   </body></notes>
       </species>
       <species id="M_udpgal_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00052</p>
   </body></notes>
       </species>
       <species id="M_g1p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00103</p>
   </body></notes>
       </species>
       <species id="M_5mdru1p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04582</p>
   </body></notes>
       </species>
       <species id="M_etoh_b" name="." boundaryCondition="true" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00469</p>
   </body></notes>
       </species>
       <species id="M_mql7_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: </p>
+     <p>KEGG ID: C05819</p>
   </body></notes>
       </species>
       <species id="M_dump_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00365</p>
   </body></notes>
       </species>
       <species id="M_s_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00087</p>
   </body></notes>
       </species>
       <species id="M_dtmp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00364</p>
   </body></notes>
       </species>
       <species id="M_utp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00075</p>
   </body></notes>
       </species>
       <species id="M_alac_DASH_S_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00900|C06010</p>
   </body></notes>
       </species>
       <species id="M_sertrna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02553</p>
   </body></notes>
       </species>
       <species id="M_thrtrna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02992</p>
   </body></notes>
       </species>
       <species id="M_phom_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01102</p>
   </body></notes>
       </species>
       <species id="M_pmcoa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01063</p>
   </body></notes>
       </species>
       <species id="M_gdp_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00035</p>
   </body></notes>
       </species>
       <species id="M_glntrna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02282</p>
   </body></notes>
       </species>
       <species id="M_damp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00360</p>
   </body></notes>
       </species>
       <species id="M_imacp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01267</p>
   </body></notes>
       </species>
       <species id="M_gdp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00035</p>
   </body></notes>
       </species>
       <species id="M_trnacys_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01639</p>
   </body></notes>
       </species>
       <species id="M_uri_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00299</p>
   </body></notes>
       </species>
       <species id="M_gam6p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00352</p>
   </body></notes>
       </species>
       <species id="M_ile_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00407</p>
   </body></notes>
       </species>
       <species id="M_leu_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00123</p>
   </body></notes>
       </species>
       <species id="M_leutrna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02047</p>
   </body></notes>
       </species>
       <species id="M_leu_DASH_L_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00123</p>
   </body></notes>
       </species>
       <species id="M_glu1sa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03741</p>
   </body></notes>
       </species>
       <species id="M_nmn_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00455</p>
   </body></notes>
       </species>
       <species id="M_nadph_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00005</p>
   </body></notes>
       </species>
       <species id="M_pphn_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00254</p>
   </body></notes>
       </species>
       <species id="M_nad_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00003</p>
   </body></notes>
       </species>
       <species id="M_fa6coa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_ocdcaiso_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_2pglyc_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00988</p>
   </body></notes>
       </species>
       <species id="M_pnto_DASH_R_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00864</p>
   </body></notes>
       </species>
       <species id="M_pnto_DASH_R_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00864</p>
   </body></notes>
       </species>
       <species id="M_pnto_DASH_R_b" name="." boundaryCondition="true" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00864</p>
   </body></notes>
       </species>
       <species id="M_cellulose_b" name="." boundaryCondition="true" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: </p>
+     <p>KEGG ID: C00760 </p>
   </body></notes>
       </species>
       <species id="M_gly_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00037</p>
   </body></notes>
       </species>
       <species id="M_xan_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00385</p>
   </body></notes>
       </species>
       <species id="M_xan_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00385</p>
   </body></notes>
       </species>
       <species id="M_3dhq_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00944</p>
   </body></notes>
       </species>
       <species id="M_dgdp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00361</p>
   </body></notes>
       </species>
       <species id="M_met_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01733|C00073</p>
   </body></notes>
       </species>
       <species id="M_r1p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00620</p>
   </body></notes>
       </species>
       <species id="M_dcacoa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C05274</p>
   </body></notes>
       </species>
       <species id="M_fpram_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04640</p>
   </body></notes>
       </species>
       <species id="M_protrna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02702</p>
   </body></notes>
       </species>
       <species id="M_fa11coa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_orot5p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01103</p>
   </body></notes>
       </species>
       <species id="M_hisp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01100</p>
   </body></notes>
       </species>
       <species id="M_fa12_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_csn_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00380</p>
   </body></notes>
       </species>
       <species id="M_arab_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00259|C11476</p>
   </body></notes>
       </species>
       <species id="M_udcp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01968|C17558</p>
   </body></notes>
       </species>
       <species id="M_arab_DASH_L_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00259|C11476</p>
   </body></notes>
       </species>
       <species id="M_skm_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00493</p>
   </body></notes>
       </species>
       <species id="M_3spyr_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C05528</p>
   </body></notes>
       </species>
       <species id="M_23dhdp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03340</p>
   </body></notes>
       </species>
       <species id="M_udcpdp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04574</p>
   </body></notes>
       </species>
       <species id="M_2mcit_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02225</p>
   </body></notes>
       </species>
       <species id="M_strcoaiso_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_ribflv_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00255</p>
   </body></notes>
       </species>
       <species id="M_fa10_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_h2o_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: C01328|C00001</p>
+     <p>KEGG ID: C00001</p>
   </body></notes>
       </species>
       <species id="M_h2o_b" name="." boundaryCondition="true" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: C01328|C00001</p>
+     <p>KEGG ID: C00001 </p>
   </body></notes>
       </species>
       <species id="M_h2o_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: C01328|C00001</p>
+     <p>KEGG ID: C00001 </p>
   </body></notes>
       </species>
       <species id="M_uacgala_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00203</p>
   </body></notes>
       </species>
       <species id="M_glu_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00302|C00025</p>
   </body></notes>
       </species>
       <species id="M_ohpb_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C06054</p>
   </body></notes>
       </species>
       <species id="M_urea_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00086</p>
   </body></notes>
       </species>
       <species id="M_urea_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00086</p>
   </body></notes>
       </species>
       <species id="M_adpglc_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00498</p>
   </body></notes>
       </species>
       <species id="M_acnam_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00270</p>
   </body></notes>
       </species>
       <species id="M_malACP_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01209</p>
   </body></notes>
       </species>
       <species id="M_fa3coa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_ametam_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01137</p>
   </body></notes>
       </species>
       <species id="M_fa6_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_ura_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00106</p>
   </body></notes>
       </species>
       <species id="M_ura_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00106</p>
   </body></notes>
       </species>
       <species id="M_acald_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00084</p>
   </body></notes>
       </species>
       <species id="M_4gudbutn_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_cystrna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03125</p>
   </body></notes>
       </species>
       <species id="M_dhap_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00111</p>
   </body></notes>
       </species>
       <species id="M_trnaarg_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01636</p>
   </body></notes>
       </species>
       <species id="M_dadp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00206</p>
   </body></notes>
       </species>
       <species id="M_pyr_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00022</p>
   </body></notes>
       </species>
       <species id="M_mmcoa_DASH_S_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00683</p>
   </body></notes>
       </species>
       <species id="M_hexdp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01230</p>
   </body></notes>
       </species>
       <species id="M_ugmd_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04877</p>
   </body></notes>
       </species>
       <species id="M_rdmbzi_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C05775</p>
   </body></notes>
       </species>
       <species id="M_pac_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C15583|C05613|C07086|C00548</p>
   </body></notes>
       </species>
       <species id="M_lys_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00047|C16440</p>
   </body></notes>
       </species>
       <species id="M_amob_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04425</p>
   </body></notes>
       </species>
       <species id="M_pant_DASH_R_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00522</p>
   </body></notes>
       </species>
       <species id="M_actp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00227</p>
   </body></notes>
       </species>
       <species id="M_gtca1_45_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_26dap_DASH_LL_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00666</p>
   </body></notes>
       </species>
       <species id="M_didp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01344</p>
   </body></notes>
       </species>
       <species id="M_glyclt_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00160</p>
   </body></notes>
       </species>
       <species id="M_ibcoa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00630</p>
   </body></notes>
       </species>
       <species id="M_mh4spt_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: </p>
+     <p>KEGG ID: C18799</p>
   </body></notes>
       </species>
       <species id="M_lipo1_24_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_glu_DASH_D_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00217</p>
   </body></notes>
       </species>
       <species id="M_3ig3p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03506</p>
   </body></notes>
       </species>
       <species id="M_ind3ac_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00954</p>
   </body></notes>
       </species>
       <species id="M_aspsa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00441</p>
   </body></notes>
       </species>
       <species id="M_fru_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C10906|C02336|C01496|C00095</p>
   </body></notes>
       </species>
       <species id="M_glytrna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02412</p>
   </body></notes>
       </species>
       <species id="M_pglyp_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_2dda7p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04691</p>
   </body></notes>
       </species>
       <species id="M_cbasp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00438</p>
   </body></notes>
       </species>
       <species id="M_agdpcbi_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C06510</p>
   </body></notes>
       </species>
       <species id="M_trp_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00078|C00806</p>
   </body></notes>
       </species>
       <species id="M_gam1p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C06156</p>
   </body></notes>
       </species>
       <species id="M_cdpdag_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_glyc_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00116</p>
   </body></notes>
       </species>
       <species id="M_ppbng_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00931</p>
   </body></notes>
       </species>
       <species id="M_mercplac_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_udp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00015</p>
   </body></notes>
       </species>
       <species id="M_2shchc_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C05817</p>
   </body></notes>
       </species>
       <species id="M_4ppan_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03492</p>
   </body></notes>
       </species>
       <species id="M_mmcoa_DASH_R_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01213</p>
   </body></notes>
       </species>
       <species id="M_uaagmda_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C05898</p>
   </body></notes>
       </species>
       <species id="M_n2_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00697</p>
   </body></notes>
       </species>
       <species id="M_e4hglu_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: </p>
+     <p>KEGG ID: C05947</p>
   </body></notes>
       </species>
       <species id="M_atp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00002</p>
   </body></notes>
       </species>
       <species id="M_hco3_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00288|C01353</p>
   </body></notes>
       </species>
       <species id="M_1pyr5c_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03912</p>
   </body></notes>
       </species>
       <species id="M_dscl_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02463</p>
   </body></notes>
       </species>
       <species id="M_adocbip_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C06509</p>
   </body></notes>
       </species>
       <species id="M_thr_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00188</p>
   </body></notes>
       </species>
       <species id="M_dgsn_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00330</p>
   </body></notes>
       </species>
       <species id="M_thf_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00101</p>
   </body></notes>
       </species>
       <species id="M_xyl_DASH_D_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01394|C00181</p>
   </body></notes>
       </species>
       <species id="M_acmana_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00645</p>
   </body></notes>
       </species>
       <species id="M_12dgr_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_argsuc_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03406</p>
   </body></notes>
       </species>
       <species id="M_accoa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00024</p>
   </body></notes>
       </species>
       <species id="M_skm5p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03175</p>
   </body></notes>
       </species>
       <species id="M_nmn_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00455</p>
   </body></notes>
       </species>
       <species id="M_nmn_b" name="." boundaryCondition="true" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00455</p>
   </body></notes>
       </species>
       <species id="M_psetha_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_dtdpglu_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00842</p>
   </body></notes>
       </species>
       <species id="M_prfp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04896</p>
   </body></notes>
       </species>
       <species id="M_trnamet_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01647</p>
   </body></notes>
       </species>
       <species id="M_2ahbut_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C06006|C00659</p>
   </body></notes>
       </species>
       <species id="M_adocbl_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00194</p>
   </body></notes>
       </species>
       <species id="M_2dr5p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00673</p>
   </body></notes>
       </species>
       <species id="M_pan4p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01134</p>
   </body></notes>
       </species>
       <species id="M_indole_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00463</p>
   </body></notes>
       </species>
       <species id="M_indpyr_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00331</p>
   </body></notes>
       </species>
       <species id="M_fa4_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_fa5coa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_dmlz_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04332</p>
   </body></notes>
       </species>
       <species id="M_uppg3_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01051</p>
   </body></notes>
       </species>
       <species id="M_o2s_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00704</p>
   </body></notes>
       </species>
       <species id="M_acser_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00979</p>
   </body></notes>
       </species>
       <species id="M_hdca_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00249</p>
   </body></notes>
       </species>
       <species id="M_rib_DASH_D_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00121</p>
   </body></notes>
       </species>
       <species id="M_tagdp_DASH_D_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03785</p>
   </body></notes>
       </species>
       <species id="M_rib_DASH_D_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00121</p>
   </body></notes>
       </species>
       <species id="M_hom_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00263</p>
   </body></notes>
       </species>
       <species id="M_25dhpp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_ichor_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00885</p>
   </body></notes>
       </species>
       <species id="M_ppa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00163</p>
   </body></notes>
       </species>
       <species id="M_cdpglyc_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00513</p>
   </body></notes>
       </species>
       <species id="M_4c2me_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C11435</p>
   </body></notes>
       </species>
       <species id="M_iad_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02693</p>
   </body></notes>
       </species>
       <species id="M_gar_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03838</p>
   </body></notes>
       </species>
       <species id="M_gln_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00064</p>
   </body></notes>
       </species>
       <species id="M_3dhsk_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02637</p>
   </body></notes>
       </species>
       <species id="M_etoh_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00469</p>
   </body></notes>
       </species>
       <species id="M_fum_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00122</p>
   </body></notes>
       </species>
       <species id="M_strcoa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: </p>
+     <p>KEGG ID: C00412</p>
   </body></notes>
       </species>
       <species id="M_etoh_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00469</p>
   </body></notes>
       </species>
       <species id="M_ggdp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00353</p>
   </body></notes>
       </species>
       <species id="M_tag6p_DASH_D_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01097</p>
   </body></notes>
       </species>
       <species id="M_fa12coa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_ahcys_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00021</p>
   </body></notes>
       </species>
       <species id="M_trdca_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C17076</p>
   </body></notes>
       </species>
       <species id="M_acg5sa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01250</p>
   </body></notes>
       </species>
       <species id="M_2ippm_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02631</p>
   </body></notes>
       </species>
       <species id="M_sarcs_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00213</p>
   </body></notes>
       </species>
       <species id="M_h2_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00282</p>
   </body></notes>
       </species>
       <species id="M_aps_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00224</p>
   </body></notes>
       </species>
       <species id="M_nh4_b" name="." boundaryCondition="true" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01342|C00014</p>
   </body></notes>
       </species>
       <species id="M_adocbi_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C06508</p>
   </body></notes>
       </species>
       <species id="M_fdred_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: </p>
+     <p>KEGG ID: C02745</p>
   </body></notes>
       </species>
       <species id="M_trnapro_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01649</p>
   </body></notes>
       </species>
       <species id="M_cdlp_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_3c2hmp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04411</p>
   </body></notes>
       </species>
       <species id="M_5mta_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00170</p>
   </body></notes>
       </species>
       <species id="M_dhnpt_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04874</p>
   </body></notes>
       </species>
       <species id="M_hcys_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00155|C05330</p>
   </body></notes>
       </species>
       <species id="M_malcoa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00083</p>
   </body></notes>
       </species>
       <species id="M_ump_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00105</p>
   </body></notes>
       </species>
       <species id="M_cdpddglu_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: </p>
+     <p>KEGG ID: C01219</p>
   </body></notes>
       </species>
       <species id="M_xu5p_DASH_D_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00231</p>
   </body></notes>
       </species>
       <species id="M_dgtp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00286</p>
   </body></notes>
       </species>
       <species id="M_q8h2_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00390</p>
   </body></notes>
       </species>
       <species id="M_2dr1p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00672</p>
   </body></notes>
       </species>
       <species id="M_thmpp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00068</p>
   </body></notes>
       </species>
       <species id="M_acmama_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02999</p>
   </body></notes>
       </species>
       <species id="M_dtbt_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01909</p>
   </body></notes>
       </species>
       <species id="M_5mthf_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00440</p>
   </body></notes>
       </species>
       <species id="M_ttdcecoa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_ivcoa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02939</p>
   </body></notes>
       </species>
       <species id="M_dcdp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00705</p>
   </body></notes>
       </species>
       <species id="M_23dhmb_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04039|C04272</p>
   </body></notes>
       </species>
       <species id="M_cys_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00097</p>
   </body></notes>
       </species>
       <species id="M_paps_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00053</p>
   </body></notes>
       </species>
       <species id="M_nh4_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01342|C00014</p>
   </body></notes>
       </species>
       <species id="M_nicrnt_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01185</p>
   </body></notes>
       </species>
       <species id="M_rnam_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03150</p>
   </body></notes>
       </species>
       <species id="M_succoa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00091</p>
   </body></notes>
       </species>
       <species id="M_nh4_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01342|C00014</p>
   </body></notes>
       </species>
       <species id="M_xmp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00655</p>
   </body></notes>
       </species>
       <species id="M_prlp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04916</p>
   </body></notes>
       </species>
       <species id="M_icit_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00311</p>
   </body></notes>
       </species>
       <species id="M_amp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00020</p>
   </body></notes>
       </species>
       <species id="M_ncam_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00153</p>
   </body></notes>
       </species>
       <species id="M_achms_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01077</p>
   </body></notes>
       </species>
       <species id="M_4adcho_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C11355</p>
   </body></notes>
       </species>
       <species id="M_2obut_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00109</p>
   </body></notes>
       </species>
       <species id="M_ppi_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00013</p>
   </body></notes>
       </species>
       <species id="M_phthr_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C06055</p>
   </body></notes>
       </species>
       <species id="M_fad_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00016</p>
   </body></notes>
       </species>
       <species id="M_ca2_b" name="." boundaryCondition="true" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00076</p>
   </body></notes>
       </species>
       <species id="M_aicar_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04677</p>
   </body></notes>
       </species>
       <species id="M_4abz_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00568</p>
   </body></notes>
       </species>
       <species id="M_dnad_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00857</p>
   </body></notes>
       </species>
       <species id="M_2ahhmd_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04807</p>
   </body></notes>
       </species>
       <species id="M_cbi_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C05774</p>
   </body></notes>
       </species>
       <species id="M_phaccoa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00582</p>
   </body></notes>
       </species>
       <species id="M_acglu_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00624</p>
   </body></notes>
       </species>
       <species id="M_t12dg_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_ditp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01345</p>
   </body></notes>
       </species>
       <species id="M_trnaasn_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01637</p>
   </body></notes>
       </species>
       <species id="M_ala_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00041</p>
   </body></notes>
       </species>
       <species id="M_dca_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01571</p>
   </body></notes>
       </species>
       <species id="M_2dhp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00966</p>
   </body></notes>
       </species>
       <species id="M_2pg_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00631</p>
   </body></notes>
       </species>
       <species id="M_23dhmp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C06007|C04104</p>
   </body></notes>
       </species>
       <species id="M_glutrna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02987</p>
   </body></notes>
       </species>
       <species id="M_trnaval_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01653</p>
   </body></notes>
       </species>
       <species id="M_argtrna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02163</p>
   </body></notes>
       </species>
       <species id="M_dhor_DASH_S_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00337</p>
   </body></notes>
       </species>
       <species id="M_gua_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00242</p>
   </body></notes>
       </species>
       <species id="M_ptrc_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00134</p>
   </body></notes>
       </species>
       <species id="M_trnaala_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01635</p>
   </body></notes>
       </species>
       <species id="M_gtca2_45_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_ptrc_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00134</p>
   </body></notes>
       </species>
       <species id="M_hdcoa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_ca2_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00076</p>
   </body></notes>
       </species>
       <species id="M_ala_DASH_B_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00099</p>
   </body></notes>
       </species>
       <species id="M_pppi_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00536</p>
   </body></notes>
       </species>
       <species id="M_fa9_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_4mpetz_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04327</p>
   </body></notes>
       </species>
       <species id="M_peptido_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_5aizc_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04751</p>
   </body></notes>
       </species>
       <species id="M_uaccg_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04631</p>
   </body></notes>
       </species>
       <species id="M_pram_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03090</p>
   </body></notes>
       </species>
       <species id="M_2hb_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: </p>
+     <p>KEGG ID: C05984</p>
   </body></notes>
       </species>
       <species id="M_acnamp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: </p>
+     <p>KEGG ID: C06241</p>
   </body></notes>
       </species>
       <species id="M_dutp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00460</p>
   </body></notes>
       </species>
       <species id="M_camp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00575</p>
   </body></notes>
       </species>
       <species id="M_4r5au_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04732</p>
   </body></notes>
       </species>
       <species id="M_dmbzid_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03114</p>
   </body></notes>
       </species>
       <species id="M_fa5_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_trnagln_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01640</p>
   </body></notes>
       </species>
       <species id="M_idp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00104</p>
   </body></notes>
       </species>
       <species id="M_fa3_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_cytd_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00475</p>
   </body></notes>
       </species>
       <species id="M_glu5p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03287</p>
   </body></notes>
       </species>
       <species id="M_fe3_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C14819</p>
   </body></notes>
       </species>
       <species id="M_dtdp4d6dm_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00688</p>
   </body></notes>
       </species>
       <species id="M_fe3_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C14819</p>
   </body></notes>
       </species>
       <species id="M_3psme_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01269</p>
   </body></notes>
       </species>
       <species id="M_pdx5p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00627</p>
   </body></notes>
       </species>
       <species id="M_dhpt_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00921</p>
   </body></notes>
       </species>
       <species id="M_citr_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00327</p>
   </body></notes>
       </species>
       <species id="M_fa1coa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_acmam_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: </p>
+     <p>KEGG ID: C02713</p>
   </body></notes>
       </species>
       <species id="M_his_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00135</p>
   </body></notes>
       </species>
       <species id="M_oaa_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00036</p>
   </body></notes>
       </species>
       <species id="M_dtdp4d6dg_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C11907</p>
   </body></notes>
       </species>
       <species id="M_xyl_DASH_D_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01394|C00181</p>
   </body></notes>
       </species>
       <species id="M_acgam_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00140</p>
   </body></notes>
       </species>
       <species id="M_trnagly_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01642</p>
   </body></notes>
       </species>
       <species id="M_lipo3_24_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_dcmp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00239</p>
   </body></notes>
       </species>
       <species id="M_trnaasp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01638</p>
   </body></notes>
       </species>
       <species id="M_5prdmbz_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04778</p>
   </body></notes>
       </species>
       <species id="M_ipdp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00129</p>
   </body></notes>
       </species>
       <species id="M_2mahmp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04752</p>
   </body></notes>
       </species>
       <species id="M_trnaile_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01644</p>
   </body></notes>
       </species>
       <species id="M_mlthf_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00143</p>
   </body></notes>
       </species>
       <species id="M_cdp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00112</p>
   </body></notes>
       </species>
       <species id="M_itp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00081</p>
   </body></notes>
       </species>
       <species id="M_phpyr_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00166</p>
   </body></notes>
       </species>
       <species id="M_chtn_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
-     <p>KEGG ID: </p>
+     <p>KEGG ID: C00461</p>
   </body></notes>
       </species>
       <species id="M_akg_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00026</p>
   </body></notes>
       </species>
       <species id="M_trdox_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00343</p>
   </body></notes>
       </species>
       <species id="M_fgam_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04376</p>
   </body></notes>
       </species>
       <species id="M_dmpp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C07488</p>
   </body></notes>
       </species>
       <species id="M_adn_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00212</p>
   </body></notes>
       </species>
       <species id="M_uagmda_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C05897</p>
   </body></notes>
       </species>
       <species id="M_trnathr_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01651</p>
   </body></notes>
       </species>
       <species id="M_5aop_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00430</p>
   </body></notes>
       </species>
       <species id="M_sucbz_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02730</p>
   </body></notes>
       </species>
       <species id="M_e4p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00279</p>
   </body></notes>
       </species>
       <species id="M_2aobut_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03508</p>
   </body></notes>
       </species>
       <species id="M_lipo2_24_CT_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_imp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00130</p>
   </body></notes>
       </species>
       <species id="M_so4_b" name="." boundaryCondition="true" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00059</p>
   </body></notes>
       </species>
       <species id="M_so4_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00059</p>
   </body></notes>
       </species>
       <species id="M_so4_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00059</p>
   </body></notes>
       </species>
       <species id="M_phetrna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03511</p>
   </body></notes>
       </species>
       <species id="M_valtrna_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02554</p>
   </body></notes>
       </species>
       <species id="M_pendp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C04217</p>
   </body></notes>
       </species>
       <species id="M_mal_DASH_L_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00711|C00149</p>
   </body></notes>
       </species>
       <species id="M_cbp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00169</p>
   </body></notes>
       </species>
       <species id="M_psd5p_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01168</p>
   </body></notes>
       </species>
       <species id="M_2p4c2me_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C11436</p>
   </body></notes>
       </species>
       <species id="M_ca2_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00076</p>
   </body></notes>
       </species>
       <species id="M_co2_b" name="." boundaryCondition="true" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00011</p>
   </body></notes>
       </species>
       <species id="M_co2_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00011</p>
   </body></notes>
       </species>
       <species id="M_mg2_b" name="." boundaryCondition="true" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00305</p>
   </body></notes>
       </species>
       <species id="M_co2_e" name="." boundaryCondition="false" compartment="Extraorganism">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00011</p>
   </body></notes>
       </species>
       <species id="M_fa1_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_ocdcea_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_glycogen_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00182</p>
   </body></notes>
       </species>
       <species id="M_trnaglu_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01641</p>
   </body></notes>
       </species>
       <species id="M_hdcea_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: </p>
   </body></notes>
       </species>
       <species id="M_8aonn_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01092</p>
   </body></notes>
       </species>
       <species id="M_uacmam_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C01170</p>
   </body></notes>
       </species>
       <species id="M_air_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C03373</p>
   </body></notes>
       </species>
       <species id="M_prbamp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C02741</p>
   </body></notes>
       </species>
       <species id="M_datp_c" name="." boundaryCondition="false" compartment="Cytosol">
 <notes><body xmlns="http://www.w3.org/1999/xhtml">
-     <p>CHARGE:    </p>
+     <p>CHARGE:     </p>
   
      <p>KEGG ID: C00131</p>
   </body></notes>
