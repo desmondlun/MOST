@@ -6,6 +6,7 @@ iRC1080_heterotrophic,Chlamydomonas reinhardtii,1080,2191,1706,Yes,"Chang et al.
 iRC1080_mixotrophic,Chlamydomonas reinhardtii,1080,2191,1706,Yes,"Chang et al., 2011",sbml/Chlamydomonas reinhardtii,sbml,http://dx.doi.org/10.1038/msb.2011.52
 iCB925,Clostridium beijerinckii NCIMB 8052,925,938,900,Yes,"Milne et al., 2011",sbml/Clostridium beijerinckii,sbml,http://dx.doi.org/10.1186/1752-0509-5-130
 iSR432,Clostridium thermocellum (ATCC 27405),432,581,564,Yes,"Roberts et al., 2010",sbml/Clostridium thermocellum,sbml,http://dx.doi.org/10.1186/1752-0509-4-31
+iCce806,Cyanothece sp. ATCC 51142,806,719,637,Yes,"Vu et al., 2012",sbml/Cyanothece sp. ATCC 51142,sbml,http://dx.doi.org/10.1371/journal.pcbi.1002460
 iAI549,Dehalococcoides ethenogenes,549,555,587,Yes,"Islam et al., 2010",sbml/Dehalococcoides ethenogenes,sbml,http://dx.doi.org/10.1371/journal.pcbi.1000887
 ecoli_core_model,Escherichia coli,134,95,92,Yes,"Orth et al, 2010",sbml/E. Coli,sbml,http://dx.doi.org/10.1128/ecosalplus.10.2.1 
 Ec_iAF1260_anaerobic_glc10_acetate,Escherichia coli K-12 MG1655,1260,2382,1972,Yes,"Egen and Lun, 2012",sbml/E. Coli,sbml,http://dx.doi.org/10.1093/bioinformatics/bts255
