@@ -169,20 +169,24 @@ public class PathwayReactionNodeFactory {
 			if (exactMatch) {
 				if (speciesExactMatch(prd.getKeggReactantIds(), prd.getKeggReactantIdsDataMap(), modelData.getKeggReactantIds()) && 
 						speciesExactMatch(prd.getKeggProductIds(), prd.getKeggProductIdsDataMap(), modelData.getKeggProductIds())) {
+					doesSetDirectionMatchDirection(prd, PathwaysCSVFileConstants.FORWARD_DIRECTION);
 					prd.setDirection(PathwaysCSVFileConstants.FORWARD_DIRECTION);
 					match = true;
 				} else if (speciesExactMatch(prd.getKeggReactantIds(), prd.getKeggReactantIdsDataMap(), modelData.getKeggProductIds()) && 
 						speciesExactMatch(prd.getKeggProductIds(), prd.getKeggProductIdsDataMap(), modelData.getKeggReactantIds())) {
+					doesSetDirectionMatchDirection(prd, PathwaysCSVFileConstants.REVERSE_DIRECTION);
 					prd.setDirection(PathwaysCSVFileConstants.REVERSE_DIRECTION);
 					match = true;
 				}
 			} else {
 				if (speciesMatch(prd.getKeggReactantIds(), prd.getKeggReactantIdsDataMap(), modelData.getKeggReactantIds()) && 
 						speciesMatch(prd.getKeggProductIds(), prd.getKeggProductIdsDataMap(), modelData.getKeggProductIds())) {
+					doesSetDirectionMatchDirection(prd, PathwaysCSVFileConstants.FORWARD_DIRECTION);
 					prd.setDirection(PathwaysCSVFileConstants.FORWARD_DIRECTION);
 					match = true;
 				} else if (speciesMatch(prd.getKeggReactantIds(), prd.getKeggReactantIdsDataMap(), modelData.getKeggProductIds()) && 
 						speciesMatch(prd.getKeggProductIds(), prd.getKeggProductIdsDataMap(), modelData.getKeggReactantIds())) {
+					doesSetDirectionMatchDirection(prd, PathwaysCSVFileConstants.REVERSE_DIRECTION);
 					prd.setDirection(PathwaysCSVFileConstants.REVERSE_DIRECTION);
 					match = true;
 				}
@@ -191,6 +195,20 @@ public class PathwayReactionNodeFactory {
 		
 		return match;
 		
+	}
+	
+	/**
+	 * If the same reaction list contains reactions in different directions, 
+	 * set DirectionsMatch to false
+	 * @param prd
+	 * @param direction
+	 */
+	private void doesSetDirectionMatchDirection(PathwayReactionData prd, String direction) {
+		if (prd.getDirection() != null) {
+			if (!prd.getDirection().equals(direction)) {
+				prd.setDirectionsMatch(false);
+			}
+		}
 	}
 	
 	/**
@@ -441,6 +459,9 @@ public class PathwayReactionNodeFactory {
 		}
 		if (directions.size() == 1) {
 			pn.setDirection(directions.get(0));
+			if (!prd.isDirectionsMatch()) {
+				reversible = GraphicalInterfaceConstants.BOOLEAN_VALUES[1];
+			}
 		} else {
 			pn.setDirection(PathwaysCSVFileConstants.FORWARD_DIRECTION);
 		}
