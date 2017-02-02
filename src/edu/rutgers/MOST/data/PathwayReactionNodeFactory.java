@@ -172,7 +172,11 @@ public class PathwayReactionNodeFactory {
 					doesSetDirectionMatchDirection(prd, PathwaysCSVFileConstants.FORWARD_DIRECTION);
 					prd.setDirection(PathwaysCSVFileConstants.FORWARD_DIRECTION);
 					match = true;
-				} else if (prd.getReversible().equals("1") && speciesExactMatch(prd.getKeggReactantIds(), prd.getKeggReactantIdsDataMap(), modelData.getKeggProductIds()) && 
+					// if reaction in database or reaction in model is reversible check for
+					// match in reverse direction
+				} else if ((r.getReversible().equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[1]) 
+					|| prd.getReversible().equals("1")) 
+					&& speciesExactMatch(prd.getKeggReactantIds(), prd.getKeggReactantIdsDataMap(), modelData.getKeggProductIds()) && 
 						speciesExactMatch(prd.getKeggProductIds(), prd.getKeggProductIdsDataMap(), modelData.getKeggReactantIds())) {
 					doesSetDirectionMatchDirection(prd, PathwaysCSVFileConstants.REVERSE_DIRECTION);
 					prd.setDirection(PathwaysCSVFileConstants.REVERSE_DIRECTION);
@@ -184,7 +188,11 @@ public class PathwayReactionNodeFactory {
 					doesSetDirectionMatchDirection(prd, PathwaysCSVFileConstants.FORWARD_DIRECTION);
 					prd.setDirection(PathwaysCSVFileConstants.FORWARD_DIRECTION);
 					match = true;
-				} else if (prd.getReversible().equals("1") && speciesMatch(prd.getKeggReactantIds(), prd.getKeggReactantIdsDataMap(), modelData.getKeggProductIds()) && 
+					// if reaction in database or reaction in model is reversible check for
+					// match in reverse direction
+				} else if ((r.getReversible().equals(GraphicalInterfaceConstants.BOOLEAN_VALUES[1]) 
+					|| prd.getReversible().equals("1")) 
+					&& speciesMatch(prd.getKeggReactantIds(), prd.getKeggReactantIdsDataMap(), modelData.getKeggProductIds()) && 
 						speciesMatch(prd.getKeggProductIds(), prd.getKeggProductIdsDataMap(), modelData.getKeggReactantIds())) {
 					doesSetDirectionMatchDirection(prd, PathwaysCSVFileConstants.REVERSE_DIRECTION);
 					prd.setDirection(PathwaysCSVFileConstants.REVERSE_DIRECTION);
