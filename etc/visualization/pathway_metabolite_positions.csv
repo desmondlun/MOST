@@ -4782,5 +4782,3 @@ Pathway ID,Metabolite ID,Metabolite Level,Metabolite Level Position,Metabolite N
 0,4780,9.05,11.97,Reduced nicotinamide adenine dinucleotide,NADH,C00004,0,s,,,,
 0,4781,8.01,11.98,Oxygen,O2,C00007,0,s,,,,
 0,4782,9.05,12.04,Hydrogen peroxide,H2O2,C00027,0,s,,,,
-0,4783,21.1,-1.95,Acceptor,Acceptor,C00028,0,s,,,,
-0,4784,20.4,-1.95,Reduced acceptor,Reduced acceptor,C00030,0,s,,,,
