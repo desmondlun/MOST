@@ -292,6 +292,6 @@ public class PathwaysFrameConstants {
 	
 	public static java.util.List<String> calvinCycleMetaboliteIDsList = Arrays.asList(CALVIN_CYCLE_METABOLITE_IDS);
 	
-	public static final boolean HIDE_DATABASE_IDS = true;
+	public static final boolean HIDE_DATABASE_IDS = false;
 	
 }
