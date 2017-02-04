@@ -116,7 +116,8 @@ public class PathwayReactionNodeFactory {
 			if (compartment != null && compartment.length() > 0) {
 				if (reac.get(r) != null) {
 					SBMLReactionEquation equn = (SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(reac.get(r).getId());
-					if (equn.getCompartmentList().size() == 1 && equn.getCompartmentList().contains(compartment)) {
+					if ((equn.getCompartmentList().size() == 1  || equn.getCompartmentListIgnoreProton().size() == 1)
+						&& equn.getCompartmentList().contains(compartment)) {
 						if (addReactionIfNotPresent(reactions, reac.get(r), prd, exactMatch)) {
 							// can't remove ids from unplotted ids, reactions skipped. instead, save
 							// ids and remove after creating all nodes

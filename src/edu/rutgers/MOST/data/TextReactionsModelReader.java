@@ -479,7 +479,7 @@ public class TextReactionsModelReader {
 		equn.setIrreversibleArrow(equation.getIrreversibleArrow());
 		equn.writeReactionEquation();
 		equn.setCompartmentList(compartmentList);
-        if (compartmentList.size()> 1) {
+        if (compartmentList.size() > 1) {
         	Collections.sort(compartmentList);
         	if (!listOfCompartmentLists.contains(compartmentList)) {
         		listOfCompartmentLists.add(compartmentList);

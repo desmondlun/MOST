@@ -10,7 +10,7 @@ import edu.rutgers.MOST.config.LocalConfig;
 
 public class TransportReactionCategorizer {
 
-	TransportCollectionsCreator transportCollectionsCreator = new TransportCollectionsCreator();
+	//TransportCollectionsCreator transportCollectionsCreator = new TransportCollectionsCreator();
 	public void removeExternalReactions() {
 		ReactionFactory rf = new ReactionFactory("SBML");
 		Vector<SBMLReaction> reactions = rf.getAllReactions();

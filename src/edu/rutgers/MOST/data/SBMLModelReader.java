@@ -469,7 +469,7 @@ public class SBMLModelReader {
             equation.setIrreversibleArrow(GraphicalInterfaceConstants.NOT_REVERSIBLE_ARROWS[1]);
             equation.writeReactionEquation();
             equation.setCompartmentList(compartmentList);
-            if (compartmentList.size()> 1) {
+            if (compartmentList.size() > 1) {
             	Collections.sort(compartmentList);
             	if (!listOfCompartmentLists.contains(compartmentList)) {
             		listOfCompartmentLists.add(compartmentList);

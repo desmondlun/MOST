@@ -14,6 +14,7 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 	public String equationAbbreviations;
 	public String equationNames;
 	private ArrayList<String> compartmentList;
+	private ArrayList<String> compartmentListIgnoreProton;
 	private ArrayList<String> compartmentReactantsList;
 	private ArrayList<String> compartmentProductsList;
 
@@ -67,6 +68,17 @@ public class SBMLReactionEquation implements ModelReactionEquation {
 		this.compartmentList = compartmentList;
 	}
 	
+	public ArrayList< String > getCompartmentListIgnoreProton()
+	{
+		return compartmentListIgnoreProton;
+	}
+
+	public void setCompartmentListIgnoreProton(
+		ArrayList< String > compartmentListIgnoreProton )
+	{
+		this.compartmentListIgnoreProton = compartmentListIgnoreProton;
+	}
+
 	public ArrayList<String> getCompartmentReactantsList() {
 		return compartmentReactantsList;
 	}
