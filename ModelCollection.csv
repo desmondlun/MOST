@@ -1,4 +1,5 @@
 Model Version,Organism Name,Genes,Reactions,Metabolites,Identifiers,Reference,Path,Type,URL
+iAbaylyiv4,Acinetobacter baylyi ADP1,774,996,828,Yes,"Dirot et al., 2008",sbml/Acinetobacter baylyi ADP1,sbml,https://dx.doi.org/10.1186/1752-0509-2-85
 AraGEM,Arabidopsis thaliana,1419,1601,1769,No,"de Oliveira Dal'Molin et al., 2009",sbml/Arabidopsis thaliana,sbml,http://dx.doi.org/10.1104/pp.109.148817
 iBsu1103,Bacillus subtilis 168,1103,1681,1625,Yes,"Henry et al., 2009",sbml/Bacillus subtilis,sbml,http://dx.doi.org/10.1186/gb-2009-10-6-r69
 iRC1080_autotrophic,Chlamydomonas reinhardtii,1080,2191,1706,Yes,"Chang et al., 2011",sbml/Chlamydomonas reinhardtii,sbml,http://dx.doi.org/10.1038/msb.2011.52
