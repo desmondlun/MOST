@@ -20,6 +20,10 @@ iIT341,Helicobacter pylori 26695,341,554,562,Yes,"Thiele et al., 2005",sbml/Heli
 recon2model.v02,Homo sapiens,1789,7440,9798,Yes,"Thiele et al., 2013",sbml/recon2_02,sbml,http://dx.doi.org/10.1038/nbt.2488
 iYL1228,Klebsiella pneumoniae MGH 78578,1228,2262,1658,Yes,"Liao et al, 2011",sbml/Klebsiella pneumoniae,sbml,http://dx.doi.org/10.1128/JB.01218-10
 iAC560,Leishmania major Friedlin,560,1112,1165,Yes,"Chivali et al., 2008",sbml/Leishmania major,sbml,http://dx.doi.org/10.1038/msb.2008.15
+iAF692-acetate,Methanosarcina barkeri,692,690,628,Yes,"Feist et al., 2006",sbml/Methanosarcina barkeri,sbml,https://dx.doi.org/10.1038/msb4100046
+iAF692_h2_co2,Methanosarcina barkeri,692,690,628,Yes,"Feist et al., 2006",sbml/Methanosarcina barkeri,sbml,https://dx.doi.org/10.1038/msb4100046
+iAF692-methanol,Methanosarcina barkeri,692,690,628,Yes,"Feist et al., 2006",sbml/Methanosarcina barkeri,sbml,https://dx.doi.org/10.1038/msb4100046
+iAF692-pyruvate,Methanosarcina barkeri,692,690,628,Yes,"Feist et al., 2006",sbml/Methanosarcina barkeri,sbml,https://dx.doi.org/10.1038/msb4100046
 GSMmouse190508,Mus musculus,473,2037,2110,Yes,"Sheikh et al., 2005",sbml/Mus musculus,sbml,http://dx.doi.org/10.1021/bp0498138
 iNJ661,Mycobacterium tuberculosis H37Rv,661,1025,912,Yes,"Jamshidi and Palsson, 2007",sbml/Mycobacterium tuberculosis,sbml,http://dx.doi.org/10.1186/1752-0509-1-26
 iJDZ836,Neurospora crassa,836,1845,1008,Yes,"Dreyfuss et al., 2013",sbml/Neurospora crassa,sbml,http://dx.doi.org/10.1371%2Fjournal.pcbi.1003126
