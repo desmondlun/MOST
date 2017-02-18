@@ -23,7 +23,7 @@ iAC560,Leishmania major Friedlin,560,1112,1165,Yes,"Chivali et al., 2008",sbml/L
 GSMmouse190508,Mus musculus,473,2037,2110,Yes,"Sheikh et al., 2005",sbml/Mus musculus,sbml,http://dx.doi.org/10.1021/bp0498138
 iNJ661,Mycobacterium tuberculosis H37Rv,661,1025,912,Yes,"Jamshidi and Palsson, 2007",sbml/Mycobacterium tuberculosis,sbml,http://dx.doi.org/10.1186/1752-0509-1-26
 iJDZ836,Neurospora crassa,836,1845,1008,Yes,"Dreyfuss et al., 2013",sbml/Neurospora crassa,sbml,http://dx.doi.org/10.1371%2Fjournal.pcbi.1003126
-tpj13081,Phaeodactylum tricornutum,-,850,754,Yes,"Kim et al., 2015",sbml/Phaeodactylum tricornutum,sbml,http://dx.doi.org/10.1111/tpj.13081
+tpj13081,Phaeodactylum tricornutum,607,850,754,Yes,"Kim et al., 2015",sbml/Phaeodactylum tricornutum,sbml,http://dx.doi.org/10.1111/tpj.13081
 iMT1026,Pichia pastoris,1026,2210,2755,Yes,"Tomas-Gamisans et al., 2016",sbml/Pichia pastoris,sbml,http://dx.doi.org/10.1371/journal.pone.0148031
 iTH366,Plasmodium falciparum 3D7,366,1001,1025,Yes,"Plata et al., 2010",sbml/Plasmodium falciparum,sbml,http://dx.doi.org/10.1038/msb.2010.60
 iND750,Saccharomyces cerevisiae Sc288,750,1266,1177,Yes,"Duarte et al., 2004",sbml/Saccharomyces cerevisiae,sbml,http://dx.doi.org/10.1101%2Fgr.2250904
@@ -38,5 +38,6 @@ iJN678-autotrophic,Synechocystis sp. PCC6803,678,863,795,Yes,"Nogales et al., 20
 iJN678-heterotrophic,Synechocystis sp. PCC6803,678,863,795,Yes,"Nogales et al., 2012",sbml/Synechocystis sp. PCC6803,sbml,http://dx.doi.org/10.1073/pnas.1117907109
 iJN678-mixotrophic,Synechocystis sp. PCC6803,678,863,795,Yes,"Nogales et al., 2012",sbml/Synechocystis sp. PCC6803,sbml,http://dx.doi.org/10.1073/pnas.1117907109
 iZY478,Thermotoga maritima MSB8,478,645,647,Yes,"Zhang et al., 2009",sbml/Thermotoga maritima,sbml,http://dx.doi.org/10.1126/science.1174671
+iCS382,Toxoplasma gondii,382,571,498,Yes,"Song et al., 2013",sbml/Toxoplasma gondii,sbml,https://dx.doi.org/10.1038%2Fmsb.2013.62
 VvuMBEL943,Vibrio vulnificus CMCP6,673,836,792,No,"Kim et al., 2011",sbml/Vibrio vulnificus,sbml,http://dx.doi.org/10.1038/msb.2010.115
 iPC815,Yersinia pestis CO92,815,1961,1552,Yes,"Charusanti et al., 2011",sbml/Yersinia pestis,sbml,http://dx.doi.org/10.1186/1752-0509-5-163
