@@ -31,6 +31,8 @@ tpj13081,Phaeodactylum tricornutum,607,850,754,Yes,"Kim et al., 2015",sbml/Phaeo
 iMT1026,Pichia pastoris,1026,2210,2755,Yes,"Tomas-Gamisans et al., 2016",sbml/Pichia pastoris,sbml,http://dx.doi.org/10.1371/journal.pone.0148031
 iTH366,Plasmodium falciparum 3D7,366,1001,1025,Yes,"Plata et al., 2010",sbml/Plasmodium falciparum,sbml,http://dx.doi.org/10.1038/msb.2010.60
 iND750,Saccharomyces cerevisiae Sc288,750,1266,1177,Yes,"Duarte et al., 2004",sbml/Saccharomyces cerevisiae,sbml,http://dx.doi.org/10.1101%2Fgr.2250904
+yeast_7.5_cobra,Saccharomyces cerevisiae Yeast v6.0,900,3490,3370,Yes,"Aung et al., 2013",sbml/Yeast_7.5,sbml,http://dx.doi.org/10.1089/ind.2013.0013
+yeast_7.5_recon,Saccharomyces cerevisiae Yeast v6.0,900,3490,3370,Yes,"Aung et al., 2013",sbml/Yeast_7.5,sbml,http://dx.doi.org/10.1089/ind.2013.0013
 yeast_7.6,Saccharomyces cerevisiae Yeast v6.0,900,3490,3370,Yes,"Aung et al., 2013",sbml/yeast_7.6,sbml,http://dx.doi.org/10.1089/ind.2013.0013
 yeast_7.6_recon,Saccharomyces cerevisiae Yeast v6.0,900,3490,3370,Yes,"Aung et al., 2013",sbml/yeast_7.6,sbml,http://dx.doi.org/10.1089/ind.2013.0013
 iRR1083,Salmonella typhimurium LT2,1083,2546,1802,Yes,"Raghunathan et al., 2009",sbml/Salmonella typhimurium,sbml,http://dx.doi.org/10.1186/1752-0509-3-38
