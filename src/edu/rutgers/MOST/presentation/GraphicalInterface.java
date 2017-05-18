@@ -4267,7 +4267,6 @@ public class GraphicalInterface extends JFrame {
 			{
 				if( file.isDirectory() || file.exists() && file.getName().toLowerCase().endsWith( ".csv" ) )
 				{
-					curSettings.add( SettingsConstants.CSV_SETTINGS_NAME, file.getAbsolutePath() );
 					//bug - this prints out every file in directory
 					//System.out.println(file.getAbsolutePath());
 					return true;
@@ -4287,6 +4286,7 @@ public class GraphicalInterface extends JFrame {
 		if( retVal != JFileChooser.APPROVE_OPTION )
 			return null;
 		
+		curSettings.add( SettingsConstants.CSV_SETTINGS_NAME, fileChooser.getSelectedFile().getAbsolutePath() );
 		return fileChooser.getSelectedFile();
 	}
 	
