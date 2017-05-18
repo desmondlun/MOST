@@ -443,7 +443,52 @@ public class ReactionFactory {
 		for (int i = 0; i < reactions.size(); i++) {
 			if (reactions.get(i) != null && LocalConfig.getInstance().getReactionEquationMap().containsKey(reactions.get(i).getId())) {
 				SBMLReactionEquation equn = (SBMLReactionEquation) LocalConfig.getInstance().getReactionEquationMap().get(reactions.get(i).getId());
-				if (equn.getCompartmentList().size() == 1 && equn.getCompartmentList().contains(comp)) {
+				boolean containsProton = false;
+				for (int q = 0; q < equn.getReactants().size(); q++) {
+					//System.out.println(equn.getReactants().get(q).getMetaboliteAbbreviation());
+					if (LocalConfig.getInstance().getMetaboliteIdKeggIdMap().get(Integer.toString(equn.getReactants().get(q).getMetaboliteId())) != null) {
+						String keggId = LocalConfig.getInstance().getMetaboliteIdKeggIdMap().get(Integer.toString(equn.getReactants().get(q).getMetaboliteId()));
+						if (keggId.equals("C00080")) {
+							containsProton = true;
+						}
+					}
+				}
+				for (int p = 0; p < equn.getProducts().size(); p++) {
+					if (LocalConfig.getInstance().getMetaboliteIdKeggIdMap().get(Integer.toString(equn.getProducts().get(p).getMetaboliteId())) != null) {
+						String keggId = LocalConfig.getInstance().getMetaboliteIdKeggIdMap().get(Integer.toString(equn.getProducts().get(p).getMetaboliteId()));
+						if (keggId.equals("C00080")) {
+							containsProton = true;
+						}
+					}
+				}
+				ArrayList<String> compList = new ArrayList<String>();
+				if (containsProton) {
+					for (int q = 0; q < equn.getReactants().size(); q++) {
+						if (LocalConfig.getInstance().getMetaboliteIdKeggIdMap().get(Integer.toString(equn.getReactants().get(q).getMetaboliteId())) != null) {
+							String keggId = LocalConfig.getInstance().getMetaboliteIdKeggIdMap().get(Integer.toString(equn.getReactants().get(q).getMetaboliteId()));
+							if (!keggId.equals("C00080")) {
+								if (!compList.contains(equn.getReactants().get(q).getCompartment())) {
+									compList.add(equn.getReactants().get(q).getCompartment());
+								}
+							}
+						}
+					}
+					for (int p = 0; p < equn.getProducts().size(); p++) {
+						if (LocalConfig.getInstance().getMetaboliteIdKeggIdMap().get(Integer.toString(equn.getProducts().get(p).getMetaboliteId())) != null) {
+							String keggId = LocalConfig.getInstance().getMetaboliteIdKeggIdMap().get(Integer.toString(equn.getProducts().get(p).getMetaboliteId()));
+							if (!keggId.equals("C00080")) {
+								if (!compList.contains(equn.getProducts().get(p).getCompartment())) {
+									compList.add(equn.getProducts().get(p).getCompartment());
+								}
+							}
+						}
+					}
+				}
+				equn.setCompartmentListIgnoreProton(compList);
+				if ((equn.getCompartmentList().size() == 1 || 
+					(equn.getCompartmentListIgnoreProton().size() == 1) && 
+					equn.getCompartmentListIgnoreProton().contains(comp)) 
+					&& equn.getCompartmentList().contains(comp)) {
 					reactionsByCompartment.add(reactions.get(i));
 				} 
 			}

@@ -1,10 +1,12 @@
 1. Change version in about box - GraphicalInterfaceConstants.ABOUT_BOX_VERSION_TEXT
 
-2. Create a folder MOST_distXXXXXX where XXXXXX is the date.  The etc folder, ModelCollection.csv,
+2. Create a folder MOST_v2_alpha-x where x is version.  The etc folder, ModelCollection.csv,
 README, and SOURCES must be placed in this folder. The backup folder and documentation folder 
 should be removed from etc folder.
-Create folder named lib in folder MOST_distXXXXXX and copy linux, mac, win32 and win64 folders from
+Create folder named lib in folder MOST_alpha-x and copy linux, mac, win32 and win64 folders from
 the lib folder of the code used for the build into this folder.
+This folder will be used to create a tar.gz
+for Linux and zip file.
 
 Note if Project is loaded through git into Eclipse, you will not be able to make an executable jar.
 
@@ -21,8 +23,4 @@ Browse for folder created in step 2 and type in MOST.jar
 in input box. Click Finish.
 Click OK for next two dialogs.
 
-6. Create a folder MOST_alpha-x where x is version. The MOST.jar, etc folder, lib folder, ModelCollection.csv,
-and README, and SOURCES from folder created in step 3 must be placed in this folder. This folder will be used to create a tar.gz
-for Linux and zip file.
-
-7. Update links in download.htmll.
+6. Update links in download.html.

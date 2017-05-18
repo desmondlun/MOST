@@ -36,6 +36,7 @@ public class PathwayReactionData {
 	private int occurences;
 	
 	private String direction;
+	private boolean directionsMatch = true;
 	
 	// data from pathway_reaction_positions, currently using same class for storing
 	// data from reactions.csv and pathway_reaction_positions. may consider using
@@ -198,6 +199,16 @@ public class PathwayReactionData {
 
 	public void setDirection(String direction) {
 		this.direction = direction;
+	}
+
+	public boolean isDirectionsMatch()
+	{
+		return directionsMatch;
+	}
+
+	public void setDirectionsMatch( boolean directionsMatch )
+	{
+		this.directionsMatch = directionsMatch;
 	}
 
 	public void setLevelPosition(double levelPosition) {

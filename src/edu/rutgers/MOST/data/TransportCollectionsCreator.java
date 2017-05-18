@@ -81,15 +81,15 @@ public class TransportCollectionsCreator {
 //		}
 //	}
 	
-	public String createMetaboliteAbbreviation(String metabAbbr) {
-		// check if metabolite ends with "_x"
-		String ch = metabAbbr.substring(metabAbbr.length() - 2, metabAbbr.length() - 1);
-		//System.out.println("ch " + ch);
-		if (ch.equals("_")) {
-			metabAbbr = metabAbbr.substring(2, metabAbbr.length() - 2);
-		} else {
-			metabAbbr = metabAbbr.substring(2);
-		}
-		return metabAbbr;
-	}
+//	public String createMetaboliteAbbreviation(String metabAbbr) {
+//		// check if metabolite ends with "_x"
+//		String ch = metabAbbr.substring(metabAbbr.length() - 2, metabAbbr.length() - 1);
+//		//System.out.println("ch " + ch);
+//		if (ch.equals("_")) {
+//			metabAbbr = metabAbbr.substring(2, metabAbbr.length() - 2);
+//		} else {
+//			metabAbbr = metabAbbr.substring(2);
+//		}
+//		return metabAbbr;
+//	}
 }
