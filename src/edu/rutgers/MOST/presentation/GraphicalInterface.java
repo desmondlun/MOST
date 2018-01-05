@@ -13890,7 +13890,7 @@ public class GraphicalInterface extends JFrame {
 			//e.printStackTrace();
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
-			dialog.setErrorMessage( "<html><p>" + errors.toString() + "</p></html>" );
+			dialog.setErrorMessage("<html><p>" + errors.toString() + "</p></html>");
 			dialog.setVisible(true);
 		}		
 	}

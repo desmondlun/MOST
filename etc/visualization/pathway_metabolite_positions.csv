@@ -2002,7 +2002,7 @@ Pathway ID,Metabolite ID,Metabolite Level,Metabolite Level Position,Metabolite N
 0,2000,25.3,-0.8,Phosphate,PI,C00009,0,s,,,,
 0,2001,26.1,-1,Acetate,AC,C00033,1,s,,,,
 0,2002,31.75,-4.6,Acceptor,Acceptor,C00028,0,s,,,,
-0,2003,31.85,-4.55,Water,H2O,C00001,0,s,,,,
+0,2003,31.83,-4.55,Water,H2O,C00001,0,s,,,,
 0,2004,32.35,-4.6,Reduced acceptor,Reduced acceptor,C00030,0,s,,,,
 0,2005,31.75,-5.2,Oxygen,O2,C00007,0,s,,,,
 0,2006,31.85,-5.25,Water,H2O,C00001,0,s,,,,
