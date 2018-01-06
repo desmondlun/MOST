@@ -354,6 +354,8 @@ public class GraphicalInterface extends JFrame {
 	/*****************************************************************************/
 	// end boolean values
 	/*****************************************************************************/ 
+	
+	public static String gurobiLicenceError;
 
 	/*****************************************************************************/
 	// components
@@ -1174,6 +1176,8 @@ public class GraphicalInterface extends JFrame {
 		gi = this;
 
 		isRoot = true;
+		
+		gurobiLicenceError = "";
 		
 		LocalConfig.getInstance().fvaColumnsVisible = false;
 		LocalConfig.getInstance().fvaDone = true;
@@ -13843,6 +13847,7 @@ public class GraphicalInterface extends JFrame {
 	// end Visualization
 	/********************************************************************************************/
 	
+	@SuppressWarnings( "static-access" )
 	public static void main(String[] args) {
 		try {
 			// Set cross-platform Java L&F (also called "Metal")
@@ -13871,6 +13876,7 @@ public class GraphicalInterface extends JFrame {
 			frame.setSize(1000, 610);
 			frame.setMinimumSize(new Dimension(800, 610));
 			frame.setLocationRelativeTo(null);
+			frame.outputTextArea.setText(gurobiLicenceError);
 			frame.setVisible(true);
 			
 			// based on http://iitdu.forumsmotion.com/t593-java-swing-adding-confirmation-dialogue-for-closing-window-in-jframe

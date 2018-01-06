@@ -63,7 +63,17 @@ public abstract class GurobiSolver implements MILSolver
 			}
 			catch ( GRBException e ) // necessary due to throws declaration
 			{
-				e.printStackTrace();
+				//e.printStackTrace();
+				StringWriter errors = new StringWriter();
+				e.printStackTrace(new PrintWriter(errors));
+				// puts license error text in console
+				GraphicalInterface.gurobiLicenceError = errors.toString();
+				// code to show error message if license expired. this would be very annoying
+				// but if this behavior is desired, uncomment below  and comment out line above
+//				JOptionPane.showMessageDialog(null,                
+//					errors,                
+//					"Gurobi Not Linked Warning.",                                
+//					JOptionPane.WARNING_MESSAGE);
 			}
 		}
 		catch ( UnsatisfiedLinkError | NoClassDefFoundError except )

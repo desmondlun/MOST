@@ -16,6 +16,7 @@ iAF1260,Escherichia coli K-12 MG1655,1260,2077,1039,Yes,"Feist et al., 2007",sbm
 iJO1366,Escherichia coli K-12 MG1655,1366,2583,1805,Yes,"Orth et al, 2011",sbml/E. Coli,sbml,http://dx.doi.org/10.1038/msb.2011.65
 iJR904,Escherichia coli K-12 MG1655,904,1075,904,Yes,"Reed et al., 2003",sbml/E. Coli,sbml,http://dx.doi.org/10.1186/gb-2003-4-9-r54
 iCA1273,Escherichia coli W (ATCC 9637),1273,2477,2062,Yes,"Archer et al., 2011",sbml/E. Coli,sbml,http://dx.doi.org/10.1186/1471-2164-12-9
+ecoli_1.1_cobra,Escherichia coli,1366,2583,1806,Yes,"Smallbone, 2013",sbml/E. Coli,sbml,http://ecoli.sourceforge.net/
 iIT341,Helicobacter pylori 26695,341,554,562,Yes,"Thiele et al., 2005",sbml/Helicobacter pylori,sbml,http://dx.doi.org/10.1128/JB.187.16.5818-5830.2005
 recon2model.v02,Homo sapiens,1789,7440,9798,Yes,"Thiele et al., 2013",sbml/recon2_02,sbml,http://dx.doi.org/10.1038/nbt.2488
 iYL1228,Klebsiella pneumoniae MGH 78578,1228,2262,1658,Yes,"Liao et al, 2011",sbml/Klebsiella pneumoniae,sbml,http://dx.doi.org/10.1128/JB.01218-10
